@@ -1,18 +1,13 @@
 from pathlib import Path
 import os
-import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-env=environ.Env()
-
-environ.Env.read_env()
-
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS')
 
 
 # Application definition
