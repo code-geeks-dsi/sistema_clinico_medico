@@ -16,6 +16,7 @@ Including another URLconf
 from django import views
 from django.contrib import admin
 from django.urls import path
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from GestionUsuarios.views import vista_iniciarsesion, logearse
 
 urlpatterns = [
@@ -24,3 +25,4 @@ urlpatterns = [
     path('login/', vista_iniciarsesion, name='login'),
     path('logearse/', logearse, name='logearse'),
 ]
+urlpatterns += staticfiles_urlpatterns()
