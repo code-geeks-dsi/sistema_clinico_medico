@@ -1,5 +1,7 @@
+from math import fabs
 from msilib.schema import Class
 from pyexpat import model
+from re import M
 from tkinter import CASCADE
 from turtle import back
 from django.db import models
@@ -39,5 +41,29 @@ class ContieneValor(models.Model):
 
     def __str__(self):
         return self.id_resultado
+
+class ExamenLaboratorio(models.Model):
+    OPCIONES_MUESTRA=(
+        (1, 'sangre'),
+        (2, 'orina'),
+        (3, 'heces'),
+        (4, 'tejidos'),
+    )
+    id_examen_laboratorio=models.AutoField(primary_key=True)
+    categoria=models.ManyToManyField('Categoria', through='CategoriaExamen')
+    codigo_examen=models.CharField(max_length=8, null=False, blank=False)
+    nombre_examen=models.CharField(max_length=40, null=False,blank=False) #tipo_examen
+    tipo_muestra=models.CharField(max_length=15,choices=OPCIONES_MUESTRA ,null=False,blank=False)
+
+class CategoriaExamen(models.Model):
+    categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
+    examen_laboratorio=models.ForeignKey('ExamenLaboratorio', on_delete=models.CASCADE)
+    pass
+
+class Categoria(models.Model):
+    id_categoria=models.AutoField(primary_key=True)
+    nombre_categoria=models.CharField(max_length=30, null=False,blank=False)
+    descripcion_categoria=models.CharField(max_length=40, null=True,blank=True)
+
 
 
