@@ -102,7 +102,8 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
     def is_superuser(self):
         return self.es_superuser
 
-        class Doctor(models.model)
-        especialidad_doctor = models.CharField(max_length=40,null=false, blank=false)
-        jvmp=models.IntegerField(max_length=5,null=false.blank=false)
-        
+class Doctor(models.model)
+    especialidad_doctor = models.CharField(max_length=40,null=false, blank=false)
+    jvmp =models.IntegerField(max_length=5,null=false.blank=false)
+    Empleado = models.OneToOneField(Empleado,model.DO_NOTHING,blank=false,null=false,through = "Empleado")
+
