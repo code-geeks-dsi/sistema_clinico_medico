@@ -1,6 +1,7 @@
 from pyexpat import model
 from django.db import models
 
+
 # Create your models here.
 class Paciente(models.Model):
     OPCIONES_SEXO=(
@@ -18,14 +19,9 @@ class Paciente(models.Model):
     responsable=models.CharField(max_length=40,blank=False,null=False)
 
 class Expediente(models.model)
-    OPCIONES_FECHA = (
-        (1,'dia'),
-        (2,'mes'),
-        (3,'año'),
-
-    )
+    
     id_expediente = models.AutoField(primary_key=True, unique=True)
-    fecha_creacion_expediente = models.DateField(max_length=8,choices=OPCIONES_FECHA,blank=false,null=false)
+    fecha_creacion_expediente = models.DateField(default=datetime.now,blank=false,null=false)
     codigo_expediente=models.CharField(max_length=10,blank=false,null=false,unique=True)
     contiene_consulta=models.ManyToManyField(contiene_consulta,model.DO_NOTHING,blank=false,null=false,through='contiene_consulta')
 
