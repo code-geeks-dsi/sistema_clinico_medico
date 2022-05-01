@@ -1,6 +1,10 @@
 from argparse import _MutuallyExclusiveGroup
+from datetime import datetime
 from pyexpat import model
+from secrets import choice
 from django.db import models
+from django.core.validators import MaxValueValidator
+from django.core.validators import MinValueValidator
 
 # Create your models here.
 
@@ -18,10 +22,37 @@ class ContieneConsulta(models.Model):
     consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True,through='Consulta')
 
 class SignosVitales(models.Model):
+    UNIDADES_TEMPERATURA=(
+        (1,'F','Fahrenheit'),
+        (2,'C','Celsius'),
+    )
+    UNIDADES_PESO=(
+        (1,'Lbs','Libras'),
+        (2,'Kgs','Kilogramos'),
+    )
     id_signos_vitales= models.AutoField(primary_key=True)
+    consulta=models.ForeignKey(Consulta,on_delete=models.DO_NOTHING,null=False, blank=False)
+    # enfermera=models.ForeignKey(Enfermera,on_delete=models.DO_NOTHING,null=False, blank=False)
+    unidad_temperatura=models.CharField(max_length=1,choices=UNIDADES_TEMPERATURA,null=False, blank=True)
+    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True)
+    unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=False, blank=True)
+    unidad_presion_arterial_sistolica=models.CharField(max_length=4,default='mmHH',null=False, blank=True)
+    unidad_frecuencia_cardiaca=models.CharField(max_length=3,null=False, blank=True)
+    unidad_saturacion_oxigeno=models.CharField(max_length=1,default='%',null=False, blank=True)
+
+    valor_temperatura=models.DecimalField(max_digits=5,decimal_places=2,validators=[MaxValueValidator(50),MinValueValidator(15)],null=False, blank=True)
+    valor_peso=models.DecimalField(max_digits=4,decimal_places=2,validators=[MaxValueValidator(500),MinValueValidator(0)],null=False, blank=True)
+    valor_presion_arterial_diastolica=models.IntegerField(max_length=3,validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=True)
+    valor_presion_arterial_sistolica=models.IntegerField(max_length=3,validators=[MaxValueValidator(350),MinValueValidator(0)],null=False, blank=True)
+    valor_frecuencia_cardiaca=models.IntegerField(max_length=3,validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=True)
+    valor_saturacion_oxigeno=models.IntegerField(max_length=3,validators=[MaxValueValidator(101),MinValueValidator(0)],null=False, blank=True)
+
 
 class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)
+    fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
+    # examen_de_laboratorio=models.ForeignKey(ExamenDeLaboratorio,,on_delete=models.DO_NOTHING,null=False, blank=False)
+
 
 class Hospital(models.Model):
     id_hospital= models.AutoField(primary_key=True)
@@ -34,7 +65,7 @@ class ReferenciaMedica(models.Model):
     id_referencia_medica= models.AutoField(primary_key=True)
     hospital=models.ForeignKey(Hospital,models.DO_NOTHING,null=False, blank=False)
     especialidad=models.CharField(max_length=30,null=False, blank=False)
-    fecha_referencia=models.DateField(auto_now_add=True,null=False, blank=False)
+    fecha_referencia=models.DateField(default=datetime.now,null=False, blank=False)
 
 
 
