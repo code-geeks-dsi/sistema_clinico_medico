@@ -1,4 +1,5 @@
 from cgitb import text
+from pyexpat import model
 from turtle import mode
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
@@ -102,19 +103,41 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
     def is_superuser(self):
         return self.es_superuser
 
+class Permisos(models.Model):
+    id_permiso = models.AutoField(primary_key=True)
+    empleado = models.ManyToManyField('Empleado', through='PermisoEmpleado')
+    nombre_permiso=models.CharField(max_length=20, null=False, blank= False)
+    descripcion_permiso=models.CharField(max_length=80, null=False, blank=False)
+    def __str__(self):
+        return self.nombre_permiso
+
+class PermisoEmpleado(models.Model):
+    empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+    permiso=models.ForeignKey('Permiso', on_delete=models.CASCADE)
+    def __str__(self):
+        return self.permiso
+
 class JefeFinanzas(models.Model):
     id_jefe_finanzas=models.AutoField(primary_key=True)
-    id_empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+    empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+    def __str__(self):
+        return self.empleado.nombres
 
 class JefeRecursosHumanos(models.Model):
     id_jefe_recursos_humanos=models.AutoField(primary_key=True)
-    id_empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+    empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+    def __str__(self):
+        return self.empleado.nombres
 
 class JefeMarketing(models.Model):
     id_jefe_marketing=models.AutoField(primary_key=True)
-    id_empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+    empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+    def __str__(self):
+        return self.empleado.nombres
 
 class Enfermera(models.Model):
     id_enfermera=models.AutoField(primary_key=True)
-    id_empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+    empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+    def __str__(self):
+        return self.empleado.nombres
 
