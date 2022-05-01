@@ -7,13 +7,14 @@ from django.forms import DateField
 
 # Create your models here.
 
-class Examina(models.Model):
+class EsperaExamen(models.Model):
     OPCIONES_ESTADO=(
         (1, 'Completo'),
         (2, 'Parcialmente')
         (3, 'Pendiente')
     )
-    id_examina = models.AutoField(primary_key=True)
+    resultado=models.ForeignKey('Resultado', on_delete=models.CASCADE)
+    paciente=models.ForeignKey('modulo_expediente_Paciente', on_delete=models.CASCADE)
     estado_pago_laboratorio=models.CharField(max_length=15, default="-", choices=OPCIONES_ESTADO, null=False, blank=False)
     numero_cola_laboratorio=models.IntegerField(null=False,blank=False)
     consumo_laboratorio=models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
@@ -23,6 +24,7 @@ class Examina(models.Model):
 
 class Resultado(models.Model):
     id_resultado = models.AutoField(primary_key=True)
+    lic_laboratorio = models.ForeignKey('modulo_control.LicLaboratorioClinico', on_delete=CASCADE)
     paciente = models.ForeignKey('modulo_expediente.Paciente', on_delete=models.CASCADE)
     parametro=models.ManyToManyField('Parametro', through='ContieneValor')
     fecha_resultado=models.DateField()
