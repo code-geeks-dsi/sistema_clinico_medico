@@ -22,15 +22,17 @@
   </head>
   <body>
       <!--Login Escritorio-->
-    <div class="container d-none d-md-block">
+    <div class="container">
         <div class="row vh-100 justify-content-center align-items-center">
             <div class="col">
                 <div class="row shadow rounded">
-                    <div class="col-6 bg">
+                    <!-- Imagen -->
+                    <div class="col-6 bg d-none d-md-block">
 
                     </div>
-                    <div class="col-6 bg-white p-3">
-                        <h2 class="fw-bold text-center p-4">Iniciar Sesión</h2>
+                    <!-- Login -->
+                    <div class="col-12 col-md-6 bg-white p-3">
+                        <h2 class="fw-bold text-center p-4">Iniciar Sesión 2</h2>
                         <form class="px-4" action="{% url 'logearse' %}" method="post">
                             {% csrf_token %}
                             <div class="mb-4">
@@ -94,70 +96,7 @@
     </div>
     <!--Fin Escritorio-->
 
-    <!--Login Telefonos-->
-    <div class="container d-md-none d-md-block">
-        <div class="row vh-100 justify-content-center align-items-center">
-            <div class="col-auto bg-white p-2">
-                <h2 class="fw-bold text-center py-4">Iniciar Sesión</h2>
-                <!--Form para logearse-->
-                <form class="px-5" action="{% url 'logearse' %}" method="post">
-                    {% csrf_token %}
-                    <div class="mb-4">
-                        <label for="email" class="form-label">Usuario o Correo Electronico</label>
-                        <input type="text" class="form-control" name="usuario">
-                    </div>
-                    <div class="mb-4">
-                        <label for="password" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" name="password">
-                    </div>
-                    <div class="mb-4 form-check">
-                        <input type="checkbox" name="connected" class="form-check-input">
-                        <label for="connected" class="form-check-label">No cerrar sesión</label>
-                    </div>
-                    <div class="d-grid"> 
-                        <button type="submit" class="btn-primary rounded">Iniciar Sesión</button>
-                    </div>
 
-                    <div class="my-3">
-                        <span>¿No tienes Cuenta? <a href="#">Registrate</a></span><br>
-                        <span><a href="#">Recuperar Password</a></span>
-                    </div>
-                </form>
-                <!-- Inicio de Sesión con Redes Sociales -->
-                <div class="container w-100 px-5 my-5">
-                    <div class="row text-center">
-                        <div class="col-12 py-3">Iniciar Sesión</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="btn btn-outline-primary w-100 my-1">
-                                <div class="row align-items-center">
-                                    <div class="col-2">
-                                        <img src="{% static 'img/fb.png'%}" width="32" alt="">
-                                    </div>
-                                    <div class="col-10 text-center">
-                                        Facebook
-                                    </div>
-                                </div>
-                            </button>
-                        </div>
-                        <div class="col-12">
-                            <button class="btn btn-outline-danger w-100 my-1">
-                                <div class="row align-items-center">
-                                    <div class="col-2">
-                                        <img src="{% static 'img/google.png'%}" width="32" alt="">
-                                    </div>
-                                    <div class="col-10 text-center">
-                                        Google
-                                    </div>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!--Fin Telefonos-->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>

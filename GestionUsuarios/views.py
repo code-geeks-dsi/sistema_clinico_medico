@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from GestionUsuarios.models import Usuario
+from GestionUsuarios.models import Empleado
 """
 -------------------------------------------------------------------------
 Para almacenar archivos estaticos se esta utilizando AWS S3, es necesario
@@ -34,7 +34,7 @@ def logearse(request):
         else:
             #mensaje="No se recibio un correo"
             try:
-                correo=Usuario.objects.filter(codigoUsuario=email).first().email
+                correo=Empleado.objects.filter(codigoUsuario=email).first().email
                 user = authenticate(request, email=correo, password=password)
                 if user is not None:
                     login(request, user)
