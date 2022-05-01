@@ -12,23 +12,23 @@ class Expediente (models.Model):
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
 
-class contiene_consulta(models.Model):
+class ContieneConsulta(models.Model):
     id_expediente = models.ForeignKey(Expediente, models.DO_NOTHING, blank=False, null=True)
     id_consulta = models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=True)
 
-class Signos_Vitales(models.Model):
+class SignosVitales(models.Model):
     id_signos_vitales= models.AutoField(primary_key=True)
 
-class Orden_Examen_Laboratorio(models.Model):
+class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)
 
-class Referencia_Medica(models.Model):
+class ReferenciaMedica(models.Model):
     id_referencia_medica= models.AutoField(primary_key=True)
 
 class Hospital(models.Model):
     id_hospital= models.AutoField(primary_key=True)
 
-class Receta_Medica(models.Model):
+class RecetaMedica(models.Model):
     id_receta_medica= models.AutoField(primary_key=True)
 
 class Dosis(models.Model):
@@ -37,6 +37,6 @@ class Dosis(models.Model):
 class Medicamento(models.Model):
     id_medicamento= models.AutoField(primary_key=True)
 
-class Constancia_Medica(models.Model):
+class ConstanciaMedica(models.Model):
     id_constancia_medica= models.AutoField(primary_key=True)
 

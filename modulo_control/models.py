@@ -101,3 +101,20 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
     @property
     def is_superuser(self):
         return self.es_superuser
+
+class JefeFinanzas(models.Model):
+    id_jefe_finanzas=models.AutoField(primary_key=True)
+    id_empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+
+class JefeRecursosHumanos(models.Model):
+    id_jefe_recursos_humanos=models.AutoField(primary_key=True)
+    id_empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+
+class JefeMarketing(models.Model):
+    id_jefe_marketing=models.AutoField(primary_key=True)
+    id_empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+
+class Enfermera(models.Model):
+    id_enfermera=models.AutoField(primary_key=True)
+    id_empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+
