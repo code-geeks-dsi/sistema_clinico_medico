@@ -94,4 +94,3 @@ class ConstanciaMedica(models.Model):
     dias_reposo=models.IntegerField(max_length=2, blank=False, null=False)
     diagnostico_constancia=models.CharField(max_length=200, blank=False, null=False)
 
-
