@@ -107,7 +107,7 @@ class Doctor(models.model)
     jvmp =models.IntegerField(max_length=5,null=false.blank=false)
     Empleado = models.OneToOneField(Empleado,model.DO_NOTHING,blank=false,null=false,through = "Empleado")
 
-class Control(models.model)
+class Clinica(models.model)
     id_clinica=models.AutoField(primary_key=True,unique=True)
     nombre_clinica=models.CharField(max_length=40,null=false,blank=false)
     direccion_clinica=models.CharField(max_length=80,null=false,blank=false)
