@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from GestionUsuarios.models import Empleado
+from modulo_control.models import Empleado
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('email','es_staff')

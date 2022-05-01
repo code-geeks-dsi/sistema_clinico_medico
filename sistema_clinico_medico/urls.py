@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
-from GestionUsuarios.views import vista_iniciarsesion, logearse
+from modulo_control.views import vista_iniciarsesion, logearse
 
 urlpatterns = [
     path('admin/', admin.site.urls),

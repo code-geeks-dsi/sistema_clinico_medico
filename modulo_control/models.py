@@ -1,5 +1,4 @@
 from cgitb import text
-import re
 from turtle import mode
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin

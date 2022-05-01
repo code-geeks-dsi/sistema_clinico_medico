@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from GestionUsuarios.models import Empleado
+from modulo_control.models import Empleado
 """
 -------------------------------------------------------------------------
 Para almacenar archivos estaticos se esta utilizando AWS S3, es necesario
@@ -48,4 +48,3 @@ def logearse(request):
     
     data={'Mensaje':mensaje}
     return JsonResponse(data)
-

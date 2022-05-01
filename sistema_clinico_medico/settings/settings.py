@@ -23,7 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'storages',
-    'GestionUsuarios',
+    'modulo_control',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +90,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 #Custom User model
-AUTH_USER_MODEL = 'GestionUsuarios.Empleado'
+AUTH_USER_MODEL = 'modulo_control.Empleado'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
