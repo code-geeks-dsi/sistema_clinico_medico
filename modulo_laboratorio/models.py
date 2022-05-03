@@ -64,5 +64,16 @@ class Categoria(models.Model):
     nombre_categoria=models.CharField(max_length=30, null=False,blank=False)
     descripcion_categoria=models.CharField(max_length=40, null=True,blank=True)
 
+class Parametro(models.model):
+    id_parametro = models.AutoField(primary_key=True)
+    nombre_parametro = models.CharField(max_length=40,null=False, blank=False)
+    unidad_parametro = models.CharField(max_length=40, null=True,blank=False)
+    examen_de_laboratorio = models.ForeignKey(ExamenLaboratorio, models.DO_NOTHING, blank=False, null=True)
+
+class ServicioDeLaboratorioClinico(models.model):
+    id_servicio =models.AutoField(primary_key=True)
+    precio_servicio_clinica=models.DecimalField(max_digits=10,decimal_places=2,null=False, blank=False)
+    examen_de_laboratorio=models.OneToOneField(ExamenLaboratorio,model.DO_NOTHING,blank=False,null=False,through='examen_de_laboratorio')
+
 
 
