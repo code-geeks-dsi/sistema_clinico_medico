@@ -32,30 +32,6 @@ class Paciente(models.Model):
     email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True)
     responsable=models.CharField(max_length=40,blank=False,null=False)
 
-class Expediente(models.model)
-    id_expediente = models.AutoField(primary_key=True, unique=True)
-    fecha_creacion_expediente = models.DateField(default=datetime.now,blank=false,null=false)
-    codigo_expediente=models.CharField(max_length=10,blank=false,null=false,unique=True)
-    contiene_consulta=models.ManyToManyField(contiene_consulta,model.DO_NOTHING,blank=false,null=false,through='contiene_consulta')
-
-class Paciente(models.Model):
-    OPCIONES_SEXO=(
-        (1, 'Masculino'),
-        (2, 'Femenino'),
-    )
-    id_paciente=models.AutoField(primary_key=True,unique=True)
-    nombre_paciente = models.CharField( max_length=40,blank=False, null=False)
-    apellido_paciente = models.CharField( max_length=40,blank=False, null=False)
-    fecha_nacimiento_paciente = models.DateField( blank=False,null=False)
-    sexo_paciente = models.CharField( max_length=1,choices=OPCIONES_SEXO, blank=False, null=False )
-    direccion_paciente=models.CharField( max_length=120, blank=False,null=False)
-    email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True)
-    responsable=models.CharField(max_length=40,blank=False,null=False)
-
-
-class Expediente (models.Model):
-    id_expediente= models.AutoField(primary_key=True, max_length=8,null=False, blank=False)
-
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
     constancia_medica= models.OneToOneField(ConstanciaMedica,on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
