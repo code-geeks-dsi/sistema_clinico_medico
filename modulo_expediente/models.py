@@ -1,8 +1,4 @@
-
-from turtle import mode
-from argparse import _MutuallyExclusiveGroup
 from datetime import datetime
-from pyexpat import model
 from secrets import choice
 from django.db import models
 from django.core.validators import MaxValueValidator
@@ -14,6 +10,7 @@ from modulo_laboratorio.models import ExamenLaboratorio
 class Expediente(models.Model):
     
     id_expediente = models.AutoField(primary_key=True, unique=True)
+    id_paciente=models.ForeignKey('Paciente', models.CASCADE, blank=False, null=False)
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
     codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
     contiene_consulta=models.ManyToManyField('Consulta',through='contieneConsulta')#blank=False,null=False, no se utilizan en ManyToMany fields.W122
@@ -24,7 +21,7 @@ class Paciente(models.Model):
         (2, 'Femenino'),
     )
     id_paciente=models.AutoField(primary_key=True,unique=True)
-    id_expediente=models.ForeignKey(Expediente, models.DO_NOTHING, blank=False, null=False)
+    
     nombre_paciente = models.CharField( max_length=40,blank=False, null=False)
     apellido_paciente = models.CharField( max_length=40,blank=False, null=False)
     fecha_nacimiento_paciente = models.DateField( blank=False,null=False)
