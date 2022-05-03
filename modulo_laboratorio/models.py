@@ -58,7 +58,6 @@ class ExamenLaboratorio(models.Model):
 class CategoriaExamen(models.Model):
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
     examen_laboratorio=models.ForeignKey('ExamenLaboratorio', on_delete=models.CASCADE)
-    pass
 
 class Categoria(models.Model):
     id_categoria=models.AutoField(primary_key=True)

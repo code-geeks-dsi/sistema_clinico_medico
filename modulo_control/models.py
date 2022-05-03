@@ -141,3 +141,13 @@ class Enfermera(models.Model):
     def __str__(self):
         return self.empleado.nombres
 
+class Doctor(models.model):
+    especialidad_doctor = models.CharField(max_length=40,null=False, blank=False)
+    jvmp =models.IntegerField(max_length=5,null=False,blank=False)
+    Empleado = models.OneToOneField(Empleado,model.DO_NOTHING,blank=False,null=False,through = "Empleado")
+
+class Clinica(models.model):
+    id_clinica=models.AutoField(primary_key=True,unique=True)
+    nombre_clinica=models.CharField(max_length=40,null=False,blank=False)
+    direccion_clinica=models.CharField(max_length=80,null=False,blank=False)
+    telefono_clinica=models.CharField(max_length=8,null=False,blank=False)
