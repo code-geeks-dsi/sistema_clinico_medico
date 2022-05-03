@@ -142,6 +142,7 @@ class Enfermera(models.Model):
         return self.empleado.nombres
 
 class Doctor(models.Model):
+    id_doctor=models.AutoField(primary_key=True, unique=True)
     especialidad_doctor = models.CharField(max_length=40,null=False, blank=False)
     jvmp =models.IntegerField(max_length=5,null=False,blank=False)
     Empleado = models.OneToOneField(Empleado,models.DO_NOTHING,blank=False,null=False,through = "Empleado")
