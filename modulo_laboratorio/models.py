@@ -1,12 +1,7 @@
-from math import fabs
-from msilib.schema import Class
-from pyexpat import model
-from re import M
-from tkinter import CASCADE
-from turtle import back
 from django.db import models
 from django.forms import DateField
 from modulo_control.models import LaboratorioClinico, LicLaboratorioClinico
+from modulo_expediente.models import Paciente
 
 # Create your models here.
 
