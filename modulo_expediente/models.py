@@ -40,6 +40,10 @@ class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
 
 class ContieneConsulta(models.Model):
+    id_expediente = models.ForeignKey(Expediente, models.DO_NOTHING, blank=False, null=True)
+    id_consulta = models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=True)
+
+class SignosVitales(models.Model):
     expediente = models.ManyToManyField(Expediente, models.DO_NOTHING, blank=False, null=True,through='Expediente')
     consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True,through='Consulta')
 
@@ -75,6 +79,8 @@ class OrdenExamenLaboratorio(models.Model):
     fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
     # examen_de_laboratorio=models.ForeignKey(ExamenDeLaboratorio,,on_delete=models.DO_NOTHING,null=False, blank=False)
 
+class ReferenciaMedica(models.Model):
+    id_referencia_medica= models.AutoField(primary_key=True)
 
 class Hospital(models.Model):
     id_hospital= models.AutoField(primary_key=True)
