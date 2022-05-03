@@ -1,7 +1,6 @@
 from django.db import models
 from django.forms import DateField
-from modulo_control.models import LaboratorioClinico, LicLaboratorioClinico
-from modulo_expediente.models import Paciente
+
 
 # Create your models here.
 
@@ -22,7 +21,7 @@ class EsperaExamen(models.Model):
 
 class Resultado(models.Model):
     id_resultado = models.AutoField(primary_key=True)
-    lic_laboratorio = models.ForeignKey(LicLaboratorioClinico, on_delete=models.CASCADE)
+    lic_laboratorio = models.ForeignKey('modulo_control.LicLaboratorioClinico', on_delete=models.CASCADE)
     paciente = models.ForeignKey('modulo_expediente.Paciente', on_delete=models.CASCADE)
     parametro=models.ManyToManyField('Parametro', through='ContieneValor')
     fecha_resultado=models.DateField()
@@ -64,12 +63,12 @@ class Parametro(models.Model):
     id_parametro = models.AutoField(primary_key=True)
     nombre_parametro = models.CharField(max_length=40,null=False, blank=False)
     unidad_parametro = models.CharField(max_length=40, null=True,blank=False)
-    examen_de_laboratorio = models.ForeignKey(ExamenLaboratorio, models.DO_NOTHING, blank=False, null=True)
+    examen_de_laboratorio = models.ForeignKey('ExamenLaboratorio', models.DO_NOTHING, blank=False, null=True)
 
 class ServicioDeLaboratorioClinico(models.Model):
     id_servicio =models.AutoField(primary_key=True)
     precio_servicio_clinica=models.DecimalField(max_digits=10,decimal_places=2,null=False, blank=False)
-    examen_de_laboratorio=models.ForeignKey(ExamenLaboratorio,on_delete=models.CASCADE,blank=False,null=False)
+    examen_de_laboratorio=models.ForeignKey('ExamenLaboratorio',on_delete=models.CASCADE,blank=False,null=False)
 
 
 
