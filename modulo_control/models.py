@@ -1,6 +1,3 @@
-from cgitb import text
-from pyexpat import model
-from turtle import mode
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
@@ -103,7 +100,7 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
     def is_superuser(self):
         return self.es_superuser
 
-class Permisos(models.Model):
+class Permiso(models.Model):
     id_permiso = models.AutoField(primary_key=True)
     empleado = models.ManyToManyField('Empleado', through='PermisoEmpleado')
     nombre_permiso=models.CharField(max_length=20, null=False, blank= False)
@@ -142,9 +139,10 @@ class Enfermera(models.Model):
         return self.empleado.nombres
 
 class Doctor(models.Model):
+    id_doctor=models.AutoField(primary_key=True, unique=True)
     especialidad_doctor = models.CharField(max_length=40,null=False, blank=False)
-    jvmp =models.IntegerField(max_length=5,null=False,blank=False)
-    Empleado = models.OneToOneField(Empleado,model.DO_NOTHING,blank=False,null=False,through = "Empleado")
+    jvmp =models.IntegerField(null=False,blank=False)
+    Empleado = models.ForeignKey('Empleado', on_delete=models.CASCADE)
 
 class Clinica(models.Model):
     id_clinica=models.AutoField(primary_key=True,unique=True)
@@ -158,7 +156,7 @@ class Secretaria(models.Model):
 
 class LicLaboratorioClinico(models.Model):
     id_lic_laboratorio=models.AutoField(primary_key=True, null=False, blank=False)
-    jvmp =models.IntegerField(max_length=5,null=False,blank=False)
+    jvmp =models.IntegerField(null=False,blank=False)#fields.w122
 
 class LaboratorioClinico(models.Model):
     id_laboratorio= models.AutoField(primary_key=True, null=False, blank=False)
