@@ -11,12 +11,12 @@ from modulo_control.models import Enfermera, Doctor
 from modulo_laboratorio.models import ExamenLaboratorio
 
 # Create your models here.
-class Expediente(models.model):
+class Expediente(models.Model):
     
     id_expediente = models.AutoField(primary_key=True, unique=True)
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
     codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
-    contiene_consulta=models.ManyToManyField('ContieneConsulta',blank=False,null=False,through='contiene_consulta')
+    contiene_consulta=models.ManyToManyField('Consulta',through='contieneConsulta')#blank=False,null=False, no se utilizan en ManyToMany fields.W122
 
 class Paciente(models.Model):
     OPCIONES_SEXO=(
@@ -32,14 +32,6 @@ class Paciente(models.Model):
     direccion_paciente=models.CharField( max_length=120, blank=False,null=False)
     email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True)
     responsable=models.CharField(max_length=40,blank=False,null=False)
-
-class Consulta(models.Model):
-    id_consulta= models.AutoField(primary_key=True)
-    constancia_medica= models.OneToOneField('ConstanciaMedica',on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
-    signos_vitales= models.OneToOneField('SignosVitales',on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
-    examen_de_laboratorio= models.OneToOneField('OrdenExamenLaboratorio', on_delete=models.DO_NOTHING, blank=False, null=False)
-    diagnostico=models.CharField(max_length=200, blank=False, null=False)
-    sintoma=models.CharField(max_length=200, blank=False, null=False)
 
 class ContieneConsulta(models.Model):
     OPCIONES_ESTADO_DE_PAGO=(
@@ -58,15 +50,19 @@ class ContieneConsulta(models.Model):
         (8,'Ver expediente'),
         (9,'Finalizar consulta'),
     )
-    expediente = models.ManyToManyField(Expediente, models.DO_NOTHING, blank=False, null=True)
-    consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True)
-    numero_cola=models.IntegerField(max_length=6, blank=False, null=False)
+    #Me parece que el ManyToManyField, no se ocupa en la clase asociación, si no en la clase dominante.
+    #expediente = models.ManyToManyField(Expediente, models.DO_NOTHING, blank=False, null=True)
+    #consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True)
+    expediente = models.ForeignKey(Expediente, models.DO_NOTHING, blank=False, null=True)
+    consulta = models.OneToOneField('Consulta', models.DO_NOTHING, blank=False, null=True)
+    numero_cola=models.IntegerField(blank=False, null=False) #No lleva max_length
     fecha_de_cola=models.DateField(default=datetime.now, blank=False, null=False)
     consumo_medico=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False)
     estado_cola_medica=models.CharField(max_length=20,choices=OPCIONES_ESTADO_DE_PAGO, blank=False,null=False)
     fase_cola_medica=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False)
 
 class SignosVitales(models.Model):
+    '''
     UNIDADES_TEMPERATURA=(
         (1,'F','Fahrenheit'),
         (2,'C','Celsius'),
@@ -75,9 +71,18 @@ class SignosVitales(models.Model):
         (1,'Lbs','Libras'),
         (2,'Kgs','Kilogramos'),
     )
+    '''
+    UNIDADES_TEMPERATURA=(
+        ('F','Fahrenheit'),
+        ('C','Celsius'),
+    )
+    UNIDADES_PESO=(
+        ('Lbs','Libras'),
+        ('Kgs','Kilogramos'),
+    )
     id_signos_vitales= models.AutoField(primary_key=True)
-    consulta=models.ForeignKey(Consulta,on_delete=models.DO_NOTHING,null=False, blank=False)
-    enfermera=models.ForeignKey(Enfermera,on_delete=models.DO_NOTHING,null=False, blank=False)
+    #consulta=models.ForeignKey(Consulta,on_delete=models.DO_NOTHING,null=False, blank=False)
+    enfermera=models.ForeignKey('modulo_control.Enfermera',on_delete=models.DO_NOTHING,null=False, blank=False)
     unidad_temperatura=models.CharField(max_length=1,choices=UNIDADES_TEMPERATURA,null=False, blank=True)
     unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True)
     unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=False, blank=True)
@@ -86,10 +91,19 @@ class SignosVitales(models.Model):
     unidad_saturacion_oxigeno=models.CharField(max_length=1,default='%',null=False, blank=True)
     valor_temperatura=models.DecimalField(max_digits=5,decimal_places=2,validators=[MaxValueValidator(50),MinValueValidator(15)],null=False, blank=True)
     valor_peso=models.DecimalField(max_digits=4,decimal_places=2,validators=[MaxValueValidator(500),MinValueValidator(0)],null=False, blank=True)
-    valor_presion_arterial_diastolica=models.IntegerField(max_length=3,validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=True)
-    valor_presion_arterial_sistolica=models.IntegerField(max_length=3,validators=[MaxValueValidator(350),MinValueValidator(0)],null=False, blank=True)
-    valor_frecuencia_cardiaca=models.IntegerField(max_length=3,validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=True)
-    valor_saturacion_oxigeno=models.IntegerField(max_length=3,validators=[MaxValueValidator(101),MinValueValidator(0)],null=False, blank=True)
+    valor_presion_arterial_diastolica=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=True)
+    valor_presion_arterial_sistolica=models.IntegerField(validators=[MaxValueValidator(350),MinValueValidator(0)],null=False, blank=True)
+    valor_frecuencia_cardiaca=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=True)
+    valor_saturacion_oxigeno=models.IntegerField(validators=[MaxValueValidator(101),MinValueValidator(0)],null=False, blank=True)
+    #Cuando se utiliza integerField, Django ignora el max_length, fields.w122
+
+class Consulta(models.Model):
+    id_consulta= models.AutoField(primary_key=True)
+    constancia_medica= models.OneToOneField('ConstanciaMedica',on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
+    signos_vitales= models.OneToOneField('SignosVitales',on_delete=models.DO_NOTHING,null=False, blank=False)
+    examen_de_laboratorio= models.OneToOneField('OrdenExamenLaboratorio', on_delete=models.DO_NOTHING, blank=False, null=False)
+    diagnostico=models.CharField(max_length=200, blank=False, null=False)
+    sintoma=models.CharField(max_length=200, blank=False, null=False)
 
 class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)
@@ -116,9 +130,10 @@ class ReferenciaMedica(models.Model):
 
 class RecetaMedica(models.Model):
     id_receta_medica= models.AutoField(primary_key=True)
-    Consulta = models.ForeignKey(Consulta, null=False, blank=False)
+    Consulta = models.ForeignKey(Consulta, on_delete=models.CASCADE,null=False, blank=False)
 
 class Medicamento(models.Model):
+    '''
     UNIDADES_DE_MEDIDA_MEDICAMENTO=(
     (3,'L','litro'),
     (4,'mL','mililitro'),
@@ -130,6 +145,19 @@ class Medicamento(models.Model):
     (12,'mg','miligramo'),
     (13,'oz','onza'),
     (15,'capsulas','cápsulas'),
+    )
+    '''
+    UNIDADES_DE_MEDIDA_MEDICAMENTO=(
+    ('L','litro'),
+    ('mL','mililitro'),
+    ('µL','microlitro'),
+    ('cc / cm³','centímetro cúbico'),
+    ('fl oz',	'onza líquida'),
+    ('Kg','kilogramo'),
+    ('g','gramo'),
+    ('mg','miligramo'),
+    ('oz','onza'),
+    ('capsulas','cápsulas'),
     )
     id_medicamento= models.AutoField(primary_key=True)
     nombre_comercial=models.CharField(max_length=50,null=False, blank=False)
@@ -144,9 +172,11 @@ class Dosis(models.Model):
         (3, 'Semana(s)'),
         (4, 'Mes(es)'),
     )
-    UNIDADES_DE_MEDIDA_DOSIS=(
-    (1,'got',	'gota'),
-    (2,'mgota / µgota'	'microgota')
+    #Solo pueden ser dos (1,2)
+    '''
+    UNIDADES_DE_MEDIDA_DOSIS = (
+    (1,'got'	'gota'),
+    (2,'mgota / µgota',	'microgota'),
     (3,'L',	'litro'),
     (4,'mL',	'mililitro'),
     (5,'µL',	'microlitro'),
@@ -161,14 +191,32 @@ class Dosis(models.Model):
     (14,'disparos'	,'disparos'),
     (15,'capsulas',	'cápsulas'),
     )
+    '''
+    UNIDADES_DE_MEDIDA_DOSIS = (
+        ('got',	'gota'),
+        ('mgota / µgota', 'microgota'),
+        ('L', 'litro'),
+        ('mL', 'mililitro'),
+        ('µL', 'microlitro'),
+        ('cc / cm³', 'centímetro cúbico'),
+        ('fl oz','onza líquida'),
+        ('cdita','cucharadita'),
+        ('cda','cucharada'),
+        ('Kg','kilogramo'),
+        ('g','gramo'),
+        ('mg','miligramo'),
+        ('oz','onza'),
+        ('disparos','disparos'),
+        ('capsulas','cápsulas'),
+    )
     id_dosis= models.AutoField(primary_key=True)
-    periodo_dosis=models.IntegerField(max_length=2,null=False,Blank=False)
+    periodo_dosis=models.IntegerField(null=False,blank=False)
     unidad_periodo_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False)
-    frecuencia_dosis=models.IntegerField(max_length=2,null=False,Blank=False)
+    frecuencia_dosis=models.IntegerField(null=False,blank=False)#fields.E120
     unidad_frecuencia_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False)
-    cantidad_dosis=models.DecimalField(decimal_places=2,max_digits=5,null=False,Blank=False)
-    unidad_de_medida_dosis=models.CharField(chocices=UNIDADES_DE_MEDIDA_DOSIS,max_length=17,null=False,Blank=False)
-    medicamento=models.OneToOneField(Medicamento,on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
+    cantidad_dosis=models.DecimalField(decimal_places=2,max_digits=5,null=False,blank=False)
+    unidad_de_medida_dosis=models.CharField(choices=UNIDADES_DE_MEDIDA_DOSIS,max_length=17,null=False,blank=False)
+    medicamento=models.OneToOneField(Medicamento,on_delete=models.DO_NOTHING,null=False, blank=False)
     receta_medica=models.ForeignKey(RecetaMedica,on_delete=models.DO_NOTHING,null=False, blank=False)
 
 class BrindaConsulta(models.Model):
@@ -178,13 +226,13 @@ class BrindaConsulta(models.Model):
     )
     consulta=models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=False)
     doctor=models.ForeignKey(Doctor, models.DO_NOTHING, blank=False, null=False)
-    consultorio=models.IntegerField(max_length=2, blank=False, null=False)
+    #consultorio=models.IntegerField(blank=False, null=False)#Es llave foranea, pero no existe la clase consultorio
     turno=models.CharField(max_length=20,choices=OPCIONES_TURNO, blank=False,null=False)
 
 class ConstanciaMedica(models.Model):
     id_constancia_medica= models.AutoField(primary_key=True)
-    consulta= models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=False)
+    #consulta= models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=False)
     fecha_de_emision=models.DateField(default=datetime.now, blank=False, null=False)
-    dias_reposo=models.IntegerField(max_length=2, blank=False, null=False)
+    dias_reposo=models.IntegerField(blank=False, null=False)#Los integer no llevan max_length
     diagnostico_constancia=models.CharField(max_length=200, blank=False, null=False)
 
