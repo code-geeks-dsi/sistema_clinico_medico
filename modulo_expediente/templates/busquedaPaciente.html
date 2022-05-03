@@ -3,5 +3,6 @@
         <input type="submit" />
     </form>
     {% for obj in filter.qs %}
-        {{ obj.name }} - ${{ obj.price }}<br />
+        {{ obj.name }}
+        {{ obj.price }}<br />
     {% endfor %}

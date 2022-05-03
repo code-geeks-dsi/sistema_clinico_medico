@@ -15,8 +15,8 @@ class Expediente(models.Model):
 
 class Paciente(models.Model):
     OPCIONES_SEXO=(
-        (1, 'Masculino'),
-        (2, 'Femenino'),
+        ('M', 'Masculino'),
+        ('F', 'Femenino'),
     )
     id_paciente=models.AutoField(primary_key=True,unique=True)
     
@@ -26,7 +26,7 @@ class Paciente(models.Model):
     sexo_paciente = models.CharField( max_length=1,choices=OPCIONES_SEXO, blank=False, null=False )
     direccion_paciente=models.CharField( max_length=120, blank=False,null=False)
     email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True)
-    responsable=models.CharField(max_length=40,blank=False,null=False)
+    responsable=models.CharField(max_length=40,blank=True,null=False,default='')
 
 class ContieneConsulta(models.Model):
     OPCIONES_ESTADO_DE_PAGO=(
