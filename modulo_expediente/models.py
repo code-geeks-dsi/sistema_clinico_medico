@@ -107,9 +107,6 @@ class OrdenExamenLaboratorio(models.Model):
     fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
     examen_de_laboratorio=models.ForeignKey(ExamenLaboratorio,on_delete=models.DO_NOTHING,null=False, blank=False)
 
-class ReferenciaMedica(models.Model):
-    id_referencia_medica= models.AutoField(primary_key=True)
-
 class Hospital(models.Model):
     id_hospital= models.AutoField(primary_key=True)
     codigo_hospital=models.CharField(max_length=25)
