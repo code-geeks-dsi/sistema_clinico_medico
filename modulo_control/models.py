@@ -141,13 +141,27 @@ class Enfermera(models.Model):
     def __str__(self):
         return self.empleado.nombres
 
-class Doctor(models.model):
+class Doctor(models.Model):
     especialidad_doctor = models.CharField(max_length=40,null=False, blank=False)
     jvmp =models.IntegerField(max_length=5,null=False,blank=False)
     Empleado = models.OneToOneField(Empleado,model.DO_NOTHING,blank=False,null=False,through = "Empleado")
 
-class Clinica(models.model):
+class Clinica(models.Model):
     id_clinica=models.AutoField(primary_key=True,unique=True)
     nombre_clinica=models.CharField(max_length=40,null=False,blank=False)
     direccion_clinica=models.CharField(max_length=80,null=False,blank=False)
     telefono_clinica=models.CharField(max_length=8,null=False,blank=False)
+    
+class Secretaria(models.Model):
+    id_secretaria=models.AutoField(primary_key=True, null=False, blank=False)
+    empleado= models.ForeignKey(Empleado, on_delete=models.CASCADE)
+
+class LicLaboratorioClinico(models.Model):
+    id_lic_laboratorio=models.AutoField(primary_key=True, null=False, blank=False)
+    jvmp =models.IntegerField(max_length=5,null=False,blank=False)
+
+class LaboratorioClinico(models.Model):
+    id_laboratorio= models.AutoField(primary_key=True, null=False, blank=False)
+    nombre_laboratorio = models.CharField(max_length=50, null=False, blank=False)
+    codigo_laboratorio = models.CharField(max_length=10, null=False, blank=False)
+    

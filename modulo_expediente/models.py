@@ -8,6 +8,13 @@ from django.core.validators import MinValueValidator
 
 
 # Create your models here.
+class Expediente(models.model):
+    
+    id_expediente = models.AutoField(primary_key=True, unique=True)
+    fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
+    codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
+    contiene_consulta=models.ManyToManyField('ContieneConsulta',blank=False,null=False,through='contiene_consulta')
+
 class Paciente(models.Model):
     OPCIONES_SEXO=(
         (1, 'Masculino'),
@@ -23,18 +30,7 @@ class Paciente(models.Model):
     email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True)
     responsable=models.CharField(max_length=40,blank=False,null=False)
 
-class Expediente(models.model)
-    
-    id_expediente = models.AutoField(primary_key=True, unique=True)
-    fecha_creacion_expediente = models.DateField(default=datetime.now,blank=false,null=false)
-    codigo_expediente=models.CharField(max_length=10,blank=false,null=false,unique=True)
-    contiene_consulta=models.ManyToManyField(contiene_consulta,model.DO_NOTHING,blank=false,null=false,through='contiene_consulta')
 
-class Paciente(models.Model):
-    id_paciente= models.AutoField(primary_key=True)
-
-class Expediente (models.Model):
-    id_expediente= models.AutoField(primary_key=True)
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
@@ -43,9 +39,6 @@ class ContieneConsulta(models.Model):
     id_expediente = models.ForeignKey(Expediente, models.DO_NOTHING, blank=False, null=True)
     id_consulta = models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=True)
 
-class SignosVitales(models.Model):
-    expediente = models.ManyToManyField(Expediente, models.DO_NOTHING, blank=False, null=True,through='Expediente')
-    consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True,through='Consulta')
 
 class SignosVitales(models.Model):
     UNIDADES_TEMPERATURA=(
