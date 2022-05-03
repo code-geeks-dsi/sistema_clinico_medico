@@ -144,7 +144,7 @@ class Enfermera(models.Model):
 class Doctor(models.Model):
     especialidad_doctor = models.CharField(max_length=40,null=False, blank=False)
     jvmp =models.IntegerField(max_length=5,null=False,blank=False)
-    Empleado = models.OneToOneField(Empleado,model.DO_NOTHING,blank=False,null=False,through = "Empleado")
+    Empleado = models.OneToOneField(Empleado,models.DO_NOTHING,blank=False,null=False,through = "Empleado")
 
 class Clinica(models.Model):
     id_clinica=models.AutoField(primary_key=True,unique=True)

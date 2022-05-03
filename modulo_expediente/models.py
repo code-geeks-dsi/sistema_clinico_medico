@@ -7,7 +7,8 @@ from secrets import choice
 from django.db import models
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
-
+from modulo_control.models import Enfermera, Doctor
+from modulo_laboratorio.models import ExamenLaboratorio
 
 # Create your models here.
 class Expediente(models.model):
@@ -34,9 +35,9 @@ class Paciente(models.Model):
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
-    constancia_medica= models.OneToOneField(ConstanciaMedica,on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
-    signos_vitales= models.OneToOneField(SignosVitales,on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
-    examen_de_laboratorio= models.OneToOneField(OrdenExamenLaboratorio, on_delete=models.DO_NOTHING, blank=False, null=False)
+    constancia_medica= models.OneToOneField('ConstanciaMedica',on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
+    signos_vitales= models.OneToOneField('SignosVitales',on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
+    examen_de_laboratorio= models.OneToOneField('OrdenExamenLaboratorio', on_delete=models.DO_NOTHING, blank=False, null=False)
     diagnostico=models.CharField(max_length=200, blank=False, null=False)
     sintoma=models.CharField(max_length=200, blank=False, null=False)
 
@@ -66,11 +67,6 @@ class ContieneConsulta(models.Model):
     fase_cola_medica=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False)
 
 class SignosVitales(models.Model):
-    id_expediente = models.ForeignKey(Expediente, models.DO_NOTHING, blank=False, null=True)
-    id_consulta = models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=True)
-
-
-class SignosVitales(models.Model):
     UNIDADES_TEMPERATURA=(
         (1,'F','Fahrenheit'),
         (2,'C','Celsius'),
@@ -81,7 +77,7 @@ class SignosVitales(models.Model):
     )
     id_signos_vitales= models.AutoField(primary_key=True)
     consulta=models.ForeignKey(Consulta,on_delete=models.DO_NOTHING,null=False, blank=False)
-    # enfermera=models.ForeignKey(Enfermera,on_delete=models.DO_NOTHING,null=False, blank=False)
+    enfermera=models.ForeignKey(Enfermera,on_delete=models.DO_NOTHING,null=False, blank=False)
     unidad_temperatura=models.CharField(max_length=1,choices=UNIDADES_TEMPERATURA,null=False, blank=True)
     unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True)
     unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=False, blank=True)
@@ -98,7 +94,7 @@ class SignosVitales(models.Model):
 class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)
     fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
-    # examen_de_laboratorio=models.ForeignKey(ExamenDeLaboratorio,,on_delete=models.DO_NOTHING,null=False, blank=False)
+    examen_de_laboratorio=models.ForeignKey(ExamenLaboratorio,on_delete=models.DO_NOTHING,null=False, blank=False)
 
 class ReferenciaMedica(models.Model):
     id_referencia_medica= models.AutoField(primary_key=True)
@@ -120,6 +116,7 @@ class ReferenciaMedica(models.Model):
 
 class RecetaMedica(models.Model):
     id_receta_medica= models.AutoField(primary_key=True)
+    Consulta = models.ForeignKey(Consulta, null=False, blank=False)
 
 class Medicamento(models.Model):
     UNIDADES_DE_MEDIDA_MEDICAMENTO=(
@@ -182,7 +179,7 @@ class BrindaConsulta(models.Model):
     consulta=models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=False)
     doctor=models.ForeignKey(Doctor, models.DO_NOTHING, blank=False, null=False)
     consultorio=models.IntegerField(max_length=2, blank=False, null=False)
-    turno=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False)
+    turno=models.CharField(max_length=20,choices=OPCIONES_TURNO, blank=False,null=False)
 
 class ConstanciaMedica(models.Model):
     id_constancia_medica= models.AutoField(primary_key=True)
