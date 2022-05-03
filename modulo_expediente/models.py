@@ -10,6 +10,13 @@ from django.core.validators import MinValueValidator
 
 
 # Create your models here.
+class Expediente(models.model):
+    
+    id_expediente = models.AutoField(primary_key=True, unique=True)
+    fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
+    codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
+    contiene_consulta=models.ManyToManyField('ContieneConsulta',blank=False,null=False,through='contiene_consulta')
+
 class Paciente(models.Model):
     OPCIONES_SEXO=(
         (1, 'Masculino'),
@@ -48,7 +55,6 @@ class Paciente(models.Model):
 
 class Expediente (models.Model):
     id_expediente= models.AutoField(primary_key=True, max_length=8,null=False, blank=False)
-  
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
@@ -87,9 +93,6 @@ class SignosVitales(models.Model):
     id_expediente = models.ForeignKey(Expediente, models.DO_NOTHING, blank=False, null=True)
     id_consulta = models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=True)
 
-class SignosVitales(models.Model):
-    expediente = models.ManyToManyField(Expediente, models.DO_NOTHING, blank=False, null=True,through='Expediente')
-    consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True,through='Consulta')
 
 class SignosVitales(models.Model):
     UNIDADES_TEMPERATURA=(
