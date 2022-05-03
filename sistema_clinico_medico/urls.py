@@ -19,6 +19,7 @@ from django.urls import path
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
 from modulo_control.views import vista_iniciarsesion, logearse
+from modulo_expediente.views import vista_sala_espera
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,5 +27,7 @@ urlpatterns = [
     path('login/', vista_iniciarsesion, name='login'),
     path('logearse/', logearse, name='logearse'),
     path('', RedirectView.as_view(url='login/')),
+    #Sala de Espera
+    path('espera/', vista_sala_espera, name='salaEspera')
 ]
 urlpatterns += staticfiles_urlpatterns()

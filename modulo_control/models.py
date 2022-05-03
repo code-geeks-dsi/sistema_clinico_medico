@@ -1,6 +1,4 @@
-from cgitb import text
-from pyexpat import model
-from turtle import mode
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
