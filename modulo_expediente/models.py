@@ -3,8 +3,6 @@ from secrets import choice
 from django.db import models
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
-from modulo_control.models import Enfermera, Doctor
-from modulo_laboratorio.models import ExamenLaboratorio
 
 # Create your models here.
 class Expediente(models.Model):
@@ -50,7 +48,7 @@ class ContieneConsulta(models.Model):
     #Me parece que el ManyToManyField, no se ocupa en la clase asociación, si no en la clase dominante.
     #expediente = models.ManyToManyField(Expediente, models.DO_NOTHING, blank=False, null=True)
     #consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True)
-    expediente = models.ForeignKey(Expediente, models.DO_NOTHING, blank=False, null=True)
+    expediente = models.ForeignKey('Expediente', models.DO_NOTHING, blank=False, null=True)
     consulta = models.OneToOneField('Consulta', models.DO_NOTHING, blank=False, null=True)
     numero_cola=models.IntegerField(blank=False, null=False) #No lleva max_length
     fecha_de_cola=models.DateField(default=datetime.now, blank=False, null=False)
@@ -105,7 +103,7 @@ class Consulta(models.Model):
 class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)
     fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
-    examen_de_laboratorio=models.ForeignKey(ExamenLaboratorio,on_delete=models.DO_NOTHING,null=False, blank=False)
+    examen_de_laboratorio=models.ForeignKey('modulo_laboratorio.ExamenLaboratorio',on_delete=models.DO_NOTHING,null=False, blank=False)
 
 class Hospital(models.Model):
     id_hospital= models.AutoField(primary_key=True)
@@ -218,8 +216,8 @@ class BrindaConsulta(models.Model):
         (1,'Matutino'),
         (2,'Vespertino'),
     )
-    consulta=models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=False)
-    doctor=models.ForeignKey(Doctor, models.DO_NOTHING, blank=False, null=False)
+    consulta=models.ForeignKey('Consulta', models.DO_NOTHING, blank=False, null=False)
+    doctor=models.ForeignKey('modulo_control.Doctor', models.DO_NOTHING, blank=False, null=False)
     #consultorio=models.IntegerField(blank=False, null=False)#Es llave foranea, pero no existe la clase consultorio
     turno=models.CharField(max_length=20,choices=OPCIONES_TURNO, blank=False,null=False)
 
