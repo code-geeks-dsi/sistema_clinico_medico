@@ -1,3 +1,4 @@
+
 import django_filters
 from modulo_expediente.models import Paciente
 
@@ -8,5 +9,4 @@ class PacienteFilter(django_filters.FilterSet):
         model = Paciente
         exclude=['sexo_paciente','direccion_paciente','responsable','fecha_nacimiento_paciente','email_paciente','nombre_paciente']
         # fields = ['nombre_paciente',
-        # 'apellido_paciente',
-        # ]
+        # 'apellido_paciente' ]
