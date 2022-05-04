@@ -7,12 +7,35 @@ from django.http import JsonResponse
 def busqueda_paciente(request):
     
     filter = PacienteFilter(request.GET, queryset=Paciente.objects.all())
+    #Primer prueba, se que no es lo mas optimo, pero solo eso pude hacer.
+    data=[]
+    for i in filter.qs:
+        diccionario={
+                    "id_paciente":"",
+                    "label":""
+                }
+        diccionario["id_paciente"]= i.id_paciente
+        diccionario["label"]= i.nombre_paciente + " " + i.apellido_paciente
+        data.append(diccionario)
+        del diccionario
+    '''
+    for paciente in pacientes:
+        diccionario={
+                    "id_paciente":"",
+                    "nombre_paciente":"",
+                    "label":""
+                }
+        diccionario["id_paciente"]= paciente.id_paciente
+        diccionario["label"]= paciente.nombre_paciente + " " + paciente.apellido_paciente
+        data.append(diccionario)
+        del diccionario'''
+    return JsonResponse(data, safe=False)
     # queryset=Paciente.objects.filter(nombre_paciente=request.GET.get('nombre_paciente',""),apellido_paciente=request.GET.get('apellido_paciente',""))
-    return render(request, 'busquedaPaciente.html', {'filter': filter})
+    #return render(request, 'busquedaPaciente.html', {'filter': filter})
 
 
 def vista_sala_espera(request):
-    return render(request,"salaEspera.html")
+    return render(request,"expediente/salaEspera.html")
 
 def get_paciente (request , id_paciente):
         paciente=list(Paciente.objects.values())
