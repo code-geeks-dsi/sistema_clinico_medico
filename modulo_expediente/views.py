@@ -11,7 +11,8 @@ import json
 def busqueda_paciente(request):
     result= PacienteFilter(request.GET, queryset=Paciente.objects.all())
     pacientes =PacienteSerializer(result.qs, many=True)
-    return JsonResponse({'pacientes':pacientes.data})
+    return JsonResponse({'data':pacientes.data})
+     #la clave tiene que ser data para que funcione con el metodo. 
 
 def autocompletado_apellidos(request):
     
@@ -19,11 +20,11 @@ def autocompletado_apellidos(request):
     apellidosList=[]
     for apellido in apellidos:
         apellidosList.append(apellido['apellido_paciente'])
-    return JsonResponse({"apellidos":apellidosList})
-
+    return JsonResponse({"data":apellidosList})
+    #la clave tiene que ser data para que funcione con el metodo. 
 
 def sala_consulta(request):
-    return render(request,"busquedaPaciente.html")
+    return render(request,"expediente/sala.html")
 
 def get_paciente (request , id_paciente):
         paciente=list(Paciente.objects.values())
