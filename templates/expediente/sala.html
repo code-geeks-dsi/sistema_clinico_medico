@@ -1,0 +1,171 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Sala de Espera {% endblock %}
+{% block content %}
+<div class="container py-4 ">
+    <h1 class="fw-bold">Sala de Espera</h1>
+    <div class="row">
+        <div class="col-12 col-md-12">
+            <!--Busqueda por nombres-->
+            <div class="input-group  py-4">
+                <span class="input-group-text bg-white" id="basic-addon1"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" class="form-control" id="id_apellido_paciente" placeholder="Apellidos" aria-label="Nombres" aria-describedby="basic-addon1">
+                
+            </div>
+        </div>
+
+        <!--Boton abregar nuevo -->
+        <div class="text-end">
+            <button class="btn btn-outline-dark" type="button" id="buscar-nombre">Abrir Expediente Nuevo</button>
+        </div>
+        
+        <!--Tabla de pacientes en cola-->
+        <div class="py-4 table-responsive">
+            <table class="table table-bordered text-center">
+                <thead class="table-secondary">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombres</th>
+                    <th scope="col">Apellidos</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Fase</th>
+                    <th scope="col">Consumo</th>
+                    <th scope="col">Opciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">1</th>
+                    <td>Isaí Ronaldo</td>
+                    <td>Martínez Vásquez</td>
+                    <td> - - </td>
+                    <td>Signos Vitales</td>
+                    <td>$10</td>
+                    <td>
+                        <i class="fa-solid fa-eye"></i>
+                        <i class="fa-solid fa-trash"></i>
+                    </td>
+                    <form action="" method="post"></form>
+                  </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!--Tabla A-->
+        <table>
+            <thead>
+              
+              <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Apellidos</th>
+                  <th>Sexo</td>
+                  <th>Fecha Nacimiento</th>
+                  <th>Direccion</th>
+                  <th>Email</th>
+                  <th>Responsable</th>
+                </tr>
+            </thead>
+            <tbody  id="datos_pacientes">
+    </div>
+    
+</div>
+{% endblock %}
+<!--Js de la vista-->
+{% block js %}
+<script>
+    let url = "{% url 'autocompletado_apellidos' %}";
+    let urlFiltro = "{% url 'busqueda_paciente' %}";
+    let complementoConsulta = "?apellido_paciente=";
+    let id_component="id_apellido_paciente";
+    let tablaResultado = "datos_pacientes"; //El id de una tabal en la que saldran los resultados
+    getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta);
+    
+    function getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta){
+      let dataAutoComletado = [];
+      let consultaData = new XMLHttpRequest();
+      let tablaData=document.getElementById(tablaResultado);
+      consultaData.open("GET", url, true);
+      consultaData.onload = function (e) {
+        if (consultaData.readyState === 4) {
+          if (consultaData.status === 200) {
+              $( function() {
+          
+                dataAutoComletado=JSON.parse(consultaData.responseText).data
+                $( "#"+id_component ).autocomplete({
+                  source: dataAutoComletado,
+                  select: getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsulta),
+                  
+            
+                });
+              } );
+          } else {
+            console.error(consultaData.statusText);
+          }
+        }
+      };
+      consultaData.onerror = function (e) {
+        console.error(consultaData.statusText);
+      };
+      consultaData.send(null);
+            
+      document.getElementById(id_component).addEventListener('keypress',(e)=>{
+        if (e.key === 'Enter') {
+          getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta);
+          
+        }
+      })
+    }
+
+    function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsulta){
+      //Variables
+      let dataTarget=document.getElementById(id_component).value;
+      let resultados;
+      let filtroResultado = new XMLHttpRequest();
+      //filtrar
+      filtroResultado.open("GET", urlFiltro+complementoConsulta+dataTarget, true);
+      filtroResultado.onload = function (e) {
+        if (filtroResultado.readyState === 4 && filtroResultado.status === 200) {
+          resultados=JSON.parse(filtroResultado.responseText);
+          tablaData.innerHTML="";
+          if(resultados.data.length==0){
+            tablaData.insertAdjacentHTML("beforeend", '<tr colspan="7" ><td colspan="7" style="text-align:center">No hay Resultados</td></tr>');
+
+          }else{
+            resultados.data.forEach(p => {
+                let element=`<tr>
+                    <td>${p.id_paciente}</td>
+                    <td>${p.nombre_paciente}</td>
+                    <td>${p.apellido_paciente}</td>
+                    <td>${p.sexo_paciente}</td>
+                    <td>${p.fecha_nacimiento_paciente}</td>
+                    <td>${p.direccion_paciente}</td>
+                    <td>${p.responsable}</td>
+                    </tr>`
+                //Recorre los elemntos del objeto
+                let elemento='<tr>';
+                for (const property in p) {
+                    elemento = elemento+'<td>'+`${p[property]}`+'</td>';
+                    console.log(`${property}: ${p[property]}`);
+                }
+                elemento=elemento+'</tr>'
+                tablaData.insertAdjacentHTML("beforeend", element);
+            });
+          }
+      } else {
+            console.error(filtroResultado.statusText);
+      }};
+
+      filtroResultado.onerror = function (e) {
+        console.error(filtroResultado.statusText);
+      };
+    
+      filtroResultado.send();
+  }
+</script>
+{% endblock %}
