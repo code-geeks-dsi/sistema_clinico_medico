@@ -1,19 +1,29 @@
 from django.shortcuts import render
+from modulo_expediente.serializers import PacienteSerializer
+from django.core import serializers
 from modulo_expediente.filters import PacienteFilter
 from modulo_expediente.models import Paciente
 from django.http import JsonResponse
+import json
+
 # Create your views here.
 
 def busqueda_paciente(request):
+    result= PacienteFilter(request.GET, queryset=Paciente.objects.all())
+    pacientes =PacienteSerializer(result.qs, many=True)
+    return JsonResponse({'pacientes':pacientes.data})
+
+def autocompletado_apellidos(request):
     
-    filter = PacienteFilter(request.GET, queryset=Paciente.objects.all())
-    apellidosList=Paciente.objects.values("apellido_paciente").all()
-    # queryset=Paciente.objects.filter(nombre_paciente=request.GET.get('nombre_paciente',""),apellido_paciente=request.GET.get('apellido_paciente',""))
-    return render(request, 'busquedaPaciente.html', {'filter': filter,'apellidosList':apellidosList})
+    apellidos=Paciente.objects.values("apellido_paciente").all()
+    apellidosList=[]
+    for apellido in apellidos:
+        apellidosList.append(apellido['apellido_paciente'])
+    return JsonResponse({"apellidos":apellidosList})
 
 
-def vista_sala_espera(request):
-    return render(request,"salaEspera.html")
+def sala_consulta(request):
+    return render(request,"busquedaPaciente.html")
 
 def get_paciente (request , id_paciente):
         paciente=list(Paciente.objects.values())

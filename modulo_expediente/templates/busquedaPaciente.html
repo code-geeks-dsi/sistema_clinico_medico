@@ -17,51 +17,107 @@
                 rel="stylesheet" type="text/css" />  
 </head>
 <body>
-    <form method="get">
-        {{ filter.form.as_p }}
-        <button type="submit">Buscar</button>
-    </form>
+      <div name="autocompletado">
+        <label for="id_apellido_paciente">
+          Paciente
+          <input type="text" name="apellido_paciente" id="id_apellido_paciente" autocomplete="off" placeholder="Apellidos">
+        </label>
+          <!-- <button type="button" id="btn_buscar_paciente">Buscar</button> -->
+      </div>
+    
     <table>
-
+      <thead>
+        
         <tr>
-            <td>ID</td>
-            <td>Nombre</td>
-            <td>Apellidos</td>
-            <td>Sexo</td>
-            <td>Fecha Nacimiento</td>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellidos</th>
+            <th>Sexo</td>
+            <th>Fecha Nacimiento</th>
+            <th>Direccion</th>
+            <th>Responsable</th>
           </tr>
-        {% for obj in filter.qs %}
-        <tr>
-            <td>{{ obj.id_paciente }}</td>
-            <td>{{ obj.nombre_paciente }}</td>
-            <td>{{ obj.apellido_paciente }}</td>
-            <td>{{ obj.sexo_paciente }}</td>
-            <td>{{ obj.fecha_nacimiento_paciente }}</td>
-          </tr>
-        {% endfor %}
+      </thead>
+      <tbody  id="datos_pacientes">
+        
+      </tbody>      
+        
     </table>
     <script>
-        $( function() {
-          var apellidos = [
-                {% for apellido in apellidosList %}
-                "{{ apellido.apellido_paciente }}",
-                {% endfor %}
-          ];
-          $( "#id_apellido_paciente" ).autocomplete({
-            source: apellidos
-          });
-        } );
-       
+        let apellidos = [];
+        let consultaApellidos = new XMLHttpRequest();
+        let filtroPacientes = new XMLHttpRequest();
+        let pacientesResult;
+        let tablaPacientes=document.getElementById("datos_pacientes");
+        consultaApellidos.open("GET", "{% url 'autocompletado_apellidos' %}", true);
+        consultaApellidos.onload = function (e) {
+          if (consultaApellidos.readyState === 4) {
+            if (consultaApellidos.status === 200) {
+                $( function() {
+            
+                  apellidos=JSON.parse(consultaApellidos.responseText).apellidos
+                  $( "#id_apellido_paciente" ).autocomplete({
+                    source: apellidos,
+                    select: getPacientes,
+                    focus : getPacientes,
+                    change :getPacientes
+              
+                  });
+                } );
+            } else {
+              console.error(consultaApellidos.statusText);
+            }
+          }
+        };
+        consultaApellidos.onerror = function (e) {
+          console.error(consultaApellidos.statusText);
+        };
+        consultaApellidos.send(null);
+               
+        document.getElementById('id_apellido_paciente').addEventListener('keypress',(e)=>{
+          if (e.key === 'Enter') {
+            getPacientes();
+            
+          }
+        })
+
+        function getPacientes(){
+                        let apellidoTarget=document.getElementById('id_apellido_paciente').value;
+                        //filtrar
+                        
+                        filtroPacientes.open("GET", "{% url 'busqueda_paciente' %}"+"?apellido_paciente="+apellidoTarget, true);
+                        filtroPacientes.onload = function (e) {
+                          if (filtroPacientes.readyState === 4 && filtroPacientes.status === 200) {
+                            pacientesResult=JSON.parse(filtroPacientes.responseText);
+                            tablaPacientes.innerHTML="";
+                            if(pacientesResult.pacientes.length==0){
+                              tablaPacientes.insertAdjacentHTML("beforeend", '<tr colspan="7" ><td colspan="7" style="text-align:center">No hay Resultados</td></tr>');
+
+                            }else{
+                              pacientesResult.pacientes.forEach(p => {
+                                let element=`<tr>
+                                  <td>${p.id_paciente}</td>
+                                  <td>${p.nombre_paciente}</td>
+                                  <td>${p.apellido_paciente}</td>
+                                  <td>${p.sexo_paciente}</td>
+                                  <td>${p.fecha_nacimiento_paciente}</td>
+                                  <td>${p.direccion_paciente}</td>
+                                  <td>${p.responsable}</td>
+                                  </tr>`
+                                tablaPacientes.insertAdjacentHTML("beforeend", element);
+                              });
+                            }
+                        } else {
+                              console.error(filtroPacientes.statusText);
+                        }};
+                        filtroPacientes.onerror = function (e) {
+                          console.error(filtroPacientes.statusText);
+                        };
+                      
+                        filtroPacientes.send();
+                    }
         </script>
 </body>
 </html>
-=======
-<form method="get">
-        {{ filter.form.as_p }}
-        <input type="submit" />
-    </form>
-    {% for obj in filter.qs %}
-        {{ obj.nombre_paciente}}
-        {{ obj.apellido_paciente }}<br />
-    {% endfor %}
+
 
