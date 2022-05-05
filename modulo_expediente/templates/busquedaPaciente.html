@@ -34,6 +34,8 @@
             <th>Apellidos</th>
             <th>Sexo</td>
             <th>Fecha Nacimiento</th>
+            <th>Direccion</th>
+            <th>Responsable</th>
           </tr>
       </thead>
       <tbody  id="datos_pacientes">
@@ -89,7 +91,7 @@
                             pacientesResult=JSON.parse(filtroPacientes.responseText);
                             tablaPacientes.innerHTML="";
                             if(pacientesResult.pacientes.length==0){
-                              tablaPacientes.insertAdjacentHTML("beforeend", '<tr colspan="5" ><td colspan="5" style="text-align:center">No hay Resultados</td></tr>');
+                              tablaPacientes.insertAdjacentHTML("beforeend", '<tr colspan="7" ><td colspan="7" style="text-align:center">No hay Resultados</td></tr>');
 
                             }else{
                               pacientesResult.pacientes.forEach(p => {
@@ -99,6 +101,8 @@
                                   <td>${p.apellido_paciente}</td>
                                   <td>${p.sexo_paciente}</td>
                                   <td>${p.fecha_nacimiento_paciente}</td>
+                                  <td>${p.direccion_paciente}</td>
+                                  <td>${p.responsable}</td>
                                   </tr>`
                                 tablaPacientes.insertAdjacentHTML("beforeend", element);
                               });
@@ -115,13 +119,5 @@
         </script>
 </body>
 </html>
-=======
-<form method="get">
-        {{ filter.form.as_p }}
-        <input type="submit" />
-    </form>
-    {% for obj in filter.qs %}
-        {{ obj.nombre_paciente}}
-        {{ obj.apellido_paciente }}<br />
-    {% endfor %}
+
 
