@@ -1,41 +1,29 @@
 from django.shortcuts import render
+from modulo_expediente.serializers import PacienteSerializer
+from django.core import serializers
 from modulo_expediente.filters import PacienteFilter
 from modulo_expediente.models import Paciente
 from django.http import JsonResponse
+import json
+
 # Create your views here.
 
 def busqueda_paciente(request):
+    result= PacienteFilter(request.GET, queryset=Paciente.objects.all())
+    pacientes =PacienteSerializer(result.qs, many=True)
+    return JsonResponse({'pacientes':pacientes.data})
+
+def autocompletado_apellidos(request):
     
-    filter = PacienteFilter(request.GET, queryset=Paciente.objects.all())
-    #Primer prueba, se que no es lo mas optimo, pero solo eso pude hacer.
-    data=[]
-    for i in filter.qs:
-        diccionario={
-                    "id_paciente":"",
-                    "label":""
-                }
-        diccionario["id_paciente"]= i.id_paciente
-        diccionario["label"]= i.nombre_paciente + " " + i.apellido_paciente
-        data.append(diccionario)
-        del diccionario
-    '''
-    for paciente in pacientes:
-        diccionario={
-                    "id_paciente":"",
-                    "nombre_paciente":"",
-                    "label":""
-                }
-        diccionario["id_paciente"]= paciente.id_paciente
-        diccionario["label"]= paciente.nombre_paciente + " " + paciente.apellido_paciente
-        data.append(diccionario)
-        del diccionario'''
-    return JsonResponse(data, safe=False)
-    # queryset=Paciente.objects.filter(nombre_paciente=request.GET.get('nombre_paciente',""),apellido_paciente=request.GET.get('apellido_paciente',""))
-    #return render(request, 'busquedaPaciente.html', {'filter': filter})
+    apellidos=Paciente.objects.values("apellido_paciente").all()
+    apellidosList=[]
+    for apellido in apellidos:
+        apellidosList.append(apellido['apellido_paciente'])
+    return JsonResponse({"apellidos":apellidosList})
 
 
-def vista_sala_espera(request):
-    return render(request,"expediente/salaEspera.html")
+def sala_consulta(request):
+    return render(request,"busquedaPaciente.html")
 
 def get_paciente (request , id_paciente):
         paciente=list(Paciente.objects.values())
@@ -63,3 +51,4 @@ def get_paciente (request , id_paciente):
                 lista.append(diccionario);
                 del diccionario
         return JsonResponse(lista, safe=False)
+
