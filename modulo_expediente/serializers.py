@@ -14,3 +14,8 @@ class PacienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Paciente
         fields = '__all__'
+
+class ContieneConsultaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContieneConsulta
+        fields = '__all__'

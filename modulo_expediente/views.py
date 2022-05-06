@@ -26,30 +26,45 @@ def autocompletado_apellidos(request):
 def sala_consulta(request):
     return render(request,"expediente/sala.html")
 
-def get_paciente (request , id_paciente):
-        paciente=list(Paciente.objects.values())
-        lista =[]
-        for i in range(len(paciente)):
-            if paciente[i]["id_paciente"] == id_paciente:
-                diccionario={
-                    "id_paciente":"",
-                    "nombre_paciente":"",
-                    "apellido_paciente":"",
-                    "fecha_nacimiento_paciente":"",
-                    "sexo_paciente":"",
-                    "direccion_paciente":"",
-                    "email_paciente":"",
-                    "responsable":""
-                }
-                diccionario["id_paciente"]= paciente[i]["id_paciente"]
-                diccionario["nombre_paciente"]= paciente[i]["nombre_paciente"]
-                diccionario["apellido_paciente"]= paciente[i]["apellido_paciente"]
-                diccionario["fecha_nacimiento_paciente"]= paciente[i]["fecha_nacimiento_paciente"]
-                diccionario["sexo_paciente"]= paciente[i]["sexo_paciente"]
-                diccionario["direccion_paciente"]= paciente[i]["direccion_paciente"]
-                diccionario["email_paciente"]= paciente[i]["email_paciente"]
-                diccionario["responsable"]= paciente[i]["responsable"]
-                lista.append(diccionario);
-                del diccionario
-        return JsonResponse(lista, safe=False)
+#Metodo que devuelve los datos del paciente en json
+def get_paciente(request, id_paciente):
+    paciente=Paciente.objects.filter(id_paciente=id_paciente)
+    serializer=PacienteSerializer(paciente, many= True)
+    return JsonResponse(serializer.data, safe=False)
 
+#Metodo que devuelve los datos del objeto contiene consulta en json
+def agregar_cola(request, id_paciente):
+    expediente=Expediente.objects.get(id_paciente_id=id_paciente)
+    codExpediente=expediente.id_expediente
+    contieneconsulta=ContieneConsulta.objects.filter(expediente_id=codExpediente)
+    serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+#Metodo que devuelve una lista de constieneConsulta filtrado por la fecha de hoy
+def  get_contieneConsulta(request):
+    fecha_actual=date.today()
+    contiene_consulta=list(ContieneConsulta.objects.values())
+    lista=[]
+    for i in range(len(contiene_consulta)):
+        if contiene_consulta[i]["fecha_de_cola"] == fecha_actual:
+            diccionario={
+                "id":"",
+                "numero_cola":"",
+                "fecha_de_cola":"",
+                "consumo_medico":"",
+                "estado_cola_medica":"",
+                "fase_cola_medica":"",
+                "consulta_id":"",
+                "expediente_id":""
+            }
+            diccionario["id"]= contiene_consulta[i]["id"]
+            diccionario["numero_cola"]= contiene_consulta[i]["numero_cola"]
+            diccionario["fecha_de_cola"]= contiene_consulta[i]["fecha_de_cola"]
+            diccionario["consumo_medico"]= contiene_consulta[i]["consumo_medico"]
+            diccionario["estado_cola_medica"]= contiene_consulta[i]["estado_cola_medica"]
+            diccionario["fase_cola_medica"]= contiene_consulta[i]["fase_cola_medica"]
+            diccionario["consulta_id"]= contiene_consulta[i]["consulta_id"]
+            diccionario["expediente_id"]= contiene_consulta[i]["expediente_id"]
+            lista.append(diccionario);
+            del diccionario
+    return JsonResponse(lista, safe=False)
