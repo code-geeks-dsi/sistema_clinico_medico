@@ -104,7 +104,7 @@ def  get_contieneConsulta(request):
     return JsonResponse(serializer.data, safe=False)
 
 #Método que elimina una persona de la cola
-def eliminar_cola(request, id_paciente):
+def eliminar_cola(request):
     fecha=datetime.now()
     try:
         contieneconsulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
