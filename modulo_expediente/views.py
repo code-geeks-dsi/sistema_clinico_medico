@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from modulo_expediente.serializers import PacienteSerializer
+from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from modulo_expediente.filters import PacienteFilter
-from modulo_expediente.models import Paciente
+from modulo_expediente.models import Paciente, ContieneConsulta, Expediente
 from django.http import JsonResponse
 import json
-
+from datetime import date
 # Create your views here.
 
 def busqueda_paciente(request):
