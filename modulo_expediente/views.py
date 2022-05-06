@@ -103,12 +103,12 @@ def  get_contieneConsulta(request):
     serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
     return JsonResponse(serializer.data, safe=False)
 
-def eliminar_cola(request, id_paciente):
-    
+def eliminar_cola(request):
+    fecha=datetime.now()
     try:
-        expediente=Expediente.objects.get(id_paciente_id=id_paciente)
-        idExpediente=expediente.id_expediente
-        contieneconsulta=ContieneConsulta.objects.filter(expediente_id=idExpediente)
+        contieneconsulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                         fecha_de_cola__month=fecha.month, 
+                         fecha_de_cola__day=fecha.day)
         contieneconsulta.delete()
         response={
             'type':'sucess',
