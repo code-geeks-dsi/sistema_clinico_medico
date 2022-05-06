@@ -11,7 +11,7 @@
     <h1 class="fw-bold">Sala de Espera</h1>
     <div class="row">
       <div class="col-12 col-md-12">
-          <!--Busqueda por nombres-->
+          <!--Busqueda por Apellidos-->
           <div class="input-group  py-4">
               <span class="input-group-text bg-white" id="basic-addon1">
                 <span class="material-symbols-outlined btn btn-sm" id="search_von" onclick="ocultarBusqueda()">visibility</span>
@@ -36,6 +36,7 @@
                 <th>Direccion</th>
                 <th>Email</th>
                 <th>Responsable</th>
+                <th>Acciones</th>
               </tr>
           </thead>
           <tbody  id="datos_pacientes">
@@ -46,40 +47,77 @@
 
       <!--Boton abregar nuevo -->
       <div class="text-end">
-          <button class="btn btn-outline-dark" type="button" id="buscar-nombre">Abrir Expediente Nuevo</button>
+          <button class="btn btn-outline-dark" type="button" id="buscar-nombre" data-bs-toggle="modal" data-bs-target="#miModal">Abrir Expediente Nuevo</button>
       </div>
       
-      <!--Tabla de pacientes en cola-->
-      <div class="py-4 table-responsive">
-        <table class="table table-bordered text-center">
-            <thead class="table-secondary">
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Nombres</th>
-                <th scope="col">Apellidos</th>
-                <th scope="col">Estado</th>
-                <th scope="col">Fase</th>
-                <th scope="col">Consumo</th>
-                <th scope="col">Opciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Isaí Ronaldo</td>
-                <td>Martínez Vásquez</td>
-                <td> - - </td>
-                <td>Signos Vitales</td>
-                <td>$10</td>
-                <td>
-                    <span class="material-symbols-outlined">visibility</span>
-                    <span class="material-symbols-outlined">delete</span>
-                    
-                </td>
-                <form action="" method="post"></form>
-              </tr>
-            </tbody>
-        </table>
+      <!--Navegación Entre Consultas y Examenes de Laboratorio-->
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#consultaMedica" type="button" role="tab" aria-controls="home" aria-selected="true">Consulta Medica</button>  
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Examenes de Laboratorio</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+        </li>
+      </ul>
+      <div class="tab-content border" id="myTabContent">
+        <div class="tab-pane fade show active" id="consultaMedica" role="tabpanel" aria-labelledby="home-tab">
+          <!--Tabla de pacientes en cola-->
+          <div class="py-4 table-responsive">
+            <table class="table table-bordered text-center">
+                <thead class="table-secondary">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombres</th>
+                    <th scope="col">Apellidos</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Fase</th>
+                    <th scope="col">Consumo</th>
+                    <th scope="col">Opciones</th>
+                  </tr>
+                </thead>
+                <tbody id="">
+                  <tr>
+                    <th scope="row">1</th>
+                    <td>Isaí Ronaldo</td>
+                    <td>Martínez Vásquez</td>
+                    <td> - - </td>
+                    <td>Signos Vitales</td>
+                    <td>$10</td>
+                    <td>
+                        <span class="material-symbols-outlined" data-bs-toggle="modal" data-bs-target="#miModal">visibility</span>
+                        <span class="material-symbols-outlined">delete</span>
+                        
+                    </td>
+                    <form action="" method="post"></form>
+                  </tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+      </div>
+      
+
+      <!--Modal Datos del Paciente-->
+      <div class="modal fade" id="AgregarCola" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Paciente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+
+            </div>
+          </div>
+        </div>
       </div>
     </div>   
 </div>
@@ -91,6 +129,7 @@
     const urlFiltro = "{% url 'busqueda_paciente' %}";
     const complementoConsulta = "?apellido_paciente=";
     const id_component="id_apellido_paciente";
+    const id_modal="AgregarCola";
     const tablaResultado = "datos_pacientes"; //El id de una tabal en la que saldran los resultados
     let tablaData=document.getElementById(tablaResultado);
     //tabla de busqueda ocultada
@@ -102,12 +141,12 @@
     });
     document.getElementById(id_component).addEventListener('keypress',(e)=>{
         if (e.key === 'Enter') {
-          getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta);
+          getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta, id_modal);
           
         }
       });
     //Lenar autocompletado
-    getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData);
+    getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
     
     function getAutocompletado(url, id_component, urlFiltro, complementoConsulta, tablaData){
       let dataAutoComletado = [];
@@ -136,7 +175,7 @@
       consultaData.send(null);
     }
 
-    function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsulta){
+    function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsulta, id_modal){
       //Variables
       let dataTarget=document.getElementById(id_component).value;
       let resultados;
@@ -159,7 +198,8 @@
                   for (const property in p) {
                       elemento = elemento+'<td>'+`${p[property]}`+'</td>';
                   }
-                  elemento=elemento+'</tr>'
+                  elemento=elemento+'<td><div id="'+Object.values(p)[0]+'"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#'+id_modal+'">add</div></td>';
+                  elemento=elemento+'</tr>';
                   tablaData.insertAdjacentHTML("beforeend", elemento);
                   document.getElementById("tabla_busqueda").hidden = false;
               });
@@ -189,6 +229,20 @@
         document.getElementById("search_voff").hidden=false;
       }
       
+    }
+
+    function consultarCola(url_consulta){
+      $.ajax({
+                url: url_consulta,
+                dataType: "json",
+                data: {
+                    nombre_paciente:request.term,
+                },
+                success: function(data){
+                    
+                    response(data)
+                }
+            });
     }
 </script>
 {% endblock %}
