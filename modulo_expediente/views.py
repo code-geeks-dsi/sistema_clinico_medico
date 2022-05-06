@@ -1,8 +1,10 @@
+from time import time
 from django.shortcuts import render
 from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
+from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
-from modulo_expediente.models import Paciente, ContieneConsulta, Expediente
+from modulo_expediente.models import Consulta, Paciente, ContieneConsulta, Expediente
 from django.http import JsonResponse
 import json
 from datetime import date
@@ -36,13 +38,36 @@ def get_paciente(request, id_paciente):
 def agregar_cola(request, id_paciente):
     expediente=Expediente.objects.get(id_paciente_id=id_paciente)
     codExpediente=expediente.id_expediente
-    contieneconsulta=ContieneConsulta.objects.filter(expediente_id=codExpediente)
-    serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
-    return JsonResponse(serializer.data, safe=False)
+    fecha=datetime.now()
+    try:
+        numero=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                         fecha_de_cola__month=fecha.month, 
+                         fecha_de_cola__day=fecha.day).last().numero_cola +1
+    except:
+        numero=1
+    #Creando Objeto contieneCola
+    try:
+        contieneconsulta=ContieneConsulta()
+        contieneconsulta.expediente=expediente
+        contieneconsulta.numero_cola=numero
+        contieneconsulta.consumo_medico=0
+        contieneconsulta.estado_cola_medica='1'
+        contieneconsulta.fase_cola_medica='2'
+        contieneconsulta.save()
+        response={
+            'type':'sucess'
+        }
+    except:
+        response={
+            'type':'error'
+        }
+    
+    return JsonResponse(response, safe=False)
 
 #Metodo que devuelve una lista de constieneConsulta filtrado por la fecha de hoy
 def  get_contieneConsulta(request):
-    fecha_actual=date.today()
+    fecha=datetime.now()
+    '''
     contiene_consulta=list(ContieneConsulta.objects.values())
     lista=[]
     for i in range(len(contiene_consulta)):
@@ -65,6 +90,11 @@ def  get_contieneConsulta(request):
             diccionario["fase_cola_medica"]= contiene_consulta[i]["fase_cola_medica"]
             diccionario["consulta_id"]= contiene_consulta[i]["consulta_id"]
             diccionario["expediente_id"]= contiene_consulta[i]["expediente_id"]
-            lista.append(diccionario);
+            lista.append(diccionario)
             del diccionario
-    return JsonResponse(lista, safe=False)
+            '''
+    contieneconsulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                    fecha_de_cola__month=fecha.month, 
+                    fecha_de_cola__day=fecha.day)
+    serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
+    return JsonResponse(serializer.data, safe=False)
