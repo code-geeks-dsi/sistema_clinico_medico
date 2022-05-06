@@ -55,11 +55,15 @@ def agregar_cola(request, id_paciente):
         contieneconsulta.fase_cola_medica='2'
         contieneconsulta.save()
         response={
-            'type':'sucess'
+            'type':'sucess',
+            'title':'Agregado',
+            'data':'Paciente agregado a la cola.'
         }
     except:
         response={
-            'type':'error'
+            'type':'error',
+            'title':'Error',
+            'data':'No fue pocible agrgar al paciente'
         }
     
     return JsonResponse(response, safe=False)
