@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from modulo_expediente.filters import PacienteFilter
+from modulo_expediente.forms import DatosDelPaciente
 from modulo_expediente.models import Paciente
 from django.http import JsonResponse
 # Create your views here.
@@ -42,3 +43,11 @@ def get_paciente (request , id_paciente):
                 del diccionario
         return JsonResponse(lista, safe=False)
 
+def crear_expediente(request):
+    formulario = DatosDelPaciente(request.GET)
+    print(formulario.is_valid)
+    if request.method == "POST": 
+        if formulario.is_valid():
+            formulario.save()
+            
+    return render(request,"datosdelPaciente.html",{'formulario':formulario})
