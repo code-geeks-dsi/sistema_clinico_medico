@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django import forms
-from .models import Paciente,Venta
+from .models import Paciente
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
@@ -27,18 +27,3 @@ class DatosDelPaciente(ModelForm):
                'type': 'date'
               }),
 }
-
-
-class DateTimeInput(forms.DateTimeInput):
-    input_type = 'datetime-local'
-
-class FormularioVenta(forms.ModelForm):
-    class Meta:
-        model=Venta
-        fields=('fecha',)
-        
-        widgets = {
-            
-            'fecha': DateTimeInput(attrs={'class': 'form-control'}),
-            
-        }
