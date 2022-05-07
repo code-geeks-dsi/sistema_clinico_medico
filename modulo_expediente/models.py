@@ -1,5 +1,7 @@
 from datetime import datetime
+from pyexpat import model
 from secrets import choice
+from xmlrpc.client import TRANSPORT_ERROR
 from django.db import models
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
@@ -8,7 +10,7 @@ from django.core.validators import MinValueValidator
 class Expediente(models.Model):
     
     id_expediente = models.AutoField(primary_key=True, unique=True)
-    id_paciente=models.ForeignKey('Paciente', models.CASCADE, blank=False, null=False)
+    id_paciente=models.OneToOneField('Paciente', models.CASCADE, blank=False, null=False)
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
     codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
     contiene_consulta=models.ManyToManyField('Consulta',through='contieneConsulta')#blank=False,null=False, no se utilizan en ManyToMany fields.W122
@@ -30,31 +32,34 @@ class Paciente(models.Model):
 
 class ContieneConsulta(models.Model):
     OPCIONES_ESTADO_DE_PAGO=(
-        (1,'No pagado'),
-        (2,'Parcialmente pagado'),
-        (3,'Pagado'),
+        ('1','No pagado'),
+        ('2','Parcialmente pagado'),
+        ('3','Pagado'),
     )
     OPCIONES_FASE=(
-        (1,'Agendado'),
-        (2,'Agregar a cola'),
-        (3,'Anotado'),
-        (4,'Preparado'),
-        (5,'En espera'),
-        (6,'En consulta'),
-        (7,'Atender paciente'),
-        (8,'Ver expediente'),
-        (9,'Finalizar consulta'),
+        ('1','Agendado'),
+        ('2','Agregar a cola'),
+        ('3','Anotado'),
+        ('4','Preparado'),
+        ('5','En espera'),
+        ('6','En consulta'),
+        ('7','Atender paciente'),
+        ('8','Ver expediente'),
+        ('9','Finalizar consulta'),
     )
     #Me parece que el ManyToManyField, no se ocupa en la clase asociación, si no en la clase dominante.
     #expediente = models.ManyToManyField(Expediente, models.DO_NOTHING, blank=False, null=True)
     #consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True)
+    id=models.AutoField(primary_key=True)
     expediente = models.ForeignKey('Expediente', models.DO_NOTHING, blank=False, null=True)
-    consulta = models.OneToOneField('Consulta', models.DO_NOTHING, blank=False, null=True)
+    consulta = models.OneToOneField('Consulta', models.DO_NOTHING, blank=True, null=True)
     numero_cola=models.IntegerField(blank=False, null=False) #No lleva max_length
     fecha_de_cola=models.DateField(default=datetime.now, blank=False, null=False)
     consumo_medico=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False)
     estado_cola_medica=models.CharField(max_length=20,choices=OPCIONES_ESTADO_DE_PAGO, blank=False,null=False)
     fase_cola_medica=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False)
+    class Meta:
+        unique_together = (('expediente', 'fecha_de_cola'),)
 
 class SignosVitales(models.Model):
     '''
@@ -96,9 +101,9 @@ class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
     constancia_medica= models.OneToOneField('ConstanciaMedica',on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
     signos_vitales= models.OneToOneField('SignosVitales',on_delete=models.DO_NOTHING,null=False, blank=False)
-    examen_de_laboratorio= models.OneToOneField('OrdenExamenLaboratorio', on_delete=models.DO_NOTHING, blank=False, null=False)
-    diagnostico=models.CharField(max_length=200, blank=False, null=False)
-    sintoma=models.CharField(max_length=200, blank=False, null=False)
+    examen_de_laboratorio= models.OneToOneField('OrdenExamenLaboratorio', on_delete=models.DO_NOTHING, blank=True, null=False)
+    diagnostico=models.CharField(max_length=200, blank=True, null=False)
+    sintoma=models.CharField(max_length=200, blank=True, null=False)
 
 class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)
