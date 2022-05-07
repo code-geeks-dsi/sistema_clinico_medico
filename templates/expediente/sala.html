@@ -1,0 +1,243 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Sala de Espera {% endblock %}
+{% block content %}
+<div class="container py-4 ">
+    <h1 class="fw-bold">Sala de Espera</h1>
+    <div class="row">
+      <div class="col-12 col-md-12">
+          <!--Busqueda por Apellidos-->
+          <div class="input-group  py-4">
+              <span class="input-group-text bg-white" id="basic-addon1">
+                <span class="material-symbols-outlined btn-sm" id="search_voff">face</span>
+              </span>
+              <input type="text" class="form-control" id="id_apellido_paciente" placeholder="Apellidos" aria-label="Nombres" aria-describedby="basic-addon1">
+              <span class="input-group-text bg-white" id="filtro_buscar">
+                <span class="material-symbols-outlined btn btn-sm" id="" data-bs-toggle="modal" data-bs-target="#busquedaPacienteModal">search</span>
+              </span>
+          </div>
+      </div>
+      <!--Tarjetas de pacientes-->
+
+      <!--Boton abregar nuevo -->
+      <div class="text-end">
+          <button class="btn btn-outline-dark" type="button" id="buscar-nombre" data-bs-toggle="modal" data-bs-target="#miModal">Abrir Expediente Nuevo</button>
+      </div>
+      
+      <!--Navegación Entre Consultas y Examenes de Laboratorio-->
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#consultaMedica" type="button" role="tab" aria-controls="home" aria-selected="true">Consulta Medica</button>  
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Examenes de Laboratorio</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+        </li>
+      </ul>
+      <div class="tab-content border" id="myTabContent">
+        <div class="tab-pane fade show active" id="consultaMedica" role="tabpanel" aria-labelledby="home-tab">
+          <!--Tabla de pacientes en cola-->
+          <div class="py-4 table-responsive">
+            <table class="table table-bordered text-center">
+                <thead class="table-secondary">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Numero Cola</th>
+                    <th scope="col">Fecha_consulta</th>
+                    <th scope="col">Consumo</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Fase</th>
+                    <th scope="col">Expediente</th>
+                  </tr>
+                </thead>
+                <tbody id="tabla_cola">
+                  
+                </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+      </div>
+      
+
+      <!--Modal Datos del Paciente-->
+      <div class="modal fade" id="busquedaPacienteModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Paciente a Cola</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <!--Tabla de pacientes buscados-->
+                <div class="table-responsive" id="tabla_busqueda">
+                  <table class="table table-bordered text-center">
+                    <thead class="table-secondary">
+                      <tr>
+                          <th>ID</th>
+                          <th>Nombre</th>
+                          <th>Apellidos</th>
+                          <th>Fecha Nacimiento</td>
+                          <th>Sexo</th>
+                          <th>Direccion</th>
+                          <th>Email</th>
+                          <th>Responsable</th>
+                          <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody  id="datos_pacientes">
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>   
+</div>
+{% endblock %}
+<!--Js de la vista-->
+{% block js %}
+<script>
+    const url = "{% url 'autocompletado_apellidos' %}";
+    const urlFiltro = "{% url 'busqueda_paciente' %}";
+    const complementoConsulta = "?apellido_paciente=";
+    const id_component="id_apellido_paciente";
+    const id_modal="AgregarCola";
+    const tablaResultado = "datos_pacientes"; //El id de una tabal en la que saldran los resultados
+    const tablaColaConsulta="tabla_cola";
+    const url_consulta="{% url 'get_contieneConsulta' %}"
+    let tablaData=document.getElementById(tablaResultado);
+    let tablaCola=document.getElementById(tablaColaConsulta);
+    
+    //Para moviles, click en la lupa
+    document.getElementById("filtro_buscar").addEventListener("click",function(){
+      getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta);
+    });
+    document.getElementById(id_component).addEventListener('keypress',(e)=>{
+        if (e.key === 'Enter') {
+          getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta, id_modal);
+          
+        }
+      });
+    //Lenar autocompletado
+    getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
+    consultarCola(url_consulta, tablaCola);
+
+    function getAutocompletado(url, id_component, urlFiltro, complementoConsulta, tablaData){
+      let dataAutoComletado = [];
+      let consultaData = new XMLHttpRequest();
+      consultaData.open("GET", url, true);
+      consultaData.onload = function (e) {
+        if (consultaData.readyState === 4) {
+          if (consultaData.status === 200) {
+              $( function() {
+          
+                dataAutoComletado=JSON.parse(consultaData.responseText).data
+                $( "#"+id_component ).autocomplete({
+                  source: dataAutoComletado,
+                
+            
+                });
+              } );
+          } else {
+            console.error(consultaData.statusText);
+          }
+        }
+      };
+      consultaData.onerror = function (e) {
+        console.error(consultaData.statusText);
+      };
+      consultaData.send(null);
+    }
+
+    function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsulta, id_modal){
+      //Variables
+      let dataTarget=document.getElementById(id_component).value;
+      let resultados;
+      let filtroResultado = new XMLHttpRequest();
+      let complemento= complementoConsulta;
+      //filtrar
+      if (dataTarget != ""){
+        filtroResultado.open("GET", urlFiltro+complemento+dataTarget, true);
+        filtroResultado.onload = function (e) {
+          if (filtroResultado.readyState === 4 && filtroResultado.status === 200) {
+            resultados=JSON.parse(filtroResultado.responseText);
+            tablaData.innerHTML="";
+            if(resultados.data.length==0){
+              tablaData.insertAdjacentHTML("beforeend", '<tr colspan="7" ><td colspan="7" style="text-align:center">No hay Resultados</td></tr>');
+
+            }else{
+              resultados.data.forEach(p => {
+                  //Recorre los elemntos del objeto
+                  let elemento='<tr>';
+                  for (const property in p) {
+                      elemento = elemento+'<td>'+`${p[property]}`+'</td>';
+                  }
+                  elemento=elemento+'<td><div id="'+Object.values(p)[0]+'"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#'+id_modal+'">add</div></td>';
+                  elemento=elemento+'</tr>';
+                  tablaData.insertAdjacentHTML("beforeend", elemento);
+                  
+              });
+            }
+        } else {
+              console.error(filtroResultado.statusText);
+        }};
+
+        filtroResultado.onerror = function (e) {
+          console.error(filtroResultado.statusText);
+        };
+      
+        filtroResultado.send();
+      }
+    }
+
+    function ocultarBusqueda(){
+      let busqueda = document.getElementById("tabla_busqueda");
+      if (busqueda.hidden== true){
+        document.getElementById("tabla_busqueda").hidden=false;
+        document.getElementById("search_von").hidden=false;
+        document.getElementById("search_voff").hidden=true;
+      }
+      else{
+        document.getElementById("tabla_busqueda").hidden=true;
+        document.getElementById("search_von").hidden=true;
+        document.getElementById("search_voff").hidden=false;
+      }
+      
+    }
+
+    function consultarCola(url_consulta, tablaCola){
+      $.ajax({
+                url: url_consulta,
+                dataType: "json",
+                data: {
+
+                },
+                success: function(data){  
+                  
+                  data.map(function(x){
+                  let elemento='<tr>';
+                  for (const property in x) {
+                      elemento = elemento+'<td>'+`${x[property]}`+'</td>';
+                  }
+                  elemento=elemento+'<td><div id="'+Object.values(x)[0]+'"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#'+id_modal+'">add</div></td>';
+                  elemento=elemento+'</tr>';
+                  tablaCola.insertAdjacentHTML("beforeend", elemento);
+                  });
+                }
+            });
+    }
+</script>
+{% endblock %}
