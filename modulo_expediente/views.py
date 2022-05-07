@@ -64,7 +64,7 @@ def agregar_cola(request, id_paciente):
         response={
             'type':'warning',
             'title':'Error',
-            'data':'Paciente ya existe en la cola'
+            'data':'El Paciente ya existe en la cola'
         }
     
     return JsonResponse(response, safe=False)

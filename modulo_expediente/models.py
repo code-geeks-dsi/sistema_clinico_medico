@@ -14,6 +14,8 @@ class Expediente(models.Model):
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
     codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
     contiene_consulta=models.ManyToManyField('Consulta',through='contieneConsulta')#blank=False,null=False, no se utilizan en ManyToMany fields.W122
+    def __str__(self):
+        return str(self.id_expediente)+" - "+str(self.id_paciente.nombre_paciente)
 
 class Paciente(models.Model):
     OPCIONES_SEXO=(
@@ -29,6 +31,9 @@ class Paciente(models.Model):
     direccion_paciente=models.CharField( max_length=120, blank=False,null=False)
     email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True)
     responsable=models.CharField(max_length=40,blank=True,null=False,default='')
+    
+    def __str__(self):
+        return str(self.id_paciente)+" - "+str(self.nombre_paciente)
 
 class ContieneConsulta(models.Model):
     OPCIONES_ESTADO_DE_PAGO=(
