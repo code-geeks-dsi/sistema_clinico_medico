@@ -1,7 +1,7 @@
 
 from django.shortcuts import render
 from modulo_expediente.filters import PacienteFilter
-from modulo_expediente.forms import DatosDelPaciente
+from modulo_expediente.forms import DatosDelPaciente, FormularioVenta
 from modulo_expediente.models import Paciente
 from django.http import JsonResponse
 # Create your views here.
@@ -43,15 +43,16 @@ def get_paciente (request , id_paciente):
                 lista.append(diccionario);
                 del diccionario
         return JsonResponse(lista, safe=False)
-
+#vista de datosdelpaciente ayala
 def crear_expediente(request):
     formulario = DatosDelPaciente(request.GET)
+    formulario2 = FormularioVenta(request.GET)
     print(formulario.is_valid)
-    if request.method == "POST": 
-        if formulario.is_valid():
-            formulario.save()
+   # if request.method == "POST": 
+    if formulario.is_valid():
+        formulario.save()
             
-    return render(request,"datosdelPaciente.html",{'formulario':formulario})
+    return render(request,"datosdelPaciente.html",{'formulario':formulario,"creaventa":formulario2})
 
 from time import time
 from django.shortcuts import render

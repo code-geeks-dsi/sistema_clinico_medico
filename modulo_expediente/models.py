@@ -233,3 +233,5 @@ class ConstanciaMedica(models.Model):
     dias_reposo=models.IntegerField(blank=False, null=False)#Los integer no llevan max_length
     diagnostico_constancia=models.CharField(max_length=200, blank=False, null=False)
 
+class Venta(models.Model):
+    fecha=models.DateTimeField(auto_now=False)

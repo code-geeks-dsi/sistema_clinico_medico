@@ -10,15 +10,21 @@
 
 </head>
 <body>
-    <form method="post">
-        {% csrf_token %}
-         
+    <form method="GET">
+        {% csrf_token %} 
         <input type="button"  value="Agregar a cola para examenes de Lab">
         <input type="button"  value="Agregar a cola para pasar Consulta">
         <input type="button"  value="Cancelar">
         {{ formulario.as_p }}
         <input type="submit"  value="Cancelar">
-      </form>   
+      </form>  
+
+      <form action="" method="POST" enctype="multipart/form-data" style="color: white;">
+        {% csrf_token %}
+        {{creaventa.as_p}}
+      
+        <input type="submit" value="Crear/Editar" style=" width:150px;">
+      </form> 
       
 </body>
 </html>
