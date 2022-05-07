@@ -14,34 +14,13 @@
           <!--Busqueda por Apellidos-->
           <div class="input-group  py-4">
               <span class="input-group-text bg-white" id="basic-addon1">
-                <span class="material-symbols-outlined btn btn-sm" id="search_von" onclick="ocultarBusqueda()">visibility</span>
-                <span class="material-symbols-outlined btn btn-sm" id="search_voff" onclick="ocultarBusqueda()">visibility_off</span>
+                <span class="material-symbols-outlined btn-sm" id="search_voff">face</span>
               </span>
               <input type="text" class="form-control" id="id_apellido_paciente" placeholder="Apellidos" aria-label="Nombres" aria-describedby="basic-addon1">
               <span class="input-group-text bg-white" id="filtro_buscar">
-                <span class="material-symbols-outlined btn btn-sm" id="">search</span>
+                <span class="material-symbols-outlined btn btn-sm" id="" data-bs-toggle="modal" data-bs-target="#busquedaPacienteModal">search</span>
               </span>
           </div>
-      </div>
-      <!--Tabla de pacientes buscados-->
-      <div class="table-responsive" id="tabla_busqueda">
-        <table class="table table-bordered text-center">
-          <thead class="table-secondary">
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellidos</th>
-                <th>Fecha Nacimiento</td>
-                <th>Sexo</th>
-                <th>Direccion</th>
-                <th>Email</th>
-                <th>Responsable</th>
-                <th>Acciones</th>
-              </tr>
-          </thead>
-          <tbody  id="datos_pacientes">
-          </tbody>
-        </table>
       </div>
       <!--Tarjetas de pacientes-->
 
@@ -70,29 +49,16 @@
                 <thead class="table-secondary">
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Nombres</th>
-                    <th scope="col">Apellidos</th>
+                    <th scope="col">Numero Cola</th>
+                    <th scope="col">Fecha_consulta</th>
+                    <th scope="col">Consumo</th>
                     <th scope="col">Estado</th>
                     <th scope="col">Fase</th>
-                    <th scope="col">Consumo</th>
-                    <th scope="col">Opciones</th>
+                    <th scope="col">Expediente</th>
                   </tr>
                 </thead>
-                <tbody id="">
-                  <tr>
-                    <th scope="row">1</th>
-                    <td>Isaí Ronaldo</td>
-                    <td>Martínez Vásquez</td>
-                    <td> - - </td>
-                    <td>Signos Vitales</td>
-                    <td>$10</td>
-                    <td>
-                        <span class="material-symbols-outlined" data-bs-toggle="modal" data-bs-target="#miModal">visibility</span>
-                        <span class="material-symbols-outlined">delete</span>
-                        
-                    </td>
-                    <form action="" method="post"></form>
-                  </tr>
+                <tbody id="tabla_cola">
+                  
                 </tbody>
             </table>
           </div>
@@ -103,15 +69,34 @@
       
 
       <!--Modal Datos del Paciente-->
-      <div class="modal fade" id="AgregarCola" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
-        <div class="modal-dialog">
+      <div class="modal fade" id="busquedaPacienteModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
           <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Agregar Paciente</h5>
+                <h5 class="modal-title">Agregar Paciente a Cola</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                
+                <!--Tabla de pacientes buscados-->
+                <div class="table-responsive" id="tabla_busqueda">
+                  <table class="table table-bordered text-center">
+                    <thead class="table-secondary">
+                      <tr>
+                          <th>ID</th>
+                          <th>Nombre</th>
+                          <th>Apellidos</th>
+                          <th>Fecha Nacimiento</td>
+                          <th>Sexo</th>
+                          <th>Direccion</th>
+                          <th>Email</th>
+                          <th>Responsable</th>
+                          <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody  id="datos_pacientes">
+                    </tbody>
+                  </table>
+                </div>
             </div>
             <div class="modal-footer">
 
@@ -131,10 +116,11 @@
     const id_component="id_apellido_paciente";
     const id_modal="AgregarCola";
     const tablaResultado = "datos_pacientes"; //El id de una tabal en la que saldran los resultados
+    const tablaColaConsulta="tabla_cola";
+    const url_consulta="{% url 'get_contieneConsulta' %}"
     let tablaData=document.getElementById(tablaResultado);
-    //tabla de busqueda ocultada
-    document.getElementById("search_voff").hidden=true;
-    document.getElementById("tabla_busqueda").hidden=true;
+    let tablaCola=document.getElementById(tablaColaConsulta);
+    
     //Para moviles, click en la lupa
     document.getElementById("filtro_buscar").addEventListener("click",function(){
       getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta);
@@ -147,7 +133,8 @@
       });
     //Lenar autocompletado
     getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
-    
+    consultarCola(url_consulta, tablaCola);
+
     function getAutocompletado(url, id_component, urlFiltro, complementoConsulta, tablaData){
       let dataAutoComletado = [];
       let consultaData = new XMLHttpRequest();
@@ -201,7 +188,7 @@
                   elemento=elemento+'<td><div id="'+Object.values(p)[0]+'"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#'+id_modal+'">add</div></td>';
                   elemento=elemento+'</tr>';
                   tablaData.insertAdjacentHTML("beforeend", elemento);
-                  document.getElementById("tabla_busqueda").hidden = false;
+                  
               });
             }
         } else {
@@ -231,16 +218,24 @@
       
     }
 
-    function consultarCola(url_consulta){
+    function consultarCola(url_consulta, tablaCola){
       $.ajax({
                 url: url_consulta,
                 dataType: "json",
                 data: {
-                    nombre_paciente:request.term,
+
                 },
-                success: function(data){
-                    
-                    response(data)
+                success: function(data){  
+                  
+                  data.map(function(x){
+                  let elemento='<tr>';
+                  for (const property in x) {
+                      elemento = elemento+'<td>'+`${x[property]}`+'</td>';
+                  }
+                  elemento=elemento+'<td><div id="'+Object.values(x)[0]+'"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#'+id_modal+'">add</div></td>';
+                  elemento=elemento+'</tr>';
+                  tablaCola.insertAdjacentHTML("beforeend", elemento);
+                  });
                 }
             });
     }
