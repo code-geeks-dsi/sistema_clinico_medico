@@ -9,6 +9,7 @@ from modulo_expediente.forms import DatosDelPaciente
 from django.http import JsonResponse
 import json
 from datetime import date
+
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -38,16 +39,26 @@ def get_paciente(request, id_paciente):
 #Metodo que devuelve los datos del objeto contiene consulta en json
 def agregar_cola(request, id_paciente):
     expediente=Expediente.objects.get(id_paciente_id=id_paciente)
-    codExpediente=expediente.id_expediente
+    idExpediente=expediente.id_expediente
     fecha=datetime.now()
     try:
-        numero=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
-                         fecha_de_cola__month=fecha.month, 
-                         fecha_de_cola__day=fecha.day).last().numero_cola +1
-    except:
-        numero=1
-    #Creando Objeto contieneCola
-    try:
+        contieneconsulta=ContieneConsulta.objects.get(expediente_id=idExpediente, fecha_de_cola__year=fecha.year, 
+                                                       fecha_de_cola__month=fecha.month, 
+                                                       fecha_de_cola__day=fecha.day)
+        response={
+            'type':'warning',
+            'title':'Error',
+            'data':'El Paciente ya existe en la cola'
+        }
+        return JsonResponse(response, safe=False)
+    except ContieneConsulta.DoesNotExist:
+        try:
+            numero=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                            fecha_de_cola__month=fecha.month, 
+                            fecha_de_cola__day=fecha.day).last().numero_cola +1
+        except:
+            numero=1
+        #Creando Objeto contieneCola
         contieneconsulta=ContieneConsulta()
         contieneconsulta.expediente=expediente
         contieneconsulta.numero_cola=numero
@@ -60,14 +71,14 @@ def agregar_cola(request, id_paciente):
             'title':'Exito',
             'data':'Paciente agregado a la cola'
         }
-    except:
-        response={
-            'type':'warning',
-            'title':'Error',
-            'data':'El Paciente ya existe en la cola'
-        }
-    
-    return JsonResponse(response, safe=False)
+        return JsonResponse(response, safe=False)
+
+            
+        
+  
+        
+           
+       
 
 #Metodo que devuelve una lista de constieneConsulta filtrado por la fecha de hoy
 def  get_contieneConsulta(request):
