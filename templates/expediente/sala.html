@@ -23,6 +23,7 @@
           </div>
       </div>
       <!--Tarjetas de pacientes-->
+      
 
       <!--Boton abregar nuevo -->
       <div class="text-end">
@@ -66,7 +67,7 @@
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
       </div>
-      
+
 
       <!--Modal Datos del Paciente-->
       <div class="modal fade" id="busquedaPacienteModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
@@ -104,6 +105,9 @@
           </div>
         </div>
       </div>
+
+      
+
     </div>   
 </div>
 {% endblock %}
@@ -134,6 +138,11 @@
     //Lenar autocompletado
     getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
     consultarCola(url_consulta, tablaCola);
+
+    //Toast
+    $(document).ready(function(){
+      
+    });
 
     function getAutocompletado(url, id_component, urlFiltro, complementoConsulta, tablaData){
       let dataAutoComletado = [];
@@ -185,7 +194,7 @@
                   for (const property in p) {
                       elemento = elemento+'<td>'+`${p[property]}`+'</td>';
                   }
-                  elemento=elemento+'<td><div id="'+Object.values(p)[0]+'"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#'+id_modal+'">add</div></td>';
+                  elemento=elemento+'<td><div onclick="accionServer('+Object.values(p)[0]+');"class="material-symbols-outlined btn" >add</div></td>';
                   elemento=elemento+'</tr>';
                   tablaData.insertAdjacentHTML("beforeend", elemento);
                   
@@ -203,21 +212,24 @@
       }
     }
 
-    function ocultarBusqueda(){
-      let busqueda = document.getElementById("tabla_busqueda");
-      if (busqueda.hidden== true){
-        document.getElementById("tabla_busqueda").hidden=false;
-        document.getElementById("search_von").hidden=false;
-        document.getElementById("search_voff").hidden=true;
-      }
-      else{
-        document.getElementById("tabla_busqueda").hidden=true;
-        document.getElementById("search_von").hidden=true;
-        document.getElementById("search_voff").hidden=false;
-      }
+    //Voy a ocupar la misma funcion para agregar y eliminar.
+    function accionServer(id){
+      url_agregar_cola="/expediente/cola/"+id;
+      $.ajax({
+        url: url_consulta,
+                url: url_agregar_cola,
+                dataType: "json",
+                data: {
+
+                },
+                success: function(data){  
+                  toastr[data.type](data.data);
+                }
+      });
+      console.log(url_agregar_cola);
       
     }
-
+    
     function consultarCola(url_consulta, tablaCola){
       $.ajax({
                 url: url_consulta,
@@ -232,7 +244,7 @@
                   for (const property in x) {
                       elemento = elemento+'<td>'+`${x[property]}`+'</td>';
                   }
-                  elemento=elemento+'<td><div id="'+Object.values(x)[0]+'"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#'+id_modal+'">add</div></td>';
+                  elemento=elemento+'<td><div onclick="accionServer('+Object.values(x)[0]+');"class="material-symbols-outlined btn" >add</div></td>';
                   elemento=elemento+'</tr>';
                   tablaCola.insertAdjacentHTML("beforeend", elemento);
                   });
@@ -240,4 +252,5 @@
             });
     }
 </script>
+
 {% endblock %}
