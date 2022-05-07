@@ -13,15 +13,10 @@ urlpatterns = [
 
     path('paciente/<int:id_paciente>',get_paciente, name='get_paciente'),
 
-    path('paciente/datos',crear_expediente,name='crear_expediente')
-]
-
-    path('paciente/datos')
-]
+    path('paciente/datos',crear_expediente,name='crear_expediente'),
 
     path('paciente/autocompletado',autocompletado_apellidos, name='autocompletado_apellidos'),
     path('sala/',sala_consulta, name='sala_consulta'),
-    path('paciente/<int:id_paciente>', get_paciente, name='get_paciente'),
     path('cola/<int:id_paciente>', agregar_cola,name='agregar_cola' ),
     path('cola/', get_contieneConsulta, name='get_contieneConsulta'),
     path('cola/eliminar-paciente/<int:id_paciente>', eliminar_cola, name='eliminar_cola')
