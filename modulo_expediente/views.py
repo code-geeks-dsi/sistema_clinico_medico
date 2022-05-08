@@ -4,7 +4,8 @@ from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSe
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
-from modulo_expediente.models import Consulta, Paciente, ContieneConsulta, Expediente
+from modulo_expediente.models import Consulta, Paciente, ContieneConsulta, Expediente, SignosVitales
+from modulo_control.models import Enfermera, Empleado
 from modulo_expediente.forms import DatosDelPaciente
 from django.http import JsonResponse
 import json
@@ -58,6 +59,31 @@ def agregar_cola(request, id_paciente):
                             fecha_de_cola__day=fecha.day).last().numero_cola +1
         except:
             numero=1
+        #Los siguientes objetos tendrán datos unicamente para prueba
+        #Creando objeto enfermera
+        enfermera=Enfermera()
+        enfermera.empleado_id='am22001'
+        enfermera.save()
+        #Creando objetos signos vitales
+        signosvitales=SignosVitales()
+        signosvitales.unidad_temperatura='F'
+        signosvitales.unidad_peso='Lbs'
+        signosvitales.unidad_presion_arterial_diastolica=''
+        signosvitales.unidad_presion_arterial_sistolica=''
+        signosvitales.unidad_frecuencia_cardiaca=''
+        signosvitales.unidad_saturacion_oxigeno=''
+        signosvitales.valor_temperatura=1
+        signosvitales.valor_peso=45.00
+        signosvitales.valor_presion_arterial_diastolica=1
+        signosvitales.valor_presion_arterial_sistolica=1
+        signosvitales.valor_frecuencia_cardiaca=1
+        signosvitales.valor_saturacion_oxigeno=1
+        signosvitales.enfermera_id=enfermera.id_enfermera
+        signosvitales.save()
+        #Creando objeto Consulta
+        consulta=Consulta()
+        consulta.signos_vitales_id=signosvitales.id_signos_vitales
+        consulta.save()
         #Creando Objeto contieneCola
         contieneconsulta=ContieneConsulta()
         contieneconsulta.expediente=expediente
@@ -65,6 +91,7 @@ def agregar_cola(request, id_paciente):
         contieneconsulta.consumo_medico=0
         contieneconsulta.estado_cola_medica='1'
         contieneconsulta.fase_cola_medica='2'
+        contieneconsulta.consulta_id=consulta.id_consulta
         contieneconsulta.save()
         response={
             'type':'success',
@@ -72,13 +99,6 @@ def agregar_cola(request, id_paciente):
             'data':'Paciente agregado a la cola'
         }
         return JsonResponse(response, safe=False)
-
-            
-        
-  
-        
-           
-       
 
 #Metodo que devuelve una lista de constieneConsulta filtrado por la fecha de hoy
 def  get_contieneConsulta(request):

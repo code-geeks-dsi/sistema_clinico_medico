@@ -104,9 +104,9 @@ class SignosVitales(models.Model):
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
-    constancia_medica= models.OneToOneField('ConstanciaMedica',on_delete=models.DO_NOTHING,parent_link=True,null=False, blank=False)
+    constancia_medica= models.OneToOneField('ConstanciaMedica',on_delete=models.DO_NOTHING,parent_link=True,null=True, blank=False)
     signos_vitales= models.OneToOneField('SignosVitales',on_delete=models.DO_NOTHING,null=False, blank=False)
-    examen_de_laboratorio= models.OneToOneField('OrdenExamenLaboratorio', on_delete=models.DO_NOTHING, blank=True, null=False)
+    examen_de_laboratorio= models.OneToOneField('OrdenExamenLaboratorio', on_delete=models.DO_NOTHING, blank=True, null=True)
     diagnostico=models.CharField(max_length=200, blank=True, null=False)
     sintoma=models.CharField(max_length=200, blank=True, null=False)
 
