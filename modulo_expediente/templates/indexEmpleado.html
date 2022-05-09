@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<a href="{%url 'registrarDoctor'%}" type="button" class="btn btn-primary btn-lg btn-block">Agregar Doctor/a</a>
+<p></p>
+<a href="{%url 'registrarEnfermera'%}" type="button" class="btn btn-primary btn-lg btn-block">Agregar Enfermero/a</a>
+<p></p>
+<a href="{%url 'registrarLicLaboratorioClinico'%}" type="button" class="btn btn-primary btn-lg btn-block">Agregar Licenciado/a de Laboratorio</a>
+<p></p>
+<a href="{%url 'registrarSecretaria'%}" type="button" class="btn btn-primary btn-lg btn-block">Agregar Secretaria</a>
+
+{% endblock %}

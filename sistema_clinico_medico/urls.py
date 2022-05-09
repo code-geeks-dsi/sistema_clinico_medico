@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
     probando cambios
 """
+from unicodedata import name
 from django import views
 from django.contrib import admin
 from django.urls import path,include
@@ -21,14 +22,22 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
 from modulo_control.views import vista_iniciarsesion, logearse
 from modulo_expediente.views import vista_sala_espera
+from modulo_control.views import agregarEmpleado
+from modulo_control.urls import *
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
     #Login
     path('login/', vista_iniciarsesion, name='login'),
     path('logearse/', logearse, name='logearse'),
-    path('', RedirectView.as_view(url='login/')),
+    path('', RedirectView.as_view(url='login/'), name='index'),
     #Sala de Espera
-    path('expediente/', include('modulo_expediente.urls'))
+    path('expediente/', include('modulo_expediente.urls')),
+    #registro de empleado
+    path('controlEmpleado/', include('modulo_control.urls')),
+    
+
+    
 ]
 urlpatterns += staticfiles_urlpatterns()
