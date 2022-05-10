@@ -12,6 +12,7 @@
     <div class="row">
       <div class="col-12 col-md-12">
           <!--Busqueda por Apellidos-->
+          {% if rol == ROL_SECRETARIA %}
           <div class="input-group  py-4">
               <span class="input-group-text bg-white" id="basic-addon1">
                 <span class="material-symbols-outlined btn-sm" id="search_voff">face</span>
@@ -21,26 +22,28 @@
                 <span class="material-symbols-outlined btn btn-sm" id="" data-bs-toggle="modal" data-bs-target="#busquedaPacienteModal">search</span>
               </span>
           </div>
+          {% endif %}
       </div>
       <!--Tarjetas de pacientes-->
       
-
+      
       <!--Boton abregar nuevo -->
+      {% if rol == ROL_SECRETARIA  %}
       <div class="text-end">
-          <a href="{% url 'crear_expediente'%}" class="btn btn-outline-dark" id="buscar-nombre" >Abrir Expediente Nuevo</a>
+        <a href="{% url 'crear_expediente'%}" class="btn btn-outline-dark" id="buscar-nombre" >Abrir Expediente Nuevo</a>
       </div>
+      {% endif %}
       
       <!--Navegación Entre Consultas y Examenes de Laboratorio-->
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#consultaMedica" type="button" role="tab" aria-controls="home" aria-selected="true">Consulta Medica</button>  
         </li>
+        {% if rol == ROL_SECRETARIA  %}
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Examenes de Laboratorio</button>
         </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
-        </li>
+        {% endif %}
       </ul>
       <div class="tab-content border" id="myTabContent">
         <div class="tab-pane fade show active" id="consultaMedica" role="tabpanel" aria-labelledby="home-tab">
@@ -49,13 +52,18 @@
             <table class="table table-bordered text-center">
                 <thead class="table-secondary">
                   <tr>
-                    <th scope="col">#</th>
+                    
+                    {% if rol == ROL_ENFERMERA or rol == ROL_SECRETARIA %}
                     <th scope="col">Numero Cola</th>
-                    <th scope="col">Fecha_consulta</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellidos</th>
+                    <!-- ROL_ENFERMERA=2 -->
+                    {% endif %}
+                    {% if rol == ROL_SECRETARIA %}
+                    <th scope="col">Fase</th>
                     <th scope="col">Consumo</th>
                     <th scope="col">Estado</th>
-                    <th scope="col">Fase</th>
-                    <th scope="col">Expediente</th>
+                    {% endif %}
                   </tr>
                 </thead>
                 <tbody id="tabla_cola">
@@ -122,8 +130,9 @@
     const tablaResultado = "datos_pacientes"; //El id de una tabal en la que saldran los resultados
     const tablaColaConsulta="tabla_cola";
     const url_consulta="{% url 'get_contieneConsulta' %}"
-    let tablaData=document.getElementById(tablaResultado);
     let tablaCola=document.getElementById(tablaColaConsulta);
+    {% if rol == ROL_SECRETARIA %}
+    let tablaData=document.getElementById(tablaResultado);
     
     //Para moviles, click en la lupa
     document.getElementById("filtro_buscar").addEventListener("click",function(){
@@ -136,7 +145,9 @@
         }
       });
     //Lenar autocompletado
+    
     getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
+    {% endif %}
     consultarCola(url_consulta, tablaCola);
 
     //Voy a ocupar la misma funcion para agregar y eliminar.
@@ -173,6 +184,11 @@
                   }
                   elemento=elemento+'<td><div onclick="accionServer('+Object.values(x)[0]+');"class="material-symbols-outlined btn" >add</div></td>';
                   elemento=elemento+'</tr>';
+      
+      //   <input type="button"  value="Agregar a cola para examenes de Lab">
+      //   <input type="button"  value="Agregar a cola para pasar Consulta">
+      //   <input type="button"  value="Cancelar">
+       
                   tablaCola.insertAdjacentHTML("beforeend", elemento);
                   });
                 }

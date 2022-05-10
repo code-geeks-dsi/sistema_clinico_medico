@@ -11,10 +11,15 @@ from modulo_expediente.forms import DatosDelPaciente
 from django.http import JsonResponse
 import json
 from datetime import date
-
+ROL=4
+ROL_DOCTOR=1
+ROL_ENFERMERA=2
+ROL_LIC_LABORATORIO=3
+ROL_SECRETARIA=4
 # Create your views here.
 
 def busqueda_paciente(request):
+
     result= PacienteFilter(request.GET, queryset=Paciente.objects.all())
     pacientes =PacienteSerializer(result.qs, many=True)
     return JsonResponse({'data':pacientes.data})
@@ -30,7 +35,11 @@ def autocompletado_apellidos(request):
     #la clave tiene que ser data para que funcione con el metodo. 
 
 def sala_consulta(request):
-    return render(request,"expediente/sala.html")
+
+    return render(request,"expediente/sala.html",{'rol':ROL,'ROL_DOCTOR':1,
+                                                    'ROL_ENFERMERA':2,
+                                                    'ROL_LIC_LABORATORIO':3,
+                                                    'ROL_SECRETARIA':4})
 
 #Metodo que devuelve los datos del paciente en json
 def get_paciente(request, id_paciente):
@@ -113,30 +122,48 @@ def  get_contieneConsulta(request):
 
 def  get_cola(request):
     fecha=datetime.today()
-    contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
-                    fecha_de_cola__month=fecha.month, 
-                    fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
-    
     lista=[]
-    for fila in contiene_consulta:
-            diccionario={
-                "numero_cola":"",
-                "nombre":"",
-                "apellidos":"",
-                "fase_cola_medica":"",
-                "consumo_medico":"",
-                "estado_cola_medica":"",
-            }
-            
-            diccionario["numero_cola"]= fila.numero_cola
-            diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
-            diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
-            diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
-            diccionario["consumo_medico"]= fila.consumo_medico
-            diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
-            lista.append(diccionario)
-            del diccionario
-    
+    if(ROL==ROL_SECRETARIA):
+        contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                        fecha_de_cola__month=fecha.month, 
+                        fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
+        
+        for fila in contiene_consulta:
+                diccionario={
+                    "numero_cola":"",
+                    "nombre":"",
+                    "apellidos":"",
+                    "fase_cola_medica":"",
+                    "consumo_medico":"",
+                    "estado_cola_medica":"",
+                }
+                
+                diccionario["numero_cola"]= fila.numero_cola
+                diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+                diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+                diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
+                diccionario["consumo_medico"]= fila.consumo_medico
+                diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
+                
+    elif (ROL==ROL_ENFERMERA):
+        contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                        fecha_de_cola__month=fecha.month, 
+                        fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
+        
+        
+        for fila in contiene_consulta:
+                diccionario={
+                    "numero_cola":"",
+                    "nombre":"",
+                    "apellidos":"",
+                }
+                
+                diccionario["numero_cola"]= fila.numero_cola
+                diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+                diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+    lista.append(diccionario)
+    del diccionario
+
     return JsonResponse( lista, safe=False)
 
 #Método que elimina una persona de la cola
