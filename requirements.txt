@@ -15,8 +15,6 @@ six==1.16.0
 sqlparse==0.4.2
 typing-extensions==4.1.1
 urllib3==1.26.9
-<<<<<<< HEAD
 djangorestframework==3.13.1
-=======
 djangorestframework==3.13.1
->>>>>>> 4978cfda76a8ab8c6d9f0eb20a56681ec39dccf4
+
