@@ -37,20 +37,17 @@ class Paciente(models.Model):
 
 class ContieneConsulta(models.Model):
     OPCIONES_ESTADO_DE_PAGO=(
-        ('1','No pagado'),
+        ('1','Pendiente'),
         ('2','Parcialmente pagado'),
         ('3','Pagado'),
     )
     OPCIONES_FASE=(
         ('1','Agendado'),
-        ('2','Agregar a cola'),
-        ('3','Anotado'),
-        ('4','Preparado'),
-        ('5','En espera'),
-        ('6','En consulta'),
-        ('7','Atender paciente'),
-        ('8','Ver expediente'),
-        ('9','Finalizar consulta'),
+        ('2','Anotado'),
+        ('3','Preparado'),
+        ('4','En espera'),
+        ('5','En consulta'),
+        ('6','Finalizado'),
     )
     #Me parece que el ManyToManyField, no se ocupa en la clase asociación, si no en la clase dominante.
     #expediente = models.ManyToManyField(Expediente, models.DO_NOTHING, blank=False, null=True)
@@ -60,6 +57,7 @@ class ContieneConsulta(models.Model):
     consulta = models.OneToOneField('Consulta', models.DO_NOTHING, blank=True, null=True)
     numero_cola=models.IntegerField(blank=False, null=False) #No lleva max_length
     fecha_de_cola=models.DateField(default=datetime.now, blank=False, null=False)
+    # hora_de_ingreso=models.TimeField(default=datetime.now,blank=False,null=False)
     consumo_medico=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False)
     estado_cola_medica=models.CharField(max_length=20,choices=OPCIONES_ESTADO_DE_PAGO, blank=False,null=False)
     fase_cola_medica=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False)

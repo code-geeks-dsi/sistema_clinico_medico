@@ -1,5 +1,6 @@
 from time import time
 from django.shortcuts import render
+from django.db.models import Q
 from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
@@ -103,37 +104,40 @@ def agregar_cola(request, id_paciente):
 #Metodo que devuelve una lista de constieneConsulta filtrado por la fecha de hoy
 def  get_contieneConsulta(request):
     fecha=datetime.now()
-    '''
-    contiene_consulta=list(ContieneConsulta.objects.values())
-    lista=[]
-    for i in range(len(contiene_consulta)):
-        if contiene_consulta[i]["fecha_de_cola"] == fecha_actual:
-            diccionario={
-                "id":"",
-                "numero_cola":"",
-                "fecha_de_cola":"",
-                "consumo_medico":"",
-                "estado_cola_medica":"",
-                "fase_cola_medica":"",
-                "consulta_id":"",
-                "expediente_id":""
-            }
-            diccionario["id"]= contiene_consulta[i]["id"]
-            diccionario["numero_cola"]= contiene_consulta[i]["numero_cola"]
-            diccionario["fecha_de_cola"]= contiene_consulta[i]["fecha_de_cola"]
-            diccionario["consumo_medico"]= contiene_consulta[i]["consumo_medico"]
-            diccionario["estado_cola_medica"]= contiene_consulta[i]["estado_cola_medica"]
-            diccionario["fase_cola_medica"]= contiene_consulta[i]["fase_cola_medica"]
-            diccionario["consulta_id"]= contiene_consulta[i]["consulta_id"]
-            diccionario["expediente_id"]= contiene_consulta[i]["expediente_id"]
-            lista.append(diccionario)
-            del diccionario
-            '''
     contieneconsulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                     fecha_de_cola__month=fecha.month, 
                     fecha_de_cola__day=fecha.day)
     serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
     return JsonResponse(serializer.data, safe=False)
+
+
+def  get_cola(request):
+    fecha=datetime.today()
+    contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                    fecha_de_cola__month=fecha.month, 
+                    fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
+    
+    lista=[]
+    for fila in contiene_consulta:
+            diccionario={
+                "numero_cola":"",
+                "nombre":"",
+                "apellidos":"",
+                "fase_cola_medica":"",
+                "consumo_medico":"",
+                "estado_cola_medica":"",
+            }
+            
+            diccionario["numero_cola"]= fila.numero_cola
+            diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+            diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+            diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
+            diccionario["consumo_medico"]= fila.consumo_medico
+            diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
+            lista.append(diccionario)
+            del diccionario
+    
+    return JsonResponse( lista, safe=False)
 
 #Método que elimina una persona de la cola
 def eliminar_cola(request, id_paciente):
