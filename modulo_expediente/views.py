@@ -36,10 +36,10 @@ def autocompletado_apellidos(request):
 
 def sala_consulta(request):
 
-    return render(request,"expediente/sala.html",{'rol':ROL,'ROL_DOCTOR':1,
-                                                    'ROL_ENFERMERA':2,
-                                                    'ROL_LIC_LABORATORIO':3,
-                                                    'ROL_SECRETARIA':4})
+    return render(request,"expediente/sala.html",{'rol':ROL,'ROL_DOCTOR':ROL_DOCTOR,
+                                                    'ROL_ENFERMERA':ROL_ENFERMERA,
+                                                    'ROL_LIC_LABORATORIO':ROL_LIC_LABORATORIO,
+                                                    'ROL_SECRETARIA':ROL_SECRETARIA})
 
 #Metodo que devuelve los datos del paciente en json
 def get_paciente(request, id_paciente):
