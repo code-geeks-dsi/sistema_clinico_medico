@@ -58,23 +58,13 @@ class ContieneConsulta(models.Model):
     numero_cola=models.IntegerField(blank=False, null=False) #No lleva max_length
     fecha_de_cola=models.DateField(default=datetime.now, blank=False, null=False)
     # hora_de_ingreso=models.TimeField(default=datetime.now,blank=False,null=False)
-    consumo_medico=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False)
-    estado_cola_medica=models.CharField(max_length=20,choices=OPCIONES_ESTADO_DE_PAGO, blank=False,null=False)
-    fase_cola_medica=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False)
+    consumo_medico=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False,default=0)
+    estado_cola_medica=models.CharField(max_length=20,choices=OPCIONES_ESTADO_DE_PAGO, blank=False,null=False,default=1)
+    fase_cola_medica=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False,default=2)
     class Meta:
         unique_together = (('expediente', 'fecha_de_cola'),)
 
 class SignosVitales(models.Model):
-    '''
-    UNIDADES_TEMPERATURA=(
-        (1,'F','Fahrenheit'),
-        (2,'C','Celsius'),
-    )
-    UNIDADES_PESO=(
-        (1,'Lbs','Libras'),
-        (2,'Kgs','Kilogramos'),
-    )
-    '''
     UNIDADES_TEMPERATURA=(
         ('F','Fahrenheit'),
         ('C','Celsius'),
@@ -86,18 +76,18 @@ class SignosVitales(models.Model):
     id_signos_vitales= models.AutoField(primary_key=True)
     #consulta=models.ForeignKey(Consulta,on_delete=models.DO_NOTHING,null=False, blank=False)
     enfermera=models.ForeignKey('modulo_control.Enfermera',on_delete=models.DO_NOTHING,null=False, blank=False)
-    unidad_temperatura=models.CharField(max_length=1,choices=UNIDADES_TEMPERATURA,null=False, blank=True)
-    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True)
-    unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=False, blank=True)
-    unidad_presion_arterial_sistolica=models.CharField(max_length=4,default='mmHH',null=False, blank=True)
-    unidad_frecuencia_cardiaca=models.CharField(max_length=3,null=False, blank=True)
+    unidad_temperatura=models.CharField(max_length=1,choices=UNIDADES_TEMPERATURA,null=False, blank=True,default=2)
+    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True,default=1)
+    unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
+    unidad_presion_arterial_sistolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
+    unidad_frecuencia_cardiaca=models.CharField(max_length=3,null=False, blank=True,default='PPM')
     unidad_saturacion_oxigeno=models.CharField(max_length=1,default='%',null=False, blank=True)
-    valor_temperatura=models.DecimalField(max_digits=5,decimal_places=2,validators=[MaxValueValidator(50),MinValueValidator(15)],null=False, blank=True)
-    valor_peso=models.DecimalField(max_digits=4,decimal_places=2,validators=[MaxValueValidator(500),MinValueValidator(0)],null=False, blank=True)
-    valor_presion_arterial_diastolica=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=True)
-    valor_presion_arterial_sistolica=models.IntegerField(validators=[MaxValueValidator(350),MinValueValidator(0)],null=False, blank=True)
-    valor_frecuencia_cardiaca=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=True)
-    valor_saturacion_oxigeno=models.IntegerField(validators=[MaxValueValidator(101),MinValueValidator(0)],null=False, blank=True)
+    valor_temperatura=models.DecimalField(max_digits=5,decimal_places=2,validators=[MaxValueValidator(50),MinValueValidator(15)],null=True, blank=True)
+    valor_peso=models.DecimalField(max_digits=4,decimal_places=2,validators=[MaxValueValidator(500),MinValueValidator(0)],null=True, blank=True)
+    valor_presion_arterial_diastolica=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=True, blank=True)
+    valor_presion_arterial_sistolica=models.IntegerField(validators=[MaxValueValidator(350),MinValueValidator(0)],null=True, blank=True)
+    valor_frecuencia_cardiaca=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=True, blank=True)
+    valor_saturacion_oxigeno=models.IntegerField(validators=[MaxValueValidator(101),MinValueValidator(0)],null=True, blank=True)
     #Cuando se utiliza integerField, Django ignora el max_length, fields.w122
 
 class Consulta(models.Model):

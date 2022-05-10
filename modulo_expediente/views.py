@@ -76,18 +76,18 @@ def agregar_cola(request, id_paciente):
         enfermera.save()
         #Creando objetos signos vitales
         signosvitales=SignosVitales()
-        signosvitales.unidad_temperatura='F'
-        signosvitales.unidad_peso='Lbs'
-        signosvitales.unidad_presion_arterial_diastolica=''
-        signosvitales.unidad_presion_arterial_sistolica=''
-        signosvitales.unidad_frecuencia_cardiaca=''
-        signosvitales.unidad_saturacion_oxigeno=''
-        signosvitales.valor_temperatura=1
-        signosvitales.valor_peso=45.00
-        signosvitales.valor_presion_arterial_diastolica=1
-        signosvitales.valor_presion_arterial_sistolica=1
-        signosvitales.valor_frecuencia_cardiaca=1
-        signosvitales.valor_saturacion_oxigeno=1
+        # signosvitales.unidad_temperatura='F'
+        # signosvitales.unidad_peso='Lbs'
+        # signosvitales.unidad_presion_arterial_diastolica=''
+        # signosvitales.unidad_presion_arterial_sistolica=''
+        # signosvitales.unidad_frecuencia_cardiaca=''
+        # signosvitales.unidad_saturacion_oxigeno=''
+        # signosvitales.valor_temperatura=1
+        # signosvitales.valor_peso=45.00
+        # signosvitales.valor_presion_arterial_diastolica=1
+        # signosvitales.valor_presion_arterial_sistolica=1
+        # signosvitales.valor_frecuencia_cardiaca=1
+        # signosvitales.valor_saturacion_oxigeno=1
         signosvitales.enfermera_id=enfermera.id_enfermera
         signosvitales.save()
         #Creando objeto Consulta
@@ -98,9 +98,6 @@ def agregar_cola(request, id_paciente):
         contieneconsulta=ContieneConsulta()
         contieneconsulta.expediente=expediente
         contieneconsulta.numero_cola=numero
-        contieneconsulta.consumo_medico=0
-        contieneconsulta.estado_cola_medica='1'
-        contieneconsulta.fase_cola_medica='2'
         contieneconsulta.consulta_id=consulta.id_consulta
         contieneconsulta.save()
         response={
@@ -121,7 +118,7 @@ def  get_contieneConsulta(request):
 
 
 def  get_cola(request):
-    fecha=datetime.today()
+    fecha=datetime.now()
     lista=[]
     if(ROL==ROL_SECRETARIA):
         contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
@@ -129,41 +126,43 @@ def  get_cola(request):
                         fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
         
         for fila in contiene_consulta:
-                diccionario={
-                    "numero_cola":"",
-                    "nombre":"",
-                    "apellidos":"",
-                    "fase_cola_medica":"",
-                    "consumo_medico":"",
-                    "estado_cola_medica":"",
-                }
-                
-                diccionario["numero_cola"]= fila.numero_cola
-                diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
-                diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
-                diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
-                diccionario["consumo_medico"]= fila.consumo_medico
-                diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
+            diccionario={
+                "numero_cola":"",
+                "nombre":"",
+                "apellidos":"",
+                "fase_cola_medica":"",
+                "consumo_medico":"",
+                "estado_cola_medica":"",
+            }
+            
+            diccionario["numero_cola"]= fila.numero_cola
+            diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+            diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+            diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
+            diccionario["consumo_medico"]= fila.consumo_medico
+            diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
+            lista.append(diccionario)
+            # del diccionario
                 
     elif (ROL==ROL_ENFERMERA):
+        # recupera los pacientes en cola en fase anotado
         contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                         fecha_de_cola__month=fecha.month, 
-                        fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
+                        fecha_de_cola__day=fecha.day,fase_cola_medica=ContieneConsulta.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente')
         
         
         for fila in contiene_consulta:
-                diccionario={
-                    "numero_cola":"",
-                    "nombre":"",
-                    "apellidos":"",
-                }
-                
-                diccionario["numero_cola"]= fila.numero_cola
-                diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
-                diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
-    lista.append(diccionario)
-    del diccionario
-
+            diccionario={
+                "numero_cola":"",
+                "nombre":"",
+                "apellidos":"",
+            }
+            
+            diccionario["numero_cola"]= fila.numero_cola
+            diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+            diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+            lista.append(diccionario)
+            # del diccionario
     return JsonResponse( lista, safe=False)
 
 #Método que elimina una persona de la cola
