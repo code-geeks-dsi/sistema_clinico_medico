@@ -150,23 +150,6 @@
     {% endif %}
     consultarCola(url_consulta, tablaCola);
 
-    //Voy a ocupar la misma funcion para agregar y eliminar.
-    function accionServer(id){
-      url_agregar_cola="/expediente/cola/"+id;
-      $.ajax({
-        url: url_consulta,
-                url: url_agregar_cola,
-                dataType: "json",
-                data: {
-
-                },
-                success: function(data){  
-                  toastr[data.type](data.data);
-                }
-      });
-      console.log(url_agregar_cola);
-      
-    }
     
     function consultarCola(url_consulta, tablaCola){
       $.ajax({
@@ -194,6 +177,26 @@
                 }
             });
     }
+    //Voy a ocupar la misma funcion para agregar y eliminar.
+    function accionServer(id){
+      url_agregar_cola="/expediente/cola/"+id;
+      $.ajax({
+        url: url_consulta,
+                url: url_agregar_cola,
+                dataType: "json",
+                data: {
+
+                },
+                success: function(data){  
+                  toastr[data.type](data.data);
+                  tablaCola.innerHTML=null;                
+                  consultarCola(url_consulta, tablaCola);
+                }
+      });
+      console.log(url_agregar_cola);
+      
+    }
+    
 </script>
 
 {% endblock %}
