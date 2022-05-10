@@ -35,11 +35,9 @@
       {% endif %}
       
       <!--Boton agregar Signos vitales v1 -->
-      {% if rol == ROL_SECRETARIA  %}
       <div class="text-end">
-        <a href="{% url 'crear_expediente'%}" class="btn btn-outline-dark" id="buscar-nombre" data-bs-toggle="modal" data-bs-target="#agregarSignosVitalesModal">Abrir Expediente Nuevo</a>
+        <a class="btn btn-outline-dark" id="buscar-nombre" data-bs-toggle="modal" data-bs-target="#agregarSignosVitalesModal">Abrir Expediente Nuevo</a>
       </div>
-      {% endif %}
 
       <!--Navegación Entre Consultas y Examenes de Laboratorio-->
       <ul class="nav nav-tabs" id="myTab" role="tablist">
