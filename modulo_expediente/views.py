@@ -180,3 +180,26 @@ def crear_expediente(request):
         formulario.save()
             
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
+
+def modificar_signosVitales(request, id_signos_vitales):
+
+    signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos_vitales)
+    signosvitales.unidad_temperatura=request.POST['unidad_temperatura']
+    signosvitales.unidad_peso=request.POST['unidad_peso']
+    signosvitales.unidad_presion_arterial_diastolica=request.POST['unidad_presion_arterial_diastolica']
+    signosvitales.unidad_presion_arterial_sistolica=request.POST['unidad_presion_arterial_sistolica']
+    signosbitales.unidad_frecuencia_cardiaca=request.POST['frecuencia_cardiaca']
+    signosvitales.unidad_saturacion_oxigeno=request.POST['unidad_saturacion_oxigeno']
+    signosvitales.valor_temperatura=request.POST['valor_temperatura']
+    signosvitales.valor_peso=request.POST['valor_peso']
+    signosvitales.valor_presion_arterial_diastolica=request.POST['valor_presion_arterial_diastolica']
+    signnosvitales.valor_presion_arterial_sistolica=request.POST['valor_presion_arterial_sistolica']
+    signosvitales.valor_frecuencia_cardiaca=request.POST['valor_frecuencia_cardiaca']
+    signnosvitales.valor_saturacion_oxigeno=request.POST['valor_saturacion_oxigeno']
+    signosvitales.save()
+    response={
+        'type':'success',
+        'title':'Modificado',
+        'data':'Se han modificado los signos vitales'
+    }
+    return JsonResponse(response, safe=False)
