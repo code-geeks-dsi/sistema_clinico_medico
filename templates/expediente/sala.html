@@ -125,9 +125,9 @@
       <div class="modal fade" id="agregarSignosVitalesModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
         <div class="modal-dialog modal-xl">
           <div class="modal-content">
-            <div class="modal-header text-center">
+            <div class="modal-header text-center bg-dark text-white">
                 <h5 class="modal-title w-100">Agregar Signos Vitales</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <button type="button" class="btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
               <div class="container">
@@ -165,16 +165,16 @@
                     </div>
                   </div>
                   <!--Peso-->
-                  <div class="col-sm-6 col-md-4">
+                  <div class="col-md-8 col-lg-4">
                     <div class="mb-3 mt-3">
                       <label for="exampleInputEmail1" class="form-label">Peso</label>
                       <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                       <div id="emailHelp" class="form-text"></div>
                     </div>
                   </div>
-                  <div class="col-sm-6 col-md-2">
+                  <div class="col-md-4 col-lg-2">
                     <div class="mb-3 mt-3">
-                      <label for="exampleInputEmail1" class="form-label">Unidad</label>
+                      <label for="exampleInputEmail1" class="form-label d-none d-sm-block">Unidad</label>
                       <select class="form-select" aria-label="Default select example" id="select-temperatura">
                         <option selected>--</option>
                         <option value="1">Libras</option>
@@ -183,40 +183,40 @@
                     </div>
                   </div>
                   <!--Presión Arterial-->
-                  <div class="col-sm-6 col-md-3">
+                  <div class="col-md-6 col-lg-3">
                     <div class="mb-3 mt-3">
                       <label for="presionArterial" class="form-label">Presión Arterial</label>
                       <input type="number" class="form-control" id="presionArterialSistolica" aria-describedby="emailHelp" placeholder="Sistolica">
                       <div id="emailHelp" class="form-text"></div>
                     </div>
                   </div>
-                  <div class="col-sm-6 col-md-3">
+                  <div class="col-md-6 col-lg-3">
                     <div class="mb-3 mt-3">
-                      <label for="presionArterial" class="form-label bg-white">Presión Arterial</label>
+                      <label for="presionArterial" class="form-label text-white d-none d-sm-block">Presión Arterial</label>
                       <input type="number" class="form-control" id="presionArterialDiastolica" aria-describedby="emailHelp" placeholder="Diastolica">
                       <div id="emailHelp" class="form-text"></div>
                     </div>
                   </div>
                   <!--Saturación de Oxigeno-->
-                  <div class="col-4">
+                  <div class="col-md-8 col-lg-4">
                     <div class="mb-3 mt-3">
                       <label for="exampleInputEmail1" class="form-label">Saturación Oxigeno</label>
                       <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                     </div>
                   </div>
-                  <div class="col-2">
+                  <div class="col-md-4 col-lg-2">
                     <div class="mb-3 mt-3">
-                      <label for="exampleInputEmail1" class="form-label text-white" >-</label>
+                      <label for="exampleInputEmail1" class="form-label text-white d-none d-sm-block" >-</label>
                       <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" disabled value="%">
-              
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
-            <div class="modal-footer">
-
+            <div class="modal-footer bg-dark">
+              <!--Btn Guardar Signos Vitales-->
+              <button class="btn btn-danger text-start" id="guarda_signos_vitales" >Cerrar ventana</button>
+              <button class="btn btn-success text-start" id="guarda_signos_vitales" >Guardar Datos</button>
             </div>
           </div>
         </div>
