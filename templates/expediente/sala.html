@@ -34,6 +34,11 @@
       </div>
       {% endif %}
       
+      <!--Boton agregar Signos vitales v1 -->
+      <div class="text-end">
+        <a class="btn btn-outline-dark" id="buscar-nombre" data-bs-toggle="modal" data-bs-target="#agregarSignosVitalesModal">Abrir Expediente Nuevo</a>
+      </div>
+
       <!--Navegación Entre Consultas y Examenes de Laboratorio-->
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -109,6 +114,107 @@
             </div>
             <div class="modal-footer">
 
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Signos Vitales -->
+      <div class="modal fade" id="agregarSignosVitalesModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header text-center bg-dark text-white">
+                <h5 class="modal-title w-100">Agregar Signos Vitales</h5>
+                <button type="button" class="btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              <div class="container">
+                <div class="row">
+                  <!--Temperatura-->
+                  <div class="col-md-8 col-lg-4">
+                    <div class="mb-3 mt-3">
+                      <label for="exampleInputEmail1" class="form-label">Temperatura</label>
+                      <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <div id="emailHelp" class="form-text"></div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-lg-2">
+                    <div class="mb-3 mt-3">
+                      <label for="exampleInputEmail1" class="form-label d-none d-sm-block">Unidades</label>
+                      <select class="form-select" aria-label="Default select example" id="select-temperatura">
+                        <option selected>--</option>
+                        <option value="1">Fahrenheit</option>
+                        <option value="2">Celsius</option>
+                      </select>
+                    </div>
+                  </div>
+                  <!--Frecuencia Cardiaca-->
+                  <div class="col-md-8 col-lg-4">
+                    <div class="mb-3 mt-3">
+                      <label for="exampleInputEmail1" class="form-label">Frecuencia Cardiaca</label>
+                      <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <div id="emailHelp" class="form-text"></div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-lg-2">
+                    <div class="mb-3 mt-3">
+                      <label for="frecunaciaUnidades" class="form-label text-white d-none d-sm-block">-</label>
+                      <input type="text" class="form-control" id="frecunaciaUnidades" aria-describedby="emailHelp" disabled value="PPM">
+                    </div>
+                  </div>
+                  <!--Peso-->
+                  <div class="col-md-8 col-lg-4">
+                    <div class="mb-3 mt-3">
+                      <label for="exampleInputEmail1" class="form-label">Peso</label>
+                      <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <div id="emailHelp" class="form-text"></div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-lg-2">
+                    <div class="mb-3 mt-3">
+                      <label for="exampleInputEmail1" class="form-label d-none d-sm-block">Unidad</label>
+                      <select class="form-select" aria-label="Default select example" id="select-temperatura">
+                        <option selected>--</option>
+                        <option value="1">Libras</option>
+                        <option value="2">Kilogramos</option>
+                      </select>
+                    </div>
+                  </div>
+                  <!--Presión Arterial-->
+                  <div class="col-md-6 col-lg-3">
+                    <div class="mb-3 mt-3">
+                      <label for="presionArterial" class="form-label">Presión Arterial</label>
+                      <input type="number" class="form-control" id="presionArterialSistolica" aria-describedby="emailHelp" placeholder="Sistolica">
+                      <div id="emailHelp" class="form-text"></div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-lg-3">
+                    <div class="mb-3 mt-3">
+                      <label for="presionArterial" class="form-label text-white d-none d-sm-block">Presión Arterial</label>
+                      <input type="number" class="form-control" id="presionArterialDiastolica" aria-describedby="emailHelp" placeholder="Diastolica">
+                      <div id="emailHelp" class="form-text"></div>
+                    </div>
+                  </div>
+                  <!--Saturación de Oxigeno-->
+                  <div class="col-md-8 col-lg-4">
+                    <div class="mb-3 mt-3">
+                      <label for="exampleInputEmail1" class="form-label">Saturación Oxigeno</label>
+                      <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-lg-2">
+                    <div class="mb-3 mt-3">
+                      <label for="exampleInputEmail1" class="form-label text-white d-none d-sm-block" >-</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" disabled value="%">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer bg-dark">
+              <!--Btn Guardar Signos Vitales-->
+              <button class="btn btn-danger text-start" id="guarda_signos_vitales" >Cerrar ventana</button>
+              <button class="btn btn-success text-start" id="guarda_signos_vitales" >Guardar Datos</button>
             </div>
           </div>
         </div>
