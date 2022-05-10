@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from modulo_control.models import Empleado
+from modulo_control.models import Empleado, Rol
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('email','es_staff')
@@ -20,4 +20,5 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
 admin.site.register(Empleado, UserAdmin)
+admin.site.register(Rol)
 admin.site.unregister(Group)
