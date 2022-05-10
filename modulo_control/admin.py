@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from modulo_control.models import Empleado
+from modulo_control.models import Empleado, Enfermera
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('email','es_staff')
@@ -21,3 +21,4 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(Empleado, UserAdmin)
 admin.site.unregister(Group)
+admin.site.register(Enfermera)

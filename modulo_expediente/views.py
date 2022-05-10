@@ -11,7 +11,7 @@ from modulo_expediente.forms import DatosDelPaciente
 from django.http import JsonResponse
 import json
 from datetime import date
-ROL=4
+ROL=2
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
 ROL_LIC_LABORATORIO=3
@@ -49,13 +49,12 @@ def get_paciente(request, id_paciente):
 
 #Metodo que devuelve los datos del objeto contiene consulta en json
 def agregar_cola(request, id_paciente):
+    CODIGO_EMPLEADO=1
     expediente=Expediente.objects.get(id_paciente_id=id_paciente)
     idExpediente=expediente.id_expediente
     fecha=datetime.now()
     try:
-        contieneconsulta=ContieneConsulta.objects.get(expediente_id=idExpediente, fecha_de_cola__year=fecha.year, 
-                                                       fecha_de_cola__month=fecha.month, 
-                                                       fecha_de_cola__day=fecha.day)
+        contieneconsulta=ContieneConsulta.objects.get(expediente_id=idExpediente, fecha_de_cola__year=fecha.year, fecha_de_cola__month=fecha.month, fecha_de_cola__day=fecha.day)
         response={
             'type':'warning',
             'title':'Error',
@@ -69,26 +68,10 @@ def agregar_cola(request, id_paciente):
                             fecha_de_cola__day=fecha.day).last().numero_cola +1
         except:
             numero=1
-        #Los siguientes objetos tendrán datos unicamente para prueba
-        #Creando objeto enfermera
-        enfermera=Enfermera()
-        enfermera.empleado_id='am22001'
-        enfermera.save()
+        
         #Creando objetos signos vitales
         signosvitales=SignosVitales()
-        # signosvitales.unidad_temperatura='F'
-        # signosvitales.unidad_peso='Lbs'
-        # signosvitales.unidad_presion_arterial_diastolica=''
-        # signosvitales.unidad_presion_arterial_sistolica=''
-        # signosvitales.unidad_frecuencia_cardiaca=''
-        # signosvitales.unidad_saturacion_oxigeno=''
-        # signosvitales.valor_temperatura=1
-        # signosvitales.valor_peso=45.00
-        # signosvitales.valor_presion_arterial_diastolica=1
-        # signosvitales.valor_presion_arterial_sistolica=1
-        # signosvitales.valor_frecuencia_cardiaca=1
-        # signosvitales.valor_saturacion_oxigeno=1
-        signosvitales.enfermera_id=enfermera.id_enfermera
+        signosvitales.enfermera=Enfermera.objects.get(id_enfermera=CODIGO_EMPLEADO)
         signosvitales.save()
         #Creando objeto Consulta
         consulta=Consulta()
