@@ -180,3 +180,4 @@ def crear_expediente(request):
         formulario.save()
             
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
+
