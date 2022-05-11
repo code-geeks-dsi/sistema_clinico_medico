@@ -61,6 +61,12 @@ class EmpleadoManager(BaseUserManager):
         empleado.save()
         return empleado
 
+class Rol(models.Model):
+    id_rol=models.AutoField(primary_key=True)
+    nombre_rol=models.CharField(max_length=15,null=False,blank=False)
+    codigo_rol=models.CharField(max_length=15,null=False,blank=False)
+    def __str__(self):
+        return f'{self.nombre_rol}'
 
 class Empleado(AbstractBaseUser, PermissionsMixin):
     codigo_empleado = models.CharField(primary_key=True,max_length=7,unique=True)
@@ -75,6 +81,7 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateField(db_column='LAST_LOGIN', null=True)
     fechaCreacion = models.DateTimeField(db_column='FECHA_CREACION', default=timezone.now)
     fechaNacimiento = models.DateField(db_column='FECHA_NACMIENTO', null=True)
+    roles = models.ManyToManyField(Rol)
     objects = EmpleadoManager()
 
     USERNAME_FIELD="email"
@@ -99,6 +106,7 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
     @property
     def is_superuser(self):
         return self.es_superuser
+
 
 class Permiso(models.Model):
     id_permiso = models.AutoField(primary_key=True)
