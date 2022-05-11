@@ -1,17 +1,25 @@
 from time import time
 from django.shortcuts import render
+from django.db.models import Q
 from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
-from modulo_expediente.models import Consulta, Paciente, ContieneConsulta, Expediente
+from modulo_expediente.models import Consulta, Paciente, ContieneConsulta, Expediente, SignosVitales
+from modulo_control.models import Enfermera, Empleado
 from modulo_expediente.forms import DatosDelPaciente
 from django.http import JsonResponse
 import json
 from datetime import date
+ROL=2
+ROL_DOCTOR=1
+ROL_ENFERMERA=2
+ROL_LIC_LABORATORIO=3
+ROL_SECRETARIA=4
 # Create your views here.
 
 def busqueda_paciente(request):
+
     result= PacienteFilter(request.GET, queryset=Paciente.objects.all())
     pacientes =PacienteSerializer(result.qs, many=True)
     return JsonResponse({'data':pacientes.data})
@@ -27,7 +35,11 @@ def autocompletado_apellidos(request):
     #la clave tiene que ser data para que funcione con el metodo. 
 
 def sala_consulta(request):
-    return render(request,"expediente/sala.html")
+
+    return render(request,"expediente/sala.html",{'rol':ROL,'ROL_DOCTOR':ROL_DOCTOR,
+                                                    'ROL_ENFERMERA':ROL_ENFERMERA,
+                                                    'ROL_LIC_LABORATORIO':ROL_LIC_LABORATORIO,
+                                                    'ROL_SECRETARIA':ROL_SECRETARIA})
 
 #Metodo que devuelve los datos del paciente en json
 def get_paciente(request, id_paciente):
@@ -37,72 +49,104 @@ def get_paciente(request, id_paciente):
 
 #Metodo que devuelve los datos del objeto contiene consulta en json
 def agregar_cola(request, id_paciente):
+    CODIGO_EMPLEADO=1
     expediente=Expediente.objects.get(id_paciente_id=id_paciente)
-    codExpediente=expediente.id_expediente
+    idExpediente=expediente.id_expediente
     fecha=datetime.now()
     try:
-        numero=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
-                         fecha_de_cola__month=fecha.month, 
-                         fecha_de_cola__day=fecha.day).last().numero_cola +1
-    except:
-        numero=1
-    #Creando Objeto contieneCola
-    try:
+        contieneconsulta=ContieneConsulta.objects.get(expediente_id=idExpediente, fecha_de_cola__year=fecha.year, fecha_de_cola__month=fecha.month, fecha_de_cola__day=fecha.day)
+        response={
+            'type':'warning',
+            'title':'Error',
+            'data':'El Paciente ya existe en la cola'
+        }
+        return JsonResponse(response, safe=False)
+    except ContieneConsulta.DoesNotExist:
+        try:
+            numero=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                            fecha_de_cola__month=fecha.month, 
+                            fecha_de_cola__day=fecha.day).last().numero_cola +1
+        except:
+            numero=1
+        
+        #Creando objetos signos vitales
+        signosvitales=SignosVitales()
+        signosvitales.enfermera=Enfermera.objects.get(id_enfermera=CODIGO_EMPLEADO)
+        signosvitales.save()
+        #Creando objeto Consulta
+        consulta=Consulta()
+        consulta.signos_vitales_id=signosvitales.id_signos_vitales
+        consulta.save()
+        #Creando Objeto contieneCola
         contieneconsulta=ContieneConsulta()
         contieneconsulta.expediente=expediente
         contieneconsulta.numero_cola=numero
-        contieneconsulta.consumo_medico=0
-        contieneconsulta.estado_cola_medica='1'
-        contieneconsulta.fase_cola_medica='2'
+        contieneconsulta.consulta_id=consulta.id_consulta
         contieneconsulta.save()
         response={
             'type':'success',
             'title':'Exito',
             'data':'Paciente agregado a la cola'
         }
-    except:
-        response={
-            'type':'warning',
-            'title':'Error',
-            'data':'Paciente ya existe en la cola'
-        }
-    
-    return JsonResponse(response, safe=False)
+        return JsonResponse(response, safe=False)
 
 #Metodo que devuelve una lista de constieneConsulta filtrado por la fecha de hoy
 def  get_contieneConsulta(request):
     fecha=datetime.now()
-    '''
-    contiene_consulta=list(ContieneConsulta.objects.values())
-    lista=[]
-    for i in range(len(contiene_consulta)):
-        if contiene_consulta[i]["fecha_de_cola"] == fecha_actual:
-            diccionario={
-                "id":"",
-                "numero_cola":"",
-                "fecha_de_cola":"",
-                "consumo_medico":"",
-                "estado_cola_medica":"",
-                "fase_cola_medica":"",
-                "consulta_id":"",
-                "expediente_id":""
-            }
-            diccionario["id"]= contiene_consulta[i]["id"]
-            diccionario["numero_cola"]= contiene_consulta[i]["numero_cola"]
-            diccionario["fecha_de_cola"]= contiene_consulta[i]["fecha_de_cola"]
-            diccionario["consumo_medico"]= contiene_consulta[i]["consumo_medico"]
-            diccionario["estado_cola_medica"]= contiene_consulta[i]["estado_cola_medica"]
-            diccionario["fase_cola_medica"]= contiene_consulta[i]["fase_cola_medica"]
-            diccionario["consulta_id"]= contiene_consulta[i]["consulta_id"]
-            diccionario["expediente_id"]= contiene_consulta[i]["expediente_id"]
-            lista.append(diccionario)
-            del diccionario
-            '''
     contieneconsulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                     fecha_de_cola__month=fecha.month, 
                     fecha_de_cola__day=fecha.day)
     serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
     return JsonResponse(serializer.data, safe=False)
+
+
+def  get_cola(request):
+    fecha=datetime.now()
+    lista=[]
+    if(ROL==ROL_SECRETARIA):
+        contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                        fecha_de_cola__month=fecha.month, 
+                        fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
+        
+        for fila in contiene_consulta:
+            diccionario={
+                "numero_cola":"",
+                "nombre":"",
+                "apellidos":"",
+                "fase_cola_medica":"",
+                "consumo_medico":"",
+                "estado_cola_medica":"",
+            }
+            
+            diccionario["numero_cola"]= fila.numero_cola
+            diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+            diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+            diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
+            diccionario["consumo_medico"]= fila.consumo_medico
+            diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
+            lista.append(diccionario)
+            # del diccionario
+                
+    elif (ROL==ROL_ENFERMERA):
+        # recupera los pacientes en cola en fase anotado
+        contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                        fecha_de_cola__month=fecha.month, 
+                        fecha_de_cola__day=fecha.day,fase_cola_medica=ContieneConsulta.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente')
+        
+        
+        for fila in contiene_consulta:
+            diccionario={
+                "numero_cola":"",
+                "nombre":"",
+                "apellidos":"",
+            }
+            
+            diccionario["numero_cola"]= fila.numero_cola
+            diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+            diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+            lista.append(diccionario)
+            # del diccionario
+    return JsonResponse( lista, safe=False)
 
 #Método que elimina una persona de la cola
 def eliminar_cola(request, id_paciente):
