@@ -28,8 +28,8 @@ class Paciente(models.Model):
     apellido_paciente = models.CharField( max_length=40,blank=False, null=False)
     fecha_nacimiento_paciente = models.DateField( blank=False,null=False)
     sexo_paciente = models.CharField( max_length=1,choices=OPCIONES_SEXO, blank=False, null=False )
-    direccion_paciente=models.CharField( max_length=120, blank=False,null=False)
-    email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True)
+    direccion_paciente=models.CharField( max_length=120, blank=True,null=False,default="")
+    email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True,default="")
     responsable=models.CharField(max_length=40,blank=True,null=False,default='')
     
     def __str__(self):
