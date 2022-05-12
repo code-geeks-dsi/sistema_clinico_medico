@@ -108,7 +108,7 @@
             <div class="modal-body">
               <div class="container">
                 
-                <form class="row g-3 needs-validation" novalidate>
+                <form class="row g-3 needs-validation" action="" novalidate>
                     <div class="col-md-6">
                       <label for="validationCustom01" class="form-label">Nombres</label>
                       <input type="text" class="form-control" id="id_nombre_empleado" value="" required>
@@ -139,7 +139,7 @@
                         <div class="input-group has-validation">
                           <input type="password" class="form-control" id="id_password_empleado" aria-describedby="inputGroupPrepend" required>
                           <div class="invalid-feedback">
-                            Please choose a username.
+                            Ingrese una contraseña.
                           </div>
                         </div>
                     </div>
@@ -168,17 +168,13 @@
                           Please select a valid state.
                         </div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-6">
 
                     </div>
-                    <div class="col-4">
-
+                    <div class="col-6 text-end">
+                      <button class="btn btn-success" id="guardar_empleado" >Guardar Datos</button>
                     </div>
                 </form>
-                <div class="col-12 py-2 text-end">
-                    <button class="btn btn-success" id="guardar_empleado" >Guardar Datos</button>
-                </div>
-
               </div>
             </div>
           </div>
@@ -208,7 +204,8 @@
             direccion = document.getElementById("id_direccion_empleado").value;
             fecha_nacimiento = document.getElementById("id_fecha_nacimiento").value;
             sexo = $('#id_select_sexo').val();
-            $.ajax({
+            if (nombres!=null, apellidos!=null, email!=null, password!=null, direccion!=null,fecha_nacimiento!=null, sexo!=null){
+              $.ajax({
                 url: url,
                 type:"POST",
                 dataType: "json",
@@ -225,9 +222,33 @@
                     toastr[data.type](data.data);
                 }
       });
+            }
             console.log(nombres+" "+apellidos+" "+email+" "+password+" "+direccion+" "+fecha_nacimiento+" "+sexo);
         });
 
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        
+    </script>
+    <script>  
+      (function () {
+      'use strict'
+
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.querySelectorAll('.needs-validation')
+
+      // Loop over them and prevent submission
+      Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+          form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+              event.preventDefault()
+              event.stopPropagation()
+            }
+
+            form.classList.add('was-validated')
+          }, false)
+        })
+    })()
     </script>
     <script src="{% static 'js/toastr.min.js' %}"></script>
     <script src="{% static 'js/sistemaClinico.js' %}"></script>
