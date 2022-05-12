@@ -87,27 +87,19 @@ def registrar_empleado(request):
         direccion = request.POST['direccion_empleado']
         fecha_nacimiento = request.POST['fecha_nacimiento']
         sexo_empleado = request.POST['sexo_empleado']
-        print(nombres+" "+ apellidos+" "+ email+" "+password+" "+direccion+" "+fecha_nacimiento+" "+sexo_empleado)
-        '''
-        empleado.codigo_empleado = request.POST['nombre_empleado']
-        empleado.nombres = request.POST['nombresEmp']
-        empleado.apellidos = request.POST['apellidosEmp']
-        empleado.sexo = request.POST['sexoEmp']
-        empleado.direccion = request.POST['direccionEmp']
-        empleado.email = None
-        empleado.es_activo = True
-        empleado.es_staff = True
-        empleado.es_superuser = False
-        empleado.last_login = None
-        empleado.fechaCreacion = datetime.now()
-        empleado.fechaNacimiento = '2022-01-2'
 
-        empleado.save()
-        '''
-        data={
-            'type':'warning',
+        try:
+            empleado = Empleado.objects.create_user(nombres, apellidos, email, password)
+            data={
+            'type':'success',
             'title':'Exito',
             'data':'Empleado registrado'
+        }
+        except:
+            data={
+            'type':'warning',
+            'title':'Exito',
+            'data':'Ya se a registrado el correo'
         }
     return JsonResponse(data, safe=False)
 
