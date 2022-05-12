@@ -8,10 +8,7 @@ from modulo_control.views import *
 
 urlpatterns = [
 
-    path('admin/', admin.site.urls),
     path('agregarEmpleado', agregarEmpleado, name= 'agregarEmpleado'),
-    path('admin/', admin.site.urls),
-    path('admin/', admin.site.urls),
     path('', indexEmpleado, name='indexEmpleado'),
     path('registrarDoctor', registrarDoctor, name= 'registrarDoctor'),
     path('agregarDoctor', agregarDoctor, name= 'agregarDoctor'),

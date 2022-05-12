@@ -21,7 +21,6 @@ from django.urls import path,include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
 from modulo_control.views import vista_iniciarsesion, logearse,agregarEmpleado
-from modulo_expediente.views import vista_sala_espera
 from modulo_control.urls import *
 
 urlpatterns = [
@@ -33,7 +32,7 @@ urlpatterns = [
     path('', RedirectView.as_view(url='login/'), name='index'),
     #Sala de Espera
     path('expediente/', include('modulo_expediente.urls')),
-    path('api-auth/', include('rest_framework.urls'))
+    path('api-auth/', include('rest_framework.urls')),
     path('controlEmpleado/', include('modulo_control.urls')),
 
 ]
