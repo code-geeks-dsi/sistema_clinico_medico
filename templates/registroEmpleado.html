@@ -3,9 +3,9 @@
 <form>
     {% csrf_token %}
     {{form.as_table}}
-    {%for f in form_roles%}
-    {{f.as_table}}
-    {%endfor%}
+    {% for f in form_roles %}
+    {{ f.as_p }}
+    {% endfor %}
     <button type="submit">Guardar</button>
 </form>
 <!-- <form method="POST" action="{%url 'agregarEmpleado'%}">

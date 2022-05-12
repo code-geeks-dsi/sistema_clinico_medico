@@ -150,7 +150,7 @@ class Doctor(models.Model):
     id_doctor=models.AutoField(primary_key=True, unique=True)
     especialidad_doctor = models.CharField(max_length=40,null=False, blank=False)
     jvmp =models.IntegerField(null=False,blank=False)
-    Empleado = models.ForeignKey('Empleado', on_delete=models.CASCADE)
+    empleado = models.ForeignKey('Empleado', on_delete=models.CASCADE)
 
 class Clinica(models.Model):
     id_clinica=models.AutoField(primary_key=True,unique=True)
@@ -163,8 +163,9 @@ class Secretaria(models.Model):
     empleado= models.ForeignKey(Empleado, on_delete=models.CASCADE)
 
 class LicLaboratorioClinico(models.Model):
-    id_lic_laboratorio=models.AutoField(primary_key=True, null=False, blank=False)
-    jvmp =models.IntegerField(null=False,blank=False)#fields.w122
+    id_lic_laboratorio=models.AutoField(primary_key=True)
+    jvplc =models.IntegerField(null=False,blank=False,default=0)
+    empleado= models.ForeignKey(Empleado, on_delete=models.DO_NOTHING)
 
 class LaboratorioClinico(models.Model):
     id_laboratorio= models.AutoField(primary_key=True, null=False, blank=False)

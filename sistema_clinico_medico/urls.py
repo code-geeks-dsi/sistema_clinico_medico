@@ -22,7 +22,6 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
 from modulo_control.views import vista_iniciarsesion, logearse
 from modulo_control.urls import *
-
 urlpatterns = [
 
     path('admin/', admin.site.urls),
