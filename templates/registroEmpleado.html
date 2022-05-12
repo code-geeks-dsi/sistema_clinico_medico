@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="POST" action="{%url 'agregarEmpleado'%}">
+    <input type="TEXT" name="codigoEmp" placeholder="Ingrese codigo de empleado" required value="">
+    <input type="TEXT" name="nombresEmp" placeholder="Nombre de empleado" required value="">
+    <input type="TEXT" name="apellidosEmp" placeholder="Apellidos de empleado" required value="">
+    <input type="TEXT" name="sexoEmp" placeholder="Sexo" required value="">
+    <input type="TEXT" name="direccionEmp" placeholder="Direccion de empleado" required value="">
+    <button type="submit">Guardar</button>
+    
+
+</form>
+{% endblock %}
+

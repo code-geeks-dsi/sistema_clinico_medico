@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DatosDelPaciente</title>
+    
+    <h1>Datos del Paciente</h1>
+
+</head>
+<body>
+    <form method="POST">
+        {% csrf_token %} 
+        <input type="button"  value="Agregar a cola para examenes de Lab">
+        <input type="button"  value="Agregar a cola para pasar Consulta">
+        <input type="button"  value="Cancelar">
+        {{ formulario.as_p }}
+        <input type="submit"  value="Cancelar">
+      </form>  
+
+      <form action="" method="POST" enctype="multipart/form-data" style="color: white;">
+        {% csrf_token %}
+      
+        <input type="submit" value="Crear/Editar" style=" width:150px;">
+      </form> 
+      
+</body>
+</html>
