@@ -79,9 +79,17 @@ def agregarEmpleado(request):
 @csrf_exempt
 def registrar_empleado(request):
     if request.method == 'POST':
-        empleado = Empleado()
 
-        empleado.codigo_empleado = request.POST['codigoEmp']
+        nombres = request.POST['nombre_empleado']
+        apellidos = request.POST['apellido_empleado']
+        email =  request.POST['email_empleado']
+        password = request.POST['password_empleado']
+        direccion = request.POST['direccion_empleado']
+        fecha_nacimiento = request.POST['fecha_nacimiento']
+        sexo_empleado = request.POST['sexo_empleado']
+        print(nombres+" "+ apellidos+" "+ email+" "+password+" "+direccion+" "+fecha_nacimiento+" "+sexo_empleado)
+        '''
+        empleado.codigo_empleado = request.POST['nombre_empleado']
         empleado.nombres = request.POST['nombresEmp']
         empleado.apellidos = request.POST['apellidosEmp']
         empleado.sexo = request.POST['sexoEmp']
@@ -95,8 +103,13 @@ def registrar_empleado(request):
         empleado.fechaNacimiento = '2022-01-2'
 
         empleado.save()
-
-        return redirect('index')
+        '''
+        data={
+            'type':'warning',
+            'title':'Exito',
+            'data':'Empleado registrado'
+        }
+    return JsonResponse(data, safe=False)
 
 
 def editar_empleado(request):
