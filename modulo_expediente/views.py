@@ -11,7 +11,7 @@ from modulo_expediente.forms import DatosDelPaciente
 from django.http import JsonResponse
 import json
 from datetime import date
-ROL=2
+ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
 ROL_LIC_LABORATORIO=3

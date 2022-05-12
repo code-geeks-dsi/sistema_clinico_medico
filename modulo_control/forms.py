@@ -2,6 +2,10 @@
 from django.forms import ModelForm
 from .models import *
 
+class EmpleadoForm(ModelForm):
+    class Meta:
+        model=Empleado
+        fields=['nombres','apellidos','sexo','direccion','email','fechaNacimiento','roles']
 
 class DoctorForm(ModelForm):
     class Meta:

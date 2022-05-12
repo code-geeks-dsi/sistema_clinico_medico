@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
-<form method="POST" action="{%url 'agregarEmpleado'%}">
+<form>
+    {% csrf_token %}
+    {{form.as_table}}
+    {%for f in form_roles%}
+    {{f.as_table}}
+    {%endfor%}
+    <button type="submit">Guardar</button>
+</form>
+<!-- <form method="POST" action="{%url 'agregarEmpleado'%}">
     <input type="TEXT" name="codigoEmp" placeholder="Ingrese codigo de empleado" required value="">
     <input type="TEXT" name="nombresEmp" placeholder="Nombre de empleado" required value="">
     <input type="TEXT" name="apellidosEmp" placeholder="Apellidos de empleado" required value="">
@@ -9,6 +17,6 @@
     <button type="submit">Guardar</button>
     
 
-</form>
+</form> -->
 {% endblock %}
 

@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import path,include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
-from modulo_control.views import vista_iniciarsesion, logearse,agregarEmpleado
+from modulo_control.views import vista_iniciarsesion, logearse
 from modulo_control.urls import *
 
 urlpatterns = [
@@ -33,7 +33,7 @@ urlpatterns = [
     #Sala de Espera
     path('expediente/', include('modulo_expediente.urls')),
     path('api-auth/', include('rest_framework.urls')),
-    path('controlEmpleado/', include('modulo_control.urls')),
+    path('control/', include('modulo_control.urls')),
 
 ]
 urlpatterns += staticfiles_urlpatterns()

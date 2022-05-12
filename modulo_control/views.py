@@ -1,10 +1,12 @@
 from contextlib import nullcontext
 from multiprocessing import context
+import select
 from urllib import request
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
+from modulo_control.forms import EmpleadoForm, EnfermeraForm, SecretariaForm,DoctorForm
 from modulo_control.models import *
 from .forms import *
 from datetime import datetime
@@ -75,7 +77,7 @@ def agregarEmpleado(request):
     return redirect('index') ##luego cambiar a que redireccione a lista de enpleados o algo asi  """
 
 @csrf_exempt
-def agregarEmpleado(request):
+def registrar_empleado(request):
     if request.method == 'POST':
         empleado = Empleado()
 
@@ -96,8 +98,22 @@ def agregarEmpleado(request):
 
         return redirect('index')
 
+
+def editar_empleado(request,codigo_empleado):
+    empleado=Empleado.objects.get(codigo_empleado=codigo_empleado)
+    form_roles=[]
+    roles_forms=[DoctorForm(Doctor),EnfermeraForm(Enfermera),LaboratorioClinico(LicLaboratorioClinico),SecretariaForm(Secretaria)]
+    for rol in empleado.roles.all():
+        form_roles.append(roles_forms[rol.id_rol])
+
+    form=EmpleadoForm(instance=empleado)
+
+    return render(request, 'registroEmpleado.html',{'form':form,'form_roles':form_roles})
+    
+
 def registrarEmpleado(request):
-    return render(request, 'registroEmpleado.html')
+    form=EmpleadoForm(request.GET)
+    return render(request, 'registroEmpleado.html',{'form':form})
 
 
 def registrarDoctor(request):
