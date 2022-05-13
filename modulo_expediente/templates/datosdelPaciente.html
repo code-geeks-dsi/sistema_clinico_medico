@@ -10,20 +10,10 @@
 
 </head>
 <body>
-    <form method="POST">
+    <form method="POST" autocomplete="off">
         {% csrf_token %} 
-        <input type="button"  value="Agregar a cola para examenes de Lab">
-        <input type="button"  value="Agregar a cola para pasar Consulta">
-        <input type="button"  value="Cancelar">
         {{ formulario.as_p }}
-        <input type="submit"  value="Cancelar">
-      </form>  
-
-      <form action="" method="POST" enctype="multipart/form-data" style="color: white;">
-        {% csrf_token %}
-      
-        <input type="submit" value="Crear/Editar" style=" width:150px;">
-      </form> 
-      
+        <input type="submit"  value="Guardar">
+      </form>      
 </body>
 </html>
