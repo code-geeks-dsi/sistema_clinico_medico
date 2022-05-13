@@ -13,7 +13,8 @@ import json
 from datetime import date
 from django.urls import reverse
 from urllib.parse import urlencode
-ROL=2
+from urllib.request import urlopen
+ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
 ROL_LIC_LABORATORIO=3
@@ -93,7 +94,16 @@ def agregar_cola(request, id_paciente):
         return JsonResponse(response, safe=False)
 
 #Metodo que devuelve una lista de constieneConsulta filtrado por la fecha de hoy
-def  get_contieneConsulta(request):
+def  get_contiene_consulta(request):
+    fecha=datetime.now()
+    contieneconsulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                    fecha_de_cola__month=fecha.month, 
+                    fecha_de_cola__day=fecha.day)
+    serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+#filtro de contiene consulta para la vista Doctor
+def contiene_consulta_con_filtro(request):
     fecha=datetime.now()
     contieneconsulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                     fecha_de_cola__month=fecha.month, 
@@ -126,6 +136,44 @@ def  get_cola(request):
             diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
             diccionario["consumo_medico"]= fila.consumo_medico
             diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
+            lista.append(diccionario)
+    elif(ROL==ROL_DOCTOR):
+        #en la vista doctor se retorna el apellido de la barra de busqueda del paciente
+        apellido_paciente=request.GET.get('apellido_paciente','')
+        year=int(request.GET.get('year',0))
+        month=int(request.GET.get('month',0))
+        day=int(request.GET.get('day',0))
+        isQuery=bool(request.GET.get('query',False))
+        filterData={}
+        if isQuery:
+            filterData['expediente__id_paciente__apellido_paciente__icontains']=apellido_paciente
+            # si filtra por fecha
+            if year!=0 and month!=0 and day!=0:
+                filterData['fecha_de_cola__year']=year 
+                filterData['fecha_de_cola__month']=month
+                filterData['fecha_de_cola__day']=day
+            # # si se estan cargando los valores por defecto
+        else:
+            filterData['fecha_de_cola__year']=fecha.year 
+            filterData['fecha_de_cola__month']=fecha.month
+            filterData['fecha_de_cola__day']=fecha.day
+
+        contiene_consulta=ContieneConsulta.objects.filter(**filterData).select_related('expediente__id_paciente')
+        
+        for fila in contiene_consulta:
+            diccionario={
+                "numero_cola":"",
+                "nombre":"",
+                "apellidos":"",
+                "fase_cola_medica":"",
+                "fecha_de_cola":""
+            }
+            
+            diccionario["numero_cola"]= fila.numero_cola
+            diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+            diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+            diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
+            diccionario["fecha_de_cola"]= fila.fecha_de_cola
             lista.append(diccionario)
             # del diccionario
                 
