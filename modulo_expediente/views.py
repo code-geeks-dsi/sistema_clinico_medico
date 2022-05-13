@@ -14,7 +14,7 @@ from datetime import date
 from django.urls import reverse
 from urllib.parse import urlencode
 from urllib.request import urlopen
-ROL=1
+ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
 ROL_LIC_LABORATORIO=3
@@ -144,27 +144,21 @@ def  get_cola(request):
         month=int(request.GET.get('month',0))
         day=int(request.GET.get('day',0))
         isQuery=bool(request.GET.get('query',False))
-        # si no filtra por fecha
-        if isQuery and year == 0:
-            years=[]
-            months=[]
-            days=[]
-        # si filtra por fecha
-        elif isQuery==True and year!=0:
-            years=[year]
-            months=[month]
-            days=[day]
-        # si se estan cargando los valores por defecto
-        elif isQuery==False:
-            years=[fecha.year]
-            months=[fecha.month]
-            days=[fecha.day]
+        filterData={}
+        if isQuery:
+            filterData['expediente__id_paciente__apellido_paciente__icontains']=apellido_paciente
+            # si filtra por fecha
+            if year!=0 and month!=0 and day!=0:
+                filterData['fecha_de_cola__year']=year 
+                filterData['fecha_de_cola__month']=month
+                filterData['fecha_de_cola__day']=day
+            # # si se estan cargando los valores por defecto
+        else:
+            filterData['fecha_de_cola__year']=fecha.year 
+            filterData['fecha_de_cola__month']=fecha.month
+            filterData['fecha_de_cola__day']=fecha.day
 
-        contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year__in=years, 
-                        fecha_de_cola__month__in=months, 
-                        fecha_de_cola__day__in=days,
-                        expediente__id_paciente__apellido_paciente__icontains=apellido_paciente
-                        ).select_related('expediente__id_paciente')
+        contiene_consulta=ContieneConsulta.objects.filter(**filterData).select_related('expediente__id_paciente')
         
         for fila in contiene_consulta:
             diccionario={

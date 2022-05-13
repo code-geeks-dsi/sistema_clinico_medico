@@ -308,13 +308,15 @@
                 dataType: "json",
                 data: data,
                 success: function(data){  
-                  console.log(data)
                   let elemento;
+                  //limpia la tabla de resultados
                   tablaCola.innerHTML=null;
+                  //si no hay resultados muestra un mensaje de que no hay resultados
                   if (data.length==0){
                     elemento='<tr><td colspan="100%">No hay pacientes en espera</td></tr>';
                     tablaCola.insertAdjacentHTML("beforeend", elemento);
                   }else{
+                    //llenado de tabla
                     data.map((x)=>{
                     elemento='<tr>';
                     for (const property in x) {
