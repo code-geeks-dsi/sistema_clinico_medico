@@ -12,17 +12,25 @@
     <div class="row">
       <div class="col-12 col-md-12">
           <!--Busqueda por Apellidos-->
-          {% if rol == ROL_SECRETARIA %}
+          {% if rol == ROL_SECRETARIA or rol == ROL_DOCTOR %}
           <div class="input-group  py-4">
               <span class="input-group-text bg-white" id="basic-addon1">
                 <span class="material-symbols-outlined btn-sm" id="search_voff">face</span>
               </span>
               <input type="text" class="form-control" id="id_apellido_paciente" placeholder="Apellidos" aria-label="Nombres" aria-describedby="basic-addon1">
+              {% if rol == ROL_SECRETARIA %}
               <span class="input-group-text bg-white" id="filtro_buscar">
                 <span class="material-symbols-outlined btn btn-sm" id="" data-bs-toggle="modal" data-bs-target="#busquedaPacienteModal">search</span>
               </span>
+              {% elif rol == ROL_DOCTOR %}
+              <input type="date" name="fecha_consulta" id="fecha_consulta" class="form-control" style="max-width: fit-content;">
+              <span class="input-group-text bg-white" id="filtro_buscar">
+                <span class="material-symbols-outlined btn btn-sm" >search</span>
+              </span>
+              {% endif %}
           </div>
           {% endif %}
+        
       </div>
       <!--Tarjetas de pacientes-->
       
@@ -32,12 +40,13 @@
       <div class="text-end">
         <a href="{% url 'crear_expediente'%}" class="btn btn-outline-dark" id="buscar-nombre" >Abrir Expediente Nuevo</a>
       </div>
-      {% endif %}
-      
-      <!--Boton agregar Signos vitales v1 -->
-      <div class="text-end">
+       <!--Boton agregar Signos vitales v1 -->
+       <div class="text-end">
         <a class="btn btn-outline-dark" id="buscar-nombre" data-bs-toggle="modal" data-bs-target="#agregarSignosVitalesModal">Abrir Expediente Nuevo</a>
       </div>
+      {% endif %}
+      
+     
 
       <!--Navegación Entre Consultas y Examenes de Laboratorio-->
       <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -58,14 +67,18 @@
                 <thead class="table-secondary">
                   <tr>
                     
-                    {% if rol == ROL_ENFERMERA or rol == ROL_SECRETARIA %}
+                    {% if rol == ROL_ENFERMERA or rol == ROL_SECRETARIA or rol == ROL_DOCTOR %}
                     <th scope="col">Numero Cola</th>
                     <th scope="col">Nombre</th>
                     <th scope="col">Apellidos</th>
-                    <!-- ROL_ENFERMERA=2 -->
+                    {% endif %}
+                    {% if rol == ROL_SECRETARIA or rol == ROL_DOCTOR %}
+                    <th scope="col">Fase</th>
+                    {% endif %}
+                    {% if rol == ROL_DOCTOR %}
+                    <th scope="col">Fecha</th>
                     {% endif %}
                     {% if rol == ROL_SECRETARIA %}
-                    <th scope="col">Fase</th>
                     <th scope="col">Consumo</th>
                     <th scope="col">Estado</th>
                     {% endif %}
@@ -237,49 +250,86 @@
     const tablaColaConsulta="tabla_cola";
     const url_consulta="{% url 'get_contieneConsulta' %}"
     let tablaCola=document.getElementById(tablaColaConsulta);
-    {% if rol == ROL_SECRETARIA %}
     let tablaData=document.getElementById(tablaResultado);
-    
+
+    //event listeners para buscar pacientes o filtrar consultas
+    {% if rol == ROL_SECRETARIA %}    
     //Para moviles, click en la lupa
     document.getElementById("filtro_buscar").addEventListener("click",function(){
       getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta);
     });
     document.getElementById(id_component).addEventListener('keypress',(e)=>{
-        if (e.key === 'Enter') {
-          getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta, id_modal);
-          
+      if (e.key === 'Enter') {
+        getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta, id_modal);
+        
+      }
+    });
+    {% elif rol == ROL_DOCTOR %}
+    // #fecha por defecto
+    // document.getElementById('fecha_consulta').valueAsDate = new Date();
+    document.getElementById("filtro_buscar").addEventListener("click",function(){
+      let apellidos=document.getElementById('id_apellido_paciente').value;
+      let fecha=document.getElementById('fecha_consulta').value;
+      var targetDate = new Date( fecha );
+
+      if ( !!targetDate.valueOf() ) {
+          year = targetDate.getFullYear();
+          month = targetDate.getMonth()+1;
+          day = targetDate.getDate()+1;
+          data={
+            'apellido_paciente':apellidos,
+            'year': year,
+            'month': month,
+            'day': day,
+            'query':1
+          }
+        }else{
+        data={
+          'apellido_paciente':apellidos,
+          'query':1
         }
-      });
-    //Lenar autocompletado
+
+      }
+      consultarCola(url_consulta, tablaCola,data)
+    });
+    {% endif %}
     
+    {% if rol == ROL_DOCTOR or rol == ROL_SECRETARIA %}
+    //Lenar autocompletado
     getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
     {% endif %}
-    consultarCola(url_consulta, tablaCola);
-
     
-    function consultarCola(url_consulta, tablaCola){
+    consultarCola(url_consulta, tablaCola);
+    
+    
+    function consultarCola(url_consulta, tablaCola,data={}){
       $.ajax({
                 url: url_consulta,
                 dataType: "json",
-                data: {
-
-                },
+                data: data,
                 success: function(data){  
-                  
-                  data.map(function(x){
-                  let elemento='<tr>';
-                  for (const property in x) {
-                      elemento = elemento+'<td>'+`${x[property]}`+'</td>';
+                  console.log(data)
+                  let elemento;
+                  tablaCola.innerHTML=null;
+                  if (data.length==0){
+                    elemento='<tr><td colspan="100%">No hay pacientes en espera</td></tr>';
+                    tablaCola.insertAdjacentHTML("beforeend", elemento);
+                  }else{
+                    data.map((x)=>{
+                    elemento='<tr>';
+                    for (const property in x) {
+                        elemento = elemento+'<td>'+`${x[property]}`+'</td>';
+                    }
+                    elemento=elemento+'<td><div onclick="accionServer('+Object.values(x)[0]+');"class="material-symbols-outlined btn" >add</div></td>';
+                    elemento=elemento+'</tr>';
+        
+        //   <input type="button"  value="Agregar a cola para examenes de Lab">
+        //   <input type="button"  value="Agregar a cola para pasar Consulta">
+        //   <input type="button"  value="Cancelar">
+                    
+                    tablaCola.insertAdjacentHTML("beforeend", elemento);
+                    });
                   }
-                  elemento=elemento+'<td><div onclick="accionServer('+Object.values(x)[0]+');"class="material-symbols-outlined btn" >add</div></td>';
-                  elemento=elemento+'</tr>';
-      
-      //   <input type="button"  value="Agregar a cola para examenes de Lab">
-      //   <input type="button"  value="Agregar a cola para pasar Consulta">
-      //   <input type="button"  value="Cancelar">
-       
-                  tablaCola.insertAdjacentHTML("beforeend", elemento);
-                  });
                 }
             });
     }
@@ -294,12 +344,10 @@
 
                 },
                 success: function(data){  
-                  toastr[data.type](data.data);
-                  tablaCola.innerHTML=null;                
+                  toastr[data.type](data.data);           
                   consultarCola(url_consulta, tablaCola);
                 }
       });
-      console.log(url_agregar_cola);
       
     }
     
