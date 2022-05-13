@@ -28,9 +28,9 @@ class Paciente(models.Model):
     apellido_paciente = models.CharField( max_length=40,blank=False, null=False)
     fecha_nacimiento_paciente = models.DateField( blank=False,null=False)
     sexo_paciente = models.CharField( max_length=1,choices=OPCIONES_SEXO, blank=False, null=False )
-    direccion_paciente=models.CharField( max_length=120, blank=False,null=False)
-    email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True)
-    responsable=models.CharField(max_length=40,blank=True,null=False,default='')
+    direccion_paciente=models.CharField( max_length=120, blank=True,null=True,default="")
+    email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True,default="")
+    responsable=models.CharField(max_length=40,blank=True,null=True,default='')
     
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)

@@ -9,6 +9,7 @@
     <title>Iniciar Sesión</title>
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="{% static 'css/toastr.min.css' %}" rel="stylesheet" />
     <style>
         .bg{
             background-image: url({%static 'img/bg5.jpg'%});
@@ -52,7 +53,7 @@
                             </div>
         
                             <div class="my-3">
-                                <span>¿No tienes Cuenta? <a href="#">Registrate</a></span><br>
+                                <span>¿No tienes Cuenta? <a href="#" data-bs-toggle="modal" data-bs-target="#agregarEmpleadoModal">Registrate</a></span><br>
                                 <span><a href="#">Recuperar Password</a></span>
                             </div>
                         </form>
@@ -96,11 +97,160 @@
     </div>
     <!--Fin Escritorio-->
 
+    <!--Modal Crear Empleado-->
+    <div class="modal fade" id="agregarEmpleadoModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100">Registrar Empleado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              <div class="container">
+                
+                <form class="row g-3 needs-validation" action="" novalidate>
+                    <div class="col-md-6">
+                      <label for="validationCustom01" class="form-label">Nombres</label>
+                      <input type="text" class="form-control" id="id_nombre_empleado" value="" required>
+                      <div class="valid-feedback">
+                        Looks good!
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="validationCustom02" class="form-label">Apellidos</label>
+                      <input type="text" class="form-control" id="id_apellido_empleado" value="" required>
+                      <div class="valid-feedback">
+                        Looks good!
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="validationCustomUsername" class="form-label">Email</label>
+                      <div class="input-group has-validation">
+                        <span class="input-group-text" id="inputGroupPrepend">@</span>
+                        <input type="text" class="form-control" id="id_email_empleado" aria-describedby="inputGroupPrepend" required>
+                        <div class="invalid-feedback">
+                          Please choose a username.
+                        </div>
+                      </div>
+                    </div>
+                    <!--Password-->
+                    <div class="col-md-6">
+                        <label for="validationCustomUsername" class="form-label">Contraseña</label>
+                        <div class="input-group has-validation">
+                          <input type="password" class="form-control" id="id_password_empleado" aria-describedby="inputGroupPrepend" required>
+                          <div class="invalid-feedback">
+                            Ingrese una contraseña.
+                          </div>
+                        </div>
+                    </div>
+                    <!--Dirección-->
+                    <div class="col-md-4">
+                        <label for="validationCustom02" class="form-label">Direccion</label>
+                        <input type="text" class="form-control" id="id_direccion_empleado" value="" required>
+                        <div class="valid-feedback">
+                          Looks good!
+                        </div>
+                      </div>
+                    <!--Fecha nacimiento-->
+                    <div class="col-md-4">
+                        <label for="id_fecha_nacimiento" class="form-label">Fecha de nacimiento</label> 
+                        <input type="date" class="form-control" placeholder="Select a date" required id="id_fecha_nacimiento">
+                    </div>
+                    <!--Sexo-->
+                    <div class="col-md-4">
+                        <label for="validationCustom04" class="form-label">Sexo</label>
+                        <select class="form-select" id="id_select_sexo" required>
+                          <option selected disabled value="">Selecione...</option>
+                          <option value="1">Maculino</option>
+                          <option value="2">Femenino</option>
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a valid state.
+                        </div>
+                    </div>
+                    <div class="col-6">
+
+                    </div>
+                    <div class="col-6 text-end">
+                      <button class="btn btn-success" id="guardar_empleado" >Guardar Datos</button>
+                    </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
     <!--Fin Telefonos-->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script>
+        url="{% url 'registrarEmpleado' %}";
+        let nombres;
+        let apellidos;
+        let email;
+        let password;
+        let direccion;
+        let fecha_nacimiento;
+        let sexo;
+
+        document.getElementById("guardar_empleado").addEventListener("click",function(){
+            nombres =  document.getElementById("id_nombre_empleado").value;
+            apellidos =  document.getElementById("id_apellido_empleado").value;
+            email = document.getElementById("id_email_empleado").value;
+            password = document.getElementById("id_password_empleado").value;
+            direccion = document.getElementById("id_direccion_empleado").value;
+            fecha_nacimiento = document.getElementById("id_fecha_nacimiento").value;
+            sexo = $('#id_select_sexo').val();
+            if (nombres!=null, apellidos!=null, email!=null, password!=null, direccion!=null,fecha_nacimiento!=null, sexo!=null){
+              $.ajax({
+                url: url,
+                type:"POST",
+                dataType: "json",
+                data: {
+                    'nombre_empleado':nombres,
+                    'apellido_empleado':apellidos,
+                    'email_empleado':email,
+                    'password_empleado':password,
+                    'direccion_empleado':direccion,
+                    'fecha_nacimiento':fecha_nacimiento,
+                    'sexo_empleado':sexo
+                },
+                success: function(data){  
+                    toastr[data.type](data.data);
+                }
+      });
+            }
+            console.log(nombres+" "+apellidos+" "+email+" "+password+" "+direccion+" "+fecha_nacimiento+" "+sexo);
+        });
+
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        
+    </script>
+    <script>  
+      (function () {
+      'use strict'
+
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.querySelectorAll('.needs-validation')
+
+      // Loop over them and prevent submission
+      Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+          form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+              event.preventDefault()
+              event.stopPropagation()
+            }
+
+            form.classList.add('was-validated')
+          }, false)
+        })
+    })()
+    </script>
+    <script src="{% static 'js/toastr.min.js' %}"></script>
+    <script src="{% static 'js/sistemaClinico.js' %}"></script>
   </body>
 </html>

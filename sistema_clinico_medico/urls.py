@@ -30,6 +30,8 @@ urlpatterns = [
     path('', RedirectView.as_view(url='login/')),
     #Sala de Espera
     path('expediente/', include('modulo_expediente.urls')),
-    path('api-auth/', include('rest_framework.urls'))
+    path('api-auth/', include('rest_framework.urls')),
+    path('control/', include('modulo_control.urls')),
+
 ]
 urlpatterns += staticfiles_urlpatterns()

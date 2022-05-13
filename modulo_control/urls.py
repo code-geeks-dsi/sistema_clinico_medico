@@ -8,18 +8,18 @@ from modulo_control.views import *
 
 urlpatterns = [
 
-    path('agregarEmpleado', agregarEmpleado, name= 'agregarEmpleado'),
-    path('', indexEmpleado, name='indexEmpleado'),
-    path('registrarDoctor', registrarDoctor, name= 'registrarDoctor'),
-    path('agregarDoctor', agregarDoctor, name= 'agregarDoctor'),
-    path('registrarEnfermera', registrarEnfermera, name= 'registrarEnfermera'),
-    path('agregarEnfermera', agregarEnfermera, name= 'agregarEnfermera'),
-    path('registrarEmpleado', registrarEmpleado, name= 'registrarEmpleado'),
-    path('agregarEmpleado', agregarEmpleado, name= 'agregarEmpleado'),
-    path('registrarLicLaboratorioClinico', registrarLicLaboratorioClinico, name= 'registrarLicLaboratorioClinico'),
-    path('agregarLicLaboratorioClinico', agregarLicLaboratorioClinico, name= 'agregarLicLaboratorioClinico'),
-    path('registrarSecretaria', registrarSecretaria, name= 'registrarSecretaria'),
-    path('agregarSecretaria', agregarSecretaria, name= 'agregarSecretaria'),
+    # path('agregarEmpleado', agregar_empleado, name= 'agregarEmpleado'),
+    # path('', indexEmpleado, name='indexEmpleado'),
+    # path('registrarDoctor', registrarDoctor, name= 'registrarDoctor'),
+    # path('agregarDoctor', agregarDoctor, name= 'agregarDoctor'),
+    # path('registrarEnfermera', registrarEnfermera, name= 'registrarEnfermera'),
+    # path('agregarEnfermera', agregarEnfermera, name= 'agregarEnfermera'),
+    path('registrar/empleado', registrar_empleado, name= 'registrarEmpleado'),
+    path('editar/empleado/', editar_empleado, name= 'agregarEmpleado'),
+    # path('registrarLicLaboratorioClinico', registrarLicLaboratorioClinico, name= 'registrarLicLaboratorioClinico'),
+    # path('agregarLicLaboratorioClinico', agregarLicLaboratorioClinico, name= 'agregarLicLaboratorioClinico'),
+    # path('registrarSecretaria', registrarSecretaria, name= 'registrarSecretaria'),
+    # path('agregarSecretaria', agregarSecretaria, name= 'agregarSecretaria'),
     
     
 ]

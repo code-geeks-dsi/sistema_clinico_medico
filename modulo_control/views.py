@@ -1,8 +1,17 @@
-from django.shortcuts import render
-from django.http import JsonResponse
+from contextlib import nullcontext
+from multiprocessing import context
+import select
+from urllib import request
+from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponseNotFound,Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from modulo_control.models import Empleado
+from modulo_control.forms import EmpleadoForm,LicLaboratorioClinicoForm,DoctorForm
+from modulo_control.models import *
+from .forms import *
+from datetime import datetime
+
+
 """
 -------------------------------------------------------------------------
 Para almacenar archivos estaticos se esta utilizando AWS S3, es necesario
@@ -48,3 +57,143 @@ def logearse(request):
     
     data={'Mensaje':mensaje}
     return JsonResponse(data)
+
+    
+
+""" def registrarEmpleado(request):
+    empleadoForm = EmpleadoForm()
+    return render(request, 'registroEmpleado.html', {'empleadoForm':empleadoForm})
+    
+@csrf_exempt
+def agregarEmpleado(request):
+    if request.method == 'POST':
+        empleado = Empleado()
+        empleadoForm = EmpleadoForm(request.POST)
+
+        if empleadoForm.is_valid():
+            empleado = empleadoForm.save(commit=False)
+            empleado.save()
+
+    return redirect('index') ##luego cambiar a que redireccione a lista de enpleados o algo asi  """
+
+@csrf_exempt
+def registrar_empleado(request):
+    if request.method == 'POST':
+
+        nombres = request.POST['nombre_empleado']
+        apellidos = request.POST['apellido_empleado']
+        email =  request.POST['email_empleado']
+        password = request.POST['password_empleado']
+        direccion = request.POST['direccion_empleado']
+        fecha_nacimiento = request.POST['fecha_nacimiento']
+        sexo_empleado = request.POST['sexo_empleado']
+
+        try:
+            empleado = Empleado.objects.create_user(nombres, apellidos, email, password)
+            data={
+            'type':'success',
+            'title':'Exito',
+            'data':'Empleado registrado'
+        }
+        except:
+            data={
+            'type':'warning',
+            'title':'Exito',
+            'data':'Ya se a registrado el correo'
+        }
+    return JsonResponse(data, safe=False)
+
+
+def editar_empleado(request):
+    codigo_empleado=request.GET.get('id',None)
+    try:
+        empleado=Empleado.objects.get(codigo_empleado=codigo_empleado)
+        form_roles=[]
+        for rol in empleado.roles.all():
+            if(rol==Rol.objects.get(nombre_rol='Doctor')):
+                form_roles.append(DoctorForm(empleado=empleado))
+            if (rol==Rol.objects.get(nombre_rol='Laboratorio')):
+                form_roles.append(LicLaboratorioClinicoForm(empleado=empleado))
+
+        form=EmpleadoForm(instance=empleado)
+        print({'form':form,'form_roles':form_roles})
+        return render(request, 'registroEmpleado.html',{'form':form,'form_roles':form_roles})
+    except Empleado.DoesNotExist:
+        raise Http404("Empleado no existe.")
+        
+
+
+    
+
+# def registrarEmpleado(request):
+#     form=EmpleadoForm(request.GET)
+#     return render(request, 'registroEmpleado.html',{'form':form})
+
+
+# def registrarDoctor(request):
+#     doctorForm = DoctorForm()
+#     return render(request, 'registroDoctor.html', {'doctorForm':doctorForm})
+
+# @csrf_exempt
+# def agregarDoctor(request):
+#     if request.method == 'POST':
+#         doctor = Doctor()
+#         doctorForm = DoctorForm(request.POST)
+
+#         if doctorForm.is_valid():
+#             doctor = doctorForm.save(commit=False)
+#             doctor.save()
+
+
+#     return redirect('index') ##luego cambiar a que redireccione a lista de doctores o algo asi
+
+# def registrarEnfermera(request):
+#     enfermeraForm = EnfermeraForm()
+#     return render(request, 'registroEnfermera.html', {'enfermeraForm':enfermeraForm})
+
+
+# def agregarEnfermera(request):
+#     if request.method == 'POST':
+#         enfermera = Enfermera()
+#         enfermeraForm = EnfermeraForm(request.POST)
+
+#         if enfermeraForm.is_valid():
+#             enfermera = enfermeraForm.save(commit=False)
+#             enfermera.save()
+    
+#     return redirect('index') ##luego cambiar a que redireccione a lista de enfermeras o algo asi
+
+# def registrarLicLaboratorioClinico(request):
+#     licLaboratorioClinicoForm = LicLaboratorioClinicoForm()
+#     return render(request, 'registroLicLaboratorioClinico.html', {'licLaboratorioClinicoForm':licLaboratorioClinicoForm})
+
+# @csrf_exempt
+# def agregarLicLaboratorioClinico(request):
+#     if request.method == 'POST':
+#         licLaboratorioClinico = LicLaboratorioClinico()
+#         licLaboratorioClinicoForm = LicLaboratorioClinicoForm(request.POST)
+
+#         if licLaboratorioClinicoForm.is_valid():
+#             licLaboratorioClinico = licLaboratorioClinicoForm.save()
+#             licLaboratorioClinico.save()
+#     return redirect('index') ##luego cambiar a que redireccione a lista de lics o algo asi
+
+# def registrarSecretaria(request):
+#     secretariaForm = SecretariaForm()
+#     return render(request, 'registroSecretaria.html', {'secretariaForm':secretariaForm})
+
+# @csrf_exempt
+# def agregarSecretaria(request):
+#     if request.method == 'POST':
+#         secretaria = Secretaria()
+#         secretariaForm = SecretariaForm(request.POST)
+
+#         if secretaria.is_valid():
+#             secretaria = secretariaForm.save()
+#             secretaria.save()
+#     return redirect('index') ##luego cambiar a que redireccione a lista de secretaria o algo asi
+
+
+# def indexEmpleado(request):
+#     return render(request, 'indexEmpleado.html')
+
