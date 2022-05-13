@@ -1,5 +1,5 @@
 from time import time
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
@@ -11,7 +11,9 @@ from modulo_expediente.forms import DatosDelPaciente
 from django.http import JsonResponse
 import json
 from datetime import date
-ROL=4
+from django.urls import reverse
+from urllib.parse import urlencode
+ROL=2
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
 ROL_LIC_LABORATORIO=3
@@ -171,13 +173,81 @@ def eliminar_cola(request, id_paciente):
         }
     return JsonResponse(response, safe=False)
 
-#vista de datosdelpaciente ayala
+#Método que crea un nuevo paciente y lo asigna a un expediente
 def crear_expediente(request):
-    formulario = DatosDelPaciente(request.GET)
-    print(formulario.is_valid)
-   # if request.method == "POST": 
-    if formulario.is_valid():
-        formulario.save()
-            
+    idpaciente=request.GET.get('id', None)
+    if request.method == 'GET':
+        if idpaciente==None:
+            formulario= DatosDelPaciente()
+        else:     
+            paciente=Paciente.objects.get(id_paciente=idpaciente)
+            formulario = DatosDelPaciente(instance=paciente)
+
+    else:
+        if idpaciente==None:
+            formulario= DatosDelPaciente(request.POST)
+            if formulario.is_valid():
+                new_paciente=formulario.save()
+                expediente=Expediente()
+                expediente.fecha_creacion_expediente=datetime.now()
+                #Generando código expediente
+                nombrepaciente = formulario["nombre_paciente"].value()
+                apellidopaciente=formulario["apellido_paciente"].value()
+                year=datetime.now().date().strftime("%Y")[2:]
+                texto=nombrepaciente[0]+apellidopaciente[0]
+                texto=texto.lower()#Solo texto en minusculas
+                texto=texto+year
+                try:
+                    correlativo = correlativo = Expediente.objects.filter(codigo_expediente__startswith=texto).last().codigo_expediente
+                    correlativo=int(correlativo[4:])
+                except:
+                    correlativo=0 
+                correlativo=correlativo+1
+                if correlativo < 10:
+                    correlativo="00"+str(correlativo)
+                elif correlativo < 100:
+                    correlativo = "0"+str(correlativo)
+                #Codigo de Usuario al estilo -- mv17012 ---
+                codigo=texto+correlativo
+                expediente.codigo_expediente=codigo
+                idpaciente=list(Paciente.objects.values("id_paciente").all())
+                idList=[]
+                for i in idpaciente:
+                    idList.append(i['id_paciente'])
+                expediente.id_paciente_id=idList[-1]
+                expediente.save()
+                base_url = reverse('crear_expediente')
+                query_string =  urlencode({'id': new_paciente.id_paciente})
+                url = '{}?{}'.format(base_url, query_string)
+                return redirect(url)
+        else:
+            paciente=Paciente.objects.get(id_paciente=idpaciente)
+            formulario = DatosDelPaciente(request.POST, instance=paciente)
+            formulario.save()
+        
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
 
+  
+
+def modificar_signosVitales(request, id_signos_vitales):
+
+    signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos_vitales)
+    signosvitales.unidad_temperatura=request.POST['unidad_temperatura']
+    signosvitales.unidad_peso=request.POST['unidad_peso']
+    signosvitales.unidad_presion_arterial_diastolica=request.POST['unidad_presion_arterial_diastolica']
+    signosvitales.unidad_presion_arterial_sistolica=request.POST['unidad_presion_arterial_sistolica']
+    signosvitales.unidad_frecuencia_cardiaca=request.POST['frecuencia_cardiaca']
+    signosvitales.unidad_saturacion_oxigeno=request.POST['unidad_saturacion_oxigeno']
+    signosvitales.valor_temperatura=request.POST['valor_temperatura']
+    signosvitales.valor_peso=request.POST['valor_peso']
+    signosvitales.valor_presion_arterial_diastolica=request.POST['valor_presion_arterial_diastolica']
+    signosvitales.valor_presion_arterial_sistolica=request.POST['valor_presion_arterial_sistolica']
+    signosvitales.valor_frecuencia_cardiaca=request.POST['valor_frecuencia_cardiaca']
+    signosvitales.valor_saturacion_oxigeno=request.POST['valor_saturacion_oxigeno']
+    signosvitales.save()
+    response={
+        'type':'success',
+        'title':'Modificado',
+        'data':'Se han modificado los signos vitales'
+    }
+    return JsonResponse(response, safe=False)

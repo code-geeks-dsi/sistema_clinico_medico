@@ -14,25 +14,32 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
     probando cambios
 """
-from unicodedata import name
 from django import views
 from django.contrib import admin
 from django.urls import path,include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
 from modulo_control.views import vista_iniciarsesion, logearse
+<<<<<<< HEAD
 from modulo_control.urls import *
-urlpatterns = [
+=======
+# from modulo_expediente.views import vista_sala_espera
 
+>>>>>>> main
+urlpatterns = [
     path('admin/', admin.site.urls),
     #Login
     path('login/', vista_iniciarsesion, name='login'),
     path('logearse/', logearse, name='logearse'),
-    path('', RedirectView.as_view(url='login/'), name='index'),
+    path('', RedirectView.as_view(url='login/')),
     #Sala de Espera
     path('expediente/', include('modulo_expediente.urls')),
+<<<<<<< HEAD
     path('api-auth/', include('rest_framework.urls')),
     path('control/', include('modulo_control.urls')),
 
+=======
+    path('api-auth/', include('rest_framework.urls'))
+>>>>>>> main
 ]
 urlpatterns += staticfiles_urlpatterns()
