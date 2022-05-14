@@ -1,5 +1,4 @@
 from dataclasses import field
-from msilib.schema import Class
 from pyexpat import model
 from rest_framework import serializers
 from modulo_control.models import Empleado, Rol
@@ -27,6 +26,6 @@ class EmpleadoSerializer(serializers.ModelSerializer):
 class SimpleEmpleadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Empleado
-        field = fields=['codigo_empleado','nombres', 'apellidos', 'direccion', 'fechaNacimiento', 'sexo','email','roles']
+        field = fields=['codigo_empleado','nombres', 'apellidos', 'direccion', 'fechaNacimiento', 'sexo','email','roles', 'es_activo']
 
 

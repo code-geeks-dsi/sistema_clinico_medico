@@ -40,6 +40,7 @@ def logearse(request):
             if user is not None:
                 login(request, user)
                 mensaje="Estas Logeado"
+                return redirect('vistaGestionEmpleados')
             else:
                 mensaje="Password o correo incorrecto"
         else:
@@ -53,7 +54,7 @@ def logearse(request):
                 else:
                     mensaje="password incorrecta"
             except:
-                mensaje="Usuario o correo incorrectos"
+                mensaje="Empleado o correo incorrectos"
     else:
         mensaje="Los datos no se enviaron de forma segura"
     
@@ -116,7 +117,7 @@ def registrar_empleado(request):
                         empleado.save()
 
                         data['type']="success"
-                        data['data']="Usuario Registrado"
+                        data['data']="Empleado Registrado"
                     except:
                         data['data']="Ya se a registrado el correo"
             else:
@@ -147,7 +148,7 @@ def editar_empleado(request):
 def vista_adminitracion_empleados(request):
     roles = Rol.objects.all()
     
-    return render(request,"control/gestionEmpleados.html", {"Rol":roles})
+    return render(request,"Control/gestionEmpleados.html", {"Rol":roles})
 
 def lista_empleados(request):
     empleados = Empleado.objects.all().order_by('-roles').reverse()

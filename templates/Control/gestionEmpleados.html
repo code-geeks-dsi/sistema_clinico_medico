@@ -142,7 +142,7 @@
                       </div>
                       <!--Password-->
                     <div class="col-md-6">
-                          <label for="validationCustomUsername" class="form-label">Contraseña</label>
+                      <label for="validationCustomUsername" class="form-label">Contraseña</label>
                           <div class="input-group has-validation">
                             <input type="password" class="form-control" id="id_password_empleado" aria-describedby="inputGroupPrepend" required>
                             <div class="invalid-feedback" id="passwordError">
@@ -169,6 +169,12 @@
                           <div class="invalid-feedback">
                             Seleccione un rol.
                           </div>
+                    </div>
+                    <div class="col-12" id="permitir_login">
+                      <div class='form-check form-switch'>
+                        <input class='form-check-input' name="login_switch" type='checkbox' id='login_switch'>
+                        <label class='form-check-label' for='login_switch'>Permitir inicio de sesión</label
+                      ></div>
                     </div>
                     <div class="col-12 text-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -254,6 +260,15 @@
         tituloModal.innerHTML="Agregar Empleado";
         $('#guardar_empleado').show(); 
         $('#btn_editar_empleado').hide();
+        $('#id_select_sexo').val("");
+        $('#id_select_rol').val("");
+        $('#id_fecha_nacimiento').val("");
+        $('#id_email_empleado').val("");
+        $('#id_direccion_empleado').val("");
+        $('#id_nombre_empleado').val("");
+        $('#id_apellido_empleado').val("");
+        $('#permitir_login').hide();
+
     })
     
     function consultarEmpleados(url_consulta, tablaEmpleados,data={}){
@@ -282,10 +297,8 @@
                     elemento= elemento+ '<div onClick="accionServer('+"'"+Object.values(x)[0]+"'"+');"'+ "class="+"'material-symbols-outlined btn'"+" data-bs-toggle='modal' data-bs-target='#agregarEmpleadoModal'>"+"manage_accounts</div></td>";
                     elemento=elemento+'</tr>';
                     numero = numero +1;
-        
-        //   <input type="button"  value="Agregar a cola para examenes de Lab">
-        //   <input type="button"  value="Agregar a cola para pasar Consulta">
-        //   <input type="button"  value="Cancelar">
+                    
+                    
                     
                     tablaEmpleados.insertAdjacentHTML("beforeend", elemento);
                     });
@@ -301,6 +314,8 @@
         let url_get_paciente="/control/empleados/lista/"+id;
         tituloModals.innerHTML=null;
         tituloModals.innerHTML="Editar Empleado";
+        $('#permitir_login').show();
+
       $.ajax({
         url: url_consulta,
                 url: url_get_paciente,
@@ -318,6 +333,8 @@
                     $('#id_select_rol').val(data[0].roles);
                     edit = document.getElementById("btn_editar_empleado");
                     edit.setAttribute("OnClick", "edit_Empleado("+"'"+id+"'"+");")
+                    $('#login_switch').prop("checked", data[0].es_activo);
+                    //console.log($('input:checkbox[name=login_switch]:checked').val())
 
                     //toastr[data.type](data.data);           
                     //consultarCola(url_consulta, tablaCola);
@@ -326,7 +343,13 @@
       
     }
     function edit_Empleado(id_empleado){
-        console.log(id_empleado);
+        //console.log(id_empleado);
+        let is_active;
+        if ($('input:checkbox[name=login_switch]:checked').val()=="on"){
+          is_active="True";
+        }
+        else is_active = "False"
+        console.log(is_active);
     }
 
 </script>
