@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.urls import path,include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
-from modulo_control.views import *
+from modulo_control.views import registrar_empleado, editar_empleado, vista_adminitracion_empleados, lista_empleados, get_empleado
 
 urlpatterns = [
 
@@ -20,6 +20,9 @@ urlpatterns = [
     # path('agregarLicLaboratorioClinico', agregarLicLaboratorioClinico, name= 'agregarLicLaboratorioClinico'),
     # path('registrarSecretaria', registrarSecretaria, name= 'registrarSecretaria'),
     # path('agregarSecretaria', agregarSecretaria, name= 'agregarSecretaria'),
+    path('empleados/', vista_adminitracion_empleados, name= 'vistaGestionEmpleados'),
+    path('empleados/lista/', lista_empleados, name="listaEmpleados"),
+    path('empleados/lista/<str:cod_empleado>', get_empleado, name='get_empleado'),
     
     
 ]
