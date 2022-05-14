@@ -36,14 +36,30 @@
         <div class="col-3 col-lg-1">
             <div class="input-group py-4 text-center px-1">
                 <span class="input-group-text bg-white" id="basic-addon1">
-                    <span class="material-symbols-outlined btn btn-sm" id="search_voff" data-bs-toggle="modal" data-bs-target="#agregarEmpleadoModal">person_add</span>
+                    <span class="material-symbols-outlined btn btn-sm" id="btn_agregar_empleado" data-bs-toggle="modal" data-bs-target="#agregarEmpleadoModal">person_add</span>
                 </span>
             </div>
         </div>
     </div>
 </div>
-<div class="container">
-
+<div class="container pt-4">
+    <!--Tabla de pacientes buscados-->
+    <div class="table-responsive" id="tabla_busqueda">
+        <table class="table table-bordered text-center">
+            <thead class="table-secondary">
+            <tr>
+                <th>#</th>
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Rol</td>
+                <th>Administrar</th>
+                </tr>
+            </thead>
+            <tbody  id="datos_empleado">
+            </tbody>
+        </table>
+    </div>
 </div>
 
     <!--Modal Crear Empleado-->
@@ -51,7 +67,7 @@
         <div class="modal-dialog modal-xl">
           <div class="modal-content">
             <div class="modal-header text-center">
-                <h5 class="modal-title w-100">Registrar Empleado</h5>
+                <h5 class="modal-title w-100" id="titulo_modal"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
@@ -144,7 +160,7 @@
                         <p class="form-label">Seleccione el cargo del empleado: </label>
                     </div>
                     <div class="col-lg-6">
-                        <select class="form-select" id="id_rol" required>
+                        <select class="form-select" id="id_select_rol" required>
                             <option selected disabled value="">Selecione...</option>
                             {% for i in Rol %}
                             <option value="{{ i.id_rol }}">{{ i.nombre_rol }}</option>
@@ -155,7 +171,9 @@
                           </div>
                     </div>
                     <div class="col-12 text-end">
-                      <button class="btn btn-success" id="guardar_empleado" >Guardar Datos</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button class="btn btn-success" id="guardar_empleado" >Guardar Datos</button>
+                        <button class="btn btn-success" id="btn_editar_empleado" >Modificar Datos</button>
                     </div>
                 </form>
 
@@ -175,6 +193,11 @@
     let direccion;
     let fecha_nacimiento;
     let sexo;
+    const url_consulta="{% url 'listaEmpleados' %}"
+    let tablaEmpleados=document.getElementById('datos_empleado');
+    let tituloModal = document.getElementById('titulo_modal');
+
+    consultarEmpleados(url_consulta, tablaEmpleados);
 
     document.getElementById("guardar_empleado").addEventListener("click",function(){
         nombres =  document.getElementById("id_nombre_empleado").value;
@@ -184,7 +207,8 @@
         direccion = document.getElementById("id_direccion_empleado").value;
         fecha_nacimiento = document.getElementById("id_fecha_nacimiento").value;
         sexo = $('#id_select_sexo').val();
-        rol = $('#id_rol').val;
+        rol = $('#id_select_rol').val();
+
         if ($("id_password_empleado").length <8){
                 $("id_password_empleado").addClass("is-invalid");
                 document.getElementById("passwordError").innerHTML=null;
@@ -216,11 +240,94 @@
                     document.getElementById("passwordError").insertAdjacentHTML("beforeend",parrafoError);
                     password.value = password.value.substring(0, password.value.length - password.value.length);
                 }
+                if (data.type =="success"){
+                    tablaEmpleados.innerHTML=null;
+                    consultarEmpleados(url_consulta, tablaEmpleados);
+                }
             }
         });
         }
-        console.log(nombres+" "+apellidos+" "+email+" "+password+" "+direccion+" "+fecha_nacimiento+" "+sexo);
     });
+
+    document.getElementById("btn_agregar_empleado").addEventListener("click", function(){
+        tituloModal.innerHTML=null;
+        tituloModal.innerHTML="Agregar Empleado";
+        $('#guardar_empleado').show(); 
+        $('#btn_editar_empleado').hide();
+    })
+    
+    function consultarEmpleados(url_consulta, tablaEmpleados,data={}){
+      $.ajax({
+                url: url_consulta,
+                dataType: "json",
+                data: data,
+                success: function(data){  
+                  let elemento;
+                  //console.log(data);
+                  //limpia la tabla de resultados
+                  tablaEmpleados.innerHTML=null;
+                  //si no hay resultados muestra un mensaje de que no hay resultados
+                  if (data.length==0){
+                    elemento='<tr><td colspan="100%">No hay pacientes en espera</td></tr>';
+                    tablaEmpleados.insertAdjacentHTML("beforeend", elemento);
+                  }else{
+                    //llenado de tabla
+                    numero=1;
+                    data.map((x)=>{
+                        elemento='<tr>';
+                        elemento='<td>'+numero+'</td><td class="text-uppercase">';
+                    for (const property in x) {
+                        elemento = elemento+`${x[property]}`+'</td><td>';
+                    }
+                    elemento= elemento+ '<div onClick="accionServer('+"'"+Object.values(x)[0]+"'"+');"'+ "class="+"'material-symbols-outlined btn'"+" data-bs-toggle='modal' data-bs-target='#agregarEmpleadoModal'>"+"manage_accounts</div></td>";
+                    elemento=elemento+'</tr>';
+                    numero = numero +1;
+        
+        //   <input type="button"  value="Agregar a cola para examenes de Lab">
+        //   <input type="button"  value="Agregar a cola para pasar Consulta">
+        //   <input type="button"  value="Cancelar">
+                    
+                    tablaEmpleados.insertAdjacentHTML("beforeend", elemento);
+                    });
+                  }
+                }
+            });
+    }
+    function accionServer(id){
+        //Ocultar boton
+        $('#guardar_empleado').hide(); 
+        $('#btn_editar_empleado').show();  
+        let tituloModals = document.getElementById('titulo_modal');
+        let url_get_paciente="/control/empleados/lista/"+id;
+        tituloModals.innerHTML=null;
+        tituloModals.innerHTML="Editar Empleado";
+      $.ajax({
+        url: url_consulta,
+                url: url_get_paciente,
+                dataType: "json",
+                data: {
+
+                },
+                success: function(data){
+                    document.getElementById('id_nombre_empleado').value=data[0].nombres; 
+                    apellidos =  document.getElementById("id_apellido_empleado").value=data[0].apellidos;
+                    email = document.getElementById("id_email_empleado").value=data[0].email;
+                    direccion = document.getElementById("id_direccion_empleado").value=data[0].direccion;
+                    $('#id_fecha_nacimiento').val(data[0].fechaNacimiento);
+                    $('#id_select_sexo').val(data[0].sexo);
+                    $('#id_select_rol').val(data[0].roles);
+                    edit = document.getElementById("btn_editar_empleado");
+                    edit.setAttribute("OnClick", "edit_Empleado("+"'"+id+"'"+");")
+
+                    //toastr[data.type](data.data);           
+                    //consultarCola(url_consulta, tablaCola);
+                }
+      });
+      
+    }
+    function edit_Empleado(id_empleado){
+        console.log(id_empleado);
+    }
 
 </script>
 <script>  

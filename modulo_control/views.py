@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from modulo_control.forms import EmpleadoForm,LicLaboratorioClinicoForm,DoctorForm
 from modulo_control.models import *
-from modulo_control.serializers import RolSerializer
+from modulo_control.serializers import EmpleadoSerializer, RolSerializer, SimpleEmpleadoSerializer
 from .forms import *
 from datetime import datetime
 from django.utils import timezone
@@ -82,13 +82,14 @@ def agregarEmpleado(request):
 def registrar_empleado(request):
     data={
                 'type':'warning',
-                'title':'Exito',
+                'title':'',
                 'data':'',
                 'pass':''
             }
 
     if request.method == 'POST':
 
+        #Recuperando Datos
         nombres = request.POST['nombre_empleado']
         apellidos = request.POST['apellido_empleado']
         email =  request.POST['email_empleado']
@@ -97,7 +98,8 @@ def registrar_empleado(request):
         fecha_nacimiento = request.POST['fecha_nacimiento']
         sexo_empleado = request.POST['sexo_empleado']
         rol_empleado = request.POST['rol_empleado']
-        if nombres != "" and apellidos != "" and email != "" and password != "" and fecha_nacimiento != "" and direccion != "" and sexo_empleado != "":
+
+        if nombres != "" and apellidos != "" and email != "" and password != "" and fecha_nacimiento != "" and direccion != "" and sexo_empleado != "" and rol_empleado != "":
             if (len(password)>5):
                 if (password.isdigit()): 
                     data['data']="Contraseña debe tener numeros y letras"
@@ -110,17 +112,13 @@ def registrar_empleado(request):
                         empleado.direccion = direccion
                         empleado.fechaNacimiento = fecha_nacimiento
                         empleado.sexo = sexo_empleado
-                        empleado.roles=Rol.objects.get(id_rol=rol_empleado)
+                        empleado.roles=Rol.objects.get(id_rol=int(rol_empleado))
                         empleado.save()
 
                         data['type']="success"
                         data['data']="Usuario Registrado"
                     except:
-                        data={
-                        'type':'warning',
-                        'title':'Exito',
-                        'data':'Ya se a registrado el correo'
-                    }
+                        data['data']="Ya se a registrado el correo"
             else:
                 data['data']="Contraseña debe tener por lo menos 6 caracteres"
                 data['pass']="0"
@@ -151,7 +149,15 @@ def vista_adminitracion_empleados(request):
     
     return render(request,"control/gestionEmpleados.html", {"Rol":roles})
 
-    
+def lista_empleados(request):
+    empleados = Empleado.objects.all().order_by('-roles').reverse()
+    serializer = EmpleadoSerializer(empleados, many=True)
+    return JsonResponse(serializer.data, safe=False)  
+
+def get_empleado(request, cod_empleado):
+    empleado=Empleado.objects.filter(codigo_empleado=cod_empleado)
+    serializer=SimpleEmpleadoSerializer(empleado, many=True)
+    return JsonResponse(serializer.data, safe=False)  
 
 # def registrarEmpleado(request):
 #     form=EmpleadoForm(request.GET)
