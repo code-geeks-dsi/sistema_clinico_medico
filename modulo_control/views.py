@@ -8,8 +8,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from modulo_control.forms import EmpleadoForm,LicLaboratorioClinicoForm,DoctorForm
 from modulo_control.models import *
+from modulo_control.serializers import RolSerializer
 from .forms import *
 from datetime import datetime
+from django.utils import timezone
 
 
 """
@@ -78,6 +80,13 @@ def agregarEmpleado(request):
 
 @csrf_exempt
 def registrar_empleado(request):
+    data={
+                'type':'warning',
+                'title':'Exito',
+                'data':'',
+                'pass':''
+            }
+
     if request.method == 'POST':
 
         nombres = request.POST['nombre_empleado']
@@ -87,20 +96,36 @@ def registrar_empleado(request):
         direccion = request.POST['direccion_empleado']
         fecha_nacimiento = request.POST['fecha_nacimiento']
         sexo_empleado = request.POST['sexo_empleado']
+        rol_empleado = request.POST['rol_empleado']
+        if nombres != "" and apellidos != "" and email != "" and password != "" and fecha_nacimiento != "" and direccion != "" and sexo_empleado != "":
+            if (len(password)>5):
+                if (password.isdigit()): 
+                    data['data']="Contraseña debe tener numeros y letras"
+                    data['pass']="0"
+                else:
+                    try:
+                        #Creando objeto fecha
+                        fecha_nacimiento = datetime.strptime(fecha_nacimiento,"%Y-%m-%d").date()
+                        empleado = Empleado.objects.create_user(nombres, apellidos, email, password)
+                        empleado.direccion = direccion
+                        empleado.fechaNacimiento = fecha_nacimiento
+                        empleado.sexo = sexo_empleado
+                        empleado.roles=Rol.objects.get(id_rol=rol_empleado)
+                        empleado.save()
 
-        try:
-            empleado = Empleado.objects.create_user(nombres, apellidos, email, password)
-            data={
-            'type':'success',
-            'title':'Exito',
-            'data':'Empleado registrado'
-        }
-        except:
-            data={
-            'type':'warning',
-            'title':'Exito',
-            'data':'Ya se a registrado el correo'
-        }
+                        data['type']="success"
+                        data['data']="Usuario Registrado"
+                    except:
+                        data={
+                        'type':'warning',
+                        'title':'Exito',
+                        'data':'Ya se a registrado el correo'
+                    }
+            else:
+                data['data']="Contraseña debe tener por lo menos 6 caracteres"
+                data['pass']="0"
+        else:
+            data['data']="Ingrese todos los campos"
     return JsonResponse(data, safe=False)
 
 
@@ -121,7 +146,10 @@ def editar_empleado(request):
     except Empleado.DoesNotExist:
         raise Http404("Empleado no existe.")
         
-
+def vista_adminitracion_empleados(request):
+    roles = Rol.objects.all()
+    
+    return render(request,"control/gestionEmpleados.html", {"Rol":roles})
 
     
 

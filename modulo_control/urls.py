@@ -20,6 +20,7 @@ urlpatterns = [
     # path('agregarLicLaboratorioClinico', agregarLicLaboratorioClinico, name= 'agregarLicLaboratorioClinico'),
     # path('registrarSecretaria', registrarSecretaria, name= 'registrarSecretaria'),
     # path('agregarSecretaria', agregarSecretaria, name= 'agregarSecretaria'),
+    path('empleados/', vista_adminitracion_empleados, name= 'vistaGestionEmpleados'),
     
     
 ]
