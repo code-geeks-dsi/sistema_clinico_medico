@@ -200,6 +200,7 @@
     let fecha_nacimiento;
     let sexo;
     const url_consulta="{% url 'listaEmpleados' %}"
+    const url_edit="{% url 'editarEmpleado' %}"
     let tablaEmpleados=document.getElementById('datos_empleado');
     let tituloModal = document.getElementById('titulo_modal');
 
@@ -348,7 +349,39 @@
         if ($('input:checkbox[name=login_switch]:checked').val()=="on"){
           is_active="True";
         }
-        else is_active = "False"
+        else {is_active = "False";}
+
+
+        $.ajax({
+            url: url_edit,
+            type:"POST",
+            dataType: "json",
+            data: {
+                'nombre_empleado':$('#id_nombre_empleado').val(),
+                'apellido_empleado':$('#id_apellido_empleado').val(),
+                'email_empleado':$('#id_email_empleado').val(),
+                'password_empleado':$('#id_password_empleado').val(),
+                'direccion_empleado':$('#id_direccion_empleado').val(),
+                'fecha_nacimiento':$('#id_fecha_nacimiento').val(),
+                'sexo_empleado':$('#id_select_sexo').val(),
+                'rol_empleado':$('#id_select_rol').val(),
+                'es_activo': is_active
+            },
+            success: function(data){  
+                toastr[data.type](data.data);
+                if (data.pass =="0"){
+                    password = document.getElementById("id_password_empleado");
+                    parrafoError="<p>"+data.data+"</p>";
+                    document.getElementById("passwordError").innerHTML=null;
+                    document.getElementById("passwordError").insertAdjacentHTML("beforeend",parrafoError);
+                    password.value = password.value.substring(0, password.value.length - password.value.length);
+                }
+                if (data.type =="success"){
+                    tablaEmpleados.innerHTML=null;
+                    consultarEmpleados(url_consulta, tablaEmpleados);
+                }
+            }
+        });
         console.log(is_active);
     }
 
