@@ -14,6 +14,7 @@ from datetime import date
 from django.urls import reverse
 from urllib.parse import urlencode
 from urllib.request import urlopen
+from django.contrib.auth.decorators import login_required
 ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
@@ -38,21 +39,21 @@ def autocompletado_apellidos(request):
     #la clave tiene que ser data para que funcione con el metodo. 
 
 def sala_consulta(request):
-
-    return render(request,"expediente/sala.html",{'rol':ROL,'ROL_DOCTOR':ROL_DOCTOR,
+    return render(request,"expediente/sala.html",{'rol':request.user.roles.id_rol,'ROL_DOCTOR':ROL_DOCTOR,
                                                     'ROL_ENFERMERA':ROL_ENFERMERA,
                                                     'ROL_LIC_LABORATORIO':ROL_LIC_LABORATORIO,
                                                     'ROL_SECRETARIA':ROL_SECRETARIA})
 
 #Metodo que devuelve los datos del paciente en json
+@login_required
 def get_paciente(request, id_paciente):
     paciente=Paciente.objects.filter(id_paciente=id_paciente)
     serializer=PacienteSerializer(paciente, many= True)
     return JsonResponse(serializer.data, safe=False)
-
+@login_required()
 #Metodo que devuelve los datos del objeto contiene consulta en json
 def agregar_cola(request, id_paciente):
-    CODIGO_EMPLEADO=1
+    #CODIGO_EMPLEADO=1
     expediente=Expediente.objects.get(id_paciente_id=id_paciente)
     idExpediente=expediente.id_expediente
     fecha=datetime.now()
@@ -74,7 +75,7 @@ def agregar_cola(request, id_paciente):
         
         #Creando objetos signos vitales
         signosvitales=SignosVitales()
-        signosvitales.enfermera=Enfermera.objects.get(id_enfermera=CODIGO_EMPLEADO)
+        #signosvitales.enfermera=Enfermera.objects.get(id_enfermera=CODIGO_EMPLEADO)
         signosvitales.save()
         #Creando objeto Consulta
         consulta=Consulta()
@@ -111,11 +112,13 @@ def contiene_consulta_con_filtro(request):
     serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
     return JsonResponse(serializer.data, safe=False)
 
-
+@login_required()
 def  get_cola(request):
     fecha=datetime.now()
     lista=[]
-    if(ROL==ROL_SECRETARIA):
+    rol=request.user.roles.id_rol
+
+    if(rol==ROL_SECRETARIA):
         contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                         fecha_de_cola__month=fecha.month, 
                         fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
@@ -137,7 +140,7 @@ def  get_cola(request):
             diccionario["consumo_medico"]= fila.consumo_medico
             diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
             lista.append(diccionario)
-    elif(ROL==ROL_DOCTOR):
+    elif(rol==ROL_DOCTOR):
         #en la vista doctor se retorna el apellido de la barra de busqueda del paciente
         apellido_paciente=request.GET.get('apellido_paciente','')
         year=int(request.GET.get('year',0))
@@ -177,7 +180,7 @@ def  get_cola(request):
             lista.append(diccionario)
             # del diccionario
                 
-    elif (ROL==ROL_ENFERMERA):
+    elif (rol==ROL_ENFERMERA):
         # recupera los pacientes en cola en fase anotado
         contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                         fecha_de_cola__month=fecha.month, 

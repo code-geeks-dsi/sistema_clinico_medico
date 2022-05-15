@@ -75,7 +75,7 @@ class SignosVitales(models.Model):
     )
     id_signos_vitales= models.AutoField(primary_key=True)
     #consulta=models.ForeignKey(Consulta,on_delete=models.DO_NOTHING,null=False, blank=False)
-    enfermera=models.ForeignKey('modulo_control.Enfermera',on_delete=models.DO_NOTHING,null=False, blank=False)
+    enfermera=models.ForeignKey('modulo_control.Enfermera',on_delete=models.DO_NOTHING,null=True, blank=True)
     unidad_temperatura=models.CharField(max_length=1,choices=UNIDADES_TEMPERATURA,null=False, blank=True,default=2)
     unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True,default=1)
     unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
