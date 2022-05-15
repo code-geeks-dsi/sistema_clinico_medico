@@ -326,7 +326,7 @@
                     for (const property in x) {
                         elemento = elemento+'<td>'+`${x[property]}`+'</td>';
                     }
-                    elemento=elemento+'<td><div onclick="accionServer('+Object.values(x)[0]+');"class="material-symbols-outlined btn" >add</div></td>';
+                    elemento=elemento+'<td><div onclick="accionServer2('+Object.values(x)[0]+');"class="material-symbols-outlined btn" >add</div></td>';
                     elemento=elemento+'</tr>';
         
         //   <input type="button"  value="Agregar a cola para examenes de Lab">
@@ -340,8 +340,25 @@
             });
     }
     //Voy a ocupar la misma funcion para agregar y eliminar.
-    function accionServer(id){
+    function accionServer(id, accion){
       url_agregar_cola="/expediente/cola/"+id;
+      $.ajax({
+        url: url_consulta,
+                url: url_agregar_cola,
+                dataType: "json",
+                data: {
+
+                },
+                success: function(data){  
+                  toastr[data.type](data.data);           
+                  consultarCola(url_consulta, tablaCola);
+                }
+      });
+      
+    }
+    //Acción Server 2
+    function accionServer2(id){
+      url_agregar_cola="#"+id;
       $.ajax({
         url: url_consulta,
                 url: url_agregar_cola,

@@ -13,10 +13,12 @@ from modulo_control.serializers import EmpleadoSerializer, RolSerializer, Simple
 from .forms import *
 from datetime import datetime
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 ROL_DOCTOR="1"
 ROL_ENFERMERA="2"
 ROL_LIC_LABORATORIO="3"
 ROL_SECRETARIA="4"
+ROL_ADMIN=5
 
 """
 -------------------------------------------------------------------------
@@ -44,7 +46,10 @@ def logearse(request):
             if user is not None:
                 login(request, user)
                 mensaje="Estas Logeado"
-                return redirect('vistaGestionEmpleados')
+                if request.user.roles.id_rol==ROL_ADMIN:
+                    return redirect('vistaGestionEmpleados')
+                elif request.user.roles.id_rol <ROL_ADMIN:
+                    return redirect('sala_consulta')
             else:
                 mensaje="Password o correo incorrecto"
         else:
@@ -91,63 +96,65 @@ def registrar_empleado(request):
                 'data':'',
                 'pass':''
             }
+    if request.user.roles.id_rol == ROL_ADMIN:
+        if request.method == 'POST':
 
-    if request.method == 'POST':
+            #Recuperando Datos
+            nombres = request.POST['nombre_empleado']
+            apellidos = request.POST['apellido_empleado']
+            email =  request.POST['email_empleado']
+            password = request.POST['password_empleado']
+            password2 = request.POST['password_empleado_2']
+            direccion = request.POST['direccion_empleado']
+            fecha_nacimiento = request.POST['fecha_nacimiento']
+            sexo_empleado = request.POST['sexo_empleado']
+            rol_empleado = request.POST['rol_empleado']
 
-        #Recuperando Datos
-        nombres = request.POST['nombre_empleado']
-        apellidos = request.POST['apellido_empleado']
-        email =  request.POST['email_empleado']
-        password = request.POST['password_empleado']
-        password2 = request.POST['password_empleado_2']
-        direccion = request.POST['direccion_empleado']
-        fecha_nacimiento = request.POST['fecha_nacimiento']
-        sexo_empleado = request.POST['sexo_empleado']
-        rol_empleado = request.POST['rol_empleado']
-
-        if nombres != "" and apellidos != "" and email != "" and password != "" and fecha_nacimiento != "" and direccion != "" and sexo_empleado != "" and rol_empleado != "":
-            if (len(password)>5):
-                if (password.isdigit()): 
-                    data['data']="Contraseña debe tener numeros y letras"
-                    data['pass']="0"
-                elif (password!=password2):
-                    data['data']="Las dos contraseñas deben ser iguales"
-                    data['pass']="0"
+            if nombres != "" and apellidos != "" and email != "" and password != "" and fecha_nacimiento != "" and direccion != "" and sexo_empleado != "" and rol_empleado != "":
+                if (len(password)>5):
+                    if (password.isdigit()): 
+                        data['data']="Contraseña debe tener numeros y letras"
+                        data['pass']="0"
+                    elif (password!=password2):
+                        data['data']="Las dos contraseñas deben ser iguales"
+                        data['pass']="0"
+                    else:
+                        try:
+                            #Creando objeto fecha
+                            fecha_nacimiento = datetime.strptime(fecha_nacimiento,"%Y-%m-%d").date()
+                            nuevo_empleado = Empleado.objects.create_user(nombres, apellidos, email, password)
+                            nuevo_empleado.direccion = direccion
+                            nuevo_empleado.fechaNacimiento = fecha_nacimiento
+                            nuevo_empleado.sexo = sexo_empleado
+                            nuevo_empleado.roles=Rol.objects.get(id_rol=int(rol_empleado))
+                            nuevo_empleado.save()
+                            
+                            if rol_empleado == ROL_DOCTOR:
+                                #De momento todos los medicos van a tener la especialidad General y 
+                                #JVPM 12345678
+                                #La gestión de las especialidades constituye a mi criterio una Historia adicional
+                                #--- Es necesario agregar la TABLA ---ESPECIALIDAD---
+                                especialidad="Medicina General"
+                                jvmp_d=12345678
+                                Doctor.objects.create(especialidad_doctor=especialidad, jvmp=jvmp_d, empleado=nuevo_empleado)
+                            elif rol_empleado == ROL_ENFERMERA:
+                                Enfermera.objects.create(empleado = nuevo_empleado)
+                            elif rol_empleado ==ROL_LIC_LABORATORIO:
+                                jvplc_n=12345678
+                                LicLaboratorioClinico.objects.create(jvplc=jvplc_n, empleado=nuevo_empleado)
+                            elif rol_empleado == ROL_SECRETARIA:
+                                Secretaria.objects.create(empleado=nuevo_empleado)
+                            data['type']="success"
+                            data['data']="Empleado Registrado"
+                        except:
+                            data['data']="Ya se a registrado el correo"
                 else:
-                    try:
-                        #Creando objeto fecha
-                        fecha_nacimiento = datetime.strptime(fecha_nacimiento,"%Y-%m-%d").date()
-                        nuevo_empleado = Empleado.objects.create_user(nombres, apellidos, email, password)
-                        nuevo_empleado.direccion = direccion
-                        nuevo_empleado.fechaNacimiento = fecha_nacimiento
-                        nuevo_empleado.sexo = sexo_empleado
-                        nuevo_empleado.roles=Rol.objects.get(id_rol=int(rol_empleado))
-                        nuevo_empleado.save()
-                        
-                        if rol_empleado == ROL_DOCTOR:
-                            #De momento todos los medicos van a tener la especialidad General y 
-                            #JVPM 12345678
-                            #La gestión de las especialidades constituye a mi criterio una Historia adicional
-                            #--- Es necesario agregar la TABLA ---ESPECIALIDAD---
-                            especialidad="Medicina General"
-                            jvmp_d=12345678
-                            Doctor.objects.create(especialidad_doctor=especialidad, jvmp=jvmp_d, empleado=nuevo_empleado)
-                        elif rol_empleado == ROL_ENFERMERA:
-                            Enfermera.objects.create(empleado = nuevo_empleado)
-                        elif rol_empleado ==ROL_LIC_LABORATORIO:
-                            jvplc_n=12345678
-                            LicLaboratorioClinico.objects.create(jvplc=jvplc_n, empleado=nuevo_empleado)
-                        elif rol_empleado == ROL_SECRETARIA:
-                            Secretaria.objects.create(empleado=nuevo_empleado)
-                        data['type']="success"
-                        data['data']="Empleado Registrado"
-                    except:
-                        data['data']="Ya se a registrado el correo"
+                    data['data']="Contraseña debe tener por lo menos 6 caracteres"
+                    data['pass']="0"
             else:
-                data['data']="Contraseña debe tener por lo menos 6 caracteres"
-                data['pass']="0"
-        else:
-            data['data']="Ingrese todos los campos"
+                data['data']="Ingrese todos los campos"
+    else:
+        data['data']="Aceso denegado"
     return JsonResponse(data, safe=False)
 
 @csrf_exempt
@@ -158,88 +165,101 @@ def editar_empleado(request):
                 'data':'',
                 'pass':''
             }
-    if request.method == 'POST':
-        nombre = request.POST['nombre_empleado']
-        apellido = request.POST['apellido_empleado']
-        direccion_empleado = request.POST['direccion_empleado']
-        fecha_nacimiento = request.POST['fecha_nacimiento']
-        sexo_empleado = request.POST['sexo_empleado']
-        rol_empleado = request.POST['rol_empleado']
-        is_active = request.POST['es_activo']
-        cod_empleado=request.POST['cod_empleado']
-        #En esta vista no se editaran los datos de inicio de sesión del empleado
-        if nombre != "" and apellido != "" and fecha_nacimiento != "" and direccion_empleado != "" and sexo_empleado != "" and rol_empleado != "":
-            if is_active=="0" or is_active=="1":
-                edit_empleado=Empleado.objects.get(codigo_empleado=cod_empleado)
+    if request.user.roles.id_rol==ROL_ADMIN:
+        if request.method == 'POST':
+            nombre = request.POST['nombre_empleado']
+            apellido = request.POST['apellido_empleado']
+            direccion_empleado = request.POST['direccion_empleado']
+            fecha_nacimiento = request.POST['fecha_nacimiento']
+            sexo_empleado = request.POST['sexo_empleado']
+            rol_empleado = request.POST['rol_empleado']
+            is_active = request.POST['es_activo']
+            cod_empleado=request.POST['cod_empleado']
+            #En esta vista no se editaran los datos de inicio de sesión del empleado
+            if nombre != "" and apellido != "" and fecha_nacimiento != "" and direccion_empleado != "" and sexo_empleado != "" and rol_empleado != "":
+                if is_active=="0" or is_active=="1":
+                    edit_empleado=Empleado.objects.get(codigo_empleado=cod_empleado)
 
-                #Recuperando Rol anterior
-                rol_antiguo=str(edit_empleado.roles.id_rol)
+                    #Recuperando Rol anterior
+                    rol_antiguo=str(edit_empleado.roles.id_rol)
 
-                #Actualizando Informacion
-                edit_empleado.nombres=nombre
-                edit_empleado.apellidos=apellido
-                edit_empleado.direccion=direccion_empleado
-                edit_empleado.fechaNacimiento=fecha_nacimiento
-                edit_empleado.sexo=sexo_empleado
-                edit_empleado.roles=Rol.objects.get(id_rol=int(rol_empleado))
-                edit_empleado.es_activo=int(is_active)
-                edit_empleado.save()
+                    #Actualizando Informacion
+                    edit_empleado.nombres=nombre
+                    edit_empleado.apellidos=apellido
+                    edit_empleado.direccion=direccion_empleado
+                    edit_empleado.fechaNacimiento=fecha_nacimiento
+                    edit_empleado.sexo=sexo_empleado
+                    edit_empleado.roles=Rol.objects.get(id_rol=int(rol_empleado))
+                    edit_empleado.es_activo=int(is_active)
+                    edit_empleado.save()
 
-                if rol_empleado == ROL_DOCTOR:
-                    #De momento todos los medicos van a tener la especialidad General y 
-                    #JVPM 12345678
-                    #La gestión de las especialidades constituye a mi criterio una Historia adicional
-                    #--- Es necesario agregar la TABLA ---ESPECIALIDAD---
-                    especialidad="Medicina General"
-                    jvmp_d=12345678
-                    if rol_antiguo!=rol_empleado:
-                        try:
-                            Doctor.objects.create(especialidad_doctor=especialidad, jvmp=jvmp_d, empleado=edit_empleado)
-                        except:
-                            data['data']="Información actualizada"
-                elif rol_empleado == ROL_ENFERMERA:
-                    if rol_antiguo!=rol_empleado:
-                        try:
-                            Enfermera.objects.create(empleado = edit_empleado)
-                        except:
-                            data['data']="Información actualizada"
-                elif rol_empleado ==ROL_LIC_LABORATORIO:
-                    jvplc_n=12345678
-                    if rol_antiguo!=rol_empleado:
-                        try:
-                            LicLaboratorioClinico.objects.create(jvplc=jvplc_n, empleado=edit_empleado)
-                        except:
-                            data['data']="Información actualizada"
-                elif rol_empleado == ROL_SECRETARIA:
-                    if rol_antiguo!=rol_empleado:
-                        try:
-                            Secretaria.objects.create(empleado=edit_empleado)
-                        except:
-                            data['data']="Información actualizada"
-                data['type']="success"
-                data['data']="Datos actualizados"
+                    if rol_empleado == ROL_DOCTOR:
+                        #De momento todos los medicos van a tener la especialidad General y 
+                        #JVPM 12345678
+                        #La gestión de las especialidades constituye a mi criterio una Historia adicional
+                        #--- Es necesario agregar la TABLA ---ESPECIALIDAD---
+                        especialidad="Medicina General"
+                        jvmp_d=12345678
+                        if rol_antiguo!=rol_empleado:
+                            try:
+                                Doctor.objects.create(especialidad_doctor=especialidad, jvmp=jvmp_d, empleado=edit_empleado)
+                            except:
+                                data['data']="Información actualizada"
+                    elif rol_empleado == ROL_ENFERMERA:
+                        if rol_antiguo!=rol_empleado:
+                            try:
+                                Enfermera.objects.create(empleado = edit_empleado)
+                            except:
+                                data['data']="Información actualizada"
+                    elif rol_empleado ==ROL_LIC_LABORATORIO:
+                        jvplc_n=12345678
+                        if rol_antiguo!=rol_empleado:
+                            try:
+                                LicLaboratorioClinico.objects.create(jvplc=jvplc_n, empleado=edit_empleado)
+                            except:
+                                data['data']="Información actualizada"
+                    elif rol_empleado == ROL_SECRETARIA:
+                        if rol_antiguo!=rol_empleado:
+                            try:
+                                Secretaria.objects.create(empleado=edit_empleado)
+                            except:
+                                data['data']="Información actualizada"
+                    data['type']="success"
+                    data['data']="Datos actualizados"
+                else:
+                    data['data']="Error de datos, debe recargar la pagina."
             else:
-                data['data']="Error de datos, debe recargar la pagina."
-        else:
-            data['data']="Debe actualizar la información completa."
-    else: 
-        data['data']="Los datos no se han enviado de forma segura."
+                data['data']="Debe actualizar la información completa."
+        else: 
+            data['data']="Los datos no se han enviado de forma segura."
+    else:
+        data['data']="Aceso Denegados"
     return JsonResponse(data, safe=False)
-        
+
+@login_required(login_url='/login/')        
 def vista_adminitracion_empleados(request):
     roles = Rol.objects.all()
     
     return render(request,"Control/gestionEmpleados.html", {"Rol":roles})
 
+@login_required()  
 def lista_empleados(request):
-    empleados = Empleado.objects.all().order_by('-roles').reverse()
-    serializer = EmpleadoSerializer(empleados, many=True)
-    return JsonResponse(serializer.data, safe=False)  
+    if request.user.roles.id_rol == ROL_ADMIN:
+        empleados = Empleado.objects.all().order_by('-roles').reverse()
+        serializer = EmpleadoSerializer(empleados, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    else:
+        data = "Acceso denegado"
+        return JsonResponse({'data': data}, safe=False)  
 
 def get_empleado(request, cod_empleado):
-    empleado=Empleado.objects.filter(codigo_empleado=cod_empleado)
-    serializer=SimpleEmpleadoSerializer(empleado, many=True)
-    return JsonResponse(serializer.data, safe=False)  
+    if request.user.roles.id_rol == ROL_ADMIN:
+        empleado=Empleado.objects.filter(codigo_empleado=cod_empleado)
+        serializer=SimpleEmpleadoSerializer(empleado, many=True)
+        return JsonResponse(serializer.data, safe=False)  
+    else:
+        data = "Acceso denegado"
+        return JsonResponse({'data': data}, safe=False)  
 
 # def registrarEmpleado(request):
 #     form=EmpleadoForm(request.GET)
