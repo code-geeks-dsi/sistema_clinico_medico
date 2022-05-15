@@ -1,5 +1,6 @@
 from contextlib import nullcontext
 from multiprocessing import context
+from pickle import TRUE
 import select
 from urllib import request
 from django.shortcuts import render, redirect
@@ -136,24 +137,30 @@ def editar_empleado(request):
                 'pass':''
             }
     if request.method == 'POST':
-        nombres = request.POST['nombre_empleado']
-        apellidos = request.POST['apellido_empleado']
-        email =  request.POST['email_empleado']
-        password = request.POST['password_empleado']
-        direccion = request.POST['direccion_empleado']
+        nombre = request.POST['nombre_empleado']
+        apellido = request.POST['apellido_empleado']
+        direccion_empleado = request.POST['direccion_empleado']
         fecha_nacimiento = request.POST['fecha_nacimiento']
         sexo_empleado = request.POST['sexo_empleado']
         rol_empleado = request.POST['rol_empleado']
-        es_activo = request.POST['es_activo']
-        print(nombres)
-        print(apellidos)
-        print(email)
-        print(password)
-        print(direccion)
-        print(fecha_nacimiento)
-        print(sexo_empleado)
-        print(rol_empleado)
-        print(es_activo)
+        is_active = request.POST['es_activo']
+        cod_empleado=request.POST['cod_empleado']
+        #En esta vista no se editaran los datos de inicio de sesión del empleado
+        if nombre != "" and apellido != "" and fecha_nacimiento != "" and direccion_empleado != "" and sexo_empleado != "" and rol_empleado != "":
+            if is_active=="0" or is_active=="1":
+                Empleado.objects.filter(codigo_empleado=cod_empleado).update(nombres=nombre,
+                                                                            apellidos=apellido,
+                                                                            direccion=direccion_empleado,
+                                                                            fechaNacimiento = fecha_nacimiento,
+                                                                            sexo=sexo_empleado,
+                                                                            roles=rol_empleado, 
+                                                                            es_activo=int(is_active))
+                data['type']="success"
+                data['data']="Datos actualizados"
+            else:
+                data['data']="Error de datos, debe recargar la pagina."
+        else:
+            data['data']="Debe actualizar la información completa."
     else: 
         data['data']="Los datos no se han enviado de forma segura."
     return JsonResponse(data, safe=False)

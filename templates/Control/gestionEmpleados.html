@@ -99,7 +99,7 @@
                         <label for="validationCustom02" class="form-label">Direccion</label>
                         <input type="text" class="form-control" id="id_direccion_empleado" value="" required>
                         <div class="valid-feedback">
-                          Looks good!
+                          ¡Correcto!
                         </div>
                       </div>
                     <!--Fecha nacimiento-->
@@ -107,7 +107,7 @@
                         <label for="id_fecha_nacimiento" class="form-label">Fecha de nacimiento</label> 
                         <input type="date" class="form-control" placeholder="Select a date" id="id_fecha_nacimiento" required>
                         <div class="valid-feedback">
-                            Looks good!
+                            ¡Correcto!
                         </div>
                     </div>
                     <!--Sexo-->
@@ -123,32 +123,33 @@
                         </div>
                     </div>
                     <!--Separador-->
-                    <div class="col-12">
+                    <div class="col-12" id="inicio_sesion_datos">
                         <div class="fw-bold border-bottom bg-secondary text-white">
                             Datos de inicio de sesión
                         </div>
-                    </div>
-
-                    <!--Email-->
-                    <div class="col-md-6">
-                        <label for="validationCustomUsername" class="form-label">Email</label>
-                        <div class="input-group has-validation">
-                          <span class="input-group-text" id="inputGroupPrepend">@</span>
-                          <input type="text" class="form-control" id="id_email_empleado" aria-describedby="inputGroupPrepend" required>
-                          <div class="invalid-feedback">
-                            Ingrese el correo electrónico.
-                          </div>
-                        </div>
-                      </div>
-                      <!--Password-->
-                    <div class="col-md-6">
-                      <label for="validationCustomUsername" class="form-label">Contraseña</label>
+                        <div class="row">
+                        <!--Email-->
+                        <div class="col-md-6" id="div_email">
+                          <label for="validationCustomUsername" class="form-label">Email</label>
                           <div class="input-group has-validation">
-                            <input type="password" class="form-control" id="id_password_empleado" aria-describedby="inputGroupPrepend" required>
-                            <div class="invalid-feedback" id="passwordError">
-                              Ingrese una contraseña.
+                            <span class="input-group-text" id="inputGroupPrepend">@</span>
+                            <input type="text" class="form-control" id="id_email_empleado" aria-describedby="inputGroupPrepend" required>
+                            <div class="invalid-feedback">
+                              Ingrese el correo electrónico.
                             </div>
                           </div>
+                        </div>
+                          <!--Password-->
+                        <div class="col-md-6" div="div_password">
+                          <label for="validationCustomUsername" class="form-label">Contraseña</label>
+                            <div class="input-group has-validation">
+                              <input type="password" class="form-control" id="id_password_empleado" aria-describedby="inputGroupPrepend" required>
+                              <div class="invalid-feedback" id="passwordError">
+                                Ingrese una contraseña.
+                              </div>
+                            </div>
+                        </div>
+                        </div>
                     </div>
                     <!--Separador-->
                     <div class="col-12">
@@ -269,6 +270,7 @@
         $('#id_nombre_empleado').val("");
         $('#id_apellido_empleado').val("");
         $('#permitir_login').hide();
+        $('#inicio_sesion_datos').show();
 
     })
     
@@ -315,6 +317,7 @@
         let url_get_paciente="/control/empleados/lista/"+id;
         tituloModals.innerHTML=null;
         tituloModals.innerHTML="Editar Empleado";
+        $('#inicio_sesion_datos').hide();
         $('#permitir_login').show();
 
       $.ajax({
@@ -327,11 +330,12 @@
                 success: function(data){
                     document.getElementById('id_nombre_empleado').value=data[0].nombres; 
                     apellidos =  document.getElementById("id_apellido_empleado").value=data[0].apellidos;
-                    email = document.getElementById("id_email_empleado").value=data[0].email;
+                    
                     direccion = document.getElementById("id_direccion_empleado").value=data[0].direccion;
                     $('#id_fecha_nacimiento').val(data[0].fechaNacimiento);
                     $('#id_select_sexo').val(data[0].sexo);
                     $('#id_select_rol').val(data[0].roles);
+
                     edit = document.getElementById("btn_editar_empleado");
                     edit.setAttribute("OnClick", "edit_Empleado("+"'"+id+"'"+");")
                     $('#login_switch').prop("checked", data[0].es_activo);
@@ -343,13 +347,13 @@
       });
       
     }
-    function edit_Empleado(id_empleado){
+    function edit_Empleado(cod_empleado){
         //console.log(id_empleado);
         let is_active;
         if ($('input:checkbox[name=login_switch]:checked').val()=="on"){
-          is_active="True";
+          is_active=1;
         }
-        else {is_active = "False";}
+        else {is_active = 0;}
 
 
         $.ajax({
@@ -365,17 +369,11 @@
                 'fecha_nacimiento':$('#id_fecha_nacimiento').val(),
                 'sexo_empleado':$('#id_select_sexo').val(),
                 'rol_empleado':$('#id_select_rol').val(),
-                'es_activo': is_active
+                'es_activo': is_active,
+                'cod_empleado':cod_empleado
             },
             success: function(data){  
                 toastr[data.type](data.data);
-                if (data.pass =="0"){
-                    password = document.getElementById("id_password_empleado");
-                    parrafoError="<p>"+data.data+"</p>";
-                    document.getElementById("passwordError").innerHTML=null;
-                    document.getElementById("passwordError").insertAdjacentHTML("beforeend",parrafoError);
-                    password.value = password.value.substring(0, password.value.length - password.value.length);
-                }
                 if (data.type =="success"){
                     tablaEmpleados.innerHTML=null;
                     consultarEmpleados(url_consulta, tablaEmpleados);
