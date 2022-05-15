@@ -22,10 +22,10 @@ class EmpleadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Empleado
         field = fields=['codigo_empleado','nombres', 'apellidos', 'nombre_rol']
-
+##No regresa los datos de inicio de sesion como email o contraseña
 class SimpleEmpleadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Empleado
-        field = fields=['codigo_empleado','nombres', 'apellidos', 'direccion', 'fechaNacimiento', 'sexo','email','roles', 'es_activo']
+        field = fields=['codigo_empleado','nombres', 'apellidos', 'direccion', 'fechaNacimiento', 'sexo','roles', 'es_activo']
 
 

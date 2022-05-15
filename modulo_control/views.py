@@ -1,5 +1,6 @@
 from contextlib import nullcontext
 from multiprocessing import context
+from pickle import TRUE
 import select
 from urllib import request
 from django.shortcuts import render, redirect
@@ -127,23 +128,42 @@ def registrar_empleado(request):
             data['data']="Ingrese todos los campos"
     return JsonResponse(data, safe=False)
 
-
+@csrf_exempt
 def editar_empleado(request):
-    codigo_empleado=request.GET.get('id',None)
-    try:
-        empleado=Empleado.objects.get(codigo_empleado=codigo_empleado)
-        form_roles=[]
-        for rol in empleado.roles.all():
-            if(rol==Rol.objects.get(nombre_rol='Doctor')):
-                form_roles.append(DoctorForm(empleado=empleado))
-            if (rol==Rol.objects.get(nombre_rol='Laboratorio')):
-                form_roles.append(LicLaboratorioClinicoForm(empleado=empleado))
-
-        form=EmpleadoForm(instance=empleado)
-        print({'form':form,'form_roles':form_roles})
-        return render(request, 'registroEmpleado.html',{'form':form,'form_roles':form_roles})
-    except Empleado.DoesNotExist:
-        raise Http404("Empleado no existe.")
+    data={
+                'type':'warning',
+                'title':'',
+                'data':'',
+                'pass':''
+            }
+    if request.method == 'POST':
+        nombre = request.POST['nombre_empleado']
+        apellido = request.POST['apellido_empleado']
+        direccion_empleado = request.POST['direccion_empleado']
+        fecha_nacimiento = request.POST['fecha_nacimiento']
+        sexo_empleado = request.POST['sexo_empleado']
+        rol_empleado = request.POST['rol_empleado']
+        is_active = request.POST['es_activo']
+        cod_empleado=request.POST['cod_empleado']
+        #En esta vista no se editaran los datos de inicio de sesión del empleado
+        if nombre != "" and apellido != "" and fecha_nacimiento != "" and direccion_empleado != "" and sexo_empleado != "" and rol_empleado != "":
+            if is_active=="0" or is_active=="1":
+                Empleado.objects.filter(codigo_empleado=cod_empleado).update(nombres=nombre,
+                                                                            apellidos=apellido,
+                                                                            direccion=direccion_empleado,
+                                                                            fechaNacimiento = fecha_nacimiento,
+                                                                            sexo=sexo_empleado,
+                                                                            roles=rol_empleado, 
+                                                                            es_activo=int(is_active))
+                data['type']="success"
+                data['data']="Datos actualizados"
+            else:
+                data['data']="Error de datos, debe recargar la pagina."
+        else:
+            data['data']="Debe actualizar la información completa."
+    else: 
+        data['data']="Los datos no se han enviado de forma segura."
+    return JsonResponse(data, safe=False)
         
 def vista_adminitracion_empleados(request):
     roles = Rol.objects.all()
