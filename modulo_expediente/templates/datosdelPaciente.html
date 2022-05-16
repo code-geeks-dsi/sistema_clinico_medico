@@ -8,6 +8,7 @@
     <title>DatosDelPaciente</title>
 </head>
 <body>
+
   <div class="container py-4 ">
     <h1 class="fw-bold">Datos del Paciente</h1>
     <form class="px-4" method="POST">
@@ -30,5 +31,12 @@
     </form> 
   </div>
  
+
+    <form method="POST" autocomplete="off">
+        {% csrf_token %} 
+        {{ formulario.as_p }}
+        <input type="submit"  value="Guardar">
+      </form>      
+
 </body>
 </html>
