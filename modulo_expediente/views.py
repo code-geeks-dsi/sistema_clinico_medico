@@ -15,6 +15,7 @@ from django.urls import reverse
 from urllib.parse import urlencode
 from urllib.request import urlopen
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
@@ -38,6 +39,7 @@ def autocompletado_apellidos(request):
     return JsonResponse({"data":apellidosList})
     #la clave tiene que ser data para que funcione con el metodo. 
 
+@login_required(login_url='/login/')
 def sala_consulta(request):
     return render(request,"expediente/sala.html",{'rol':request.user.roles.id_rol,'ROL_DOCTOR':ROL_DOCTOR,
                                                     'ROL_ENFERMERA':ROL_ENFERMERA,
@@ -125,6 +127,7 @@ def  get_cola(request):
         
         for fila in contiene_consulta:
             diccionario={
+                "id_consulta":"",
                 "numero_cola":"",
                 "nombre":"",
                 "apellidos":"",
@@ -132,7 +135,7 @@ def  get_cola(request):
                 "consumo_medico":"",
                 "estado_cola_medica":"",
             }
-            
+            diccionario['id_consulta']=fila.consulta.id_consulta
             diccionario["numero_cola"]= fila.numero_cola
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
@@ -165,13 +168,14 @@ def  get_cola(request):
         
         for fila in contiene_consulta:
             diccionario={
+                "id_consulta":"",
                 "numero_cola":"",
                 "nombre":"",
                 "apellidos":"",
                 "fase_cola_medica":"",
                 "fecha_de_cola":""
             }
-            
+            diccionario['id_consulta']=fila.consulta.id_consulta
             diccionario["numero_cola"]= fila.numero_cola
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
@@ -189,11 +193,12 @@ def  get_cola(request):
         
         for fila in contiene_consulta:
             diccionario={
+                "id_consulta":"",
                 "numero_cola":"",
                 "nombre":"",
                 "apellidos":"",
             }
-            
+            diccionario['id_consulta']=fila.consulta.id_consulta
             diccionario["numero_cola"]= fila.numero_cola
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
@@ -279,26 +284,42 @@ def crear_expediente(request):
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
 
   
-
-def modificar_signosVitales(request, id_signos_vitales):
-
-    signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos_vitales)
-    signosvitales.unidad_temperatura=request.POST['unidad_temperatura']
-    signosvitales.unidad_peso=request.POST['unidad_peso']
-    signosvitales.unidad_presion_arterial_diastolica=request.POST['unidad_presion_arterial_diastolica']
-    signosvitales.unidad_presion_arterial_sistolica=request.POST['unidad_presion_arterial_sistolica']
-    signosvitales.unidad_frecuencia_cardiaca=request.POST['frecuencia_cardiaca']
-    signosvitales.unidad_saturacion_oxigeno=request.POST['unidad_saturacion_oxigeno']
-    signosvitales.valor_temperatura=request.POST['valor_temperatura']
-    signosvitales.valor_peso=request.POST['valor_peso']
-    signosvitales.valor_presion_arterial_diastolica=request.POST['valor_presion_arterial_diastolica']
-    signosvitales.valor_presion_arterial_sistolica=request.POST['valor_presion_arterial_sistolica']
-    signosvitales.valor_frecuencia_cardiaca=request.POST['valor_frecuencia_cardiaca']
-    signosvitales.valor_saturacion_oxigeno=request.POST['valor_saturacion_oxigeno']
-    signosvitales.save()
-    response={
-        'type':'success',
-        'title':'Modificado',
-        'data':'Se han modificado los signos vitales'
-    }
+@csrf_exempt
+def modificar_signosVitales(request, id_consulta):
+    print("ID_Consulta: "+str(id_consulta))
+    id_signos_vitales=0
+    print("temperatura: "+request.POST['valor_temperatura'])
+    print("Frecuencia Cardiaca: "+request.POST['valor_frecuencia_cardiaca'])
+    print("Peso: "+request.POST['valor_peso'])
+    print("Presion Diastolica: "+request.POST['valor_presion_arterial_diastolica'])
+    print("Presion Sistolica: "+request.POST['valor_presion_arterial_sistolica'])
+    print("Saturacion oxigeno: "+request.POST['valor_saturacion_oxigeno'])
+    ##Yo envio el id_consulta, hay que hacer que funcione con el id_consulta
+    if id_signos_vitales!=0:
+        id_signos_vitales=1
+        signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos_vitales)
+        signosvitales.unidad_temperatura=request.POST['unidad_temperatura']
+        signosvitales.unidad_peso=request.POST['unidad_peso']
+        signosvitales.unidad_presion_arterial_diastolica=request.POST['unidad_presion_arterial_diastolica']
+        signosvitales.unidad_presion_arterial_sistolica=request.POST['unidad_presion_arterial_sistolica']
+        signosvitales.unidad_frecuencia_cardiaca=request.POST['frecuencia_cardiaca']
+        signosvitales.unidad_saturacion_oxigeno=request.POST['unidad_saturacion_oxigeno']
+        signosvitales.valor_temperatura=request.POST['valor_temperatura']
+        signosvitales.valor_peso=request.POST['valor_peso']
+        signosvitales.valor_presion_arterial_diastolica=request.POST['valor_presion_arterial_diastolica']
+        signosvitales.valor_presion_arterial_sistolica=request.POST['valor_presion_arterial_sistolica']
+        signosvitales.valor_frecuencia_cardiaca=request.POST['valor_frecuencia_cardiaca']
+        signosvitales.valor_saturacion_oxigeno=request.POST['valor_saturacion_oxigeno']
+        signosvitales.save()
+        response={
+            'type':'success',
+            'title':'Modificado',
+            'data':'Se han modificado los signos vitales'
+        }
+    else:
+        response={
+            'type':'warning',
+            'title':'Modificado',
+            'data':'aun no funciona'
+        }
     return JsonResponse(response, safe=False)
