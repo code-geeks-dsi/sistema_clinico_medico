@@ -53,6 +53,7 @@ def get_paciente(request, id_paciente):
     paciente=Paciente.objects.filter(id_paciente=id_paciente)
     serializer=PacienteSerializer(paciente, many= True)
     return JsonResponse(serializer.data, safe=False)
+@csrf_exempt
 @login_required()
 #Metodo que devuelve los datos del objeto contiene consulta en json
 def agregar_cola(request, id_paciente):
@@ -177,7 +178,7 @@ def  get_cola(request):
                 "fecha_de_cola":""
             }
             #En id_consulta devuelve el id_de los signos
-            diccionario['id_consulta']=fila.consulta.id_consulta.signos_vitales.id_signos_vitales
+            diccionario['id_consulta']=fila.consulta.id_consulta
             diccionario["numero_cola"]= fila.numero_cola
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
@@ -307,7 +308,6 @@ def modificar_signosVitales(request, id_signos_vitales):
         if unidad_peso == "1" or unidad_peso=="2":
             #if id_signos_vitales!=0:    
             try:
-                print("LLegue aunque hay datos vacios")
                 enfermera= Enfermera.objects.get(empleado=request.user.codigo_empleado)
                 signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos)
                 signosvitales.unidad_temperatura=unidad_temperatura
