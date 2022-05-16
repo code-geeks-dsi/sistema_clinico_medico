@@ -320,7 +320,7 @@ def modificar_signosVitales(request, id_signos_vitales):
                 signosvitales.valor_peso=valor_peso
                 signosvitales.valor_presion_arterial_diastolica=valor_arterial_diasolica
                 signosvitales.valor_presion_arterial_sistolica=valor_arterial_sistolica
-                signosvitales.valor_frecuencia_cardiaca=valor_frecuencia_cardiaca
+                signosvitales.valor_frecuencia_cardiaca=int(valor_frecuencia_cardiaca)
                 signosvitales.valor_saturacion_oxigeno=valor_saturacion_oxigeno
                 signosvitales.enfermera= enfermera
                 signosvitales.save()
