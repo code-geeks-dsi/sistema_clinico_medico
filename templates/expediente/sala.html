@@ -7,37 +7,49 @@
 <!--Titulo-->
 {% block titulo %} Sala de Espera {% endblock %}
 {% block content %}
-<div class="container py-4 ">
-    <h1 class="fw-bold">Sala de Espera</h1>
-    <div class="row">
-      <div class="col-12 col-md-12">
-          <!--Busqueda por Apellidos-->
+<div class="container py-4">
+  
+</div>
+<div class="container py-2 rounded">
+  <div class="row g-0">
+    <h1 class="fw-bold text-secondary">Sala de Espera</h1>
+    <div class="col-12 col-md-12">
+      <!--Busqueda por Apellidos-->
+      {% if rol == ROL_SECRETARIA or rol == ROL_DOCTOR %}
+      <div class="input-group  py-4">
+          <span class="input-group-text bg-white" id="basic-addon1">
+            <span class="material-symbols-outlined btn-sm" id="search_voff">face</span>
+          </span>
+          <input type="text" class="form-control" id="id_apellido_paciente" placeholder="Apellidos" aria-label="Nombres" aria-describedby="basic-addon1">
           {% if rol == ROL_SECRETARIA %}
-          <div class="input-group  py-4">
-              <span class="input-group-text bg-white" id="basic-addon1">
-                <span class="material-symbols-outlined btn-sm" id="search_voff">face</span>
-              </span>
-              <input type="text" class="form-control" id="id_apellido_paciente" placeholder="Apellidos" aria-label="Nombres" aria-describedby="basic-addon1">
-              <span class="input-group-text bg-white" id="filtro_buscar">
-                <span class="material-symbols-outlined btn btn-sm" id="" data-bs-toggle="modal" data-bs-target="#busquedaPacienteModal">search</span>
-              </span>
-          </div>
+          <span class="input-group-text bg-white" id="filtro_buscar">
+            <span class="material-symbols-outlined btn btn-sm" id="" data-bs-toggle="modal" data-bs-target="#busquedaPacienteModal">search</span>
+          </span>
+          {% elif rol == ROL_DOCTOR %}
+          <input type="date" name="fecha_consulta" id="fecha_consulta" class="form-control" style="max-width: fit-content;">
+          <span class="input-group-text bg-white" id="filtro_buscar">
+            <span class="material-symbols-outlined btn btn-sm" >search</span>
+          </span>
           {% endif %}
       </div>
-      <!--Tarjetas de pacientes-->
-      
-      
-      <!--Boton abregar nuevo -->
-      {% if rol == ROL_SECRETARIA  %}
-      <div class="text-end">
-        <a href="{% url 'crear_expediente'%}" class="btn btn-outline-dark" id="buscar-nombre" >Abrir Expediente Nuevo</a>
-      </div>
       {% endif %}
-      
-      <!--Boton agregar Signos vitales v1 -->
+    </div>
+    <!--Boton abregar nuevo -->
+    {% if rol == ROL_SECRETARIA  %}
+    <div class="col-lg-12 pb-3 text-end">
       <div class="text-end">
-        <a class="btn btn-outline-dark" id="buscar-nombre" data-bs-toggle="modal" data-bs-target="#agregarSignosVitalesModal">Abrir Expediente Nuevo</a>
+        <a href="{% url 'crear_expediente'%}" class="btn btn-outline-secondary" id="buscar-nombre" >Abrir Expediente Nuevo</a>
       </div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+<div class="container">
+    <div class="row g-0">
+      
+      <!--Tarjetas de pacientes-->
+           
 
       <!--Navegación Entre Consultas y Examenes de Laboratorio-->
       <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -50,25 +62,30 @@
         </li>
         {% endif %}
       </ul>
-      <div class="tab-content border" id="myTabContent">
+      <div class="tab-content " id="myTabContent">
         <div class="tab-pane fade show active" id="consultaMedica" role="tabpanel" aria-labelledby="home-tab">
           <!--Tabla de pacientes en cola-->
-          <div class="py-4 table-responsive">
+          <div class="table-responsive">
             <table class="table table-bordered text-center">
                 <thead class="table-secondary">
                   <tr>
                     
-                    {% if rol == ROL_ENFERMERA or rol == ROL_SECRETARIA %}
+                    {% if rol == ROL_ENFERMERA or rol == ROL_SECRETARIA or rol == ROL_DOCTOR %}
                     <th scope="col">Numero Cola</th>
                     <th scope="col">Nombre</th>
                     <th scope="col">Apellidos</th>
-                    <!-- ROL_ENFERMERA=2 -->
+                    {% endif %}
+                    {% if rol == ROL_SECRETARIA or rol == ROL_DOCTOR %}
+                    <th scope="col">Fase</th>
+                    {% endif %}
+                    {% if rol == ROL_DOCTOR %}
+                    <th scope="col">Fecha</th>
                     {% endif %}
                     {% if rol == ROL_SECRETARIA %}
-                    <th scope="col">Fase</th>
                     <th scope="col">Consumo</th>
                     <th scope="col">Estado</th>
                     {% endif %}
+                    <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody id="tabla_cola">
@@ -123,9 +140,9 @@
       <div class="modal fade" id="agregarSignosVitalesModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
         <div class="modal-dialog modal-xl">
           <div class="modal-content">
-            <div class="modal-header text-center bg-dark text-white">
+            <div class="modal-header text-center bg-secondary text-white">
                 <h5 class="modal-title w-100">Agregar Signos Vitales</h5>
-                <button type="button" class="btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
               <div class="container">
@@ -134,14 +151,14 @@
                   <div class="col-md-8 col-lg-4">
                     <div class="mb-3 mt-3">
                       <label for="exampleInputEmail1" class="form-label">Temperatura</label>
-                      <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <input type="number" class="form-control" id="inputTemperatura" aria-describedby="emailHelp" required>
                       <div id="emailHelp" class="form-text"></div>
                     </div>
                   </div>
                   <div class="col-md-4 col-lg-2">
                     <div class="mb-3 mt-3">
                       <label for="exampleInputEmail1" class="form-label d-none d-sm-block">Unidades</label>
-                      <select class="form-select" aria-label="Default select example" id="select-temperatura">
+                      <select class="form-select" aria-label="Default select example" id="select_temperatura" required>
                         <option selected>--</option>
                         <option value="1">Fahrenheit</option>
                         <option value="2">Celsius</option>
@@ -151,29 +168,29 @@
                   <!--Frecuencia Cardiaca-->
                   <div class="col-md-8 col-lg-4">
                     <div class="mb-3 mt-3">
-                      <label for="exampleInputEmail1" class="form-label">Frecuencia Cardiaca</label>
-                      <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <label for="inputFrecuenciaCardiaca" class="form-label">Frecuencia Cardiaca</label>
+                      <input type="number" class="form-control" id="inputFrecuenciaCardiaca" aria-describedby="emailHelp" required>
                       <div id="emailHelp" class="form-text"></div>
                     </div>
                   </div>
                   <div class="col-md-4 col-lg-2">
                     <div class="mb-3 mt-3">
                       <label for="frecunaciaUnidades" class="form-label text-white d-none d-sm-block">-</label>
-                      <input type="text" class="form-control" id="frecunaciaUnidades" aria-describedby="emailHelp" disabled value="PPM">
+                      <input type="text" class="form-control" id="frecunaciaUnidades" aria-describedby="emailHelp" disabled value="PPM" required>
                     </div>
                   </div>
                   <!--Peso-->
                   <div class="col-md-8 col-lg-4">
                     <div class="mb-3 mt-3">
-                      <label for="exampleInputEmail1" class="form-label">Peso</label>
-                      <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <label for="inputPeso" class="form-label">Peso</label>
+                      <input type="number" class="form-control" id="inputPeso" aria-describedby="emailHelp" required>
                       <div id="emailHelp" class="form-text"></div>
                     </div>
                   </div>
                   <div class="col-md-4 col-lg-2">
                     <div class="mb-3 mt-3">
                       <label for="exampleInputEmail1" class="form-label d-none d-sm-block">Unidad</label>
-                      <select class="form-select" aria-label="Default select example" id="select-temperatura">
+                      <select class="form-select" aria-label="Default select example" id="select_peso" required>
                         <option selected>--</option>
                         <option value="1">Libras</option>
                         <option value="2">Kilogramos</option>
@@ -183,23 +200,23 @@
                   <!--Presión Arterial-->
                   <div class="col-md-6 col-lg-3">
                     <div class="mb-3 mt-3">
-                      <label for="presionArterial" class="form-label">Presión Arterial</label>
-                      <input type="number" class="form-control" id="presionArterialSistolica" aria-describedby="emailHelp" placeholder="Sistolica">
+                      <label for="inputPresionSistolica" class="form-label">Presión Arterial</label>
+                      <input type="number" class="form-control" id="inputPresionSistolica" aria-describedby="emailHelp" placeholder="Sistolica" required>
                       <div id="emailHelp" class="form-text"></div>
                     </div>
                   </div>
                   <div class="col-md-6 col-lg-3">
                     <div class="mb-3 mt-3">
-                      <label for="presionArterial" class="form-label text-white d-none d-sm-block">Presión Arterial</label>
-                      <input type="number" class="form-control" id="presionArterialDiastolica" aria-describedby="emailHelp" placeholder="Diastolica">
+                      <label for="inputPresionDiastolica" class="form-label">Presión Arterial</label>
+                      <input type="number" class="form-control" id="inputPresionDiastolica" aria-describedby="emailHelp" placeholder="Diastolica" required>
                       <div id="emailHelp" class="form-text"></div>
                     </div>
                   </div>
                   <!--Saturación de Oxigeno-->
                   <div class="col-md-8 col-lg-4">
                     <div class="mb-3 mt-3">
-                      <label for="exampleInputEmail1" class="form-label">Saturación Oxigeno</label>
-                      <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <label for="inputSaturacionOxigeno" class="form-label">Saturación Oxigeno</label>
+                      <input type="number" class="form-control" id="inputSaturacionOxigeno" aria-describedby="emailHelp" required>
                     </div>
                   </div>
                   <div class="col-md-4 col-lg-2">
@@ -211,14 +228,15 @@
                 </div>
               </div>
             </div>
-            <div class="modal-footer bg-dark">
+            <div class="modal-footer bg-secondary">
               <!--Btn Guardar Signos Vitales-->
-              <button class="btn btn-danger text-start" id="guarda_signos_vitales" >Cerrar ventana</button>
+              <button class="btn btn-danger text-start" id="cerrar_signos_vitales" data-bs-dismiss="modal">Cerrar</button>
               <button class="btn btn-success text-start" id="guarda_signos_vitales" >Guardar Datos</button>
             </div>
           </div>
         </div>
       </div>
+
 
       
 
@@ -237,70 +255,150 @@
     const tablaColaConsulta="tabla_cola";
     const url_consulta="{% url 'get_contieneConsulta' %}"
     let tablaCola=document.getElementById(tablaColaConsulta);
-    {% if rol == ROL_SECRETARIA %}
     let tablaData=document.getElementById(tablaResultado);
-    
+
+    //event listeners para buscar pacientes o filtrar consultas
+    {% if rol == ROL_SECRETARIA %}    
     //Para moviles, click en la lupa
     document.getElementById("filtro_buscar").addEventListener("click",function(){
       getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta);
     });
     document.getElementById(id_component).addEventListener('keypress',(e)=>{
-        if (e.key === 'Enter') {
-          getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta, id_modal);
-          
+      if (e.key === 'Enter') {
+        getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta, id_modal);
+        
+      }
+    });
+    {% elif rol == ROL_DOCTOR %}
+    // #fecha por defecto
+    // document.getElementById('fecha_consulta').valueAsDate = new Date();
+    document.getElementById("filtro_buscar").addEventListener("click",function(){
+      let apellidos=document.getElementById('id_apellido_paciente').value;
+      let fecha=document.getElementById('fecha_consulta').value;
+      var targetDate = new Date( fecha );
+
+      if ( !!targetDate.valueOf() ) {
+          year = targetDate.getFullYear();
+          month = targetDate.getMonth()+1;
+          day = targetDate.getDate()+1;
+          data={
+            'apellido_paciente':apellidos,
+            'year': year,
+            'month': month,
+            'day': day,
+            'query':1
+          }
+        }else{
+        data={
+          'apellido_paciente':apellidos,
+          'query':1
         }
-      });
-    //Lenar autocompletado
+
+      }
+      consultarCola(url_consulta, tablaCola,data)
+    });
+    {% endif %}
     
+    {% if rol == ROL_DOCTOR or rol == ROL_SECRETARIA %}
+    //Lenar autocompletado
     getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
     {% endif %}
-    consultarCola(url_consulta, tablaCola);
-
     
-    function consultarCola(url_consulta, tablaCola){
+    consultarCola(url_consulta, tablaCola);
+    
+    
+    function consultarCola(url_consulta, tablaCola,data={}){
       $.ajax({
                 url: url_consulta,
                 dataType: "json",
-                data: {
-
-                },
+                data: data,
                 success: function(data){  
-                  
-                  data.map(function(x){
-                  let elemento='<tr>';
-                  for (const property in x) {
-                      elemento = elemento+'<td>'+`${x[property]}`+'</td>';
+                  let elemento;
+                  let icon;
+                  let modal="";
+                  //limpia la tabla de resultados
+                  tablaCola.innerHTML=null;
+                  //si no hay resultados muestra un mensaje de que no hay resultados
+                  if (data.length==0){
+                    elemento='<tr><td colspan="100%">No hay pacientes en espera</td></tr>';
+                    tablaCola.insertAdjacentHTML("beforeend", elemento);
+                  }else{
+                    //llenado de tabla
+                    data.map((x)=>{
+                    elemento='<tr>';
+                    //necesito el id_signos
+                    id_consulta=x.id_consulta;
+                    delete x.id_consulta;
+                    for (const property in x) {
+                        elemento = elemento+'<td>'+`${x[property]}`+'</td>';
+                    }
+                    {% if rol == ROL_ENFERMERA %}
+                    icon="monitor_heart";
+                    modal="data-bs-toggle='modal' data-bs-target='#agregarSignosVitalesModal'";
+                    strfuncion="modificar_btn_editar_signos("+id_consulta+");";
+                    click="onclick='"+strfuncion+"';";
+
+                    {% else %}
+                    click="";
+                    icon = "more_vert";
+                    {% endif %}
+                    elemento=elemento+'<td><div class="material-symbols-outlined btn" '+click+' '+modal+' >'+icon+'</div></td>';
+                    elemento=elemento+'</tr>';
+        
+        //   <input type="button"  value="Agregar a cola para examenes de Lab">
+        //   <input type="button"  value="Agregar a cola para pasar Consulta">
+        //   <input type="button"  value="Cancelar">
+                    
+                    tablaCola.insertAdjacentHTML("beforeend", elemento);
+                    });
                   }
-                  elemento=elemento+'<td><div onclick="accionServer('+Object.values(x)[0]+');"class="material-symbols-outlined btn" >add</div></td>';
-                  elemento=elemento+'</tr>';
-      
-      //   <input type="button"  value="Agregar a cola para examenes de Lab">
-      //   <input type="button"  value="Agregar a cola para pasar Consulta">
-      //   <input type="button"  value="Cancelar">
-       
-                  tablaCola.insertAdjacentHTML("beforeend", elemento);
-                  });
                 }
             });
     }
     //Voy a ocupar la misma funcion para agregar y eliminar.
-    function accionServer(id){
-      url_agregar_cola="/expediente/cola/"+id;
+    function accionServer(id, accion){
+      let url_accion="";
+      {% if rol == ROL_ENFERMERA %}
+      url_accion = "/expediente/modificar-signosVitales/";
+      {% else %}
+      url_accion = "/expediente/cola/";
+      {% endif %}
+      url_agregar_cola=url_accion+id;
+      console.log(url_agregar_cola);
+      //console.log($('#inputTemperatura').val().toString());
+
       $.ajax({
         url: url_consulta,
                 url: url_agregar_cola,
+                type:"POST",
                 dataType: "json",
                 data: {
+                  {% if rol == ROL_ENFERMERA %}
+                  'valor_temperatura': $('#inputTemperatura').val(),
+                  'valor_frecuencia_cardiaca': $('#inputFrecuenciaCardiaca').val(),
+                  'valor_peso': $('#inputPeso').val(),
+                  'valor_presion_arterial_diastolica': $('#inputPresionDiastolica').val(),
+                  'valor_presion_arterial_sistolica': $('#inputPresionSistolica').val(),
+                  'valor_saturacion_oxigeno': $('#inputSaturacionOxigeno').val(),
+                  'unidad_temperatura':$('#select_temperatura').val(),
+                  'unidad_peso':$('#select_peso').val()
+                  {% else %}
 
+                  {% endif %}
                 },
-                success: function(data){  
-                  toastr[data.type](data.data);
-                  tablaCola.innerHTML=null;                
+                success: function(data){ 
+                  toastr[data.type](data.data);           
                   consultarCola(url_consulta, tablaCola);
                 }
       });
-      console.log(url_agregar_cola);
       
+    }
+    //Editar signos vitales
+    function modificar_btn_editar_signos(id_consulta){
+      edit = document.getElementById("guarda_signos_vitales");
+      strfuncion="accionServer("+id_consulta+");";
+
+      edit.setAttribute("OnClick", strfuncion);
     }
     
 </script>

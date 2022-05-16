@@ -13,7 +13,11 @@ import json
 from datetime import date
 from django.urls import reverse
 from urllib.parse import urlencode
-ROL=2
+from urllib.request import urlopen
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ValidationError
+ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
 ROL_LIC_LABORATORIO=3
@@ -36,22 +40,24 @@ def autocompletado_apellidos(request):
     return JsonResponse({"data":apellidosList})
     #la clave tiene que ser data para que funcione con el metodo. 
 
+@login_required(login_url='/login/')
 def sala_consulta(request):
-
-    return render(request,"expediente/sala.html",{'rol':ROL,'ROL_DOCTOR':ROL_DOCTOR,
+    return render(request,"expediente/sala.html",{'rol':request.user.roles.id_rol,'ROL_DOCTOR':ROL_DOCTOR,
                                                     'ROL_ENFERMERA':ROL_ENFERMERA,
                                                     'ROL_LIC_LABORATORIO':ROL_LIC_LABORATORIO,
                                                     'ROL_SECRETARIA':ROL_SECRETARIA})
 
 #Metodo que devuelve los datos del paciente en json
+@login_required
 def get_paciente(request, id_paciente):
     paciente=Paciente.objects.filter(id_paciente=id_paciente)
     serializer=PacienteSerializer(paciente, many= True)
     return JsonResponse(serializer.data, safe=False)
-
+@csrf_exempt
+@login_required()
 #Metodo que devuelve los datos del objeto contiene consulta en json
 def agregar_cola(request, id_paciente):
-    CODIGO_EMPLEADO=1
+    #CODIGO_EMPLEADO=1
     expediente=Expediente.objects.get(id_paciente_id=id_paciente)
     idExpediente=expediente.id_expediente
     fecha=datetime.now()
@@ -73,7 +79,7 @@ def agregar_cola(request, id_paciente):
         
         #Creando objetos signos vitales
         signosvitales=SignosVitales()
-        signosvitales.enfermera=Enfermera.objects.get(id_enfermera=CODIGO_EMPLEADO)
+        #signosvitales.enfermera=Enfermera.objects.get(id_enfermera=CODIGO_EMPLEADO)
         signosvitales.save()
         #Creando objeto Consulta
         consulta=Consulta()
@@ -93,7 +99,7 @@ def agregar_cola(request, id_paciente):
         return JsonResponse(response, safe=False)
 
 #Metodo que devuelve una lista de constieneConsulta filtrado por la fecha de hoy
-def  get_contieneConsulta(request):
+def  get_contiene_consulta(request):
     fecha=datetime.now()
     contieneconsulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                     fecha_de_cola__month=fecha.month, 
@@ -101,17 +107,29 @@ def  get_contieneConsulta(request):
     serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
     return JsonResponse(serializer.data, safe=False)
 
+#filtro de contiene consulta para la vista Doctor
+def contiene_consulta_con_filtro(request):
+    fecha=datetime.now()
+    contieneconsulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
+                    fecha_de_cola__month=fecha.month, 
+                    fecha_de_cola__day=fecha.day)
+    serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
+    return JsonResponse(serializer.data, safe=False)
 
+@login_required()
 def  get_cola(request):
     fecha=datetime.now()
     lista=[]
-    if(ROL==ROL_SECRETARIA):
+    rol=request.user.roles.id_rol
+
+    if(rol==ROL_SECRETARIA):
         contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                         fecha_de_cola__month=fecha.month, 
                         fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
         
         for fila in contiene_consulta:
             diccionario={
+                "id_consulta":"",
                 "numero_cola":"",
                 "nombre":"",
                 "apellidos":"",
@@ -119,7 +137,7 @@ def  get_cola(request):
                 "consumo_medico":"",
                 "estado_cola_medica":"",
             }
-            
+            diccionario['id_consulta']=fila.consulta.id_consulta
             diccionario["numero_cola"]= fila.numero_cola
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
@@ -127,9 +145,49 @@ def  get_cola(request):
             diccionario["consumo_medico"]= fila.consumo_medico
             diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
             lista.append(diccionario)
+    elif(rol==ROL_DOCTOR):
+        #en la vista doctor se retorna el apellido de la barra de busqueda del paciente
+        apellido_paciente=request.GET.get('apellido_paciente','')
+        year=int(request.GET.get('year',0))
+        month=int(request.GET.get('month',0))
+        day=int(request.GET.get('day',0))
+        isQuery=bool(request.GET.get('query',False))
+        filterData={}
+        if isQuery:
+            filterData['expediente__id_paciente__apellido_paciente__icontains']=apellido_paciente
+            # si filtra por fecha
+            if year!=0 and month!=0 and day!=0:
+                filterData['fecha_de_cola__year']=year 
+                filterData['fecha_de_cola__month']=month
+                filterData['fecha_de_cola__day']=day
+            # # si se estan cargando los valores por defecto
+        else:
+            filterData['fecha_de_cola__year']=fecha.year 
+            filterData['fecha_de_cola__month']=fecha.month
+            filterData['fecha_de_cola__day']=fecha.day
+
+        contiene_consulta=ContieneConsulta.objects.filter(**filterData).select_related('expediente__id_paciente')
+        
+        for fila in contiene_consulta:
+            diccionario={
+                "id_consulta":"",
+                "numero_cola":"",
+                "nombre":"",
+                "apellidos":"",
+                "fase_cola_medica":"",
+                "fecha_de_cola":""
+            }
+            #En id_consulta devuelve el id_de los signos
+            diccionario['id_consulta']=fila.consulta.id_consulta
+            diccionario["numero_cola"]= fila.numero_cola
+            diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+            diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+            diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
+            diccionario["fecha_de_cola"]= fila.fecha_de_cola
+            lista.append(diccionario)
             # del diccionario
                 
-    elif (ROL==ROL_ENFERMERA):
+    elif (rol==ROL_ENFERMERA):
         # recupera los pacientes en cola en fase anotado
         contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                         fecha_de_cola__month=fecha.month, 
@@ -138,11 +196,12 @@ def  get_cola(request):
         
         for fila in contiene_consulta:
             diccionario={
+                "id_consulta":"",
                 "numero_cola":"",
                 "nombre":"",
                 "apellidos":"",
             }
-            
+            diccionario['id_consulta']=fila.consulta.id_consulta
             diccionario["numero_cola"]= fila.numero_cola
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
@@ -228,26 +287,53 @@ def crear_expediente(request):
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
 
   
-
+@csrf_exempt
 def modificar_signosVitales(request, id_signos_vitales):
-
-    signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos_vitales)
-    signosvitales.unidad_temperatura=request.POST['unidad_temperatura']
-    signosvitales.unidad_peso=request.POST['unidad_peso']
-    signosvitales.unidad_presion_arterial_diastolica=request.POST['unidad_presion_arterial_diastolica']
-    signosvitales.unidad_presion_arterial_sistolica=request.POST['unidad_presion_arterial_sistolica']
-    signosvitales.unidad_frecuencia_cardiaca=request.POST['frecuencia_cardiaca']
-    signosvitales.unidad_saturacion_oxigeno=request.POST['unidad_saturacion_oxigeno']
-    signosvitales.valor_temperatura=request.POST['valor_temperatura']
-    signosvitales.valor_peso=request.POST['valor_peso']
-    signosvitales.valor_presion_arterial_diastolica=request.POST['valor_presion_arterial_diastolica']
-    signosvitales.valor_presion_arterial_sistolica=request.POST['valor_presion_arterial_sistolica']
-    signosvitales.valor_frecuencia_cardiaca=request.POST['valor_frecuencia_cardiaca']
-    signosvitales.valor_saturacion_oxigeno=request.POST['valor_saturacion_oxigeno']
-    signosvitales.save()
     response={
-        'type':'success',
-        'title':'Modificado',
-        'data':'Se han modificado los signos vitales'
-    }
+                'type':'warning',
+                'title':'Modificado',
+                'data':'aun no funciona'
+            }
+    unidad_temperatura=request.POST['unidad_temperatura']
+    unidad_peso=request.POST['unidad_peso']
+    valor_temperatura=request.POST['valor_temperatura']
+    valor_peso=request.POST['valor_peso']
+    valor_arterial_diasolica=request.POST['valor_presion_arterial_diastolica']
+    valor_arterial_sistolica=request.POST['valor_presion_arterial_sistolica']
+    valor_frecuencia_cardiaca=request.POST['valor_frecuencia_cardiaca']
+    valor_saturacion_oxigeno=request.POST['valor_saturacion_oxigeno']
+
+    id_signos=int(id_signos_vitales)
+    if unidad_temperatura=="1" or unidad_temperatura == "2": 
+        if unidad_peso == "1" or unidad_peso=="2":
+            #if id_signos_vitales!=0:    
+            try:
+                enfermera= Enfermera.objects.get(empleado=request.user.codigo_empleado)
+                signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos)
+                signosvitales.unidad_temperatura=unidad_temperatura
+                signosvitales.unidad_peso=unidad_peso
+                signosvitales.unidad_presion_arterial_diastolica='mmHg'
+                signosvitales.unidad_presion_arterial_sistolica='mmHg'
+                signosvitales.unidad_frecuencia_cardiaca="PPM"
+                signosvitales.unidad_saturacion_oxigeno="%"
+                signosvitales.valor_temperatura=valor_temperatura
+                signosvitales.valor_peso=valor_peso
+                signosvitales.valor_presion_arterial_diastolica=valor_arterial_diasolica
+                signosvitales.valor_presion_arterial_sistolica=valor_arterial_sistolica
+                signosvitales.valor_frecuencia_cardiaca=valor_frecuencia_cardiaca
+                signosvitales.valor_saturacion_oxigeno=valor_saturacion_oxigeno
+                signosvitales.enfermera= enfermera
+                signosvitales.save()
+                response['type']='success'
+                response['data']='Se han registrado los signos vitales'
+            except ValueError:
+                response['data']="Ingrese todos los datos."
+            except:
+                response['data']="Error de datos, posiblemente no tienen el nivel de acceso necesario."
+            #else:
+            #    response['data']="Signos vitales invalidos"
+        else:
+            response['data']="Ingrese las unidades del peso."
+    else:
+        response['data']="Ingrese la unidad de la temperatura."
     return JsonResponse(response, safe=False)
