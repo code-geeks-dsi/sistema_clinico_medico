@@ -7,7 +7,7 @@ from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
 from modulo_expediente.models import Consulta, Paciente, ContieneConsulta, Expediente, SignosVitales
 from modulo_control.models import Enfermera, Empleado
-from modulo_expediente.forms import DatosDelPaciente
+from modulo_expediente.forms import DatosDelPaciente, IngresoMedicamentos
 from django.http import JsonResponse
 import json
 from datetime import date
@@ -342,3 +342,9 @@ def modificar_signosVitales(request, id_signos_vitales):
     else:
         response['data']="Ingrese la unidad de la temperatura."
     return JsonResponse(response, safe=False)
+
+def agregar_medicamento(request):
+    formulario= IngresoMedicamentos(request.POST)
+    if formulario.is_valid():
+        new_medicamento=formulario.save()
+    return render(request,"medicamentos.html",{'formulario':formulario})

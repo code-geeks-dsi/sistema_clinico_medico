@@ -9,34 +9,28 @@
 </head>
 <body>
 
-  <div class="container py-4 ">
-    <h1 class="fw-bold">Datos del Paciente</h1>
-    <form class="px-4" method="POST">
-      <div class="col-12 col-md-6 bg-white p-3">
-        {% csrf_token %}
-        {% for field in formulario.visible_fields %}
-            <div class="mb-4">
-              <label for="exampleInputPassword1" class="form-label mt-4">{{field.label}}</label>
-              {{field}}
-            </div>
-        {% endfor %}
-        <div class="px-4">
-          <input type="submit" class="btn-primary rounded"  value="Guardar">
-        </div> 
-      </div>  
-    </form>  
-    <form action="" method="POST" enctype="multipart/form-data" style="color: white;">
-      {% csrf_token %}
-      <input type="submit" class="btn-primary rounded" value="Crear/Editar" style=" width:150px;">
-    </form> 
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center bg-secondary text-white">
+            <h5 class="modal-title w-100">Datos Del Paciente</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form class="px-4" method="POST">
+          <div class="col-12 col-md-6 bg-white p-3">
+            {% csrf_token %}
+            {% for field in formulario.visible_fields %}
+                <div class="mb-4">
+                  <label for="exampleInputPassword1" class="form-label mt-4">{{field.label}}</label>
+                  {{field}}
+                </div>
+            {% endfor %}
+          </div> 
+          <div class="modal-footer bg-secondary">
+            <input type="submit" class="btn-primary rounded"  value="Guardar Datos">
+          </div> 
+        </form>  
+         
   </div>
- 
-
-    <form method="POST" autocomplete="off">
-        {% csrf_token %} 
-        {{ formulario.as_p }}
-        <input type="submit"  value="Guardar">
-      </form>      
-
+</div>
 </body>
 </html>
