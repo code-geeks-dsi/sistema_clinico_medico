@@ -57,7 +57,7 @@ def logearse(request):
                 elif request.user.roles.id_rol <ROL_ADMIN:
                     return redirect('sala_consulta')
             else:
-                mensaje="Password o correo incorrecto"
+                mensaje="usuario/contraseña no válido"
         else:
             #mensaje="No se recibio un correo"
             try:
@@ -244,11 +244,11 @@ def editar_empleado(request):
 
 @login_required(login_url='/login/')        
 def vista_adminitracion_empleados(request):
-    if request.user.roles.id_rol==5:
+    if request.user.roles.id_rol==ROL_ADMIN:
         roles = Rol.objects.all()
         return render(request,"Control/gestionEmpleados.html", {"Rol":roles})
     else:
-        return render(request,"baseControl.html")
+        return render(request,"Control/error403.html")
 
 @login_required()  
 def lista_empleados(request):
