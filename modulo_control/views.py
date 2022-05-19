@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseNotFound,Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
+from pkg_resources import normalize_path
 from modulo_control.forms import EmpleadoForm,LicLaboratorioClinicoForm,DoctorForm
 from modulo_control.models import *
 from modulo_control.serializers import EmpleadoSerializer, RolSerializer, SimpleEmpleadoSerializer
@@ -46,6 +47,7 @@ def logearse(request):
         #mensaje="Si recibí los datos"
 
         if aux != -1:
+            email=email.lower()
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
@@ -55,7 +57,7 @@ def logearse(request):
                 elif request.user.roles.id_rol <ROL_ADMIN:
                     return redirect('sala_consulta')
             else:
-                mensaje="Password o correo incorrecto"
+                mensaje="usuario/contraseña no válido"
         else:
             #mensaje="No se recibio un correo"
             try:
@@ -242,11 +244,11 @@ def editar_empleado(request):
 
 @login_required(login_url='/login/')        
 def vista_adminitracion_empleados(request):
-    if request.user.roles.id_rol==5:
+    if request.user.roles.id_rol==ROL_ADMIN:
         roles = Rol.objects.all()
         return render(request,"Control/gestionEmpleados.html", {"Rol":roles})
     else:
-        return render(request,"baseControl.html")
+        return render(request,"Control/error403.html")
 
 @login_required()  
 def lista_empleados(request):
