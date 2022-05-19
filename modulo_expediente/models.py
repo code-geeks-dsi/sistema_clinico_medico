@@ -83,7 +83,7 @@ class SignosVitales(models.Model):
     unidad_frecuencia_cardiaca=models.CharField(max_length=3,null=False, blank=True,default='PPM')
     unidad_saturacion_oxigeno=models.CharField(max_length=1,default='%',null=False, blank=True)
     valor_temperatura=models.DecimalField(max_digits=5,decimal_places=2,validators=[MaxValueValidator(50),MinValueValidator(15)],null=True, blank=True)
-    valor_peso=models.DecimalField(max_digits=4,decimal_places=2,validators=[MaxValueValidator(500),MinValueValidator(0)],null=True, blank=True)
+    valor_peso=models.DecimalField(max_digits=5,decimal_places=2,validators=[MaxValueValidator(500),MinValueValidator(0)],null=True, blank=True)
     valor_presion_arterial_diastolica=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=True, blank=True)
     valor_presion_arterial_sistolica=models.IntegerField(validators=[MaxValueValidator(350),MinValueValidator(0)],null=True, blank=True)
     valor_frecuencia_cardiaca=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=True, blank=True)

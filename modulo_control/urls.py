@@ -23,6 +23,7 @@ urlpatterns = [
     path('empleados/', vista_adminitracion_empleados, name= 'vistaGestionEmpleados'),
     path('empleados/lista/', lista_empleados, name="listaEmpleados"),
     path('empleados/lista/<str:cod_empleado>', get_empleado, name='get_empleado'),
+
     
     
 ]

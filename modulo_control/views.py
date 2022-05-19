@@ -33,6 +33,10 @@ se coloque en modo producción.
 def vista_iniciarsesion(request):
     return render(request,"login.html")
 
+def cerrar_sesion(request):
+    logout(request)
+    return redirect('login')
+
 @csrf_exempt
 def logearse(request):
     mensaje=""
@@ -240,9 +244,11 @@ def editar_empleado(request):
 
 @login_required(login_url='/login/')        
 def vista_adminitracion_empleados(request):
-    roles = Rol.objects.all()
-    
-    return render(request,"Control/gestionEmpleados.html", {"Rol":roles})
+    if request.user.roles.id_rol==5:
+        roles = Rol.objects.all()
+        return render(request,"Control/gestionEmpleados.html", {"Rol":roles})
+    else:
+        return render(request,"baseControl.html")
 
 @login_required()  
 def lista_empleados(request):

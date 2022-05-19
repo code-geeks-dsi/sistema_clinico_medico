@@ -320,10 +320,15 @@ def modificar_signosVitales(request, id_signos_vitales):
                 signosvitales.valor_peso=valor_peso
                 signosvitales.valor_presion_arterial_diastolica=valor_arterial_diasolica
                 signosvitales.valor_presion_arterial_sistolica=valor_arterial_sistolica
-                signosvitales.valor_frecuencia_cardiaca=valor_frecuencia_cardiaca
+                signosvitales.valor_frecuencia_cardiaca=int(valor_frecuencia_cardiaca)
                 signosvitales.valor_saturacion_oxigeno=valor_saturacion_oxigeno
                 signosvitales.enfermera= enfermera
                 signosvitales.save()
+
+                consulta=Consulta.objects.get(signos_vitales_id=id_signos)
+                contieneConsulta=ContieneConsulta.objects.get(consulta_id=consulta.id_consulta)
+                contieneConsulta.fase_cola_medica="3"
+                contieneConsulta.save()
                 response['type']='success'
                 response['data']='Se han registrado los signos vitales'
             except ValueError:
