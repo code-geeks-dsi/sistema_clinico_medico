@@ -245,6 +245,7 @@
 {% endblock %}
 <!--Js de la vista-->
 {% block js %}
+<script src="{% static 'js/sistemaClinico.js' %}"></script>
 <script>
     const url = "{% url 'autocompletado_apellidos' %}";
     const urlFiltro = "{% url 'busqueda_paciente' %}";

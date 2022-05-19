@@ -38,7 +38,7 @@ class EmpleadoManager(BaseUserManager):
         #Crear usuario
         empleado=self.model(
             codigo_empleado=codigo,
-            email=self.normalize_email(email),
+            email=self.normalize_email(email).lower(),
             nombres=nombres,
             apellidos=apellidos,
             password=password

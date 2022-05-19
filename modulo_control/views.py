@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseNotFound,Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
+from pkg_resources import normalize_path
 from modulo_control.forms import EmpleadoForm,LicLaboratorioClinicoForm,DoctorForm
 from modulo_control.models import *
 from modulo_control.serializers import EmpleadoSerializer, RolSerializer, SimpleEmpleadoSerializer
@@ -42,6 +43,7 @@ def logearse(request):
         #mensaje="Si recibí los datos"
 
         if aux != -1:
+            email=email.lower()
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
