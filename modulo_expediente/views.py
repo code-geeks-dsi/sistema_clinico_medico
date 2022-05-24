@@ -1,6 +1,7 @@
 from time import time
 from django.shortcuts import redirect, render
 from django.db.models import Q
+from modulo_control.views import ROL_ADMIN
 from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
@@ -22,6 +23,7 @@ ROL_DOCTOR=1
 ROL_ENFERMERA=2
 ROL_LIC_LABORATORIO=3
 ROL_SECRETARIA=4
+ROL_ADMIN=5
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -42,10 +44,13 @@ def autocompletado_apellidos(request):
 
 @login_required(login_url='/login/')
 def sala_consulta(request):
-    return render(request,"expediente/sala.html",{'rol':request.user.roles.id_rol,'ROL_DOCTOR':ROL_DOCTOR,
+    if request.user.roles.id_rol !=ROL_ADMIN:
+        return render(request,"expediente/sala.html",{'rol':request.user.roles.id_rol,'ROL_DOCTOR':ROL_DOCTOR,
                                                     'ROL_ENFERMERA':ROL_ENFERMERA,
                                                     'ROL_LIC_LABORATORIO':ROL_LIC_LABORATORIO,
                                                     'ROL_SECRETARIA':ROL_SECRETARIA})
+    else:
+        return render(request,"Control/error403.html")
 
 #Metodo que devuelve los datos del paciente en json
 @login_required
