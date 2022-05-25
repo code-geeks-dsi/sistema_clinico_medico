@@ -18,6 +18,7 @@ from urllib.request import urlopen
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
+from django.contrib import messages
 ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
@@ -250,7 +251,7 @@ def crear_expediente(request):
     else:
         if idpaciente==None:
             formulario= DatosDelPaciente(request.POST)
-            if formulario.is_valid():
+            if  formulario.is_valid():
                 new_paciente=formulario.save()
                 expediente=Expediente()
                 expediente.fecha_creacion_expediente=datetime.now()
@@ -280,6 +281,7 @@ def crear_expediente(request):
                     idList.append(i['id_paciente'])
                 expediente.id_paciente_id=idList[-1]
                 expediente.save()
+                messages.add_message(request=request, level=messages.SUCCESS, message="Paciente registrado con exito")
                 base_url = reverse('crear_expediente')
                 query_string =  urlencode({'id': new_paciente.id_paciente})
                 url = '{}?{}'.format(base_url, query_string)
@@ -288,6 +290,7 @@ def crear_expediente(request):
             paciente=Paciente.objects.get(id_paciente=idpaciente)
             formulario = DatosDelPaciente(request.POST, instance=paciente)
             formulario.save()
+            messages.add_message(request=request, level=messages.SUCCESS, message="El Paciente se ha modificado con exito")
         
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
 
