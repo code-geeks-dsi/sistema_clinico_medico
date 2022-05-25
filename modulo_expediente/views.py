@@ -6,9 +6,9 @@ from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSe
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
-from modulo_expediente.models import Consulta, Paciente, ContieneConsulta, Expediente, SignosVitales
+from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, SignosVitales
 from modulo_control.models import Enfermera, Empleado
-from modulo_expediente.forms import DatosDelPaciente
+from modulo_expediente.forms import DatosDelPaciente, IngresoMedicamentos
 from django.http import JsonResponse
 import json
 from datetime import date
@@ -18,6 +18,7 @@ from urllib.request import urlopen
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
+from django.contrib import messages
 ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
@@ -250,7 +251,7 @@ def crear_expediente(request):
     else:
         if idpaciente==None:
             formulario= DatosDelPaciente(request.POST)
-            if formulario.is_valid():
+            if  formulario.is_valid():
                 new_paciente=formulario.save()
                 expediente=Expediente()
                 expediente.fecha_creacion_expediente=datetime.now()
@@ -280,6 +281,7 @@ def crear_expediente(request):
                     idList.append(i['id_paciente'])
                 expediente.id_paciente_id=idList[-1]
                 expediente.save()
+                messages.add_message(request=request, level=messages.SUCCESS, message="Paciente registrado con exito")
                 base_url = reverse('crear_expediente')
                 query_string =  urlencode({'id': new_paciente.id_paciente})
                 url = '{}?{}'.format(base_url, query_string)
@@ -288,6 +290,7 @@ def crear_expediente(request):
             paciente=Paciente.objects.get(id_paciente=idpaciente)
             formulario = DatosDelPaciente(request.POST, instance=paciente)
             formulario.save()
+            messages.add_message(request=request, level=messages.SUCCESS, message="El Paciente se ha modificado con exito")
         
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
 
@@ -347,3 +350,30 @@ def modificar_signosVitales(request, id_signos_vitales):
     else:
         response['data']="Ingrese la unidad de la temperatura."
     return JsonResponse(response, safe=False)
+
+def agregar_medicamento(request):
+    idmedicamento=request.GET.get('id', None)
+    if request.method == 'GET':
+        if idmedicamento==None:
+            formulario= IngresoMedicamentos()
+        else:     
+            medicamento=Medicamento.objects.get(id_medicamento=idmedicamento)
+            formulario = IngresoMedicamentos(instance=medicamento)
+
+    else:
+        if idmedicamento==None:
+            formulario= IngresoMedicamentos(request.POST)
+            if  formulario.is_valid():
+                new_medicamento=formulario.save()
+                messages.add_message(request=request, level=messages.SUCCESS, message="Medicamento registrado con exito")
+                base_url = reverse('agregar_medicamento')
+                query_string =  urlencode({'id': new_medicamento.id_medicamento})
+                url = '{}?{}'.format(base_url, query_string)
+                return redirect(url)
+        else:
+            medicamento=Medicamento.objects.get(id_medicamento=idmedicamento)
+            formulario = IngresoMedicamentos(request.POST, instance=medicamento)
+            formulario.save()
+            messages.add_message(request=request, level=messages.SUCCESS, message="El Medicamento se ha modificado con exito")
+        
+    return render(request,"medicamentos.html",{'formulario':formulario})

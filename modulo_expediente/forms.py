@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm, TextInput
 from django import forms
-from .models import Paciente
+from .models import Paciente, Medicamento
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
@@ -44,3 +44,8 @@ class DatosDelPaciente(ModelForm):
             ),
 
 }
+
+class IngresoMedicamentos(ModelForm):
+    class Meta:
+        model = Medicamento
+        fields = ('nombre_comercial', 'nombre_generico','cantidad_medicamento','unidad_medicamento')
