@@ -1,7 +1,7 @@
 from django import forms
-from django.forms import ModelForm
+from django.forms import ModelForm, TextInput
 from django import forms
-from .models import Paciente
+from .models import Paciente, Medicamento
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
@@ -17,4 +17,35 @@ class DatosDelPaciente(ModelForm):
                'placeholder': 'Select a date',
                'type': 'date'
               }),
+            'nombre_paciente': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese los nombres',
+              } 
+            ),
+            'apellido_paciente': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese los apellidos',
+              } 
+            ),
+            'direccion_paciente': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Calle, número de casa, Ciudad, Departamento',
+              } 
+            ),
+            'email_paciente': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'example@gmail.com',
+              } 
+            ),
+            'responsable': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Nombres Apellidos',
+              } 
+            ),
+
 }
+
+class IngresoMedicamentos(ModelForm):
+    class Meta:
+        model = Medicamento
+        fields = ('nombre_comercial', 'nombre_generico','cantidad_medicamento','unidad_medicamento')

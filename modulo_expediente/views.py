@@ -1,24 +1,30 @@
 from time import time
 from django.shortcuts import redirect, render
 from django.db.models import Q
+from modulo_control.views import ROL_ADMIN
 from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
-from modulo_expediente.models import Consulta, Paciente, ContieneConsulta, Expediente, SignosVitales
+from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, SignosVitales
 from modulo_control.models import Enfermera, Empleado
-from modulo_expediente.forms import DatosDelPaciente
+from modulo_expediente.forms import DatosDelPaciente, IngresoMedicamentos
 from django.http import JsonResponse
 import json
 from datetime import date
 from django.urls import reverse
 from urllib.parse import urlencode
 from urllib.request import urlopen
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ValidationError
+from django.contrib import messages
 ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
 ROL_LIC_LABORATORIO=3
 ROL_SECRETARIA=4
+ROL_ADMIN=5
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -37,22 +43,27 @@ def autocompletado_apellidos(request):
     return JsonResponse({"data":apellidosList})
     #la clave tiene que ser data para que funcione con el metodo. 
 
+@login_required(login_url='/login/')
 def sala_consulta(request):
-
-    return render(request,"expediente/sala.html",{'rol':ROL,'ROL_DOCTOR':ROL_DOCTOR,
+    if request.user.roles.id_rol !=ROL_ADMIN:
+        return render(request,"expediente/sala.html",{'rol':request.user.roles.id_rol,'ROL_DOCTOR':ROL_DOCTOR,
                                                     'ROL_ENFERMERA':ROL_ENFERMERA,
                                                     'ROL_LIC_LABORATORIO':ROL_LIC_LABORATORIO,
                                                     'ROL_SECRETARIA':ROL_SECRETARIA})
+    else:
+        return render(request,"Control/error403.html")
 
 #Metodo que devuelve los datos del paciente en json
+@login_required
 def get_paciente(request, id_paciente):
     paciente=Paciente.objects.filter(id_paciente=id_paciente)
     serializer=PacienteSerializer(paciente, many= True)
     return JsonResponse(serializer.data, safe=False)
-
+@csrf_exempt
+@login_required()
 #Metodo que devuelve los datos del objeto contiene consulta en json
 def agregar_cola(request, id_paciente):
-    CODIGO_EMPLEADO=1
+    #CODIGO_EMPLEADO=1
     expediente=Expediente.objects.get(id_paciente_id=id_paciente)
     idExpediente=expediente.id_expediente
     fecha=datetime.now()
@@ -74,7 +85,7 @@ def agregar_cola(request, id_paciente):
         
         #Creando objetos signos vitales
         signosvitales=SignosVitales()
-        signosvitales.enfermera=Enfermera.objects.get(id_enfermera=CODIGO_EMPLEADO)
+        #signosvitales.enfermera=Enfermera.objects.get(id_enfermera=CODIGO_EMPLEADO)
         signosvitales.save()
         #Creando objeto Consulta
         consulta=Consulta()
@@ -111,17 +122,20 @@ def contiene_consulta_con_filtro(request):
     serializer=ContieneConsultaSerializer(contieneconsulta, many=True)
     return JsonResponse(serializer.data, safe=False)
 
-
+@login_required()
 def  get_cola(request):
     fecha=datetime.now()
     lista=[]
-    if(ROL==ROL_SECRETARIA):
+    rol=request.user.roles.id_rol
+
+    if(rol==ROL_SECRETARIA):
         contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                         fecha_de_cola__month=fecha.month, 
                         fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
         
         for fila in contiene_consulta:
             diccionario={
+                "id_consulta":"",
                 "numero_cola":"",
                 "nombre":"",
                 "apellidos":"",
@@ -129,7 +143,7 @@ def  get_cola(request):
                 "consumo_medico":"",
                 "estado_cola_medica":"",
             }
-            
+            diccionario['id_consulta']=fila.consulta.id_consulta
             diccionario["numero_cola"]= fila.numero_cola
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
@@ -137,7 +151,7 @@ def  get_cola(request):
             diccionario["consumo_medico"]= fila.consumo_medico
             diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
             lista.append(diccionario)
-    elif(ROL==ROL_DOCTOR):
+    elif(rol==ROL_DOCTOR):
         #en la vista doctor se retorna el apellido de la barra de busqueda del paciente
         apellido_paciente=request.GET.get('apellido_paciente','')
         year=int(request.GET.get('year',0))
@@ -162,13 +176,15 @@ def  get_cola(request):
         
         for fila in contiene_consulta:
             diccionario={
+                "id_consulta":"",
                 "numero_cola":"",
                 "nombre":"",
                 "apellidos":"",
                 "fase_cola_medica":"",
                 "fecha_de_cola":""
             }
-            
+            #En id_consulta devuelve el id_de los signos
+            diccionario['id_consulta']=fila.consulta.id_consulta
             diccionario["numero_cola"]= fila.numero_cola
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
@@ -177,7 +193,7 @@ def  get_cola(request):
             lista.append(diccionario)
             # del diccionario
                 
-    elif (ROL==ROL_ENFERMERA):
+    elif (rol==ROL_ENFERMERA):
         # recupera los pacientes en cola en fase anotado
         contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                         fecha_de_cola__month=fecha.month, 
@@ -186,11 +202,12 @@ def  get_cola(request):
         
         for fila in contiene_consulta:
             diccionario={
+                "id_consulta":"",
                 "numero_cola":"",
                 "nombre":"",
                 "apellidos":"",
             }
-            
+            diccionario['id_consulta']=fila.consulta.id_consulta
             diccionario["numero_cola"]= fila.numero_cola
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
@@ -234,7 +251,7 @@ def crear_expediente(request):
     else:
         if idpaciente==None:
             formulario= DatosDelPaciente(request.POST)
-            if formulario.is_valid():
+            if  formulario.is_valid():
                 new_paciente=formulario.save()
                 expediente=Expediente()
                 expediente.fecha_creacion_expediente=datetime.now()
@@ -264,6 +281,7 @@ def crear_expediente(request):
                     idList.append(i['id_paciente'])
                 expediente.id_paciente_id=idList[-1]
                 expediente.save()
+                messages.add_message(request=request, level=messages.SUCCESS, message="Paciente registrado con exito")
                 base_url = reverse('crear_expediente')
                 query_string =  urlencode({'id': new_paciente.id_paciente})
                 url = '{}?{}'.format(base_url, query_string)
@@ -272,30 +290,90 @@ def crear_expediente(request):
             paciente=Paciente.objects.get(id_paciente=idpaciente)
             formulario = DatosDelPaciente(request.POST, instance=paciente)
             formulario.save()
+            messages.add_message(request=request, level=messages.SUCCESS, message="El Paciente se ha modificado con exito")
         
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
 
   
-
+@csrf_exempt
 def modificar_signosVitales(request, id_signos_vitales):
-
-    signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos_vitales)
-    signosvitales.unidad_temperatura=request.POST['unidad_temperatura']
-    signosvitales.unidad_peso=request.POST['unidad_peso']
-    signosvitales.unidad_presion_arterial_diastolica=request.POST['unidad_presion_arterial_diastolica']
-    signosvitales.unidad_presion_arterial_sistolica=request.POST['unidad_presion_arterial_sistolica']
-    signosvitales.unidad_frecuencia_cardiaca=request.POST['frecuencia_cardiaca']
-    signosvitales.unidad_saturacion_oxigeno=request.POST['unidad_saturacion_oxigeno']
-    signosvitales.valor_temperatura=request.POST['valor_temperatura']
-    signosvitales.valor_peso=request.POST['valor_peso']
-    signosvitales.valor_presion_arterial_diastolica=request.POST['valor_presion_arterial_diastolica']
-    signosvitales.valor_presion_arterial_sistolica=request.POST['valor_presion_arterial_sistolica']
-    signosvitales.valor_frecuencia_cardiaca=request.POST['valor_frecuencia_cardiaca']
-    signosvitales.valor_saturacion_oxigeno=request.POST['valor_saturacion_oxigeno']
-    signosvitales.save()
     response={
-        'type':'success',
-        'title':'Modificado',
-        'data':'Se han modificado los signos vitales'
-    }
+                'type':'warning',
+                'title':'Modificado',
+                'data':'aun no funciona'
+            }
+    unidad_temperatura=request.POST['unidad_temperatura']
+    unidad_peso=request.POST['unidad_peso']
+    valor_temperatura=request.POST['valor_temperatura']
+    valor_peso=request.POST['valor_peso']
+    valor_arterial_diasolica=request.POST['valor_presion_arterial_diastolica']
+    valor_arterial_sistolica=request.POST['valor_presion_arterial_sistolica']
+    valor_frecuencia_cardiaca=request.POST['valor_frecuencia_cardiaca']
+    valor_saturacion_oxigeno=request.POST['valor_saturacion_oxigeno']
+
+    id_signos=int(id_signos_vitales)
+    if unidad_temperatura=="1" or unidad_temperatura == "2": 
+        if unidad_peso == "1" or unidad_peso=="2":
+            #if id_signos_vitales!=0:    
+            try:
+                enfermera= Enfermera.objects.get(empleado=request.user.codigo_empleado)
+                signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos)
+                signosvitales.unidad_temperatura=unidad_temperatura
+                signosvitales.unidad_peso=unidad_peso
+                signosvitales.unidad_presion_arterial_diastolica='mmHg'
+                signosvitales.unidad_presion_arterial_sistolica='mmHg'
+                signosvitales.unidad_frecuencia_cardiaca="PPM"
+                signosvitales.unidad_saturacion_oxigeno="%"
+                signosvitales.valor_temperatura=valor_temperatura
+                signosvitales.valor_peso=valor_peso
+                signosvitales.valor_presion_arterial_diastolica=valor_arterial_diasolica
+                signosvitales.valor_presion_arterial_sistolica=valor_arterial_sistolica
+                signosvitales.valor_frecuencia_cardiaca=int(valor_frecuencia_cardiaca)
+                signosvitales.valor_saturacion_oxigeno=valor_saturacion_oxigeno
+                signosvitales.enfermera= enfermera
+                signosvitales.save()
+
+                consulta=Consulta.objects.get(signos_vitales_id=id_signos)
+                contieneConsulta=ContieneConsulta.objects.get(consulta_id=consulta.id_consulta)
+                contieneConsulta.fase_cola_medica="3"
+                contieneConsulta.save()
+                response['type']='success'
+                response['data']='Se han registrado los signos vitales'
+            except ValueError:
+                response['data']="Ingrese todos los datos."
+            except:
+                response['data']="Error de datos, posiblemente no tienen el nivel de acceso necesario."
+            #else:
+            #    response['data']="Signos vitales invalidos"
+        else:
+            response['data']="Ingrese las unidades del peso."
+    else:
+        response['data']="Ingrese la unidad de la temperatura."
     return JsonResponse(response, safe=False)
+
+def agregar_medicamento(request):
+    idmedicamento=request.GET.get('id', None)
+    if request.method == 'GET':
+        if idmedicamento==None:
+            formulario= IngresoMedicamentos()
+        else:     
+            medicamento=Medicamento.objects.get(id_medicamento=idmedicamento)
+            formulario = IngresoMedicamentos(instance=medicamento)
+
+    else:
+        if idmedicamento==None:
+            formulario= IngresoMedicamentos(request.POST)
+            if  formulario.is_valid():
+                new_medicamento=formulario.save()
+                messages.add_message(request=request, level=messages.SUCCESS, message="Medicamento registrado con exito")
+                base_url = reverse('agregar_medicamento')
+                query_string =  urlencode({'id': new_medicamento.id_medicamento})
+                url = '{}?{}'.format(base_url, query_string)
+                return redirect(url)
+        else:
+            medicamento=Medicamento.objects.get(id_medicamento=idmedicamento)
+            formulario = IngresoMedicamentos(request.POST, instance=medicamento)
+            formulario.save()
+            messages.add_message(request=request, level=messages.SUCCESS, message="El Medicamento se ha modificado con exito")
+        
+    return render(request,"medicamentos.html",{'formulario':formulario})
