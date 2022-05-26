@@ -168,6 +168,8 @@ def  get_cola(request):
                 filterData['fecha_de_cola__day']=day
             # # si se estan cargando los valores por defecto
         else:
+            
+            filterData['fase_cola_medica']=ContieneConsulta.OPCIONES_FASE[2][0]
             filterData['fecha_de_cola__year']=fecha.year 
             filterData['fecha_de_cola__month']=fecha.month
             filterData['fecha_de_cola__day']=fecha.day
