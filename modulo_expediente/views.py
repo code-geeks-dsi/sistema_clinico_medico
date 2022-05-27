@@ -1,4 +1,5 @@
 from time import time
+from xml.dom import INVALID_CHARACTER_ERR
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_control.views import ROL_ADMIN
@@ -383,9 +384,14 @@ def agregar_medicamento(request):
 
 @login_required
 def editar_consulta(request,id_consulta):
-    return render(request,"expediente/consulta.html",{'id_consulta':id_consulta})
+    contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+    paciente=contiene_consulta.expediente.id_paciente
+    signos_vitales=contiene_consulta.consulta.signos_vitales
+    datos={
+        'paciente':paciente,
+        'signos_vitales':signos_vitales,
+        'id_consulta':id_consulta
+    }
+    return render(request,"expediente/consulta.html",datos)
 
-
-def consulta2(request):
-    return render(request,"expediente/consulta.html")
 
