@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm, TextInput
 from django import forms
-from .models import Paciente, Medicamento
+from .models import Consulta, Paciente, Medicamento
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
@@ -49,3 +49,22 @@ class IngresoMedicamentos(ModelForm):
     class Meta:
         model = Medicamento
         fields = ('nombre_comercial', 'nombre_generico','cantidad_medicamento','unidad_medicamento')
+
+class ConsultaFormulario(ModelForm):
+  # diagnostico=forms.CharField(widget=forms.Textarea(attrs={"rows":5, "cols":20}))
+  # sintoma=forms.CharField(widget=forms.Textarea(attrs={"resize": "vertical",
+  #   'min-width': '-webkit-fill-available'}))
+  class Meta:
+    model=Consulta
+    fields=['diagnostico','sintoma']
+    widgets = {
+            'diagnostico': forms.Textarea(attrs={
+                                                  "rows":5,
+                                                  "cols":20
+                                                  }),
+            'sintoma': forms.Textarea(attrs={
+                                                  "rows":5,
+                                                  "cols":20
+                                                  })
+
+              }
