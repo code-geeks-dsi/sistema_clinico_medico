@@ -93,8 +93,8 @@ class SignosVitales(models.Model):
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
     signos_vitales= models.OneToOneField('SignosVitales',on_delete=models.DO_NOTHING,null=False, blank=False)
-    diagnostico=models.CharField(max_length=200, blank=True, null=False)
-    sintoma=models.CharField(max_length=200, blank=True, null=False)
+    diagnostico=models.TextField(max_length=200, blank=True, null=False)
+    sintoma=models.TextField(max_length=200, blank=True, null=False)
 
 class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)

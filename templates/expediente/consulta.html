@@ -51,7 +51,9 @@
                 </div>
             </div>  
         </div>
-        {{paciente}}
+        {{paciente.nombre_paciente}}
+        {{paciente.apellido_paciente}}
+        {{ paciente.fecha_nacimiento_paciente.year }}
         {{signos_vitales.valor_temperatura}}
         <!--Datos Consulta-->
         <div class="col-12 py-4">
@@ -59,6 +61,25 @@
                 <div class="card-body">
                   Datos de consulta
                 </div>
+            <div>
+                <form  method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div>
+                        
+                        {{consulta_form.diagnostico.errors}}
+                        <label for="{{ consulta_form.sintoma.id_for_label }}">Sintomas</label>
+                            <textarea name="{{consulta_form.sintoma.name}}" id="{{consulta_form.sintoma.id_for_label}}" style="width:100%;" rows="10">{{consulta_form.diagnostico.value}}</textarea>
+                        </div>
+                        <div>
+                            {{consulta_form.sintoma.errors}}
+                            <label for="{{ consulta_form.diagnostico.id_for_label }}">Diagnostico</label>
+                            <textarea name="{{consulta_form.diagnostico.name}}" id="{{consulta_form.diagnostico.id_for_label}}" style="width:100%;"rows="10">{{consulta_form.sintoma.value}}</textarea>
+                        </div>
+                        <input type="submit" value="Guardar">
+                </form>
+                
+            </div>
             </div>  
         </div>
         <!--Botones-->

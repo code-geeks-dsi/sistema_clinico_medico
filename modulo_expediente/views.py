@@ -9,7 +9,7 @@ from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
 from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, SignosVitales
 from modulo_control.models import Enfermera, Empleado
-from modulo_expediente.forms import DatosDelPaciente, IngresoMedicamentos
+from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, IngresoMedicamentos
 from django.http import JsonResponse
 import json
 from datetime import date
@@ -387,11 +387,23 @@ def editar_consulta(request,id_consulta):
     contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
     paciente=contiene_consulta.expediente.id_paciente
     signos_vitales=contiene_consulta.consulta.signos_vitales
+    consulta=Consulta.objects.get(id_consulta=id_consulta)
+    if request.method=='POST':
+        consulta_form=ConsultaFormulario(request.POST,instance=consulta)
+        if consulta_form.is_valid():
+            consulta=consulta_form.save()
+            messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
+    else:
+        consulta_form=ConsultaFormulario(instance=consulta)
+
     datos={
         'paciente':paciente,
         'signos_vitales':signos_vitales,
-        'id_consulta':id_consulta
+        'id_consulta':id_consulta,
+        'consulta_form':consulta_form
     }
+    
     return render(request,"expediente/consulta.html",datos)
+    
 
 
