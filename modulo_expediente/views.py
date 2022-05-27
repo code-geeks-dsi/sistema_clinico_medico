@@ -321,8 +321,14 @@ def modificar_signosVitales(request, id_signos_vitales):
             try:
                 enfermera= Enfermera.objects.get(empleado=request.user.codigo_empleado)
                 signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos)
-                signosvitales.unidad_temperatura=unidad_temperatura
-                signosvitales.unidad_peso=unidad_peso
+                if unidad_temperatura=="1":
+                    signosvitales.unidad_temperatura='F'
+                elif unidad_temperatura=="2":
+                    signosvitales.unidad_temperatura='C'
+                if unidad_peso=="1":
+                    signosvitales.unidad_peso='Lbs'
+                elif unidad_peso=="2":
+                    signosvitales.unidad_peso='Kgs'
                 signosvitales.unidad_presion_arterial_diastolica='mmHg'
                 signosvitales.unidad_presion_arterial_sistolica='mmHg'
                 signosvitales.unidad_frecuencia_cardiaca="PPM"
@@ -383,7 +389,10 @@ def agregar_medicamento(request):
 
 @login_required
 def editar_consulta(request,id_consulta):
-    return render(request,"expediente/consulta.html",{'id_consulta':id_consulta})
+    consulta=Consulta.objects.get(id_consulta=id_consulta)
+    signos_vitales=consulta.signos_vitales
+    print(signos_vitales.get_unidad_temperatura_display())
+    return render(request,"expediente/consulta.html",{'id_consulta':id_consulta, 'signos':signos_vitales})
 
 
 def consulta2(request):
