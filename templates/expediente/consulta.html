@@ -9,8 +9,98 @@
 {% block titulo %} Consulta {% endblock %}
 {% block content %}
 <div class="container py-4">
-    <h1>Consulta</h1>
-</div>
+    <h1 class="fw-bold text-secondary">Consulta</h1>
+
+    <div class="row">
+        <!--Datos del paciente-->
+        <div class="col-md-12 col-lg-6 py-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Datos del Paciente</h5>
+                    <p>Nombre: </p>
+                    <p>Apellido: </p>
+                    <p>Edad: </p>
+                </div>
+              </div>        
+        </div>
+        <!--Signos Vitales-->
+        <div class="col-md-12 col-lg-6 py-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Signos Vitales</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="">
+                                <p>Temperatura: </p>
+                                <p>Frecuencia Cardica: </p>
+                                <p>Peso: </p>
+                                <p>Presión Arterial: </p>
+                                <p>Saturación Oxigeno: </p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="">
+                                <p>Temperatura: </p>
+                                <p>Frecuencia Cardica: </p>
+                                <p>Peso: </p>
+                                <p>Presión Arterial: </p>
+                                <p>Saturación Oxigeno: </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        </div>
+        <!--Datos Consulta-->
+        <div class="col-12 py-4">
+            <div class="card">
+                <div class="card-body">
+                  Datos de consulta
+                </div>
+            </div>  
+        </div>
+        <!--Botones-->
+        <div class="col-4">
+        </div>
+        <div class="col-8 text-end">
+            <button class="btn btn-outline-secondary w-0 my-1">
+                <div class="row align-items-center">
+                    <div class="col-2">
+                        <span class="material-symbols-outlined g-0 w-0">
+                            medication_liquid
+                        </span>
+                    </div>
+                    <div class="col-10 text-center">
+                        Referencia Medica
+                    </div>
+                </div>
+            </button>
+            <button class="btn btn-outline-secondary w-0 my-1">
+                <div class="row align-items-center">
+                    <div class="col-2">
+                        <span class="material-symbols-outlined g-0 w-0">
+                            emergency
+                        </span>
+                    </div>
+                    <div class="col-10 text-center">
+                        Referencia Medica
+                    </div>
+                </div>
+            </button>
+            <button class="btn btn-outline-secondary w-0 my-1">
+                <div class="row align-items-center">
+                    <div class="col-2">
+                        <span class="material-symbols-outlined g-0 w-0">
+                            biotech
+                        </span>
+                    </div>
+                    <div class="col-10 text-center">
+                        Orden de Examen
+                    </div>
+                </div>
+            </button>
+        </div>
+    </div>
 {% endblock %}
 {% block js %}
 {% endblock %}
