@@ -17,9 +17,16 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title text-secondary">Datos del Paciente</h5>
-                    <p>Nombre: </p>
-                    <p>Apellido: </p>
-                    <p>Edad: </p>
+                    <hr class="dropdown-divider">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="pt-2">
+                                <p>Nombre: </p>
+                                <p>Apellido: </p>
+                                <p>Edad: </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
               </div>        
         </div>
@@ -28,9 +35,10 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title text-secondary">Signos Vitales</h5>
+                    <hr class="dropdown-divider">
                     <div class="row">
                         <div class="col-6">
-                            <div class="">
+                            <div class="pt-2">
                                 <p>Temperatura: </p>
                                 <p>Frecuencia Cardica: </p>
                                 <p>Peso: </p>
@@ -39,7 +47,7 @@
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="">
+                            <div class="pt-2">
                                 <p>Temperatura: </p>
                                 <p>Frecuencia Cardica: </p>
                                 <p>Peso: </p>
@@ -55,7 +63,16 @@
         <div class="col-12 py-4">
             <div class="card">
                 <div class="card-body">
-                  Datos de consulta
+                    <h5 class="card-title text-secondary">Datos de Consulta</h5>
+                    <hr class="dropdown-divider">
+                  <div class="pt-2">
+                    <label for="txt_sintomas" class="form-label">Sintomas</label>
+                    <textarea class="form-control" id="txt_sintomas" rows="3"></textarea>
+                  </div>
+                  <div class="pt-2">
+                    <label for="txt_diagnostico" class="form-label">Diagnostico</label>
+                    <textarea class="form-control" id="txt_diagnostico" rows="3"></textarea>
+                  </div>
                 </div>
             </div>  
         </div>
