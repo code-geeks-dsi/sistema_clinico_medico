@@ -53,6 +53,7 @@ def sala_consulta(request):
     else:
         return render(request,"Control/error403.html")
 
+
 #Metodo que devuelve los datos del paciente en json
 @login_required
 def get_paciente(request, id_paciente):
@@ -379,3 +380,6 @@ def agregar_medicamento(request):
             messages.add_message(request=request, level=messages.SUCCESS, message="El Medicamento se ha modificado con exito")
         
     return render(request,"medicamentos.html",{'formulario':formulario})
+@login_required
+def editar_consulta(request,id_consulta):
+    return render(request,"expediente/consulta.html",{'id_consulta':id_consulta})
