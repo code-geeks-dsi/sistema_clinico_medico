@@ -92,15 +92,14 @@ class SignosVitales(models.Model):
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
-    constancia_medica= models.OneToOneField('ConstanciaMedica',on_delete=models.DO_NOTHING,parent_link=True,null=True, blank=False)
     signos_vitales= models.OneToOneField('SignosVitales',on_delete=models.DO_NOTHING,null=False, blank=False)
-    examen_de_laboratorio= models.OneToOneField('OrdenExamenLaboratorio', on_delete=models.DO_NOTHING, blank=True, null=True)
     diagnostico=models.CharField(max_length=200, blank=True, null=False)
     sintoma=models.CharField(max_length=200, blank=True, null=False)
 
 class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)
     fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
+    consulta=models.ForeignKey('Consulta',on_delete=models.DO_NOTHING,null=False, blank=False)
     examen_de_laboratorio=models.ForeignKey('modulo_laboratorio.ExamenLaboratorio',on_delete=models.DO_NOTHING,null=False, blank=False)
 
 class Hospital(models.Model):
@@ -112,6 +111,7 @@ class Hospital(models.Model):
 
 class ReferenciaMedica(models.Model):
     id_referencia_medica= models.AutoField(primary_key=True)
+    consulta=models.ForeignKey('Consulta',models.DO_NOTHING,null=False, blank=False)
     hospital=models.ForeignKey(Hospital,models.DO_NOTHING,null=False, blank=False)
     especialidad=models.CharField(max_length=30,null=False, blank=False)
     fecha_referencia=models.DateField(default=datetime.now,null=False, blank=False)
@@ -221,7 +221,7 @@ class BrindaConsulta(models.Model):
 
 class ConstanciaMedica(models.Model):
     id_constancia_medica= models.AutoField(primary_key=True)
-    #consulta= models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=False)
+    consulta= models.ForeignKey('Consulta', models.DO_NOTHING, blank=False, null=False)
     fecha_de_emision=models.DateField(default=datetime.now, blank=False, null=False)
     dias_reposo=models.IntegerField(blank=False, null=False)#Los integer no llevan max_length
     diagnostico_constancia=models.CharField(max_length=200, blank=False, null=False)
