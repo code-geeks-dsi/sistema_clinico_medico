@@ -20,6 +20,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from dateutil.relativedelta import relativedelta
 ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
@@ -402,12 +403,13 @@ def editar_consulta(request,id_consulta):
             messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
     else:
         consulta_form=ConsultaFormulario(instance=consulta)
-
+    edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
     datos={
         'paciente':paciente,
         'signos_vitales':signos_vitales,
         'id_consulta':id_consulta,
-        'consulta_form':consulta_form
+        'consulta_form':consulta_form,
+        'edad':edad
     }
     
     return render(request,"expediente/consulta.html",datos)
