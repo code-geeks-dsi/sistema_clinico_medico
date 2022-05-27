@@ -380,6 +380,12 @@ def agregar_medicamento(request):
             messages.add_message(request=request, level=messages.SUCCESS, message="El Medicamento se ha modificado con exito")
         
     return render(request,"medicamentos.html",{'formulario':formulario})
+
 @login_required
 def editar_consulta(request,id_consulta):
     return render(request,"expediente/consulta.html",{'id_consulta':id_consulta})
+
+
+def consulta2(request):
+    return render(request,"expediente/consulta.html")
+
