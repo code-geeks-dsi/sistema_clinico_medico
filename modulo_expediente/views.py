@@ -2,10 +2,10 @@ from time import time
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_control.views import ROL_ADMIN
-from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
+from modulo_expediente.serializers import MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
-from modulo_expediente.filters import PacienteFilter
+from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, SignosVitales
 from modulo_control.models import Enfermera, Empleado
 from modulo_expediente.forms import DatosDelPaciente, IngresoMedicamentos
@@ -377,3 +377,19 @@ def agregar_medicamento(request):
             messages.add_message(request=request, level=messages.SUCCESS, message="El Medicamento se ha modificado con exito")
         
     return render(request,"medicamentos.html",{'formulario':formulario})
+
+
+def busqueda_Medicamento(request):
+    result= MedicamentoFilter(request.GET, queryset=Medicamento.objects.all())
+    Medicamento =MedicamentoSerializer(result.qs, many=True)
+    return JsonResponse({'data':Medicamento.data})
+     #la clave tiene que ser data para que funcione con el metodo.
+
+def autocompletado_Medicamento(request):
+    
+    Medicamento=Medicamento.objects.values('nombre_generico').all()
+    medicamentosList=[]
+    for Medicamento in medicamentosList:
+        medicamentosList.append(Medicamento['nombre_generico'])
+    return JsonResponse({"data":medicamentosList})
+    #la clave tiene que ser data para que funcione con el metodo
