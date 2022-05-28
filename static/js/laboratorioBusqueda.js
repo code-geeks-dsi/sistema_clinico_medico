@@ -1,3 +1,15 @@
+
+//Al presionar la lupa
+document.getElementById("filtro_buscar").addEventListener("click",function(){
+  getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta);
+});
+
+document.getElementById("selectCategoria").addEventListener("change", function(){
+
+  accionServer($('#selectCategoria').val(), 2);
+  console.log($('#selectCategoria').val());
+});
+
 function getAutocompletado(url, id_component, urlFiltro, complementoConsulta, tablaData){
     let dataAutoComletado = [];
     let consultaData = new XMLHttpRequest();
@@ -48,7 +60,7 @@ function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsul
                 for (const property in p) {
                     elemento = elemento+'<td>'+`${p[property]}`+'</td>';
                 }
-                elemento=elemento+'<td><div onclick="accionServer('+Object.values(p)[0]+',1);"class="material-symbols-outlined btn" >add</div></td>';
+                elemento=elemento+'<td><div onclick="setPaciente('+Object.values(p)[0]+','+"'"+Object.values(p)[1]+"', '"+Object.values(p)[2]+"', "+"'"+Object.values(p)[3]+"'"+');"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#modalSelectExamen" >add</div></td>';
                 elemento=elemento+'</tr>';
                 tablaData.insertAdjacentHTML("beforeend", elemento);
                 
@@ -65,3 +77,27 @@ function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsul
       filtroResultado.send();
     }
   }
+
+function setPaciente(id_paciente, nombre_paciente, apellido_paciente, fecha_nacimiento){
+  edad=getEdad(fecha_nacimiento);
+  $('#pacienteId').val(id_paciente);
+  $('#nombrePaciente').val(nombre_paciente+" "+apellido_paciente);
+  $('#edadPaciente').val(edad +" años")
+  console.log(edad);
+
+}
+function getEdad(dateString) {
+  let hoy = new Date()
+  let fechaNacimiento = new Date(dateString)
+  let edad = hoy.getFullYear() - fechaNacimiento.getFullYear()
+  let diferenciaMeses = hoy.getMonth() - fechaNacimiento.getMonth()
+  if (
+    diferenciaMeses < 0 ||
+    (diferenciaMeses === 0 && hoy.getDate() < fechaNacimiento.getDate())
+  ) {
+    edad--
+  }
+  return edad
+}
+
+
