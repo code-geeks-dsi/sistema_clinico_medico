@@ -12,7 +12,7 @@ class PacienteFilter(django_filters.FilterSet):
         # 'apellido_paciente' ]
 class MedicamentoFilter(django_filters.FilterSet):
     # nombre_paciente = django_filters.CharFilter(lookup_expr='icontains')
-    Medicamento = django_filters.CharFilter(lookup_expr='icontains')
+    nombre_generico = django_filters.CharFilter(lookup_expr='icontains')
     class Meta:
         model = Medicamento
         exclude=['nombre_comercial', 'nombre_generico','cantidad_medicamento','unidad_medicamento']

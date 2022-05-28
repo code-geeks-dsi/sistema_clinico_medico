@@ -2,7 +2,7 @@ from django import views
 from django.contrib import admin
 from django.urls import path
 from modulo_expediente.views import agregar_medicamento, busqueda_paciente, autocompletado_apellidos, eliminar_cola,sala_consulta,get_cola,get_paciente,agregar_cola, modificar_signosVitales, crear_expediente
-
+from modulo_expediente.views import busqueda_Medicamento, autocompletado_Medicamento
 
 
 urlpatterns = [
@@ -18,6 +18,8 @@ urlpatterns = [
     path('cola/', get_cola, name='get_contieneConsulta'),
     path('cola/eliminar-paciente/<int:id_paciente>', eliminar_cola, name='eliminar_cola'),
     path('modificar-signosVitales/<int:id_signos_vitales>',modificar_signosVitales, name='modificar_signosVitales'),
-    path('receta_medica/agregar-medicamento', agregar_medicamento, name='agregar_medicamento')
+    path('receta_medica/agregar-medicamento', agregar_medicamento, name='agregar_medicamento'),
+    path('medicamento/',busqueda_Medicamento, name='agregar_medicamento'),
+    path('medicamento/ghj',autocompletado_Medicamento, name='agregar_medicamento')
 ]
 

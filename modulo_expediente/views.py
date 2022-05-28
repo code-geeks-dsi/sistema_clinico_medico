@@ -380,16 +380,17 @@ def agregar_medicamento(request):
 
 
 def busqueda_Medicamento(request):
-    result= MedicamentoFilter(request.GET, queryset=Medicamento.objects.all())
-    Medicamento =MedicamentoSerializer(result.qs, many=True)
-    return JsonResponse({'data':Medicamento.data})
+    queryset=Medicamento.objects.all()
+    result= MedicamentoFilter(request.GET, queryset=queryset)
+    medicamento =MedicamentoSerializer(result.qs, many=True)
+    return JsonResponse({'data':medicamento.data})
      #la clave tiene que ser data para que funcione con el metodo.
 
 def autocompletado_Medicamento(request):
     
-    Medicamento=Medicamento.objects.values('nombre_generico').all()
+    medicamentos=Medicamento.objects.values('nombre_generico').all()
     medicamentosList=[]
-    for Medicamento in medicamentosList:
-        medicamentosList.append(Medicamento['nombre_generico'])
+    for medicamento in medicamentos:
+        medicamentosList.append(medicamento['nombre_generico'])
     return JsonResponse({"data":medicamentosList})
     #la clave tiene que ser data para que funcione con el metodo
