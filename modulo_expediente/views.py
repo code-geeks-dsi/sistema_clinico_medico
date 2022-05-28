@@ -391,28 +391,30 @@ def agregar_medicamento(request):
 
 @login_required
 def editar_consulta(request,id_consulta):
-
-    contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
-    paciente=contiene_consulta.expediente.id_paciente
-    signos_vitales=contiene_consulta.consulta.signos_vitales
-    consulta=Consulta.objects.get(id_consulta=id_consulta)
-    if request.method=='POST':
-        consulta_form=ConsultaFormulario(request.POST,instance=consulta)
-        if consulta_form.is_valid():
-            consulta=consulta_form.save()
-            messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
+    if request.user.roles.id_rol ==ROL_DOCTOR:
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        paciente=contiene_consulta.expediente.id_paciente
+        signos_vitales=contiene_consulta.consulta.signos_vitales
+        consulta=Consulta.objects.get(id_consulta=id_consulta)
+        if request.method=='POST':
+            consulta_form=ConsultaFormulario(request.POST,instance=consulta)
+            if consulta_form.is_valid():
+                consulta=consulta_form.save()
+                messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
+        else:
+            consulta_form=ConsultaFormulario(instance=consulta)
+        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        datos={
+            'paciente':paciente,
+            'signos_vitales':signos_vitales,
+            'id_consulta':id_consulta,
+            'consulta_form':consulta_form,
+            'edad':edad
+        }
+        
+        return render(request,"expediente/consulta.html",datos)
     else:
-        consulta_form=ConsultaFormulario(instance=consulta)
-    edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
-    datos={
-        'paciente':paciente,
-        'signos_vitales':signos_vitales,
-        'id_consulta':id_consulta,
-        'consulta_form':consulta_form,
-        'edad':edad
-    }
-    
-    return render(request,"expediente/consulta.html",datos)
+        return render(request,"Control/error403.html")
     
 def busqueda_Medicamento(request):
     queryset=Medicamento.objects.all()
