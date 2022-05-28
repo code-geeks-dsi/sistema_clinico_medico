@@ -48,7 +48,7 @@ function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsul
                 for (const property in p) {
                     elemento = elemento+'<td>'+`${p[property]}`+'</td>';
                 }
-                elemento=elemento+'<td><div onclick="accionServer('+Object.values(p)[0]+');"class="material-symbols-outlined btn" >add</div></td>';
+                elemento=elemento+'<td><div onclick="accionServer('+Object.values(p)[0]+',1);"class="material-symbols-outlined btn" >add</div></td>';
                 elemento=elemento+'</tr>';
                 tablaData.insertAdjacentHTML("beforeend", elemento);
                 

@@ -331,7 +331,7 @@
                     id_consulta=x.id_consulta;
                     delete x.id_consulta;
                     for (const property in x) {
-                        elemento = elemento+'<td>'+`${x[property]}`+'</td>';
+                        elemento = elemento+'<td valign="middle">'+`${x[property]}`+'</td>';
                     }
                     {% if rol == ROL_ENFERMERA %}
                     icon="monitor_heart";
@@ -343,7 +343,15 @@
                     click="";
                     icon = "more_vert";
                     {% endif %}
+                    {% if rol == ROL_DOCTOR %}
+                    elemento=elemento+`<td>
+                      <a role="button"   class="btn btn-outline-primary" href="/expediente/consulta/${id_consulta}">
+                      <div class="material-symbols-outlined">edit_note</div>
+                      <div>Abrir Consulta</div> 
+                      </a></td>`;
+                    {% else %}
                     elemento=elemento+'<td><div class="material-symbols-outlined btn" '+click+' '+modal+' >'+icon+'</div></td>';
+                    {% endif %}
                     elemento=elemento+'</tr>';
         
         //   <input type="button"  value="Agregar a cola para examenes de Lab">
@@ -401,6 +409,9 @@
 
       edit.setAttribute("OnClick", strfuncion);
     }
+    setInterval(() => {
+      consultarCola(url_consulta, tablaCola);
+    }, 60*1000);
     
 </script>
 

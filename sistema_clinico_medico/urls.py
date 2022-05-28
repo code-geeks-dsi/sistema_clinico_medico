@@ -33,6 +33,7 @@ urlpatterns = [
     path('expediente/', include('modulo_expediente.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('control/', include('modulo_control.urls')),
+    path('laboratorio/', include('modulo_laboratorio.urls')),
 
 ]
 urlpatterns += staticfiles_urlpatterns()

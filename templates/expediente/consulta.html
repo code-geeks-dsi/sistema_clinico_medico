@@ -1,0 +1,172 @@
+{% extends "baseControl.html" %}
+{% load static %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Consulta {% endblock %}
+{% block content %}
+
+<div class="container py-4">
+    <h1 class="fw-bold text-secondary">Consulta</h1>
+
+    <div class="row">
+        <!--Datos del paciente-->
+        <div class="col-md-12 col-lg-6 py-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Datos del Paciente</h5>
+                    <hr class="dropdown-divider">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="pt-2 fw-bold">
+                                <p>Nombre: </p>
+                                <p>Apellido: </p>
+                                <p>Edad: </p>
+                                <p>Email: </p>
+                                <p>Responsable: </p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="pt-2">
+                                <p>{{ paciente.nombre_paciente }}</p>
+                                <p>{{ paciente.apellido_paciente }}</p>
+                                <p>{{ edad.years }} años</p>
+                                <p>{{ paciente.email_paciente }}</p>
+                                <p>{{ paciente.responsable }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>        
+        </div>
+        <!--signos_vitales Vitales-->
+        <div class="col-md-12 col-lg-6 py-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Signos Vitales</h5>
+                    <hr class="dropdown-divider">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="pt-2 fw-bold">
+                                <p>Temperatura: </p>
+                                <p>Frecuencia Cardica: </p>
+                                <p>Peso: </p>
+                                <p>Presión Arterial: </p>
+                                <p>Saturación Oxigeno: </p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="pt-2">
+                                <p>{{ signos_vitales.valor_temperatura }} {{ signos_vitales.unidad_temperatura }}</p>
+                                <p>{{ signos_vitales.valor_peso }} {{ signos_vitales.unidad_peso }}</p>
+                                <p>{{ signos_vitales.valor_frecuencia_cardiaca }} {{ signos_vitales.unidad_frecuencia_cardiaca }}</p>
+                                <p>{{ signos_vitales.valor_presion_arterial_sistolica }}/{{ signos_vitales.valor_presion_arterial_diastolica }}</p>
+                                <p>{{ signos_vitales.valor_saturacion_oxigeno }} %</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        </div>
+        <!--Datos Consulta-->
+        <div class="col-12 py-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Datos de Consulta</h5>
+                    <hr class="dropdown-divider">
+
+                    <form  method="post">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        <div class="pt-2">      
+                            {{consulta_form.diagnostico.errors}}
+                            <label  for="{{ consulta_form.sintoma.id_for_label }}" class="form-label" >Sintomas</label>
+                            <textarea name="{{consulta_form.sintoma.name}}" id="{{consulta_form.sintoma.id_for_label}}"  class="form-control" rows="3" maxlength="200">{{consulta_form.sintoma.value}}</textarea>
+                        </div>
+                        <div class="pt-2">
+                            {{consulta_form.sintoma.errors}}
+                            <label for="{{ consulta_form.diagnostico.id_for_label }}" class="form-label">Diagnostico</label>
+                            <textarea name="{{consulta_form.diagnostico.name}}" id="{{consulta_form.diagnostico.id_for_label}}" class="form-control" rows="3" maxlength="200">{{consulta_form.diagnostico.value}}</textarea>
+                        </div>
+                        <!--Botones-->
+                        <div class="row pt-3">
+                            <div class="col-md-12 col-lg-4">
+                                <input type="submit" class="btn btn-outline-success "  value="Guardar">
+                            </div>
+                            <div class="col-md-12 col-lg-8 text-end">
+                                <a class="btn btn-outline-secondary w-0 my-1"  data-bs-toggle="modal" data-bs-target="#agregarReceta">
+                                    <div class="row align-items-center">
+                                        <div class="col-2">
+                                            <span class="material-symbols-outlined g-0 w-0">
+                                                medication_liquid
+                                            </span>
+                                        </div>
+                                        <div class="col-10 text-center">
+                                            Referencia Medica
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta">
+                                    <div class="row align-items-center">
+                                        <div class="col-2">
+                                            <span class="material-symbols-outlined g-0 w-0">
+                                                emergency
+                                            </span>
+                                        </div>
+                                        <div class="col-10 text-center">
+                                            Referencia Medica
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta">
+                                    <div class="row align-items-center">
+                                        <div class="col-2">
+                                            <span class="material-symbols-outlined g-0 w-0">
+                                                biotech
+                                            </span>
+                                        </div>
+                                        <div class="col-10 text-center">
+                                            Orden de Examen
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>                        
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" id="agregarReceta"  aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>    
+{% endblock %}
+{% block js %}
+<script>
+    '{% for message in messages %}'
+        '{% if message.tags %}'
+        toastr[ '{{ message.tags }}' ]( '{{ message }}' );
+        '{% endif %}'
+    '{% endfor %}'
+</script>
+{% endblock %}
+
