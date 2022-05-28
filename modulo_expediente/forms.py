@@ -1,5 +1,7 @@
+
+from tkinter.tix import Select
 from django import forms
-from django.forms import ModelForm, TextInput
+from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
 from .models import Consulta, Paciente, Medicamento
 
@@ -27,6 +29,10 @@ class DatosDelPaciente(ModelForm):
                'placeholder': 'Ingrese los apellidos',
               } 
             ),
+            'sexo_paciente': Select(
+               attrs={'class': 'form-control'
+              } 
+            ),
             'direccion_paciente': TextInput(
                attrs={'class': 'form-control', 
                'placeholder': 'Calle, número de casa, Ciudad, Departamento',
@@ -49,7 +55,26 @@ class IngresoMedicamentos(ModelForm):
     class Meta:
         model = Medicamento
         fields = ('nombre_comercial', 'nombre_generico','cantidad_medicamento','unidad_medicamento')
-
+        widgets = {
+            'nombre_comercial': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese el nombre comercial del medicamento',
+              } 
+            ),
+            'nombre_generico': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese el nombre generico del medicamento',
+              } 
+            ),
+            'cantidad_medicamento': NumberInput(
+               attrs={'class': 'form-control'
+              } 
+            ),
+            'unidad_medicamento': Select(
+               attrs={'class': 'form-control'
+              } 
+            ),
+        }
 class ConsultaFormulario(ModelForm):
   # diagnostico=forms.CharField(widget=forms.Textarea(attrs={"rows":5, "cols":20}))
   # sintoma=forms.CharField(widget=forms.Textarea(attrs={"resize": "vertical",
