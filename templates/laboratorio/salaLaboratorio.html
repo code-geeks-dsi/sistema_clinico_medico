@@ -118,17 +118,78 @@
                 </div>
             </div>
             <div class="modal-footer">
-
             </div>
           </div>
         </div>
       </div>
+
+
+      <!--Modal seleccionar Examen-->
+      <div class="modal" tabindex="-1" id="modalSelectExamen"  aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Seleccionar Examen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <!--Datos del paciente-->
+                  <p class="fw-bold text-secondary">Datos del Paciente</p>
+                  <hr class="dropdown-divider">
+                  <div class="row">
+                    <div class="col-md-12 col-lg-6">
+                      <div class="mb-3">
+                        <label for="nombrePaciente" class="form-label">Nombre del paciente:</label>
+                        <input type="text" class="form-control" id="nombrePaciente" aria-describedby="emailHelp" disabled>
+                      </div>
+                    </div>
+                    <div class="col-md-12 col-lg-6">
+                      <div class="mb-3">
+                        <label for="edadPaciente" class="form-label">Edad del paciente:</label>
+                        <input type="text" class="form-control" id="edadPaciente" aria-describedby="emailHelp" disabled>
+                      </div>
+                    </div>
+                  </div>
+                  <input type="text" id="pacienteId" hidden>
+                  <!--Datos del Examen-->
+                  <p class="fw-bold text-secondary pt-2">Examen a Realizar</p>
+                  <hr class="dropdown-divider">
+                  <div class="row">
+                    <div class="col-md-12 col-lg-6">
+                      <div class="mb-3">
+                        <label for="selectCategoria" class="form-label">Seleccione el Perfil</label>
+                        <select id="selectCategoria" class="form-select">
+                          {% for c in Categoria %}
+                            <option value="{{ c.id_categoria }}">{{ c.nombre_categoria }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-12 col-lg-6">
+                      <div class="mb-3">
+                        <label for="selectExamen" class="form-label">Seleccione el Examen</label>
+                        <select id="selectExamen" class="form-select">
+                          {% for e in Examen %}
+                            <option value="{{ e.examen_laboratorio.id_examen_laboratorio }}">{{ e.examen_laboratorio.nombre_examen }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+      </div>
     </div>   
-</div>
+  </div>
 {% endblock %}
 <!--Js de la vista-->
 {% block js %}
-<script src="{% static 'js/sistemaClinico.js' %}"></script>
+<script src="{% static 'js/laboratorioBusqueda.js' %}"></script>
 <script>
     const url = "{% url 'autocompletado_apellidos' %}";
     const urlFiltro = "{% url 'busqueda_paciente' %}";
@@ -141,18 +202,69 @@
     let tablaCola=document.getElementById(tablaColaConsulta);
     let tablaData=document.getElementById(tablaResultado);
 
+    //Para moviles, click en la lupa
+    
+
+
+    //Invocando Funciones
+    getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
+
+
+    function accionServer(id, accion){
+      let url_accion="";
+
+      switch (accion){
+        //Si se va agregar a la cola
+        case 1:
+          url_accion = "/laboratorio/cola/";
+          url_agregar_cola=url_accion+id;
+          metodo="POST";
+          break;
+        //  
+        case 2:
+          url_accion="/laboratorio/get-select-examen/";
+          url_agregar_cola=url_accion+id;
+          metodo="GET";
+          console.log("prueba")
+          break;
+      }
+      //console.log(url_agregar_cola);
+      //console.log($('#inputTemperatura').val().toString());
+
+      $.ajax({
+        url: url_consulta,
+                url: url_agregar_cola,
+                type:metodo,
+                dataType: "json",
+                data: {
+                  
+                },
+                success: function(data){ 
+                  switch(data.accion){
+                    case 1:
+                      onsultarCola(url_consulta, tablaCola);
+                      toastr[data.type](data.data);
+                      break;
+                    case 2:
+                      $('#selectExamen').fadeIn(1000).html(data);
+                      let selectExamen=document.getElementById('selectExamen');
+                      selectExamen.innerHTML=null
+                      let elemento=""
+                      data.data.map((x)=>{
+                        elemento= elemento+'<option value="'+x.id_examen+'">'+x.nombre_examen+'</option>';
+                      });
+                      selectExamen.insertAdjacentHTML("beforeend", elemento);
+                      break;
+                  }           
+                }
+      });
+      
+    }
+
     //event listeners para buscar pacientes o filtrar consultas
     // {% if rol == ROL_SECRETARIA %}    
     //Para moviles, click en la lupa
-    document.getElementById("filtro_buscar").addEventListener("click",function(){
-      getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta);
-    });
-    document.getElementById(id_component).addEventListener('keypress',(e)=>{
-      if (e.key === 'Enter') {
-        getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta, id_modal);
-        
-      }
-    });
+/*    
     // {% elif rol == ROL_DOCTOR %}
     // #fecha por defecto
     // document.getElementById('fecha_consulta').valueAsDate = new Date();
@@ -248,41 +360,7 @@
             });
     }
     //Voy a ocupar la misma funcion para agregar y eliminar.
-    function accionServer(id, accion){
-      let url_accion="";
-
-      switch (accion){
-        //Si se va agregar a la cola
-        case 1:
-          url_accion = "/laboratorio/cola/";
-          url_agregar_cola=url_accion+id;
-          metodo="POST";
-          break;
-        //  
-        case 2:
-          url_accion="";
-          url_agregar_cola=url_accion+id;
-          metodo="GET";
-          break;
-      }
-      console.log(url_agregar_cola);
-      //console.log($('#inputTemperatura').val().toString());
-
-      $.ajax({
-        url: url_consulta,
-                url: url_agregar_cola,
-                type:metodo,
-                dataType: "json",
-                data: {
-                  
-                },
-                success: function(data){ 
-                  toastr[data.type](data.data);           
-                  consultarCola(url_consulta, tablaCola);
-                }
-      });
-      
-    }
+    
     //Editar signos vitales
     function modificar_btn_editar_signos(id_consulta){
       edit = document.getElementById("guarda_signos_vitales");
@@ -293,7 +371,7 @@
     setInterval(() => {
       consultarCola(url_consulta, tablaCola);
     }, 60*1000);
-    
+*/    
 </script>
 
 {% endblock %}
