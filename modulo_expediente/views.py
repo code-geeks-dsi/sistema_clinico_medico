@@ -3,10 +3,10 @@ from xml.dom import INVALID_CHARACTER_ERR
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_control.views import ROL_ADMIN
-from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
+from modulo_expediente.serializers import MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
-from modulo_expediente.filters import PacienteFilter
+from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, SignosVitales
 from modulo_control.models import Enfermera, Empleado
 from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, IngresoMedicamentos
@@ -416,5 +416,18 @@ def editar_consulta(request,id_consulta):
     else:
         return render(request,"Control/error403.html")
     
+def busqueda_Medicamento(request):
+    queryset=Medicamento.objects.all()
+    result= MedicamentoFilter(request.GET, queryset=queryset)
+    medicamento =MedicamentoSerializer(result.qs, many=True)
+    return JsonResponse({'data':medicamento.data})
+     #la clave tiene que ser data para que funcione con el metodo.
 
-
+def autocompletado_Medicamento(request):
+    
+    medicamentos=Medicamento.objects.values('nombre_generico').all()
+    medicamentosList=[]
+    for medicamento in medicamentos:
+        medicamentosList.append(medicamento['nombre_generico'])
+    return JsonResponse({"data":medicamentosList})
+    #la clave tiene que ser data para que funcione con el metodo

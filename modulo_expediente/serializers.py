@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from modulo_expediente.models import Paciente, ContieneConsulta
+from modulo_expediente.models import Medicamento, Paciente, ContieneConsulta
 # class PacienteSerializer(serializers.Serializer):
 #     id_paciente=serializers.IntegerField()
 #     nombre_paciente = serializers.CharField(max_length=200)
@@ -14,7 +14,10 @@ class PacienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Paciente
         fields = '__all__'
-
+class MedicamentoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Medicamento
+        fields = '__all__'
 class ContieneConsultaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContieneConsulta
