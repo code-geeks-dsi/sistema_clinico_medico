@@ -179,7 +179,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary"
+                    onclick="agregarExamen();">Save changes</button>
                 </div>
             </div>
         </div>
@@ -202,7 +203,27 @@
     let tablaCola=document.getElementById(tablaColaConsulta);
     let tablaData=document.getElementById(tablaResultado);
 
-    //Para moviles, click en la lupa
+    function agregarExamen(){
+      //recuperacion de datos 
+      let id_examen_laboratorio=parseInt($('#language').val())
+      let id_paciente=parseInt(document.getElementById('pacienteId').value);
+      $.ajax({
+        url: url_consulta,
+                url:"{% url 'agregar_examen_cola' %}",
+                type:"POST",
+                dataType: "json",
+                headers: {
+                          'X-CSRFToken': "{{ csrf_token }}"
+                        },
+                data: {
+                        'id_paciente':id_paciente,
+                        'id_examen_laboratorio':id_examen_laboratorio
+                      },
+                success: function(data){ 
+                 console.log(data) 
+                }
+      });
+    }
     
 
 
@@ -242,7 +263,7 @@
                 success: function(data){ 
                   switch(data.accion){
                     case 1:
-                      onsultarCola(url_consulta, tablaCola);
+                      consultarCola(url_consulta, tablaCola);
                       toastr[data.type](data.data);
                       break;
                     case 2:

@@ -83,7 +83,7 @@ function setPaciente(id_paciente, nombre_paciente, apellido_paciente, fecha_naci
   $('#pacienteId').val(id_paciente);
   $('#nombrePaciente').val(nombre_paciente+" "+apellido_paciente);
   $('#edadPaciente').val(edad +" años")
-  console.log(edad);
+  
 
 }
 function getEdad(dateString) {
