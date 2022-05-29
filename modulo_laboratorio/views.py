@@ -30,7 +30,21 @@ def get_categoria_examen(request, id_categoria):
     response['data']=serializer.data
     return JsonResponse(response, safe=False)
 
+def agregar_examen_cola(request):
+    id_paciente=request.POST.get('id_paciente',0)
+    id_examen_laboratorio=request.POST.get('id_examen_laboratorio',0)
+    examen_item=EsperaExamen.create(id_paciente,id_examen_laboratorio)
+    examen_item.save()
+    response={
+            'type':'success',
+            'title':'Guardado!',
+            'data':'Examen agregado a la cola'
+        }
 
+    return JsonResponse({}, safe=False)
+
+
+    return JsonResponse(response, safe=False)
 #View que retorna lista de examenes en espera
 def get_cola_examenes(request):
     fecha=datetime.now()
@@ -59,20 +73,3 @@ def get_cola_examenes(request):
                 diccionario["estado_pago_laboratorio"]= fila.get_estado_pago_laboratorio_display()
                 lista.append(diccionario)
     return JsonResponse( lista, safe=False)
-
-def agregar_examen_cola(request):
-    id_paciente=request.POST.get('id_paciente',0)
-    id_examen_laboratorio=request.POST.get('id_examen_laboratorio',0)
-    examen_item=EsperaExamen.create(id_paciente,id_examen_laboratorio)
-    examen_item.save()
-    response={
-            'type':'success',
-            'title':'Guardado!',
-            'data':'Examen agregado a la cola'
-        }
-
-    return JsonResponse({}, safe=False)
-
-
-    return JsonResponse(response, safe=False)
-
