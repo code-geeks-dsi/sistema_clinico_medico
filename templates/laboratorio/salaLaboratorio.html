@@ -205,7 +205,10 @@
 
     function agregarExamen(){
       //recuperacion de datos 
-      let id_examen_laboratorio=parseInt($('#language').val())
+      console.log()
+      // let id_examen_laboratorio=parseInt(1)
+      let id_examen_laboratorio=$('#selectExamen').val()
+
       let id_paciente=parseInt(document.getElementById('pacienteId').value);
       $.ajax({
         url: url_consulta,
@@ -213,7 +216,7 @@
                 type:"POST",
                 dataType: "json",
                 headers: {
-                          'X-CSRFToken': "{{ csrf_token }}"
+                          'X-CSRFToken': "{{csrf_token }}"
                         },
                 data: {
                         'id_paciente':id_paciente,

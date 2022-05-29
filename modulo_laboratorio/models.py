@@ -4,7 +4,7 @@ from unittest import result
 from django.db import models
 from django.forms import DateField
 from django.utils.timezone import now
-from modulo_expediente.models import Paciente
+from modulo_expediente.models import Expediente, Paciente
 
 
 # Create your models here.
@@ -23,24 +23,30 @@ class EsperaExamen(models.Model):
     expediente=models.ForeignKey('modulo_expediente.Expediente', on_delete=models.CASCADE)
     estado_pago_laboratorio=models.CharField(max_length=15, default=OPCIONES_ESTADO[0][0], choices=OPCIONES_ESTADO, null=False, blank=False)
     numero_cola_laboratorio=models.IntegerField(null=False,blank=False)
+
     consumo_laboratorio=models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
     fase_examenes_lab=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False,default=1)
+
+    consumo_laboratorio=models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False,default=0)
+    fase_examenes_lab=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False,default=OPCIONES_FASE[0][0])
+
     fecha=models.DateTimeField( default=now, blank=True)
 
     @classmethod
-    def create(cls, id_paciente):
-        paciente=Paciente.objects.get(id_paciente=id_paciente)
-        resultado=Resultado()
+    def create(cls, id_paciente,id_examen_laboratorio):
+        expediente=Expediente.objects.get(id_paciente=id_paciente)
+        examen_laboratorio=ExamenLaboratorio.objects.get(id_examen_laboratorio=id_examen_laboratorio)
+        resultado=Resultado(examen_laboratorio=examen_laboratorio)
+        resultado.save()
         hoy=datetime.now()
-        numero_cola_laboratorio=EsperaExamen.objects.filter(
-                            fecha__year=hoy.year, 
-                            fecha__month=hoy.month).last()
-        if hoy.day==1 and not numero_cola_laboratorio:
+        try:
+            numero_cola_laboratorio=EsperaExamen.objects.filter(
+                                fecha__year=hoy.year, 
+                                fecha__month=hoy.month).last().numero_cola_laboratorio+1
+        except:
             numero_cola_laboratorio=1
-        else:
-            numero_cola_laboratorio=numero_cola_laboratorio +1
         cola_item = cls(
-            paciente=paciente,
+            expediente=expediente,
             resultado=resultado,
             numero_cola_laboratorio=numero_cola_laboratorio)
             

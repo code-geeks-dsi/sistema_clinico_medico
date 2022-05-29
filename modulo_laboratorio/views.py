@@ -40,11 +40,16 @@ def get_cola_examenes(request):
 def agregar_examen_cola(request):
     id_paciente=request.POST.get('id_paciente',0)
     id_examen_laboratorio=request.POST.get('id_examen_laboratorio',0)
-    examen_item=EsperaExamen.create(id_paciente)
+    examen_item=EsperaExamen.create(id_paciente,id_examen_laboratorio)
+    examen_item.save()
     response={
             'type':'success',
             'title':'Guardado!',
             'data':'Examen agregado a la cola'
         }
+
     return JsonResponse({}, safe=False)
+
+
+    return JsonResponse(response, safe=False)
 
