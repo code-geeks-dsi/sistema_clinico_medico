@@ -47,29 +47,29 @@ def agregar_examen_cola(request):
     return JsonResponse(response, safe=False)
 #View que retorna lista de examenes en espera
 def get_cola_examenes(request):
-    fecha=datetime.now()
+    fecha_hoy=datetime.now()
     lista=[]
-    espera_examen=EsperaExamen.objects.filter(fecha__year=fecha.year, 
-                        fecha__month=fecha.month, 
-                        fecha__day=fecha.day).select_related('expediente__id_paciente')
-
-    if EsperaExamen.fase_examenes_lab==1:
-        for fila in espera_examen:
-                diccionario={
-                    "numero_cola_laboratorio":"",
-                    "nombre":"",
-                    "apellidos":"",
-                    "sexo":"",
-                    "fase_examenes_lab":"",
-                    "consumo_laboratorio":"",
-                    "estado_pago_laboratorio":"",
-                }
-                diccionario["numero_cola_laboratorio"]= fila.numero_cola
-                diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
-                diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
-                diccionario["sexo"]=fila.expediente.id_paciente.sexo_paciente
-                diccionario["fase_examenes_lab"]= fila.get_fase_examenes_lab_display()
-                diccionario["consumo_laboratorio"]= fila.consumo_laboratorio
-                diccionario["estado_pago_laboratorio"]= fila.get_estado_pago_laboratorio_display()
-                lista.append(diccionario)
+    espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
+                        fecha__month=fecha_hoy.month, 
+                        fecha__day=fecha_hoy.day,fase_examenes_lab=EsperaExamen.OPCIONES_FASE[0][0]).select_related('expediente__id_paciente')
+    for fila in espera_examen:
+                    diccionario={
+                        "numero_cola_laboratorio":"",
+                        "nombre":"",
+                        "apellidos":"",
+                        "sexo":"",
+                        "fase_examenes_lab":"",
+                        "consumo_laboratorio":"",
+                        "estado_pago_laboratorio":"",
+                    }
+                    diccionario["numero_cola_laboratorio"]= fila.numero_cola_laboratorio
+                    diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+                    diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+                    diccionario["sexo"]=fila.expediente.id_paciente.sexo_paciente
+                    diccionario["fase_examenes_lab"]= fila.get_fase_examenes_lab_display()
+                    diccionario["consumo_laboratorio"]= fila.consumo_laboratorio
+                    diccionario["estado_pago_laboratorio"]= fila.get_estado_pago_laboratorio_display()
+                    lista.append(diccionario)
+                    del diccionario
     return JsonResponse( lista, safe=False)
+
