@@ -1,5 +1,9 @@
+
+import datetime
+
 from curses import pair_content
 import json
+
 from django.http import JsonResponse
 from django.shortcuts import render
 from modulo_expediente.models import Paciente
@@ -26,6 +30,13 @@ def get_categoria_examen(request, id_categoria):
     response['data']=serializer.data
     return JsonResponse(response, safe=False)
 
+
+#View que retorna lista de examenes en espera
+def get_cola_examenes(request):
+    fecha=datetime.now()
+    lista=[]
+    
+
 def agregar_examen_cola(request):
     id_paciente=request.POST.get('id_paciente',0)
     id_examen_laboratorio=request.POST.get('id_examen_laboratorio',0)
@@ -36,4 +47,9 @@ def agregar_examen_cola(request):
             'title':'Guardado!',
             'data':'Examen agregado a la cola'
         }
+
+    return JsonResponse({}, safe=False)
+
+
     return JsonResponse(response, safe=False)
+

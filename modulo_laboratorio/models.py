@@ -23,8 +23,13 @@ class EsperaExamen(models.Model):
     expediente=models.ForeignKey('modulo_expediente.Expediente', on_delete=models.CASCADE)
     estado_pago_laboratorio=models.CharField(max_length=15, default=OPCIONES_ESTADO[0][0], choices=OPCIONES_ESTADO, null=False, blank=False)
     numero_cola_laboratorio=models.IntegerField(null=False,blank=False)
+
+    consumo_laboratorio=models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
+    fase_examenes_lab=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False,default=1)
+
     consumo_laboratorio=models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False,default=0)
     fase_examenes_lab=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False,default=OPCIONES_FASE[0][0])
+
     fecha=models.DateTimeField( default=now, blank=True)
 
     @classmethod
