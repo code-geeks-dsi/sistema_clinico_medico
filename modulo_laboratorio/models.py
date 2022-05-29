@@ -1,6 +1,10 @@
+from datetime import datetime
 from re import S
+from unittest import result
 from django.db import models
 from django.forms import DateField
+from django.utils.timezone import now
+from modulo_expediente.models import Paciente
 
 
 # Create your models here.
@@ -16,20 +20,39 @@ class EsperaExamen(models.Model):
         ('2','Finalizado'),
     )
     resultado=models.ForeignKey('Resultado', on_delete=models.CASCADE)
-    paciente=models.ForeignKey('modulo_expediente.Paciente', on_delete=models.CASCADE)
-    estado_pago_laboratorio=models.CharField(max_length=15, default="-", choices=OPCIONES_ESTADO, null=False, blank=False)
+    expediente=models.ForeignKey('modulo_expediente.Expediente', on_delete=models.CASCADE)
+    estado_pago_laboratorio=models.CharField(max_length=15, default=OPCIONES_ESTADO[0][0], choices=OPCIONES_ESTADO, null=False, blank=False)
     numero_cola_laboratorio=models.IntegerField(null=False,blank=False)
     consumo_laboratorio=models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
     fase_examenes_lab=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False,default=1)
+    fecha=models.DateTimeField( default=now, blank=True)
+
+    @classmethod
+    def create(cls, id_paciente):
+        paciente=Paciente.objects.get(id_paciente=id_paciente)
+        resultado=Resultado()
+        hoy=datetime.now()
+        numero_cola_laboratorio=EsperaExamen.objects.filter(
+                            fecha__year=hoy.year, 
+                            fecha__month=hoy.month).last()
+        if hoy.day==1 and not numero_cola_laboratorio:
+            numero_cola_laboratorio=1
+        else:
+            numero_cola_laboratorio=numero_cola_laboratorio +1
+        cola_item = cls(
+            paciente=paciente,
+            resultado=resultado,
+            numero_cola_laboratorio=numero_cola_laboratorio)
+            
+        return cola_item
     def __str__(self):
         return str(self.id_examina)+" - "+str(self.id_paciente)
 
 class Resultado(models.Model):
     id_resultado = models.AutoField(primary_key=True)
-    lic_laboratorio = models.ForeignKey('modulo_control.LicLaboratorioClinico', on_delete=models.CASCADE)
-    paciente = models.ForeignKey('modulo_expediente.Paciente', on_delete=models.CASCADE)
-    parametro=models.ManyToManyField('Parametro', through='ContieneValor')
-    fecha_resultado=models.DateField()
+    lic_laboratorio = models.ForeignKey('modulo_control.LicLaboratorioClinico', on_delete=models.CASCADE,null=True)
+    examen_laboratorio= models.ForeignKey('ExamenLaboratorio', on_delete=models.DO_NOTHING,null=False)
+    
 
     def __str__(self):
         return self.id_resultado
