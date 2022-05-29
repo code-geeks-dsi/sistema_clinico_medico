@@ -1,3 +1,4 @@
+import datetime
 from django.http import JsonResponse
 from django.shortcuts import render
 from modulo_laboratorio.models import Categoria, CategoriaExamen
@@ -22,3 +23,9 @@ def get_categoria_examen(request, id_categoria):
     serializer = CategoriaExamenSerializer(categoriaExamen, many= True)
     response['data']=serializer.data
     return JsonResponse(response, safe=False)
+
+#View que retorna lista de examenes en espera
+def get_cola_examenes(request):
+    fecha=datetime.now()
+    lista=[]
+    

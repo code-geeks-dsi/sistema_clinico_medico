@@ -11,12 +11,16 @@ class EsperaExamen(models.Model):
         (2, 'Parcialmente'),
         (3, 'Pendiente')
     )
+    OPCIONES_FASE=(
+        ('1','Preparado'),
+        ('2','Finalizado'),
+    )
     resultado=models.ForeignKey('Resultado', on_delete=models.CASCADE)
     paciente=models.ForeignKey('modulo_expediente.Paciente', on_delete=models.CASCADE)
     estado_pago_laboratorio=models.CharField(max_length=15, default="-", choices=OPCIONES_ESTADO, null=False, blank=False)
     numero_cola_laboratorio=models.IntegerField(null=False,blank=False)
     consumo_laboratorio=models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
-
+    fase_examenes_lab=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False,default=1)
     def __str__(self):
         return str(self.id_examina)+" - "+str(self.id_paciente)
 
