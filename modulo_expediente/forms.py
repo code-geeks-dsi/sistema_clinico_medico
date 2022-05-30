@@ -1,9 +1,11 @@
 
+from dataclasses import fields
+from pyexpat import model
 from tkinter.tix import Select
 from django import forms
 from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
-from .models import Consulta, Paciente, Medicamento
+from .models import Consulta, Dosis, Paciente, Medicamento
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
@@ -93,3 +95,7 @@ class ConsultaFormulario(ModelForm):
                                                   })
 
               }
+class DosisFormulario(ModelForm):
+  class Meta:
+    model=Dosis
+    fields='__all__'

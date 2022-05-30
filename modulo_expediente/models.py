@@ -158,6 +158,11 @@ class Medicamento(models.Model):
     cantidad_medicamento=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False)
     unidad_medicamento=models.CharField(max_length=8,choices=UNIDADES_DE_MEDIDA_MEDICAMENTO,null=False, blank=False)
     presentacion=models.CharField(choices=PRESENTACION_MEDICAMENTO,null=False,blank=False,default=PRESENTACION_MEDICAMENTO[12][0],max_length=25)
+    def __str__(self):
+        if(self.nombre_comercial):
+            return self.nombre_generico+" - "+self.nombre_comercial+" - "+self.PRESENTACION_MEDICAMENTO[int(self.presentacion)][1]
+        else:
+            return self.nombre_generico+" - "+self.PRESENTACION_MEDICAMENTO[int(self.presentacion)][1]
 
 class Dosis(models.Model):
     OPCIONES_TIEMPO = (
@@ -166,26 +171,7 @@ class Dosis(models.Model):
         (3, 'Semana(s)'),
         (4, 'Mes(es)'),
     )
-    #Solo pueden ser dos (1,2)
-    '''
-    UNIDADES_DE_MEDIDA_DOSIS = (
-    (1,'got'	'gota'),
-    (2,'mgota / µgota',	'microgota'),
-    (3,'L',	'litro'),
-    (4,'mL',	'mililitro'),
-    (5,'µL',	'microlitro'),
-    (6,'cc / cm³',	'centímetro cúbico'),
-    (7,'fl oz',	'onza líquida'),
-    (8,'cdita',	'cucharadita'),
-    (9,'cda',	'cucharada'),
-    (10,'Kg',	'kilogramo'),
-    (11,'g',	'gramo'),
-    (12,'mg',	'miligramo'),
-    (13,'oz',	'onza'),
-    (14,'disparos'	,'disparos'),
-    (15,'capsulas',	'cápsulas'),
-    )
-    '''
+   
     UNIDADES_DE_MEDIDA_DOSIS = (
         ('got',	'gota'),
         ('mgota / µgota', 'microgota'),
