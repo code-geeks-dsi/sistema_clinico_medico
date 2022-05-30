@@ -71,7 +71,13 @@
                 </div>
             </div>  
         </div>
-        <!-- {{dosis_form.as_p}} -->
+        <form action="{% url 'agregar_dosis' %}" method="post">
+            {% csrf_token %}
+            {{dosis_form.as_p}}
+            <input type="submit" >
+        </form>
+   
+       
         <!--Datos Consulta-->
         <div class="col-12 py-4">
             <div class="card">

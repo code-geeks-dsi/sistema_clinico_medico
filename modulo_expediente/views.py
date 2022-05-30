@@ -7,7 +7,7 @@ from modulo_expediente.serializers import MedicamentoSerializer, PacienteSeriali
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
-from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, SignosVitales
+from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales
 from modulo_control.models import Enfermera, Empleado
 from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos
 from django.http import JsonResponse
@@ -94,6 +94,10 @@ def agregar_cola(request, id_paciente):
         consulta=Consulta()
         consulta.signos_vitales_id=signosvitales.id_signos_vitales
         consulta.save()
+        #receta medica
+        receta=RecetaMedica()
+        receta.id_consulta=consulta
+        receta.save()
         #Creando Objeto contieneCola
         contieneconsulta=ContieneConsulta()
         contieneconsulta.expediente=expediente
@@ -432,3 +436,22 @@ def autocompletado_medicamento(request):
         medicamentosList.append(medicamento['nombre_generico'])
     return JsonResponse({"data":medicamentosList})
     #la clave tiene que ser data para que funcione con el metodo
+
+def dosis_medicamento(request):
+    if request.method=='POST':
+        medicamento=DosisFormulario(request.POST)
+        if medicamento.is_valid():
+            medicamento.save()
+            response={
+            'type':'success',
+            'title':'Guardado!',
+            'data':'Dosis Guardada!'
+        }
+        else:
+            response={
+            'type':'warning',
+            'title':'Error!',
+            'data':medicamento.errors
+        }
+    
+    return JsonResponse(response)

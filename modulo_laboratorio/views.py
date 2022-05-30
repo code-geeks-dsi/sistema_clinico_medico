@@ -48,7 +48,7 @@ def agregar_examen_cola(request):
             'data':'Examen agregado a la cola'
         }
 
-    return JsonResponse({}, safe=False)
+    return JsonResponse(response, safe=False)
 
 
     return JsonResponse(response, safe=False)
