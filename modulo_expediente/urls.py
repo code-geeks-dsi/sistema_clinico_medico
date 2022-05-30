@@ -21,7 +21,9 @@ urlpatterns = [
     path('receta_medica/agregar-medicamento', agregar_medicamento, name='agregar_medicamento'),
     path('consulta/<int:id_consulta>/',editar_consulta,name='editar_consulta'),
     path('medicamento/',busqueda_medicamento, name='agregar_medicamento'),
-    path('medicamento/autocompletado/',autocompletado_medicamento, name='agregar_medicamento'),
-    path('receta/dosis',dosis_medicamento,name='agregar_dosis')
+    path('receta/dosis',dosis_medicamento,name='agregar_dosis'),
+
+    path('medicamento/autocompletado/',autocompletado_medicamento, name='agregar_medicamento_2'),
+
 ]
 

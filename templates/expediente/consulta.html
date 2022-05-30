@@ -3,7 +3,9 @@
 {% load static %}
 <!--Css del template-->
 {% block css %}
-
+<style>
+    .ui-autocomplete { z-index:2147483647; }
+</style>
 {% endblock %}
 <!--Titulo-->
 {% block titulo %} Consulta {% endblock %}
@@ -112,7 +114,7 @@
                                             </span>
                                         </div>
                                         <div class="col-10 text-center">
-                                            Referencia Medica
+                                            Receta Medica
                                         </div>
                                     </div>
                                 </a>
@@ -148,15 +150,59 @@
         </div>
     </div>
 
+    <!--Modal Agregar medicamento  DC-61 -->
     <div class="modal" tabindex="-1" id="agregarReceta"  aria-hidden="true" aria-labelledby="modalTitle">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
+                    <h5 class="modal-title">Agregar Receta</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Modal body text goes here.</p>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white" id="basic-addon1">
+                                      <span class="material-symbols-outlined btn-sm" id="search_voff">medication_liquid</span>
+                                    </span>
+                                    <input type="text" class="form-control" id="id_nombre_medicamento" placeholder="Buscar Medicamentos" aria-label="Nombres" aria-describedby="basic-addon1">
+                                    
+                                    <span class="input-group-text bg-white" id="filtro_buscar">
+                                      <span class="material-symbols-outlined btn btn-sm" id="agregar_medicamento_receta" >add</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-6">
+
+                        </div>
+                        <div class="col-md-12 col-lg-6">
+
+                        </div>
+                        <div class="col-12">
+                            <!--Tabla de pacientes buscados-->
+                <div class="table-responsive" id="tabla_busqueda">
+                    <table class="table table-bordered text-center">
+                      <thead class="table-secondary">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellidos</th>
+                            <th>Fecha Nacimiento</td>
+                            <th>Sexo</th>
+                            <th>Direccion</th>
+                            <th>Email</th>
+                            <th>Responsable</th>
+                            <th>Agregar Examen</th>
+                          </tr>
+                      </thead>
+                      <tbody  id="datos_pacientes">
+                      </tbody>
+                    </table>
+                  </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -165,10 +211,39 @@
             </div>
         </div>
     </div>
+
+
+    <!--Modal Datos del Paciente-->
+    <div class="modal fade" id="busquedaPacienteModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Paciente a Cola</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
 </div>    
 {% endblock %}
 {% block js %}
+<script src="{% static 'js/medicamentoBusqueda.js' %}"></script>
 <script>
+    const url = "{% url 'agregar_medicamento_2' %}";
+    const urlFiltro = "{% url 'agregar_medicamento' %}";
+    const complementoConsulta = "?nombre_generico=";
+    const id_component="id_nombre_medicamento";
+    const id_modal="agregarReceta";
+    const tablaResultado = "datos_pacientes"; 
+    let tablaData=document.getElementById(tablaResultado);
+
+    getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
+
     '{% for message in messages %}'
         '{% if message.tags %}'
         toastr[ '{{ message.tags }}' ]( '{{ message }}' );
