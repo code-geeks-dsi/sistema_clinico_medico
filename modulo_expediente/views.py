@@ -1,3 +1,4 @@
+from gzip import READ
 from time import time
 from xml.dom import INVALID_CHARACTER_ERR
 from django.shortcuts import redirect, render
@@ -400,6 +401,7 @@ def editar_consulta(request,id_consulta):
         paciente=contiene_consulta.expediente.id_paciente
         signos_vitales=contiene_consulta.consulta.signos_vitales
         consulta=Consulta.objects.get(id_consulta=id_consulta)
+        receta=RecetaMedica.objects.get(Consulta=consulta)
         if request.method=='POST':
             consulta_form=ConsultaFormulario(request.POST,instance=consulta)
             if consulta_form.is_valid():
@@ -412,6 +414,7 @@ def editar_consulta(request,id_consulta):
             'paciente':paciente,
             'signos_vitales':signos_vitales,
             'id_consulta':id_consulta,
+            'id_receta':receta.id_receta_medica,
             'consulta_form':consulta_form,
             'edad':edad,
             'dosis_form':DosisFormulario()
