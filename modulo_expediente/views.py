@@ -9,7 +9,7 @@ from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, SignosVitales
 from modulo_control.models import Enfermera, Empleado
-from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, IngresoMedicamentos
+from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos
 from django.http import JsonResponse
 import json
 from datetime import date
@@ -409,7 +409,8 @@ def editar_consulta(request,id_consulta):
             'signos_vitales':signos_vitales,
             'id_consulta':id_consulta,
             'consulta_form':consulta_form,
-            'edad':edad
+            'edad':edad,
+            'dosis_form':DosisFormulario()
         }
         
         return render(request,"expediente/consulta.html",datos)

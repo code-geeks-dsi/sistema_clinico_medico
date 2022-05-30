@@ -3,7 +3,9 @@
 {% load static %}
 <!--Css del template-->
 {% block css %}
-
+<style>
+    .ui-autocomplete { z-index:2147483647; }
+</style>
 {% endblock %}
 <!--Titulo-->
 {% block titulo %} Consulta {% endblock %}
@@ -71,6 +73,7 @@
                 </div>
             </div>  
         </div>
+        <!-- {{dosis_form.as_p}} -->
         <!--Datos Consulta-->
         <div class="col-12 py-4">
             <div class="card">
@@ -157,9 +160,10 @@
                                     <span class="input-group-text bg-white" id="basic-addon1">
                                       <span class="material-symbols-outlined btn-sm" id="search_voff">medication_liquid</span>
                                     </span>
-                                    <input type="text" class="form-control" id="id_apellido_paciente" placeholder="Buscar Medicamentos" aria-label="Nombres" aria-describedby="basic-addon1">
+                                    <input type="text" class="form-control" id="id_nombre_medicamento" placeholder="Buscar Medicamentos" aria-label="Nombres" aria-describedby="basic-addon1">
+                                    
                                     <span class="input-group-text bg-white" id="filtro_buscar">
-                                      <span class="material-symbols-outlined btn btn-sm" id="" data-bs-toggle="modal" data-bs-target="#busquedaPacienteModal">search</span>
+                                      <span class="material-symbols-outlined btn btn-sm" id="agregar_medicamento_receta" >add</span>
                                     </span>
                                 </div>
                             </div>
@@ -170,6 +174,28 @@
                         <div class="col-md-12 col-lg-6">
 
                         </div>
+                        <div class="col-12">
+                            <!--Tabla de pacientes buscados-->
+                <div class="table-responsive" id="tabla_busqueda">
+                    <table class="table table-bordered text-center">
+                      <thead class="table-secondary">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellidos</th>
+                            <th>Fecha Nacimiento</td>
+                            <th>Sexo</th>
+                            <th>Direccion</th>
+                            <th>Email</th>
+                            <th>Responsable</th>
+                            <th>Agregar Examen</th>
+                          </tr>
+                      </thead>
+                      <tbody  id="datos_pacientes">
+                      </tbody>
+                    </table>
+                  </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -179,17 +205,36 @@
             </div>
         </div>
     </div>
+
+
+    <!--Modal Datos del Paciente-->
+    <div class="modal fade" id="busquedaPacienteModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Paciente a Cola</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
 </div>    
 {% endblock %}
 {% block js %}
 <script src="{% static 'js/medicamentoBusqueda.js' %}"></script>
 <script>
-    const url = "{% url 'autocompletado_apellidos' %}";
-    const urlFiltro = "{% url 'busqueda_paciente' %}";
-    const complementoConsulta = "?apellido_paciente=";
-    const id_component="id_apellido_paciente";
-    const id_modal="AgregarCola";
+    const url = "{% url 'agregar_medicamento_2' %}";
+    const urlFiltro = "{% url 'agregar_medicamento' %}";
+    const complementoConsulta = "?nombre_generico=";
+    const id_component="id_nombre_medicamento";
+    const id_modal="agregarReceta";
     const tablaResultado = "datos_pacientes"; 
+    let tablaData=document.getElementById(tablaResultado);
 
     getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
 
