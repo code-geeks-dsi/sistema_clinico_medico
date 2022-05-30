@@ -123,20 +123,23 @@ class RecetaMedica(models.Model):
     Consulta = models.ForeignKey(Consulta, on_delete=models.CASCADE,null=False, blank=False)
 
 class Medicamento(models.Model):
-    '''
-    UNIDADES_DE_MEDIDA_MEDICAMENTO=(
-    (3,'L','litro'),
-    (4,'mL','mililitro'),
-    (5,'µL','microlitro'),
-    (6,'cc / cm³','centímetro cúbico'),
-    (7,'fl oz',	'onza líquida'),
-    (10,'Kg','kilogramo'),
-    (11,'g','gramo'),
-    (12,'mg','miligramo'),
-    (13,'oz','onza'),
-    (15,'capsulas','cápsulas'),
+    PRESENTACION_MEDICAMENTO=(
+    (1,'Frasco'),
+    (2,'Ampolla'),
+    (3,'Frasco vial'),
+    (4,'Sobre'),
+    (5,'Jeringa prellenada'),
+    (6,'Bolsa'),
+    (7,'Tubo'),
+    (8,'Tarro'),
+    (9,'Dispositivo precargado'),
+    (10,'Pluma multidosis'),
+    (11,'Cartucho'),
+    (12,'Frasco gotero'),
+    (13,'Capsulas'),
+    (14,'Spray'),
+    (15,'Suspensión'),
     )
-    '''
     UNIDADES_DE_MEDIDA_MEDICAMENTO=(
     ('L','litro'),
     ('mL','mililitro'),
@@ -154,6 +157,7 @@ class Medicamento(models.Model):
     nombre_generico=models.CharField(max_length=25,null=False, blank=False)
     cantidad_medicamento=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False)
     unidad_medicamento=models.CharField(max_length=8,choices=UNIDADES_DE_MEDIDA_MEDICAMENTO,null=False, blank=False)
+    presentacion=models.CharField(choices=PRESENTACION_MEDICAMENTO,null=False,blank=False,default=PRESENTACION_MEDICAMENTO[12][0],max_length=25)
 
 class Dosis(models.Model):
     OPCIONES_TIEMPO = (
