@@ -96,6 +96,7 @@ class ConsultaFormulario(ModelForm):
 
               }
 class DosisFormulario(ModelForm):
+  medicamento= forms.ModelChoiceField(queryset=Medicamento.objects.all())
   class Meta:
     model=Dosis
     fields='__all__'

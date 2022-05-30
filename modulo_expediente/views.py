@@ -1,3 +1,4 @@
+from gzip import READ
 from time import time
 from xml.dom import INVALID_CHARACTER_ERR
 from django.shortcuts import redirect, render
@@ -7,7 +8,7 @@ from modulo_expediente.serializers import MedicamentoSerializer, PacienteSeriali
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
-from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, SignosVitales
+from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales
 from modulo_control.models import Enfermera, Empleado
 from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos
 from django.http import JsonResponse
@@ -94,6 +95,10 @@ def agregar_cola(request, id_paciente):
         consulta=Consulta()
         consulta.signos_vitales_id=signosvitales.id_signos_vitales
         consulta.save()
+        #receta medica
+        receta=RecetaMedica()
+        receta.id_consulta=consulta
+        receta.save()
         #Creando Objeto contieneCola
         contieneconsulta=ContieneConsulta()
         contieneconsulta.expediente=expediente
@@ -396,6 +401,7 @@ def editar_consulta(request,id_consulta):
         paciente=contiene_consulta.expediente.id_paciente
         signos_vitales=contiene_consulta.consulta.signos_vitales
         consulta=Consulta.objects.get(id_consulta=id_consulta)
+        receta=RecetaMedica.objects.get(Consulta=consulta)
         if request.method=='POST':
             consulta_form=ConsultaFormulario(request.POST,instance=consulta)
             if consulta_form.is_valid():
@@ -408,6 +414,7 @@ def editar_consulta(request,id_consulta):
             'paciente':paciente,
             'signos_vitales':signos_vitales,
             'id_consulta':id_consulta,
+            'id_receta':receta.id_receta_medica,
             'consulta_form':consulta_form,
             'edad':edad,
             'dosis_form':DosisFormulario()
@@ -432,3 +439,22 @@ def autocompletado_medicamento(request):
         medicamentosList.append(medicamento['nombre_generico'])
     return JsonResponse({"data":medicamentosList})
     #la clave tiene que ser data para que funcione con el metodo
+
+def dosis_medicamento(request):
+    if request.method=='POST':
+        medicamento=DosisFormulario(request.POST)
+        if medicamento.is_valid():
+            medicamento.save()
+            response={
+            'type':'success',
+            'title':'Guardado!',
+            'data':'Dosis Guardada!'
+        }
+        else:
+            response={
+            'type':'warning',
+            'title':'Error!',
+            'data':medicamento.errors
+        }
+    
+    return JsonResponse(response)

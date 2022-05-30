@@ -2,7 +2,7 @@ from django import views
 from django.contrib import admin
 from django.urls import path
 from modulo_expediente.views import agregar_medicamento, busqueda_paciente, autocompletado_apellidos, eliminar_cola,sala_consulta,get_cola,get_paciente,agregar_cola, modificar_signosVitales, crear_expediente, editar_consulta
-from modulo_expediente.views import busqueda_medicamento, autocompletado_medicamento
+from modulo_expediente.views import busqueda_medicamento, autocompletado_medicamento,dosis_medicamento
 
 
 urlpatterns = [
@@ -21,6 +21,9 @@ urlpatterns = [
     path('receta_medica/agregar-medicamento', agregar_medicamento, name='agregar_medicamento'),
     path('consulta/<int:id_consulta>/',editar_consulta,name='editar_consulta'),
     path('medicamento/',busqueda_medicamento, name='agregar_medicamento'),
+    path('receta/dosis',dosis_medicamento,name='agregar_dosis'),
+
     path('medicamento/autocompletado/',autocompletado_medicamento, name='agregar_medicamento_2'),
+
 ]
 
