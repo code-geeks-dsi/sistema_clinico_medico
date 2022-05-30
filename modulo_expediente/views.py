@@ -377,10 +377,10 @@ def agregar_medicamento(request):
             if  formulario.is_valid():
                 new_medicamento=formulario.save()
                 messages.add_message(request=request, level=messages.SUCCESS, message="Medicamento registrado con exito")
-                base_url = reverse('agregar_medicamento')
-                query_string =  urlencode({'id': new_medicamento.id_medicamento})
-                url = '{}?{}'.format(base_url, query_string)
-                return redirect(url)
+                # base_url = reverse('agregar_medicamento')
+                # query_string =  urlencode({'id': new_medicamento.id_medicamento})
+                # url = '{}?{}'.format(base_url, query_string)
+                # return redirect(url)
         else:
             medicamento=Medicamento.objects.get(id_medicamento=idmedicamento)
             formulario = IngresoMedicamentos(request.POST, instance=medicamento)
