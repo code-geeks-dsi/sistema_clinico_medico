@@ -377,10 +377,10 @@ def agregar_medicamento(request):
             if  formulario.is_valid():
                 new_medicamento=formulario.save()
                 messages.add_message(request=request, level=messages.SUCCESS, message="Medicamento registrado con exito")
-                base_url = reverse('agregar_medicamento')
-                query_string =  urlencode({'id': new_medicamento.id_medicamento})
-                url = '{}?{}'.format(base_url, query_string)
-                return redirect(url)
+                # base_url = reverse('agregar_medicamento')
+                # query_string =  urlencode({'id': new_medicamento.id_medicamento})
+                # url = '{}?{}'.format(base_url, query_string)
+                # return redirect(url)
         else:
             medicamento=Medicamento.objects.get(id_medicamento=idmedicamento)
             formulario = IngresoMedicamentos(request.POST, instance=medicamento)
@@ -416,16 +416,16 @@ def editar_consulta(request,id_consulta):
     else:
         return render(request,"Control/error403.html")
     
-def busqueda_Medicamento(request):
+def busqueda_medicamento(request):
     queryset=Medicamento.objects.all()
     result= MedicamentoFilter(request.GET, queryset=queryset)
     medicamento =MedicamentoSerializer(result.qs, many=True)
     return JsonResponse({'data':medicamento.data})
      #la clave tiene que ser data para que funcione con el metodo.
 
-def autocompletado_Medicamento(request):
+def autocompletado_medicamento(request):
     
-    medicamentos=Medicamento.objects.values('nombre_generico').all()
+    medicamentos=Medicamento.objects.values('nombre_generico',).all()
     medicamentosList=[]
     for medicamento in medicamentos:
         medicamentosList.append(medicamento['nombre_generico'])
