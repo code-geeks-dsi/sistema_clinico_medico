@@ -37,6 +37,7 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
       let resultados;
       let filtroResultado = new XMLHttpRequest();
       let complemento= complementoConsulta;
+      let dosis_fields=document.getElementById('dosis_fields').childNodes;
       //filtrar
       if (dataTarget != ""){
         filtroResultado.open("GET", urlFiltro+complemento+dataTarget, true);
@@ -51,14 +52,25 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
               resultados.data.forEach(p => {
                   //Recorre los elemntos del objeto
                   let elemento='<tr>';
+                  const nodeFila = document.createElement("tr");
                   for (const property in p) {
-                      elemento = elemento+'<td>'+`${p[property]}`+'</td>';
+                      const nodeColumna = document.createElement("td");
+                      const textnode = document.createTextNode(`${p[property]}`);
+                      nodeColumna.appendChild(textnode);
+                      nodeFila.appendChild(nodeColumna);
                   }
-  
-                  //imprime paciente en el modal de resultados de busqueda
-                  elemento=elemento+'<td><div onclick="setPaciente('+Object.values(p)[0]+','+"'"+Object.values(p)[1]+"', '"+Object.values(p)[2]+"', "+"'"+Object.values(p)[3]+"'"+');"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#modalSelectExamen" >add</div></td>';
-                  elemento=elemento+'</tr>';
-                  tablaData.insertAdjacentHTML("beforeend", elemento);
+                  dosis_fields.forEach(element => {
+                    if(element.nodeName!='#text'){
+                      
+                      const nodeColumna = document.createElement("td");
+                      let clonedNode = element.cloneNode(true);
+                      nodeColumna.appendChild(clonedNode);
+                      nodeFila.appendChild(nodeColumna);
+                    }
+                  });
+                  // //imprime paciente en el modal de resultados de busqueda
+                  // elemento=elemento+'<td><div onclick="setPaciente('+Object.values(p)[0]+','+"'"+Object.values(p)[1]+"', '"+Object.values(p)[2]+"', "+"'"+Object.values(p)[3]+"'"+');"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#modalSelectExamen" >add</div></td>';
+                  tablaData.appendChild(nodeFila);
                   
               });
             }
