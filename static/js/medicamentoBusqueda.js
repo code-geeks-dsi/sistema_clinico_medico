@@ -49,30 +49,43 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
               tablaData.insertAdjacentHTML("beforeend", '<tr colspan="9" ><td colspan="9" style="text-align:center">No hay Resultados</td></tr>');
   
             }else{
-              resultados.data.forEach(p => {
-                  //Recorre los elemntos del objeto
-                  let elemento='<tr>';
-                  const nodeFila = document.createElement("tr");
-                  for (const property in p) {
-                      const nodeColumna = document.createElement("td");
-                      const textnode = document.createTextNode(`${p[property]}`);
-                      nodeColumna.appendChild(textnode);
-                      nodeFila.appendChild(nodeColumna);
-                  }
-                  dosis_fields.forEach(element => {
-                    if(element.nodeName!='#text'){
-                      
-                      const nodeColumna = document.createElement("td");
-                      let clonedNode = element.cloneNode(true);
-                      nodeColumna.appendChild(clonedNode);
-                      nodeFila.appendChild(nodeColumna);
-                    }
-                  });
-                  // //imprime paciente en el modal de resultados de busqueda
-                  // elemento=elemento+'<td><div onclick="setPaciente('+Object.values(p)[0]+','+"'"+Object.values(p)[1]+"', '"+Object.values(p)[2]+"', "+"'"+Object.values(p)[3]+"'"+');"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#modalSelectExamen" >add</div></td>';
-                  tablaData.appendChild(nodeFila);
+            resultados.data.forEach(p => {
+              //Recorre los elemntos del objeto
+              let elemento='<tr>';
+              const nodeFila = document.createElement("tr");
+              for (const property in p) {
+                  const nodeColumna = document.createElement("td");
+                  const textnode = document.createTextNode(`${p[property]}`);
+                  nodeColumna.appendChild(textnode);
+                  nodeFila.appendChild(nodeColumna);
+              }
+              dosis_fields.forEach(element => {
+                if(element.nodeName!='#text'){
                   
+                  const nodeColumna = document.createElement("td");
+                  let clonedNode = element.cloneNode(true);
+                  nodeColumna.appendChild(clonedNode);
+                  nodeFila.appendChild(nodeColumna);
+                }
               });
+              let nodeColumna = document.createElement("td");
+              nodeColumna.innerHTML=`<div class="material-symbols-outlined btn" 
+                                          data-bs-toggle="modal" 
+                                          data-bs-target="#modalSelectExamen">add</div>`;
+              //  si la funcion set paciente existiera, pero debe ser remplazada por una para agregar dosis
+              // nodeColumna.innerHTML=`<div class="material-symbols-outlined btn" 
+              //                             data-bs-toggle="modal" 
+              //                             data-bs-target="#modalSelectExamen"
+              //                             onclick="setPaciente(${Object.values(p)[0]},
+              //                                                   ${Object.values(p)[1]},
+              //                                                   ${Object.values(p)[2]}, 
+              //                                                   ${Object.values(p)[3]});"
+              //                                                   >add</div>`;
+              
+              nodeFila.appendChild(nodeColumna);
+              tablaData.appendChild(nodeFila);
+                
+            });
             }
         } else {
               console.error(filtroResultado.statusText);
