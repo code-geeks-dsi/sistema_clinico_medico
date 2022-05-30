@@ -3,10 +3,10 @@ from xml.dom import INVALID_CHARACTER_ERR
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_control.views import ROL_ADMIN
-from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
+from modulo_expediente.serializers import MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
-from modulo_expediente.filters import PacienteFilter
+from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, SignosVitales
 from modulo_control.models import Enfermera, Empleado
 from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, IngresoMedicamentos
@@ -20,6 +20,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from dateutil.relativedelta import relativedelta
 ROL=4
 ROL_DOCTOR=1
 ROL_ENFERMERA=2
@@ -390,27 +391,43 @@ def agregar_medicamento(request):
 
 @login_required
 def editar_consulta(request,id_consulta):
-
-    contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
-    paciente=contiene_consulta.expediente.id_paciente
-    signos_vitales=contiene_consulta.consulta.signos_vitales
-    consulta=Consulta.objects.get(id_consulta=id_consulta)
-    if request.method=='POST':
-        consulta_form=ConsultaFormulario(request.POST,instance=consulta)
-        if consulta_form.is_valid():
-            consulta=consulta_form.save()
-            messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
+    if request.user.roles.id_rol ==ROL_DOCTOR:
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        paciente=contiene_consulta.expediente.id_paciente
+        signos_vitales=contiene_consulta.consulta.signos_vitales
+        consulta=Consulta.objects.get(id_consulta=id_consulta)
+        if request.method=='POST':
+            consulta_form=ConsultaFormulario(request.POST,instance=consulta)
+            if consulta_form.is_valid():
+                consulta=consulta_form.save()
+                messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
+        else:
+            consulta_form=ConsultaFormulario(instance=consulta)
+        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        datos={
+            'paciente':paciente,
+            'signos_vitales':signos_vitales,
+            'id_consulta':id_consulta,
+            'consulta_form':consulta_form,
+            'edad':edad
+        }
+        
+        return render(request,"expediente/consulta.html",datos)
     else:
-        consulta_form=ConsultaFormulario(instance=consulta)
-
-    datos={
-        'paciente':paciente,
-        'signos_vitales':signos_vitales,
-        'id_consulta':id_consulta,
-        'consulta_form':consulta_form
-    }
+        return render(request,"Control/error403.html")
     
-    return render(request,"expediente/consulta.html",datos)
+def busqueda_Medicamento(request):
+    queryset=Medicamento.objects.all()
+    result= MedicamentoFilter(request.GET, queryset=queryset)
+    medicamento =MedicamentoSerializer(result.qs, many=True)
+    return JsonResponse({'data':medicamento.data})
+     #la clave tiene que ser data para que funcione con el metodo.
+
+def autocompletado_Medicamento(request):
     
-
-
+    medicamentos=Medicamento.objects.values('nombre_generico').all()
+    medicamentosList=[]
+    for medicamento in medicamentos:
+        medicamentosList.append(medicamento['nombre_generico'])
+    return JsonResponse({"data":medicamentosList})
+    #la clave tiene que ser data para que funcione con el metodo
