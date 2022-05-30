@@ -15,9 +15,10 @@ class PacienteSerializer(serializers.ModelSerializer):
         model = Paciente
         fields = '__all__'
 class MedicamentoSerializer(serializers.ModelSerializer):
+    presentacion = serializers.CharField(source='get_presentacion_display')
     class Meta:
         model = Medicamento
-        fields = '__all__'
+        fields = fields=['presentacion']
 class ContieneConsultaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContieneConsulta
