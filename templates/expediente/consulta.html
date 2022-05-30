@@ -233,7 +233,6 @@
     <td>{{dosis_form.unidad_frecuencia_dosis}}</td> 
     <td>{{dosis_form.cantidad_dosis}}</td> 
     <td>{{dosis_form.unidad_de_medida_dosis}}</td> 
-    <input name="receta_medica" hidden required id="id_receta_medica" value="{{id_receta}}">
 </div>
 {% endblock %}
 {% block js %}
@@ -246,7 +245,7 @@
     const id_modal="agregarReceta";
     const tablaResultado = "datos_pacientes"; 
     let tablaData=document.getElementById(tablaResultado);
-    let dosis_fields=[];
+    let id_receta_medica={{id_receta}};
    
 
     getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);

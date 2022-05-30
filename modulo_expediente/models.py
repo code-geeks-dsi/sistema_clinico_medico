@@ -191,9 +191,9 @@ class Dosis(models.Model):
         ('capsulas','cápsulas'),
     )
     id_dosis= models.AutoField(primary_key=True)
-    periodo_dosis=models.IntegerField(null=False,blank=False,default=7)
+    periodo_dosis=models.IntegerField(null=False,blank=False,default=7,max_length=2)
     unidad_periodo_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False,default=OPCIONES_TIEMPO[1][0])
-    frecuencia_dosis=models.IntegerField(null=False,blank=False,default=8)
+    frecuencia_dosis=models.IntegerField(null=False,blank=False,default=8,max_length=2)
     unidad_frecuencia_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False,default=OPCIONES_TIEMPO[0][0])
     cantidad_dosis=models.DecimalField(decimal_places=2,max_digits=5,null=False,blank=False,default=1)
     unidad_de_medida_dosis=models.CharField(choices=UNIDADES_DE_MEDIDA_DOSIS,max_length=17,null=False,blank=False,default=UNIDADES_DE_MEDIDA_DOSIS[14][0])
