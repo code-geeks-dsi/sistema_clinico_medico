@@ -184,7 +184,12 @@
 {% block js %}
 <script src="{% static 'js/medicamentoBusqueda.js' %}"></script>
 <script>
-    
+    const url = "{% url 'autocompletado_apellidos' %}";
+    const urlFiltro = "{% url 'busqueda_paciente' %}";
+    const complementoConsulta = "?apellido_paciente=";
+    const id_component="id_apellido_paciente";
+    const id_modal="AgregarCola";
+    const tablaResultado = "datos_pacientes"; 
 
     getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
 
