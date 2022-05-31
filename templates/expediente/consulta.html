@@ -73,7 +73,8 @@
                 </div>
             </div>  
         </div>
-        <!-- {{dosis_form.as_p}} -->
+    
+       
         <!--Datos Consulta-->
         <div class="col-12 py-4">
             <div class="card">
@@ -192,6 +193,7 @@
                       <tbody  id="datos_pacientes">
                       </tbody>
                     </table>
+
                   </div>
                         </div>
                     </div>
@@ -222,6 +224,14 @@
         </div>
       </div>
 </div>    
+<div hidden id="dosis_fields">
+    <td>{{dosis_form.periodo_dosis}}</td>
+    <td>{{dosis_form.unidad_periodo_dosis}}</td> 
+    <td>{{dosis_form.frecuencia_dosis}}</td> 
+    <td>{{dosis_form.unidad_frecuencia_dosis}}</td> 
+    <td>{{dosis_form.cantidad_dosis}}</td> 
+    <td>{{dosis_form.unidad_de_medida_dosis}}</td> 
+</div>
 {% endblock %}
 {% block js %}
 <script src="{% static 'js/medicamentoBusqueda.js' %}"></script>
@@ -233,6 +243,8 @@
     const id_modal="agregarReceta";
     const tablaResultado = "datos_pacientes"; 
     let tablaData=document.getElementById(tablaResultado);
+    let id_receta_medica={{id_receta}};
+   
 
     getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
 
