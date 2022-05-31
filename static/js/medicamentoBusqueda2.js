@@ -58,7 +58,7 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
                     elemento = elemento+'<td>'+`${p[property]}`+'</td>';
                 }
 
-                //imprime paciente en el modal de resultados de busqueda
+                //imprime los medicamentos en el modal de resultados de busqueda
                 elemento=elemento+`<td>
                                     <div onclick="setMedicamento('`+id_medicamento+`');"
                                       class="material-symbols-outlined btn"
@@ -86,4 +86,49 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
     $('select[name=medicamento]').val(id_medicamento);
     $('#busquedaMedicamentoModal').modal('hide')
   }
+  //Funcion para agregar medicamentos a la receta
+  function agregarMedicamentoReceta(id, url_data){
+    $('#load').show();
+  $.ajax({
+            url: url_data,
+            type:"POST",
+            dataType: "json",
+            data: {
+              'medicamento':$('#id_medicamento').val(),
+              'periodo_dosis': $('#id_periodo_dosis').val(),
+              'unidad_periodo_dosis':$('#id_unidad_periodo_dosis').val(),
+              'frecuencia_dosis': $('#id_frecuencia_dosis').val(),
+              'unidad_frecuencia_dosis':$('#id_unidad_frecuencia_dosis').val(),
+              'cantidad_dosis': $('#id_cantidad_dosis').val(),
+              'unidad_de_medida_dosis':$('#id_unidad_de_medida_dosis').val(),
+              'receta_medica': id
+            },
+            success: function(data){
+              $('#load').hide();
+                if (data.type=='warning'){
+                  toastr[data.type](data.data['medicamento'][0]);   
+                }
+                else
+                {
+                  toastr[data.type](data.data);   
+                }
+                //document.getElementById('id_nombre_empleado').value=data[0].nombres; 
+                //apellidos =  document.getElementById("id_apellido_empleado").value=data[0].apellidos;
+      
+                //direccion = document.getElementById("id_direccion_empleado").value=data[0].direccion;
+                //$('#id_fecha_nacimiento').val(data[0].fechaNacimiento);
+                //$('#id_select_sexo').val(data[0].sexo);
+                //$('#id_select_rol').val(data[0].roles);
+
+                //edit = document.getElementById("btn_editar_empleado");
+                //edit.setAttribute("OnClick", "edit_Empleado("+"'"+id+"'"+");")
+                //$('#login_switch').prop("checked", data[0].es_activo);
+                //console.log($('input:checkbox[name=login_switch]:checked').val())
+
+                //toastr[data.type](data.data);           
+                //consultarCola(url_consulta, tablaCola);
+            }
+  });
+  
+}
   

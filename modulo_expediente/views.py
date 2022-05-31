@@ -440,6 +440,7 @@ def autocompletado_medicamento(request):
     return JsonResponse({"data":medicamentosList})
     #la clave tiene que ser data para que funcione con el metodo
 
+@csrf_exempt
 def dosis_medicamento(request):
     if request.method=='POST':
         medicamento=DosisFormulario(request.POST)
@@ -454,7 +455,8 @@ def dosis_medicamento(request):
             response={
             'type':'warning',
             'title':'Error!',
-            'data':medicamento.errors
+            'data':medicamento.errors,
+            'test':medicamento.errors
         }
     
     return JsonResponse(response)
