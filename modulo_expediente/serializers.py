@@ -18,7 +18,7 @@ class MedicamentoSerializer(serializers.ModelSerializer):
     presentacion = serializers.CharField(source='get_presentacion_display')
     class Meta:
         model = Medicamento
-        fields = fields=['nombre_generico', 'nombre_comercial', 'presentacion']
+        fields = fields=['id_medicamento','nombre_generico', 'nombre_comercial', 'presentacion']
 class ContieneConsultaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContieneConsulta
