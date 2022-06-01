@@ -80,7 +80,7 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
     
       filtroResultado.send();
     }
-  }_
+  }
   function setMedicamento(id_medicamento){
     console.log(id_medicamento);
     $('select[name=medicamento]').val(id_medicamento);
@@ -106,9 +106,9 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
             },
             success: function(data){
               //Al recibir la respuesta oculta el spinner
-              $('#load').hide();
                 //Si es un warning
                 if (data.type=='warning'){
+                  $('#load').hide();
                   console.log(data.test)
                   for (const property in data.data) {
                     //Si es un error no relacionado a un campo especifico.
@@ -125,8 +125,22 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
                 //Si todo salio bien
                 else
                 {
-                  console.log(data.dosis)
-                  toastr[data.type](data.data);   
+                  toastr[data.type](data.data); 
+                  //Impresion en templete de las dosis de medicamentos
+                  let elemento;
+                  for(const dosis in data.dosis){
+                    elemento = elemento+ '<tr>';
+                    for (const p in data.dosis[dosis]){
+                      elemento = elemento+'<td>'+`${data.dosis[dosis][p]}`+'</td>';
+                    }
+                    elemento= elemento+`<th>
+                                          <span class="material-symbols-outlined btn btn-sm">delete</span>
+                                        </th>`;
+                    elemento = elemento+ '</tr>';
+                  }  
+                  $('#medicamentos_dosis').empty();
+                  $('#medicamentos_dosis').append(elemento);
+                  $('#load').hide();
                 }
                 //document.getElementById('id_nombre_empleado').value=data[0].nombres; 
                 //apellidos =  document.getElementById("id_apellido_empleado").value=data[0].apellidos;

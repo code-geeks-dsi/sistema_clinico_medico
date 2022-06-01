@@ -25,6 +25,7 @@ class ContieneConsultaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 class DosisListSerializer(serializers.ModelSerializer):
     medicamentos = serializers.CharField(source='medicamento')
+    presentacion=serializers.CharField(source='medicamento.presentacion')
     cantidad = serializers.SerializerMethodField()
     frecuencia = serializers.SerializerMethodField()
     periodo = serializers.SerializerMethodField()
@@ -37,4 +38,4 @@ class DosisListSerializer(serializers.ModelSerializer):
         return '{} - {}'.format(obj.periodo_dosis, obj.get_unidad_periodo_dosis_display()) 
     class Meta:
         model = Dosis
-        fields = ['medicamentos','cantidad', 'frecuencia', 'periodo']
+        fields = ['medicamentos','cantidad', 'presentacion','frecuencia', 'periodo']
