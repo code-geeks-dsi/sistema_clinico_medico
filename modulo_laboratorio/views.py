@@ -58,7 +58,12 @@ def agregar_examen_cola(request):
 def get_cola_examenes(request):
     fecha_hoy=datetime.now()
     lista=[]
-    espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
+    if(request.user.roles.codigo_rol=='ROL_SECRETARIA'):
+        espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
+                        fecha__month=fecha_hoy.month, 
+                        fecha__day=fecha_hoy.day).select_related('expediente__id_paciente')
+    elif (request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO'):
+        espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
                         fecha__month=fecha_hoy.month, 
                         fecha__day=fecha_hoy.day,fase_examenes_lab=EsperaExamen.OPCIONES_FASE[0][0]).select_related('expediente__id_paciente')
     for fila in espera_examen:
@@ -71,18 +76,21 @@ def get_cola_examenes(request):
             "fecha":"",
             "consumo_laboratorio":"",
             "estado_pago_laboratorio":"",
-            "url_resultado":"",
         }
         diccionario["numero_cola_laboratorio"]= fila.numero_cola_laboratorio
         diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
         diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
         diccionario["examen"]=fila.resultado.examen_laboratorio.nombre_examen
         diccionario["fase_examenes_lab"]= fila.get_fase_examenes_lab_display()
-        diccionario["fecha"]=fila.fecha
+        diccionario["fecha"]=fila.fecha.strftime("%d/%b/%Y")
         diccionario["consumo_laboratorio"]= fila.consumo_laboratorio
         diccionario["estado_pago_laboratorio"]= fila.get_estado_pago_laboratorio_display()
         #  en caso de ser secretaria la url debe de cambiarse a cambiar fase
-        diccionario["url_resultado"]= reverse('elaborar_resultado',kwargs={'id_resultado':fila.resultado.id_resultado})
+        if(request.user.roles.codigo_rol=='ROL_SECRETARIA'):
+             diccionario["id_resultado"]= fila.resultado.id_resultado
+             diccionario["id_expediente"]= fila.expediente.id_expediente
+        elif (request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO'):
+            diccionario["url_resultado"]= reverse('elaborar_resultado',kwargs={'id_resultado':fila.resultado.id_resultado})
         lista.append(diccionario)
         del diccionario
     return JsonResponse( {'data':lista}, safe=False)
