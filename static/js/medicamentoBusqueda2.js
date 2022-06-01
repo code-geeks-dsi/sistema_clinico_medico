@@ -128,13 +128,20 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
                   toastr[data.type](data.data); 
                   //Impresion en templete de las dosis de medicamentos
                   let elemento;
+                  let id_dosis;
                   for(const dosis in data.dosis){
                     elemento = elemento+ '<tr>';
                     for (const p in data.dosis[dosis]){
-                      elemento = elemento+'<td>'+`${data.dosis[dosis][p]}`+'</td>';
+                      if(p=="id"){
+                        id_dosis=data.dosis[dosis][p];
+                      }
+                      else{
+                        elemento = elemento+'<td>'+`${data.dosis[dosis][p]}`+'</td>';
+                      }
                     }
                     elemento= elemento+`<th>
-                                          <span class="material-symbols-outlined btn btn-sm">delete</span>
+                                          <span onclick="eliminarDosis(`+id_dosis+`, `+id+`);"
+                                          class="material-symbols-outlined btn btn-sm">delete</span>
                                         </th>`;
                     elemento = elemento+ '</tr>';
                   }  
@@ -160,5 +167,48 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
             }
   });
   
+}
+function eliminarDosis(id_dosis, id_receta){
+  $('#load').show();
+  $.ajax({
+    url: "/expediente/receta/dosis/eliminar_dosis/"+id_dosis,
+    type:"GET",
+    dataType: "json",
+    data: {
+      'id_receta': id_receta.toString()
+      
+    },
+    success: function(data){
+      //Al recibir la respuesta oculta el spinner
+      toastr[data.type](data.data);
+      //Si se elimino el medicamento
+      if (data.type=="success"){
+        //Impresion en templete de las dosis de medicamentos
+        let elemento;
+        let id_dosis;
+        let id=id_receta;
+        for(const dosis in data.dosis){
+          elemento = elemento+ '<tr>';
+          for (const p in data.dosis[dosis]){
+            if(p=="id"){
+              id_dosis=data.dosis[dosis][p];
+            }
+            else{
+              elemento = elemento+'<td>'+`${data.dosis[dosis][p]}`+'</td>';
+            }
+          }
+          elemento= elemento+`<th>
+                                <span onclick="eliminarDosis(`+id_dosis+`, `+id+`);"
+                                class="material-symbols-outlined btn btn-sm">delete</span>
+                              </th>`;
+          elemento = elemento+ '</tr>';
+        }  
+        $('#medicamentos_dosis').empty();
+        $('#medicamentos_dosis').append(elemento);
+        $('#load').hide();
+      }  
+
+    }
+});
 }
   

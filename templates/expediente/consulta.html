@@ -271,7 +271,7 @@
                                     <td>{{ medicamento.unidad_de_medida_dosis }}</td>
                                     <td>{{ medicamento.frecuencia_dosis }} - {{ medicamento.get_unidad_frecuencia_dosis_display }}</td>
                                     <td>{{ medicamento.periodo_dosis }} - {{ medicamento.get_unidad_periodo_dosis_display }}</td>
-                                    <td><span class="material-symbols-outlined btn btn-sm">delete</span></td>
+                                    <td><span onclick="eliminarDosis({{ medicamento.id_dosis }}, {{ medicamento.receta_medica.id_receta_medica }});" class="material-symbols-outlined btn btn-sm">delete</span></td>
                                 </tr>
                                 {% endfor %}
                               </tbody>
@@ -283,7 +283,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary">Finalizar</button>
                 </div>
             </div>
