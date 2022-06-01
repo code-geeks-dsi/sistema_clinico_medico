@@ -262,16 +262,16 @@
                                     <th>Opciones</td>
                                 </tr>
                               </thead>
-                              <tbody  id="datos_pacientes">
+                              <tbody id="medicamentos_dosis">
                               <!--Datos del server -- dosis -- -->
                                 {% for medicamento in dosis %}
                                 <tr>
-                                    <th>{{ medicamento.medicamento }}</th>
-                                    <th>{{ medicamento.cantidad_dosis }}</th>
-                                    <th>{{ medicamento.unidad_de_medida_dosis }}</th>
-                                    <th>{{ medicamento.frecuencia_dosis }} - {{ medicamento.get_unidad_frecuencia_dosis_display }}</th>
-                                    <th>{{ medicamento.periodo_dosis }} - {{ medicamento.get_unidad_periodo_dosis_display }}</th>
-                                    <th><span class="material-symbols-outlined btn btn-sm">more_vert</span></th>
+                                    <td>{{ medicamento.medicamento }}</td>
+                                    <td>{{ medicamento.cantidad_dosis }}</td>
+                                    <td>{{ medicamento.unidad_de_medida_dosis }}</td>
+                                    <td>{{ medicamento.frecuencia_dosis }} - {{ medicamento.get_unidad_frecuencia_dosis_display }}</td>
+                                    <td>{{ medicamento.periodo_dosis }} - {{ medicamento.get_unidad_periodo_dosis_display }}</td>
+                                    <td><span onclick="eliminarDosis({{ medicamento.id_dosis }}, {{ medicamento.receta_medica.id_receta_medica }});" class="material-symbols-outlined btn btn-sm">delete</span></td>
                                 </tr>
                                 {% endfor %}
                               </tbody>
@@ -283,8 +283,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary">Finalizar</button>
                 </div>
             </div>
         </div>
@@ -317,7 +317,7 @@
             </div>
           </div>
         </div>
-      </div>
+    </div>
 </div>    
 {% endblock %}
 {% block js %}
