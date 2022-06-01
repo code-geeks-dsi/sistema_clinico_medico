@@ -450,46 +450,63 @@ def autocompletado_medicamento(request):
     #la clave tiene que ser data para que funcione con el metodo
 
 @csrf_exempt
+@login_required
 def dosis_medicamento(request):
-    if request.method=='POST':
-        medicamento=DosisFormulario(request.POST)
-        if medicamento.is_valid():
-            medicamento.save()
-            dosis=Dosis.objects.filter(receta_medica=request.POST['receta_medica'])
-            serializer=DosisListSerializer(dosis, many=True)
-            response={
-            'type':'success',
-            'title':'Guardado!',
-            'data':'Dosis Guardada!',
-            'dosis':serializer.data
-        }
-        else:
-            response={
-            'type':'warning',
-            'title':'Error!',
-            'data':medicamento.errors,
-            'test':""
-        }
+    if request.user.roles.id_rol ==ROL_DOCTOR:
+        if request.method=='POST':
+            medicamento=DosisFormulario(request.POST)
+            if medicamento.is_valid():
+                medicamento.save()
+                dosis=Dosis.objects.filter(receta_medica=request.POST['receta_medica'])
+                serializer=DosisListSerializer(dosis, many=True)
+                response={
+                'type':'success',
+                'title':'Guardado!',
+                'data':'Dosis Guardada!',
+                'dosis':serializer.data
+            }
+            else:
+                response={
+                'type':'warning',
+                'title':'Error!',
+                'data':medicamento.errors,
+                'test':""
+            }
+    else:
+        response={
+                'type':'warning',
+                'title':'Error!',
+                'data':'Acceso denegado',
+                'test':""
+            }
     
     return JsonResponse(response)
 
 #Método que elimina una dosis de la receta medica
+@login_required
 def eliminar_dosis(request, id_dosis):
-    try:
-        dosis=Dosis.objects.get(id_dosis=id_dosis)
-        dosis.delete()
-        dosis=Dosis.objects.filter(receta_medica=request.GET['id_receta'])
-        serializer=DosisListSerializer(dosis, many=True)
+    if request.user.roles.id_rol ==ROL_DOCTOR:
+        try:
+            dosis=Dosis.objects.get(id_dosis=id_dosis)
+            dosis.delete()
+            dosis=Dosis.objects.filter(receta_medica=request.GET['id_receta'])
+            serializer=DosisListSerializer(dosis, many=True)
+            response={
+                'type':'success',
+                'title':'Eliminado',
+                'data':'Se ha eliminado la dosis de la receta medica',
+                'dosis':serializer.data
+            }
+        except:
+            response={
+                'type':'warning',
+                'title':'Error',
+                'data':'La dosis no esta ingresada en la receta medica'
+            }
+    else:
         response={
-            'type':'success',
-            'title':'Eliminado',
-            'data':'Se ha eliminado la dosis de la receta medica',
-            'dosis':serializer.data
-        }
-    except:
-        response={
-            'type':'warning',
-            'title':'Error',
-            'data':'La dosis no esta ingresada en la receta medica'
-        }
+                'type':'warning',
+                'title':'Error',
+                'data':'Acceso denegado'
+            }
     return JsonResponse(response, safe=False)

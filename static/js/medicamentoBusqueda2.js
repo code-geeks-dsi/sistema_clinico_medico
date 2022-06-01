@@ -127,7 +127,6 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
                 //Si todo salio bien
                 else
                 {
-                  toastr[data.type](data.data); 
                   //Impresion en templete de las dosis de medicamentos
                   let elemento;
                   let id_dosis;
