@@ -457,13 +457,11 @@ def dosis_medicamento(request):
             'dosis':serializer.data
         }
         else:
-            dosis=Dosis.objects.filter(receta_medica=request.POST['receta_medica'])
-            serializer=DosisListSerializer(dosis, many=True)
             response={
             'type':'warning',
             'title':'Error!',
             'data':medicamento.errors,
-            'test':serializer.data
+            'test':""
         }
     
     return JsonResponse(response)
