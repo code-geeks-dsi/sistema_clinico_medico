@@ -72,8 +72,11 @@
                     <th scope="col">Fase</th>                                        
                     <th scope="col">Fecha</th>    
                     <th scope="col">Consumo</th>
-                    <th scope="col">Estado</th>                    
-                    <th scope="col"></th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Cambiar<br/>Fase</th>     
+                    {% if rol == ROL_LIC_LABORATORIO %}               
+                    <th scope="col">Elaborar<br/>Resultado</th>
+                    {% endif %}
                   </tr>
                 </thead>
                 <tbody id="tabla_cola">
@@ -235,23 +238,33 @@ function get_cola_examenes(){
   url: url_consulta,
   url: "{% url 'get_cola_examenes' %}",
   type:"GET",
-  dataType: "json",
-  data: {
-    
-  },
+  dataType: "json",data: {},
   success: function(data){ 
-    
-    data.data.forEach(examenItem => {
-//Recorre los elemntos del objeto
+    tabla_examenes_cola.innerHTML=null; //borrando los datos previos en la cola examenes
+    console.log(data)
+    if(data.type=='warning'){
+      toastr[data.type](`${data.data}`);
+      tabla_examenes_cola.insertAdjacentHTML("beforeend", `<tr colspan="9" ><td colspan="9" style="text-align:center">${data.data}</td></tr>`);
+    }else{
+      data.data.forEach(examenItem => {
+      //Recorre los elemntos del objeto
       let elemento='<tr>';
       const nodeFila = document.createElement("tr");
       for (const property in examenItem) {
-          
-          {% if rol == ROL_LIC_LABORATORIO %}
-          if(property!='url_resultado'){
-          {% elif rol == ROL_SECRETARIA %}
-          if(property!='id_resultado' && property!='id_expediente'){
-          {% endif %}
+          /**
+           * Si es lic de lab entonces se recive una url que redirige a la elaboracion de resultados, si es secretaria entonces le envia el el id_expediente y el id_resultados
+           * ya que la combinacion de estos es la key primary de espera examen
+          */
+        {% if rol == ROL_LIC_LABORATORIO %}
+          if(property!='url_resultado'&& property!='id_resultado' && property!='id_expediente'){
+        {% elif rol == ROL_SECRETARIA %}
+          if(property!='id_resultado' && property!='id_expediente' && property!='url_resultado_pdf'){
+        {% endif %}
+          /** 
+           * desplegando cada atributo del examen en una columna que luego es agregada a una fila
+           * que es agregada a la tabla luego de agregar el boton de cambiar fase o elaborar 
+           * resultados de examen
+           */
             const nodeColumna = document.createElement("td");
             const textnode = document.createTextNode(`${examenItem[property]}`);
             nodeColumna.appendChild(textnode);
@@ -260,22 +273,37 @@ function get_cola_examenes(){
         }
         
       }
+      /**
+       * Agregando el boton de cambiar fase o elaborar resultados de examen
+      */
       let nodeColumna = document.createElement("td");
-      {% if rol == ROL_LIC_LABORATORIO %}
-      nodeColumna.innerHTML=`<a href="${examenItem['url_resultado']}" target="_blank"><div class="material-symbols-outlined btn">open_in_new</div></a>`;
-      {% elif rol == ROL_SECRETARIA %}
-      //  en caso de ser secretaria la url debe de cambiarse a cambiar fase
+    {% if rol == ROL_LIC_LABORATORIO %}
       nodeColumna.innerHTML=`<div 
-                          class="material-symbols-outlined btn"
-                          onclick="cambiar_fase(${examenItem['id_resultado']},${examenItem['id_expediente']})">done</div>`;
-                          {% endif %}
+                            class="material-symbols-outlined btn btn-outline-primary"
+                            onclick="cambiar_fase(${examenItem['id_resultado']},${examenItem['id_expediente']})">done</div>`;
       nodeFila.appendChild(nodeColumna);
+      nodeColumna = document.createElement("td");
+      nodeColumna.innerHTML=`<a href="${examenItem['url_resultado']}" target="_blank"><div class="material-symbols-outlined btn btn-outline-primary">open_in_new</div></a>`;
+
+    {% elif rol == ROL_SECRETARIA %}
+      if(examenItem['fase_examenes_lab']=='Resultados en Proceso'){
+        nodeColumna.innerHTML=`<button type="button"
+                            class="material-symbols-outlined btn btn-primary" disabled>done</button>`;
+      }else if(examenItem['fase_examenes_lab']=='Resultados Listos'){
+        nodeColumna.innerHTML=`<a target="_blank"
+                            class="material-symbols-outlined btn btn-outline-success"
+                            href="${examenItem['url_resultado_pdf']}" >download</a>`;
+      }else{
+        nodeColumna.innerHTML=`<button type="button"
+                            class="material-symbols-outlined btn btn-outline-primary"
+                            onclick="cambiar_fase(${examenItem['id_resultado']},${examenItem['id_expediente']})">done</button>`;
+      }
       
-      
+    {% endif %}
+      nodeFila.appendChild(nodeColumna);      
       tabla_examenes_cola.appendChild(nodeFila);            
-              
       });
-    }});
+    }}});
 }
     
  //Al presionar la lupa
@@ -290,7 +318,46 @@ getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsu
 get_cola_examenes();
 
 function cambiar_fase(id_resultado,id_expediente) {
-  
+  $.ajax({
+    url: url_consulta,
+    {% if rol == ROL_LIC_LABORATORIO %}
+    url: "{% url 'cambiar_fase_laboratorio' %}",
+    {% else %}
+    url: "{% url 'cambiar_fase_secretaria' %}",
+    {% endif %}
+    type:"POST",
+    dataType: "json",
+    headers: {
+                  'X-CSRFToken': "{{csrf_token }}"
+      }, data: {
+        'id_expediente':id_expediente,
+        'id_resultado':id_resultado
+      },
+    success: function(data){ 
+      //disable button
+
+      toastr[data.type](`${data.data}`);
+      get_cola_examenes();
+    }
+  });
+}
+function descargar_examen(id_resultado) {
+  $.ajax({
+    url: url_consulta,
+    url: "{% url 'cambiar_fase_secretaria' %}",
+    type:"GET",
+    dataType: "json",
+    data: {
+        'id_expediente':id_expediente,
+        'id_resultado':id_resultado
+      },
+    success: function(data){ 
+      //disable button
+
+      toastr[data.type](`${data.data}`);
+      get_cola_examenes();
+    }
+  });
 }
 </script>
 

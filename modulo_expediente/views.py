@@ -3,7 +3,6 @@ from time import time
 from xml.dom import INVALID_CHARACTER_ERR
 from django.shortcuts import redirect, render
 from django.db.models import Q
-from modulo_control.views import ROL_ADMIN
 from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
@@ -130,9 +129,9 @@ def contiene_consulta_con_filtro(request):
 def  get_cola(request):
     fecha=datetime.now()
     lista=[]
-    rol=request.user.roles.id_rol
+    rol=request.user.roles.codigo_rol
 
-    if(rol==ROL_SECRETARIA):
+    if(rol=='ROL_SECRETARIA'):
         contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                         fecha_de_cola__month=fecha.month, 
                         fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
@@ -155,7 +154,7 @@ def  get_cola(request):
             diccionario["consumo_medico"]= fila.consumo_medico
             diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
             lista.append(diccionario)
-    elif(rol==ROL_DOCTOR):
+    elif(rol=='ROL_DOCTOR'):
         #en la vista doctor se retorna el apellido de la barra de busqueda del paciente
         apellido_paciente=request.GET.get('apellido_paciente','')
         year=int(request.GET.get('year',0))
@@ -199,7 +198,7 @@ def  get_cola(request):
             lista.append(diccionario)
             # del diccionario
                 
-    elif (rol==ROL_ENFERMERA):
+    elif (rol=='ROL_ENFERMERA'):
         # recupera los pacientes en cola en fase anotado
         contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                         fecha_de_cola__month=fecha.month, 
@@ -392,7 +391,7 @@ def agregar_medicamento(request):
 
 @login_required
 def editar_consulta(request,id_consulta):
-    if request.user.roles.id_rol ==ROL_DOCTOR:
+    if request.user.roles.codigo_rol =='ROL_DOCTOR':
         contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
         paciente=contiene_consulta.expediente.id_paciente
         signos_vitales=contiene_consulta.consulta.signos_vitales
@@ -448,7 +447,7 @@ def autocompletado_medicamento(request):
 @csrf_exempt
 @login_required
 def dosis_medicamento(request):
-    if request.user.roles.id_rol ==ROL_DOCTOR:
+    if request.user.roles.codigo_rol =='ROL_DOCTOR':
         if request.method=='POST':
             medicamento=DosisFormulario(request.POST)
             if medicamento.is_valid():
@@ -481,7 +480,7 @@ def dosis_medicamento(request):
 #Método que elimina una dosis de la receta medica
 @login_required
 def eliminar_dosis(request, id_dosis):
-    if request.user.roles.id_rol ==ROL_DOCTOR:
+    if request.user.roles.codigo_rol =='ROL_DOCTOR':
         try:
             dosis=Dosis.objects.get(id_dosis=id_dosis)
             dosis.delete()

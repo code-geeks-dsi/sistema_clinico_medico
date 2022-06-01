@@ -8,7 +8,7 @@ from datetime import datetime
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from modulo_control.models import Rol
-from modulo_expediente.models import Paciente
+from modulo_expediente.models import Expediente, Paciente
 from modulo_laboratorio.models import Categoria, CategoriaExamen, EsperaExamen, ExamenLaboratorio, Resultado
 from modulo_laboratorio.serializers import CategoriaExamenSerializer
 from dateutil.relativedelta import relativedelta
@@ -70,7 +70,7 @@ def get_cola_examenes(request):
     elif (request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO'):
         espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
                         fecha__month=fecha_hoy.month, 
-                        fecha__day=fecha_hoy.day,fase_examenes_lab=EsperaExamen.OPCIONES_FASE[0][0]).select_related('expediente__id_paciente')
+                        fecha__day=fecha_hoy.day,fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente')
     for fila in espera_examen:
         diccionario={
             "numero_cola_laboratorio":"",
@@ -91,22 +91,60 @@ def get_cola_examenes(request):
         diccionario["consumo_laboratorio"]= fila.consumo_laboratorio
         diccionario["estado_pago_laboratorio"]= fila.get_estado_pago_laboratorio_display()
         #  en caso de ser secretaria la url debe de cambiarse a cambiar fase
-        if(request.user.roles.codigo_rol=='ROL_SECRETARIA'):
-             diccionario["id_resultado"]= fila.resultado.id_resultado
-             diccionario["id_expediente"]= fila.expediente.id_expediente
-        elif (request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO'):
+        
+        diccionario["id_resultado"]= fila.resultado.id_resultado
+        diccionario["id_expediente"]= fila.expediente.id_expediente
+        if (request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO'):
             diccionario["url_resultado"]= reverse('elaborar_resultado',kwargs={'id_resultado':fila.resultado.id_resultado})
+        if (request.user.roles.codigo_rol=='ROL_SECRETARIA'):
+            diccionario["url_resultado_pdf"]= reverse('generar_pdf',kwargs={'id_resultado':fila.resultado.id_resultado})
         lista.append(diccionario)
         del diccionario
-    return JsonResponse( {'data':lista}, safe=False)
+    if len(lista)==0:
+        response={
+            'type':'warning',
+            'data':'No hay examenes pendientes'
+        }
+    else:
+        response={'data':lista}
+    return JsonResponse( response , safe=False)
 
 def elaborar_resultados_examen(request,id_resultado):
         examen=ExamenLaboratorio.objects.get(resultado=id_resultado)
         return HttpResponse("Elaborar examen de laboratorio "+examen.nombre_examen+"!")
 
+def cambiar_fase_secretaria(request):
+    id_resultado=request.POST.get('id_resultado',0)
+    id_expediente=request.POST.get('id_expediente',0)
+    item=EsperaExamen.objects.get(resultado__id_resultado=id_resultado,expediente__id_expediente=id_expediente)
+    item.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]
+   
+    item.save()
+    response={
+            'type':'success',
+            'title':'Muestras entregadas!',
+            'data':'Examen en proceso'
+        }
+
+    return JsonResponse(response, safe=False)
+    # cambiar la fase de un examen en cola a resultados listos
+def cambiar_fase_laboratorio(request):
+    id_resultado=request.POST.get('id_resultado',0)
+    id_expediente=request.POST.get('id_expediente',0)
+    item=EsperaExamen.objects.get(resultado__id_resultado=id_resultado,expediente__id_expediente=id_expediente)
+    item.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[2][0]
+   
+    item.save()
+    response={
+            'type':'success',
+            'data':'Resultados Listos'
+        }
+
+    return JsonResponse(response, safe=False)
+
 #Método para descargar examenes de laboratorio
 #Método que genera los pdf 
-def generar_pdf(request):
+def generar_pdf(request,id_resultado):
     #puede recibir la info como diccionario
     html_string = render_to_string('ResultadosDeLaboratorio.html')
     html = HTML(string=html_string)
