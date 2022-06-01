@@ -167,7 +167,7 @@
                                     <input type="text" class="form-control" id="id_nombre_medicamento" placeholder="Buscar Medicamentos" aria-label="Nombres" aria-describedby="basic-addon1">
                                     
                                     <span class="input-group-text bg-white" id="filtro_buscar">
-                                      <span class="material-symbols-outlined btn btn-sm" id="agregar_medicamento_receta" data-bs-toggle="modal" data-bs-target="#busquedaMedicamentoModal">add</span>
+                                      <span class="material-symbols-outlined btn btn-sm" id="agregar_medicamento_receta" data-bs-toggle="modal" data-bs-target="#busquedaMedicamentoModal">search</span>
                                     </span>
                                 </div>
                             </div>
@@ -254,12 +254,26 @@
                             <table class="table table-bordered text-center">
                               <thead class="table-secondary">
                                 <tr>
-                                    <th>Nombre Comercial</th>
-                                    <th>Nombre Generico</th>
-                                    <th>Seleccionar</td>
-                                  </tr>
+                                    <th>Medicamento</th>
+                                    <th>Cantidad</th>
+                                    <th>Presentación</td>
+                                    <th>Frecuencia</td>
+                                    <th>Periodo</td>
+                                    <th>Opciones</td>
+                                </tr>
                               </thead>
                               <tbody  id="datos_pacientes">
+                              <!--Datos del server -- dosis -- -->
+                                {% for medicamento in dosis %}
+                                <tr>
+                                    <th>{{ medicamento.medicamento }}</th>
+                                    <th>{{ medicamento.cantidad_dosis }}</th>
+                                    <th>{{ medicamento.unidad_de_medida_dosis }}</th>
+                                    <th>{{ medicamento.frecuencia_dosis }} - {{ medicamento.get_unidad_frecuencia_dosis_display }}</th>
+                                    <th>{{ medicamento.periodo_dosis }} - {{ medicamento.get_unidad_periodo_dosis_display }}</th>
+                                    <th><span class="material-symbols-outlined btn btn-sm">more_vert</span></th>
+                                </tr>
+                                {% endfor %}
                               </tbody>
                             </table>
                         </div>

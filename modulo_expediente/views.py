@@ -8,7 +8,7 @@ from modulo_expediente.serializers import MedicamentoSerializer, PacienteSeriali
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
-from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales
+from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales
 from modulo_control.models import Enfermera, Empleado
 from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos
 from django.http import JsonResponse
@@ -402,6 +402,7 @@ def editar_consulta(request,id_consulta):
         signos_vitales=contiene_consulta.consulta.signos_vitales
         consulta=Consulta.objects.get(id_consulta=id_consulta)
         receta=RecetaMedica.objects.get(Consulta=consulta)
+        dosis=Dosis.objects.filter(receta_medica=receta)
         if request.method=='POST':
             consulta_form=ConsultaFormulario(request.POST,instance=consulta)
             if consulta_form.is_valid():
@@ -417,7 +418,8 @@ def editar_consulta(request,id_consulta):
             'id_receta':receta.id_receta_medica,
             'consulta_form':consulta_form,
             'edad':edad,
-            'dosis_form':DosisFormulario()
+            'dosis_form':DosisFormulario(),
+            'dosis':dosis
         }
         
         return render(request,"expediente/consulta.html",datos)
