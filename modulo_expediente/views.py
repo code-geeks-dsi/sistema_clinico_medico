@@ -464,27 +464,27 @@ def dosis_medicamento(request):
             'dosis':serializer.data
         }
         else:
-            dosis=Dosis.objects.filter(receta_medica=request.POST['receta_medica'])
-            serializer=DosisListSerializer(dosis, many=True)
             response={
             'type':'warning',
             'title':'Error!',
             'data':medicamento.errors,
-            'test':serializer.data
+            'test':""
         }
     
     return JsonResponse(response)
 
 #Método que elimina una dosis de la receta medica
 def eliminar_dosis(request, id_dosis):
-    
     try:
         dosis=Dosis.objects.get(id_dosis=id_dosis)
         dosis.delete()
+        dosis=Dosis.objects.filter(receta_medica=request.GET['id_receta'])
+        serializer=DosisListSerializer(dosis, many=True)
         response={
-            'type':'sucess',
+            'type':'success',
             'title':'Eliminado',
-            'data':'Se ha eliminado la dosis de la receta medica'
+            'data':'Se ha eliminado la dosis de la receta medica',
+            'dosis':serializer.data
         }
     except:
         response={
