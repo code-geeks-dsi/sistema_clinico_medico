@@ -11,9 +11,9 @@ from modulo_expediente.models import Expediente, Paciente
 
 class EsperaExamen(models.Model):
     OPCIONES_ESTADO=(
-        (1, 'Completo'),
-        (2, 'Parcialmente'),
-        (3, 'Pendiente')
+        ('1', 'Completo'),
+        ('2', 'Parcialmente'),
+        ('3', 'Pendiente')
     )
     OPCIONES_FASE=(
         ('1','Preparado'),

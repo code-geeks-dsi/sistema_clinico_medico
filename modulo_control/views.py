@@ -254,6 +254,7 @@ def vista_adminitracion_empleados(request):
 def lista_empleados(request):
     if request.user.roles.id_rol == ROL_ADMIN:
         empleados = Empleado.objects.all().order_by('-roles').reverse()
+        print(empleados[0].roles)
         serializer = EmpleadoSerializer(empleados, many=True)
         return JsonResponse(serializer.data, safe=False)
     else:
