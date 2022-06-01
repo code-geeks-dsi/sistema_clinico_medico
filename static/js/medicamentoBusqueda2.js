@@ -88,6 +88,7 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
   }
   //Funcion para agregar medicamentos a la receta
   function agregarMedicamentoReceta(id, url_data){
+    //Para que muestre el spinner
     $('#load').show();
   $.ajax({
             url: url_data,
@@ -104,19 +105,27 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
               'receta_medica': id
             },
             success: function(data){
+              //Al recibir la respuesta oculta el spinner
               $('#load').hide();
+                //Si es un warning
                 if (data.type=='warning'){
+                  console.log(data.test)
                   for (const property in data.data) {
+                    //Si es un error no relacionado a un campo especifico.
                     if (`${property}`=="__all__"){
                       toastr[data.type](`${data.data[property]}`);
-                    }else{
+                    }
+                    //Si es un error relacionado a un campo especifico, como por ejemplo: los medicamentos
+                    else{
                     toastr[data.type](`${property}: ${data.data[property]}`);
                     }
                   }
                     
                 }
+                //Si todo salio bien
                 else
                 {
+                  console.log(data.dosis)
                   toastr[data.type](data.data);   
                 }
                 //document.getElementById('id_nombre_empleado').value=data[0].nombres; 
