@@ -80,7 +80,7 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
     
       filtroResultado.send();
     }
-  }
+  }_
   function setMedicamento(id_medicamento){
     console.log(id_medicamento);
     $('select[name=medicamento]').val(id_medicamento);
