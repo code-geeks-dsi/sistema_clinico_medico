@@ -73,3 +73,4 @@ def get_cola_examenes(request):
                     del diccionario
     return JsonResponse( lista, safe=False)
 
+#Método para descargar examenes de laboratorio 
