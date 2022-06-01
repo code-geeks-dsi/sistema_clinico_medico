@@ -465,3 +465,22 @@ def dosis_medicamento(request):
         }
     
     return JsonResponse(response)
+
+#Método que elimina una dosis de la receta medica
+def eliminar_dosis(request, id_dosis):
+    
+    try:
+        dosis=Dosis.objects.get(id_dosis=id_dosis)
+        dosis.delete()
+        response={
+            'type':'sucess',
+            'title':'Eliminado',
+            'data':'Se ha eliminado la dosis de la receta medica'
+        }
+    except:
+        response={
+            'type':'warning',
+            'title':'Error',
+            'data':'La dosis no esta ingresada en la receta medica'
+        }
+    return JsonResponse(response, safe=False)
