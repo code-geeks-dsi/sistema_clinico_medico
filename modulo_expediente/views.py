@@ -430,6 +430,13 @@ def busqueda_medicamento(request):
     queryset=Medicamento.objects.all()
     result= MedicamentoFilter(request.GET, queryset=queryset)
     medicamento =MedicamentoSerializer(result.qs, many=True)
+    if(len(result.qs) ==0):
+        response={
+            'type':'warning',
+            'title':'Error!',
+            'data':'El medicamento aún no ha sido registrado'
+        }
+        return JsonResponse(response)
     return JsonResponse({'data':medicamento.data})
      #la clave tiene que ser data para que funcione con el metodo.
 
