@@ -1,9 +1,3 @@
-
-//Al presionar la lupa
-document.getElementById("filtro_buscar").addEventListener("click",function(){
-  getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta);
-});
-
 document.getElementById("selectCategoria").addEventListener("change", function(){
 
   accionServer($('#selectCategoria').val(), 2);

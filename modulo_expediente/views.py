@@ -9,7 +9,7 @@ from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales
-from modulo_control.models import Enfermera, Empleado
+from modulo_control.models import Enfermera, Empleado, Rol
 from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos
 from django.http import JsonResponse
 import json
@@ -22,12 +22,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from dateutil.relativedelta import relativedelta
-ROL=4
-ROL_DOCTOR=1
-ROL_ENFERMERA=2
-ROL_LIC_LABORATORIO=3
-ROL_SECRETARIA=4
-ROL_ADMIN=5
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -48,11 +42,13 @@ def autocompletado_apellidos(request):
 
 @login_required(login_url='/login/')
 def sala_consulta(request):
-    if request.user.roles.id_rol !=ROL_ADMIN:
-        return render(request,"expediente/sala.html",{'rol':request.user.roles.id_rol,'ROL_DOCTOR':ROL_DOCTOR,
-                                                    'ROL_ENFERMERA':ROL_ENFERMERA,
-                                                    'ROL_LIC_LABORATORIO':ROL_LIC_LABORATORIO,
-                                                    'ROL_SECRETARIA':ROL_SECRETARIA})
+    roles=Rol.objects.values_list('codigo_rol','id_rol').all()
+    data={}
+    data['rol']=request.user.roles.id_rol
+    for rol in roles:
+        data[rol[0]]=rol[1]
+    if request.user.roles.id_rol !=data['ROL_ADMIN']:
+        return render(request,"expediente/sala.html",data)
     else:
         return render(request,"Control/error403.html")
 

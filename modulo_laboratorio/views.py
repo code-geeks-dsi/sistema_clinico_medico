@@ -1,13 +1,15 @@
 
+from django.urls import reverse
 import datetime
 
 from curses import pair_content
 import json
 from datetime import datetime
-from django.http import JsonResponse
-from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+from modulo_control.models import Rol
 from modulo_expediente.models import Paciente
-from modulo_laboratorio.models import Categoria, CategoriaExamen, EsperaExamen, Resultado
+from modulo_laboratorio.models import Categoria, CategoriaExamen, EsperaExamen, ExamenLaboratorio, Resultado
 from modulo_laboratorio.serializers import CategoriaExamenSerializer
 from dateutil.relativedelta import relativedelta
 from django.template.loader import get_template
@@ -21,7 +23,14 @@ import tempfile
 def sala_laboratorio(request):
     categorias= Categoria.objects.all()
     rutina=CategoriaExamen.objects.filter(categoria=1)
-    return render(request,"laboratorio/salaLaboratorio.html", {"Categoria":categorias, "Examen":rutina})
+    roles=Rol.objects.values_list('codigo_rol','id_rol').all()
+    data={}
+    data["Categoria"]=categorias 
+    data["Examen"]=rutina
+    data['rol']=request.user.roles.id_rol
+    for rol in roles:
+        data[rol[0]]=rol[1]
+    return render(request,"laboratorio/salaLaboratorio.html",data)
 
 #View Recuperar Examenes por categoria
 def get_categoria_examen(request, id_categoria):
@@ -54,29 +63,46 @@ def agregar_examen_cola(request):
 def get_cola_examenes(request):
     fecha_hoy=datetime.now()
     lista=[]
-    espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
+    if(request.user.roles.codigo_rol=='ROL_SECRETARIA'):
+        espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
+                        fecha__month=fecha_hoy.month, 
+                        fecha__day=fecha_hoy.day).select_related('expediente__id_paciente')
+    elif (request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO'):
+        espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
                         fecha__month=fecha_hoy.month, 
                         fecha__day=fecha_hoy.day,fase_examenes_lab=EsperaExamen.OPCIONES_FASE[0][0]).select_related('expediente__id_paciente')
     for fila in espera_examen:
-                    diccionario={
-                        "numero_cola_laboratorio":"",
-                        "nombre":"",
-                        "apellidos":"",
-                        "sexo":"",
-                        "fase_examenes_lab":"",
-                        "consumo_laboratorio":"",
-                        "estado_pago_laboratorio":"",
-                    }
-                    diccionario["numero_cola_laboratorio"]= fila.numero_cola_laboratorio
-                    diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
-                    diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
-                    diccionario["sexo"]=fila.expediente.id_paciente.sexo_paciente
-                    diccionario["fase_examenes_lab"]= fila.get_fase_examenes_lab_display()
-                    diccionario["consumo_laboratorio"]= fila.consumo_laboratorio
-                    diccionario["estado_pago_laboratorio"]= fila.get_estado_pago_laboratorio_display()
-                    lista.append(diccionario)
-                    del diccionario
-    return JsonResponse( lista, safe=False)
+        diccionario={
+            "numero_cola_laboratorio":"",
+            "nombre":"",
+            "apellidos":"",
+            "examen":"",
+            "fase_examenes_lab":"",
+            "fecha":"",
+            "consumo_laboratorio":"",
+            "estado_pago_laboratorio":"",
+        }
+        diccionario["numero_cola_laboratorio"]= fila.numero_cola_laboratorio
+        diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
+        diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+        diccionario["examen"]=fila.resultado.examen_laboratorio.nombre_examen
+        diccionario["fase_examenes_lab"]= fila.get_fase_examenes_lab_display()
+        diccionario["fecha"]=fila.fecha.strftime("%d/%b/%Y")
+        diccionario["consumo_laboratorio"]= fila.consumo_laboratorio
+        diccionario["estado_pago_laboratorio"]= fila.get_estado_pago_laboratorio_display()
+        #  en caso de ser secretaria la url debe de cambiarse a cambiar fase
+        if(request.user.roles.codigo_rol=='ROL_SECRETARIA'):
+             diccionario["id_resultado"]= fila.resultado.id_resultado
+             diccionario["id_expediente"]= fila.expediente.id_expediente
+        elif (request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO'):
+            diccionario["url_resultado"]= reverse('elaborar_resultado',kwargs={'id_resultado':fila.resultado.id_resultado})
+        lista.append(diccionario)
+        del diccionario
+    return JsonResponse( {'data':lista}, safe=False)
+
+def elaborar_resultados_examen(request,id_resultado):
+        examen=ExamenLaboratorio.objects.get(resultado=id_resultado)
+        return HttpResponse("Elaborar examen de laboratorio "+examen.nombre_examen+"!")
 
 #Método para descargar examenes de laboratorio
 #Método que genera los pdf 
