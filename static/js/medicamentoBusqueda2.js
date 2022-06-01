@@ -106,7 +106,14 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
             success: function(data){
               $('#load').hide();
                 if (data.type=='warning'){
-                  toastr[data.type](data.data['medicamento'][0]);   
+                  for (const property in data.data) {
+                    if (`${property}`=="__all__"){
+                      toastr[data.type](`${data.data[property]}`);
+                    }else{
+                    toastr[data.type](`${property}: ${data.data[property]}`);
+                    }
+                  }
+                    
                 }
                 else
                 {
