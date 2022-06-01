@@ -4,7 +4,7 @@ from xml.dom import INVALID_CHARACTER_ERR
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_control.views import ROL_ADMIN
-from modulo_expediente.serializers import MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
+from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
@@ -448,17 +448,22 @@ def dosis_medicamento(request):
         medicamento=DosisFormulario(request.POST)
         if medicamento.is_valid():
             medicamento.save()
+            dosis=Dosis.objects.filter(receta_medica=request.POST['receta_medica'])
+            serializer=DosisListSerializer(dosis, many=True)
             response={
             'type':'success',
             'title':'Guardado!',
-            'data':'Dosis Guardada!'
+            'data':'Dosis Guardada!',
+            'dosis':serializer.data
         }
         else:
+            dosis=Dosis.objects.filter(receta_medica=request.POST['receta_medica'])
+            serializer=DosisListSerializer(dosis, many=True)
             response={
             'type':'warning',
             'title':'Error!',
             'data':medicamento.errors,
-            'test':medicamento.errors
+            'test':serializer.data
         }
     
     return JsonResponse(response)
