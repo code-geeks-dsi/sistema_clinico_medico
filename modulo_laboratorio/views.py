@@ -12,6 +12,11 @@ from modulo_expediente.models import Paciente
 from modulo_laboratorio.models import Categoria, CategoriaExamen, EsperaExamen, ExamenLaboratorio, Resultado
 from modulo_laboratorio.serializers import CategoriaExamenSerializer
 from dateutil.relativedelta import relativedelta
+from django.template.loader import get_template
+from weasyprint import HTML
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import tempfile
 # Create your views here.
 
 # Templete Sala de Espera laboratorio
@@ -99,3 +104,20 @@ def elaborar_resultados_examen(request,id_resultado):
         examen=ExamenLaboratorio.objects.get(resultado=id_resultado)
         return HttpResponse("Elaborar examen de laboratorio "+examen.nombre_examen+"!")
 
+#Método para descargar examenes de laboratorio
+#Método que genera los pdf 
+def generar_pdf(request):
+    #puede recibir la info como diccionario
+    html_string = render_to_string('ResultadosDeLaboratorio.html')
+    html = HTML(string=html_string)
+    result = html.write_pdf()
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
+    response['Content-Transfer-Encoding'] = 'binary'
+    #Crea un archivo temporal
+    with tempfile.NamedTemporaryFile(delete=True) as output:
+        output.write(result)
+        output.flush()
+        output = open(output.name, 'rb')
+        response.write(output.read())
+    return response
