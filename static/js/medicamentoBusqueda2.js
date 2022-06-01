@@ -44,12 +44,13 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
         if (filtroResultado.readyState === 4 && filtroResultado.status === 200) {
           resultados=JSON.parse(filtroResultado.responseText);
           tablaData.innerHTML="";
-          if(resultados.data.length==0){
-            tablaData.insertAdjacentHTML("beforeend", '<tr colspan="9" ><td colspan="9" style="text-align:center">No hay Resultados</td></tr>');
-
+            if (resultados.type=='warning'){
+                  toastr[resultados.type](`${resultados.data}`);
+                  tablaData.insertAdjacentHTML("beforeend", '<tr colspan="9" ><td colspan="9" style="text-align:center">No hay Resultados</td></tr>');
+              
           }else{
             resultados.data.forEach(p => {
-                //Recorre los elemntos del objeto
+                //Recorre los elementos del objeto
 
                 let id_medicamento=p.id_medicamento;
                 delete p.id_medicamento;
@@ -109,7 +110,8 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
                 //Si es un warning
                 if (data.type=='warning'){
                   $('#load').hide();
-                  console.log(data.test)
+                  //console.log(data.test)
+
                   for (const property in data.data) {
                     //Si es un error no relacionado a un campo especifico.
                     if (`${property}`=="__all__"){
@@ -148,6 +150,8 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
                   $('#medicamentos_dosis').empty();
                   $('#medicamentos_dosis').append(elemento);
                   $('#load').hide();
+                  // console.log(data.dosis)
+                  toastr[data.type](data.data);   
                 }
                 //document.getElementById('id_nombre_empleado').value=data[0].nombres; 
                 //apellidos =  document.getElementById("id_apellido_empleado").value=data[0].apellidos;
