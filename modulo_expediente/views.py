@@ -4,11 +4,11 @@ from xml.dom import INVALID_CHARACTER_ERR
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_control.views import ROL_ADMIN
-from modulo_expediente.serializers import MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
+from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
-from modulo_expediente.models import Consulta, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales
+from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales
 from modulo_control.models import Enfermera, Empleado
 from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos
 from django.http import JsonResponse
@@ -402,6 +402,7 @@ def editar_consulta(request,id_consulta):
         signos_vitales=contiene_consulta.consulta.signos_vitales
         consulta=Consulta.objects.get(id_consulta=id_consulta)
         receta=RecetaMedica.objects.get(Consulta=consulta)
+        dosis=Dosis.objects.filter(receta_medica=receta)
         if request.method=='POST':
             consulta_form=ConsultaFormulario(request.POST,instance=consulta)
             if consulta_form.is_valid():
@@ -417,7 +418,8 @@ def editar_consulta(request,id_consulta):
             'id_receta':receta.id_receta_medica,
             'consulta_form':consulta_form,
             'edad':edad,
-            'dosis_form':DosisFormulario()
+            'dosis_form':DosisFormulario(),
+            'dosis':dosis
         }
         
         return render(request,"expediente/consulta.html",datos)
@@ -440,21 +442,47 @@ def autocompletado_medicamento(request):
     return JsonResponse({"data":medicamentosList})
     #la clave tiene que ser data para que funcione con el metodo
 
+@csrf_exempt
 def dosis_medicamento(request):
     if request.method=='POST':
         medicamento=DosisFormulario(request.POST)
         if medicamento.is_valid():
             medicamento.save()
+            dosis=Dosis.objects.filter(receta_medica=request.POST['receta_medica'])
+            serializer=DosisListSerializer(dosis, many=True)
             response={
             'type':'success',
             'title':'Guardado!',
-            'data':'Dosis Guardada!'
+            'data':'Dosis Guardada!',
+            'dosis':serializer.data
         }
         else:
+            dosis=Dosis.objects.filter(receta_medica=request.POST['receta_medica'])
+            serializer=DosisListSerializer(dosis, many=True)
             response={
             'type':'warning',
             'title':'Error!',
-            'data':medicamento.errors
+            'data':medicamento.errors,
+            'test':serializer.data
         }
     
     return JsonResponse(response)
+
+#Método que elimina una dosis de la receta medica
+def eliminar_dosis(request, id_dosis):
+    
+    try:
+        dosis=Dosis.objects.get(id_dosis=id_dosis)
+        dosis.delete()
+        response={
+            'type':'sucess',
+            'title':'Eliminado',
+            'data':'Se ha eliminado la dosis de la receta medica'
+        }
+    except:
+        response={
+            'type':'warning',
+            'title':'Error',
+            'data':'La dosis no esta ingresada en la receta medica'
+        }
+    return JsonResponse(response, safe=False)

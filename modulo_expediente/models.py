@@ -122,6 +122,8 @@ class ReferenciaMedica(models.Model):
 class RecetaMedica(models.Model):
     id_receta_medica= models.AutoField(primary_key=True)
     Consulta = models.ForeignKey(Consulta, on_delete=models.CASCADE,null=False, blank=False)
+    def __str__(self):
+        return str(self.id_receta_medica)+" - Consultata: "+str(self.Consulta.id_consulta)
 
 class Medicamento(models.Model):
     PRESENTACION_MEDICAMENTO=(
@@ -191,14 +193,19 @@ class Dosis(models.Model):
         ('capsulas','cápsulas'),
     )
     id_dosis= models.AutoField(primary_key=True)
-    periodo_dosis=models.IntegerField(null=False,blank=False,default=7,max_length=2)
+    periodo_dosis=models.IntegerField(null=False,blank=False,default=7)
     unidad_periodo_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False,default=OPCIONES_TIEMPO[1][0])
-    frecuencia_dosis=models.IntegerField(null=False,blank=False,default=8,max_length=2)
+    frecuencia_dosis=models.IntegerField(null=False,blank=False,default=8)
     unidad_frecuencia_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False,default=OPCIONES_TIEMPO[0][0])
     cantidad_dosis=models.DecimalField(decimal_places=2,max_digits=5,null=False,blank=False,default=1)
     unidad_de_medida_dosis=models.CharField(choices=UNIDADES_DE_MEDIDA_DOSIS,max_length=17,null=False,blank=False,default=UNIDADES_DE_MEDIDA_DOSIS[14][0])
-    medicamento=models.OneToOneField(Medicamento,on_delete=models.DO_NOTHING,null=False, blank=False)
+    medicamento=models.ForeignKey(Medicamento,on_delete=models.DO_NOTHING,null=False, blank=False)
     receta_medica=models.ForeignKey(RecetaMedica,on_delete=models.DO_NOTHING,null=False, blank=False)
+    class Meta:
+        unique_together = (('medicamento', 'receta_medica'),)
+    def __str__(self):
+        return str(self.id_dosis)+" - Medicamento: "+str(self.medicamento.id_medicamento)+" - Consulta: "+str(self.receta_medica.Consulta.id_consulta)
+
 
 class BrindaConsulta(models.Model):
     OPCIONES_TURNO=(

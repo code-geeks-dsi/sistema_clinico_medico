@@ -97,6 +97,15 @@ class ConsultaFormulario(ModelForm):
               }
 class DosisFormulario(ModelForm):
   medicamento= forms.ModelChoiceField(queryset=Medicamento.objects.all())
+  medicamento.widget.attrs.update({'class': 'form-select'})
   class Meta:
     model=Dosis
     fields='__all__'
+  def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['frecuencia_dosis'].widget.attrs.update({'class': 'form-control'})
+        self.fields['unidad_frecuencia_dosis'].widget.attrs.update({'class': 'form-select'})
+        self.fields['cantidad_dosis'].widget.attrs.update({'class': 'form-control'})
+        self.fields['unidad_de_medida_dosis'].widget.attrs.update({'class': 'form-select'})
+        self.fields['periodo_dosis'].widget.attrs.update({'class': 'form-control'})
+        self.fields['unidad_periodo_dosis'].widget.attrs.update({'class': 'form-select'})
