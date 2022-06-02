@@ -35,7 +35,7 @@ def sala_laboratorio(request):
 #View Recuperar Examenes por categoria
 def get_categoria_examen(request, id_categoria):
     response={
-            'data':'El Paciente ya existe en la cola',
+            'data':'El Examen ya existe en la cola',
             'accion':2
         }
     id_cat=id_categoria
