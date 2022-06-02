@@ -207,6 +207,7 @@ const url_consulta="{% url 'get_contieneConsulta' %}"
 let tablaCola=document.getElementById(tablaColaConsulta);
 let tablaData=document.getElementById(tablaResultado);
 let tabla_examenes_cola=document.getElementById(tabla_examenes);
+let cargando=false;
 
 // al agregar examen de laboratorio a la cola, retorna json para notificar
 function agregarExamen(){
@@ -214,7 +215,9 @@ function agregarExamen(){
   let id_examen_laboratorio=$('#selectExamen').val()
 
   let id_paciente=parseInt(document.getElementById('pacienteId').value);
-  $.ajax({
+  if(cargando==false){
+    cargando=true;
+    $.ajax({
     url: url_consulta,
         url:"{% url 'agregar_examen_cola' %}",
         type:"POST",
@@ -231,8 +234,11 @@ function agregarExamen(){
           $('#busquedaPacienteModal').modal('hide');
           toastr[data.type](`${data.data}`);
           get_cola_examenes();
+          cargando=false;
         }
   });
+  }
+  
 }
 
 function get_cola_examenes(){
