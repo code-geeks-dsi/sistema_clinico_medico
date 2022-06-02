@@ -35,7 +35,7 @@ def sala_laboratorio(request):
 #View Recuperar Examenes por categoria
 def get_categoria_examen(request, id_categoria):
     response={
-            'data':'El Paciente ya existe en la cola',
+            'data':'El Examen ya existe en la cola',
             'accion':2
         }
     id_cat=id_categoria
@@ -47,13 +47,23 @@ def get_categoria_examen(request, id_categoria):
 def agregar_examen_cola(request):
     id_paciente=request.POST.get('id_paciente',0)
     id_examen_laboratorio=request.POST.get('id_examen_laboratorio',0)
-    examen_item=EsperaExamen.create(id_paciente,id_examen_laboratorio)
-    examen_item.save()
-    response={
-            'type':'success',
-            'title':'Guardado!',
-            'data':'Examen agregado a la cola'
-        }
+    fecha_hoy=datetime.now()
+    examen_item=EsperaExamen.objects.filter(expediente__id_paciente__id_paciente=id_paciente,resultado__examen_laboratorio__id_examen_laboratorio=id_examen_laboratorio,fecha__year=fecha_hoy.year, 
+                        fecha__month=fecha_hoy.month, 
+                        fecha__day=fecha_hoy.day).first()
+    if examen_item is None:
+        examen_item=EsperaExamen.create(id_paciente,id_examen_laboratorio)
+        examen_item.save()
+        response={
+                'type':'success',
+                'title':'Guardado!',
+                'data':'Examen agregado a la cola'
+            }
+    else:
+        response={
+                'type':'warning',
+                'data':'El examen ya existe en la cola!'
+            }
 
     return JsonResponse(response, safe=False)
 
@@ -66,11 +76,11 @@ def get_cola_examenes(request):
     if(request.user.roles.codigo_rol=='ROL_SECRETARIA'):
         espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
                         fecha__month=fecha_hoy.month, 
-                        fecha__day=fecha_hoy.day).select_related('expediente__id_paciente')
+                        fecha__day=fecha_hoy.day).select_related('expediente__id_paciente').order_by('numero_cola_laboratorio')
     elif (request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO'):
         espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
                         fecha__month=fecha_hoy.month, 
-                        fecha__day=fecha_hoy.day,fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente')
+                        fecha__day=fecha_hoy.day,fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente').order_by('numero_cola_laboratorio')
     for fila in espera_examen:
         diccionario={
             "numero_cola_laboratorio":"",
