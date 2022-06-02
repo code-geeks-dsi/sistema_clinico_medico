@@ -66,11 +66,11 @@ def get_cola_examenes(request):
     if(request.user.roles.codigo_rol=='ROL_SECRETARIA'):
         espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
                         fecha__month=fecha_hoy.month, 
-                        fecha__day=fecha_hoy.day).select_related('expediente__id_paciente')
+                        fecha__day=fecha_hoy.day).select_related('expediente__id_paciente').order_by('numero_cola_laboratorio')
     elif (request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO'):
         espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
                         fecha__month=fecha_hoy.month, 
-                        fecha__day=fecha_hoy.day,fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente')
+                        fecha__day=fecha_hoy.day,fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente').order_by('numero_cola_laboratorio')
     for fila in espera_examen:
         diccionario={
             "numero_cola_laboratorio":"",
