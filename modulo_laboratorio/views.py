@@ -1,7 +1,9 @@
 
+from unittest import result
+from urllib import response
 from django.urls import reverse
 import datetime
-
+from django.forms import formset_factory
 from curses import pair_content
 import json
 from datetime import datetime
@@ -9,7 +11,8 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from modulo_control.models import Rol
 from modulo_expediente.models import Expediente, Paciente
-from modulo_laboratorio.models import Categoria, CategoriaExamen, EsperaExamen, ExamenLaboratorio, Resultado
+from modulo_laboratorio.forms import ContieneValorForm
+from modulo_laboratorio.models import Categoria, CategoriaExamen, ContieneValor, EsperaExamen, ExamenLaboratorio, Parametro, Resultado
 from modulo_laboratorio.serializers import CategoriaExamenSerializer
 from dateutil.relativedelta import relativedelta
 from django.template.loader import get_template
@@ -120,8 +123,58 @@ def get_cola_examenes(request):
     return JsonResponse( response , safe=False)
 
 def elaborar_resultados_examen(request,id_resultado):
-        examen=ExamenLaboratorio.objects.get(resultado=id_resultado)
-        return HttpResponse("Elaborar examen de laboratorio "+examen.nombre_examen+"!")
+        data={}
+        resultado=Resultado.objects.get(id_resultado=id_resultado)
+        examen=resultado.examen_laboratorio
+        valores=ContieneValor.objects.filter(resultado=resultado)
+        parametros=Parametro.objects.filter(examen_de_laboratorio=examen)
+        ContieneValorFormSet=formset_factory(ContieneValorForm)
+        #recuperando parametros que pertenecen a este examen
+        cantidad_parametros=len(parametros)
+        data['form-TOTAL_FORMS']= str(cantidad_parametros)
+        data['form-INITIAL_FORMS']= str(0)
+        # # asignando valores por defecto para unidad y nombre parametro
+        if len(valores)==0:
+            for i in range(cantidad_parametros):
+                parametro=parametros[i]
+                data['form-'+str(i)+'-unidad_parametro']=parametro.unidad_parametro
+                data['form-'+str(i)+'-nombre_parametro']=parametro.nombre_parametro
+                data['form-'+str(i)+'-dato']=0
+                
+        else:
+            for i in range(cantidad_parametros):
+                valor=valores[i]
+                data['form-'+str(i)+'-unidad_parametro']=valor.parametro.unidad_parametro
+                data['form-'+str(i)+'-nombre_parametro']=valor.parametro.nombre_parametro
+                data['form-'+str(i)+'-dato']=valor.dato
+        formset=ContieneValorFormSet(data)
+        if request.method=='GET':
+            response={
+                'formset':formset
+            }
+        elif request.method=='POST':
+            formset=ContieneValorFormSet(request.POST, request.FILES)
+            
+            if formset.is_valid():
+                for i in range(cantidad_parametros):
+                    dato=request.POST.get('form-'+str(i)+'-dato')
+                    obj, created=ContieneValor.objects.update_or_create(dato=dato,resultado=resultado,parametro=parametros[i])
+                    
+                response={
+                    'formset':formset,
+                    'type':'success',
+                    'data':'Guardado!'
+                }
+            else:
+                print(formset.non_form_errors())
+                print(formset.errors)
+                response={
+                    'formset':formset,
+                    'type':'warning',
+                    'data':'Datos no validos!'
+                }
+
+        return render(request,'laboratorio/resultados.html',response)
 
 def cambiar_fase_secretaria(request):
     id_resultado=request.POST.get('id_resultado',0)

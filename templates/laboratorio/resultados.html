@@ -1,0 +1,30 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Sala de Espera Laboratorio{% endblock %}
+{% block content %}
+
+        <form action="" method="post">
+                {% csrf_token %}
+                {{ formset.management_form }}
+                {% for form in formset %}
+                {{form.nombre_parametro}}
+                {{form.dato}}
+                {{form.unidad_parametro}}
+                <input type="hidden" name="id_parametro" value="{{form.id_parametro.value}}">
+                <br/>
+                {% endfor %}
+                <button type="submit">guardar</button>
+        </form>
+        <script>
+                
+                {% if type %}
+                toastr[{{type}}]('{{data}}');
+                {% endif %}
+        </script>
+        
+{% endblock %}

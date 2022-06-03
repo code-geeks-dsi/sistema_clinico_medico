@@ -64,10 +64,11 @@ class Resultado(models.Model):
 class ContieneValor(models.Model):
     resultado = models.ForeignKey('Resultado', on_delete=models.CASCADE)
     parametro = models.ForeignKey('Parametro', on_delete=models.CASCADE)
-    dato=models.DecimalField(max_digits=12, decimal_places=3, null=False,blank=False)
-
+    dato=models.DecimalField(max_digits=12, decimal_places=3, null=False,blank=False,default=0)
+    class Meta:
+        unique_together = ('resultado', 'parametro',)
     def __str__(self):
-        return self.id_resultado
+        return self.parametro.nombre_parametro+": "+str(self.dato)+" "+self.parametro.unidad_parametro
 
 class ExamenLaboratorio(models.Model):
     OPCIONES_MUESTRA=(
