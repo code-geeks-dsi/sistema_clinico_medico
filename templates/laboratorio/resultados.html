@@ -8,7 +8,7 @@
 {% block titulo %} Sala de Espera Laboratorio{% endblock %}
 {% block content %}
 
-        <form action="" method="post">
+        <form action="" method="post" id="form">
                 {% csrf_token %}
                 {{ formset.management_form }}
                 {% for form in formset %}
@@ -21,10 +21,15 @@
                 <button type="submit">guardar</button>
         </form>
         <script>
+                $("form").on("submit", function(event){
+                        event.preventDefault();
                 
-                {% if type %}
-                toastr[{{type}}]('{{data}}');
-                {% endif %}
+                        var formValues= $(this).serialize();
+                
+                        $.post('{{request.path}}', formValues, function(data){
+                                toastr[data.type](`${data.data}`);
+                        });
+                });
         </script>
         
 {% endblock %}

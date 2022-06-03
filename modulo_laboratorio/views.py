@@ -162,18 +162,16 @@ def elaborar_resultados_examen(request,id_resultado):
                     obj, created=ContieneValor.objects.update_or_create(parametro=parametros[i],resultado=resultado,defaults={'dato':dato})
                     
                 response={
-                    'formset':formset,
                     'type':'success',
                     'data':'Guardado!'
                 }
             else:
                 response={
-                    'formset':formset,
                     'type':'warning',
                     'data':'Datos no validos!'
                 }
             
-            return redirect(request.path)
+            return JsonResponse(response,safe=False)
             
 
 def cambiar_fase_secretaria(request):
