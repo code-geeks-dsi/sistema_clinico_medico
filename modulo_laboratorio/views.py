@@ -157,7 +157,7 @@ def cambiar_fase_laboratorio(request):
 def generar_pdf(request,id_resultado):
     #puede recibir la info como diccionario
     html_string = render_to_string('ResultadosDeLaboratorio.html')
-    html = HTML(string=html_string)
+    html = HTML(string=html_string, base_url=request.build_absolute_uri())
     result = html.write_pdf()
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
