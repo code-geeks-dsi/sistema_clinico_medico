@@ -9,30 +9,32 @@
     <link href="{% static 'css/toastr.min.css' %}" rel="stylesheet" />
 
   </head>
-
-<body>
-    
-        
-        <div class="box">
-            <div class="row align-items-center">
-                <div class="col-2">
-                    <img src="{% static 'img/logo_lab.png'%}"  alt=""/>
-                </div>
-                <div class="col">
-                    <h1 >LABORATORIO DE ANALISIS CLINICO</h1>
-                    <h1 >EBENEZER</h1>
-                    <b>
-                        Regente: Licda. Jennifer Lisbeth Martínez de Loza.  JVPLC 4817 
-                    </b>
-                    <p>
-                        Teléfono: 2327-3492<br>
-                        Horarios: Lun a Vie 7:00 AM a 4:00 PM Sab: 7:00 AM a 12:00 PM<br>
-                        3ra Av. Sur Casa No. 3 “A” Barrio San Nicolás , Cojutepeque Cuscatlán<br>
-                    </p>
-                </div>
+<header>
+    <div class="box">
+        <div class="row align-items-center">
+            <div class="col-2">
+                <img src="{% static 'img/logo_lab.png'%}"  alt=""/>
+            </div>
+            <div class="col">
+                <h1 >LABORATORIO DE ANALISIS CLINICO</h1>
+                <h1 >EBENEZER</h1>
+                <b>
+                    Regente: Licda. Jennifer Lisbeth Martínez de Loza.  JVPLC 4817 
+                </b>
+                <p>
+                    Teléfono: 2327-3492<br>
+                    Horarios: Lun a Vie 7:00 AM a 4:00 PM Sab: 7:00 AM a 12:00 PM<br>
+                    3ra Av. Sur Casa No. 3 “A” Barrio San Nicolás , Cojutepeque Cuscatlán<br>
+                </p>
             </div>
         </div>
     </div>
+</div>
+</header>
+<body>    
+        <div class="conten">
+
+        </div>
 </body>
 </html>
 <style>
@@ -64,5 +66,21 @@
         border-radius:25px;
         text-align: center;
         padding-bottom: 5px;
+    }
+    .conten{
+        background:url("{% static 'img/microscopio.png'%}");
+        width:50%;
+        height:300px;
+        background-size:cover;
+        position:relative;
+        margin-left: 150px;
+    }
+    .conten::before{
+        content: "";
+        width:100%;
+        height:100%;
+        background-color: white;
+        position:absolute;
+        opacity: 0.7;
     }
 </style>
