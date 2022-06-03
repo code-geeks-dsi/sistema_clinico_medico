@@ -1,6 +1,7 @@
 
 from unittest import result
 from urllib import response
+from wsgiref.util import request_uri
 from django.urls import reverse
 import datetime
 from django.forms import formset_factory
@@ -152,13 +153,13 @@ def elaborar_resultados_examen(request,id_resultado):
             response={
                 'formset':formset
             }
+            return render(request,'laboratorio/resultados.html',response)
         elif request.method=='POST':
-            formset=ContieneValorFormSet(request.POST, request.FILES)
             
             if formset.is_valid():
                 for i in range(cantidad_parametros):
                     dato=request.POST.get('form-'+str(i)+'-dato')
-                    obj, created=ContieneValor.objects.update_or_create(dato=dato,resultado=resultado,parametro=parametros[i])
+                    obj, created=ContieneValor.objects.update_or_create(parametro=parametros[i],resultado=resultado,defaults={'dato':dato})
                     
                 response={
                     'formset':formset,
@@ -166,15 +167,14 @@ def elaborar_resultados_examen(request,id_resultado):
                     'data':'Guardado!'
                 }
             else:
-                print(formset.non_form_errors())
-                print(formset.errors)
                 response={
                     'formset':formset,
                     'type':'warning',
                     'data':'Datos no validos!'
                 }
-
-        return render(request,'laboratorio/resultados.html',response)
+            
+            return redirect(request.path)
+            
 
 def cambiar_fase_secretaria(request):
     id_resultado=request.POST.get('id_resultado',0)

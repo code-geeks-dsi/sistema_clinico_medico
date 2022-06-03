@@ -12,9 +12,9 @@
                 {% csrf_token %}
                 {{ formset.management_form }}
                 {% for form in formset %}
-                {{form.nombre_parametro}}
+                {{form.nombre_parametro.value}}
                 {{form.dato}}
-                {{form.unidad_parametro}}
+                {{form.unidad_parametro.value}}
                 <input type="hidden" name="id_parametro" value="{{form.id_parametro.value}}">
                 <br/>
                 {% endfor %}
