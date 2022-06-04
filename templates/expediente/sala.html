@@ -58,7 +58,7 @@
         </li>
         {% if rol == ROL_SECRETARIA  %}
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Examenes de Laboratorio</button>
+          <a class="nav-link" id="profile-tab" href="{% url 'sala_laboratorio' %}">Examenes de Laboratorio</a>
         </li>
         {% endif %}
       </ul>
