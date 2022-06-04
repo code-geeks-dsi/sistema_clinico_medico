@@ -23,7 +23,8 @@
 </div>
 {% endblock %}
 {% block js %}
-<script> 
+<script>
+    $( "#side_gestion_usuarios" ).addClass( "active" ); 
     toastr["warning"]("Acceso Denegado");
 </script>
 {% endblock %}

@@ -34,8 +34,8 @@
           </a>
           <hr>
           <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-              <a href="#" class="nav-link active" aria-current="page">
+            <li>
+              <a href="" class="nav-link text-white" id="">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">home</span>
                   <div class="px-2">
@@ -45,7 +45,7 @@
               </a>
             </li>
             <li>
-              <a href="#" class="nav-link text-white">
+              <a href="{% url 'sala_consulta' %}" class="nav-link text-white" id="side_expediente">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">medical_information</span>
                   <div class="px-2">
@@ -55,7 +55,7 @@
               </a>
             </li>
             <li>
-              <a href="#" class="nav-link text-white">
+              <a href="{% url 'sala_laboratorio' %}" class="nav-link text-white" id="side_laboratorio">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">biotech</span>
                   <div class="px-2">
@@ -85,7 +85,7 @@
               </a>
             </li>
             <li>
-              <a href="#" class="nav-link text-white">
+              <a href="{% url 'vistaGestionEmpleados' %}" class="nav-link text-white" id="side_gestion_usuarios">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">badge</span>
                   <div class="px-2">

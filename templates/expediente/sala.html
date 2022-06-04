@@ -244,6 +244,7 @@
 {% block js %}
 <script src="{% static 'js/sistemaClinico.js' %}"></script>
 <script>
+    $( "#side_expediente" ).addClass( "active" );
     const url = "{% url 'autocompletado_apellidos' %}";
     const urlFiltro = "{% url 'busqueda_paciente' %}";
     const complementoConsulta = "?apellido_paciente=";

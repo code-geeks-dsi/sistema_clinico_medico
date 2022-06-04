@@ -230,6 +230,7 @@
 {% block js %}
 <script src="{% static 'js/laboratorioBusqueda.js' %}"></script>
 <script>
+$( "#side_laboratorio" ).addClass( "active" );
 const url = "{% url 'autocompletado_apellidos' %}";
 const urlFiltro = "{% url 'busqueda_paciente' %}";
 const complementoConsulta = "?apellido_paciente=";
