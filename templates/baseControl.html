@@ -22,15 +22,16 @@
     <title>{% block titulo%}{% endblock %}</title>
   </head>
   <body>
-
       <main>        
         <!--Sidebar-->
         <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" id="side_bar_base">
-          <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <span class="material-symbols-outlined px-2">
-              medical_services
-            </span>
-            <span class="fs-4"> SCM</span>
+          <a href="#" class="nav-link text-white" id="">
+            <div class="d-flex align-items-start">
+              <span onclick="reducir();" class="material-symbols-outlined">medical_services</span>
+              <div class="px-2 txt_link" id="txt_link">
+                SCM
+              </div>
+            </div>
           </a>
           <hr>
           <ul class="nav nav-pills flex-column mb-auto">
@@ -38,7 +39,7 @@
               <a href="" class="nav-link text-white" id="">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">home</span>
-                  <div class="px-2">
+                  <div class="px-2 txt_link" id="txt_link">
                     Inicio
                   </div>
                 </div>
@@ -48,7 +49,7 @@
               <a href="{% url 'sala_consulta' %}" class="nav-link text-white" id="side_expediente">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">medical_information</span>
-                  <div class="px-2">
+                  <div class="px-2 txt_link" id="txt_link">
                     Expediente
                   </div>
                 </div>
@@ -58,7 +59,7 @@
               <a href="{% url 'sala_laboratorio' %}" class="nav-link text-white" id="side_laboratorio">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">biotech</span>
-                  <div class="px-2">
+                  <div class="px-2 txt_link" id="txt_link">
                     Laboratorio
                   </div>
                 </div>
@@ -68,7 +69,7 @@
               <a href="#" class="nav-link text-white">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">monitoring</span>
-                  <div class="px-2">
+                  <div class="px-2 txt_link" id="txt_link">
                     Finanzas
                   </div>
                 </div>
@@ -78,7 +79,7 @@
               <a href="#" class="nav-link text-white">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">thumbs_up_down</span>
-                  <div class="px-2">
+                  <div class="px-2 txt_link" id="txt_link">
                     Redes Sociales
                   </div>
                 </div>
@@ -88,7 +89,7 @@
               <a href="{% url 'vistaGestionEmpleados' %}" class="nav-link text-white" id="side_gestion_usuarios">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">badge</span>
-                  <div class="px-2">
+                  <div class="px-2 txt_link" id="txt_link">
                     Usuarios
                   </div>
                 </div>
@@ -99,7 +100,7 @@
           <div class="dropdown">
             <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
               <img src="https://cdn.pixabay.com/photo/2018/04/18/18/56/user-3331256_960_720.png" alt="" width="32" height="32" class="rounded-circle me-2">
-              <strong>{{ request.user.nombres }}</strong>
+              <strong class="txt_link" id="txt_link">{{ request.user.nombres }}</strong>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
               <li><a class="dropdown-item" href="#">...</a></li>
@@ -142,6 +143,7 @@
     
     {% endblock %}
     <script>
+      let letras_ocultas=0;
 
       if ($(window).width()<500){
           ocultar();
@@ -149,9 +151,12 @@
 
       $(window).resize(function(){
       //aqui el codigo que se ejecutara cuando se redimencione la ventana
-        if ($(window).width()<500){
+        if ($(window).width()<1000){
+          reducir();
+        }else if(($(window).width()<500)){
           ocultar();
-        }else{
+        }
+        else{
           mostrar();
         }
       })
@@ -161,8 +166,18 @@
         $( "#divider_side" ).addClass( "d-none" );
     }
     function mostrar(){
-        $( "#side_bar_base").removeClass( "d-none" )
+        $( "#side_bar_base").removeClass( "d-none" );
         $( "#divider_side" ).removeClass( "d-none" );
+    }
+    function reducir(){
+      if (letras_ocultas==0){
+        $( ".txt_link" ).hide();
+        letras_ocultas=1;
+      }
+      else{
+        $( ".txt_link" ).show();
+        letras_ocultas=0;
+      }
     }
     </script>
   </body>
