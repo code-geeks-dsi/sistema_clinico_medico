@@ -11,3 +11,6 @@ class ContieneValorForm(forms.ModelForm):
         class Meta:
                 model=ContieneValor
                 fields=('dato','nombre_parametro','unidad_parametro',)
+        def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.fields['dato'].widget.attrs.update({'class': 'form-control'})
