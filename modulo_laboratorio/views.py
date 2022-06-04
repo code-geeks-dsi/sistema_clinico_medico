@@ -206,8 +206,11 @@ def cambiar_fase_laboratorio(request):
 #Método para descargar examenes de laboratorio
 #Método que genera los pdf 
 def generar_pdf(request,id_resultado):
+    data={}
+    contieneValor=ContieneValor.objects.filter(resultado_id=id_resultado)
+    data={'contieneValor':contieneValor}
     #puede recibir la info como diccionario
-    html_string = render_to_string('ResultadosDeLaboratorio.html')
+    html_string = render_to_string('ResultadosDeLaboratorio.html',data)
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
     result = html.write_pdf()
     response = HttpResponse(content_type='application/pdf')
