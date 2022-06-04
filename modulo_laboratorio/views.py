@@ -12,6 +12,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from modulo_control.models import Rol
 from modulo_expediente.models import Expediente, Paciente
+from modulo_expediente.serializers import PacienteSerializer
 from modulo_laboratorio.forms import ContieneValorForm
 from modulo_laboratorio.models import Categoria, CategoriaExamen, ContieneValor, EsperaExamen, ExamenLaboratorio, Parametro, Resultado
 from modulo_laboratorio.serializers import CategoriaExamenSerializer
@@ -212,8 +213,17 @@ def cambiar_fase_laboratorio(request):
 #Método para descargar examenes de laboratorio
 #Método que genera los pdf 
 def generar_pdf(request,id_resultado):
+    data={}
+    esperaExamen=EsperaExamen.objects.get(resultado_id=id_resultado)
+    idExpediente=esperaExamen.expediente_id
+    expediente=Expediente.objects.get(id_expediente=idExpediente)
+    idpaciente=expediente.id_paciente_id
+    paciente=Paciente.objects.get(id_paciente=idpaciente)
+    edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+    contieneValor=ContieneValor.objects.filter(resultado_id=id_resultado)
+    data={'contieneValor':contieneValor, 'paciente':paciente,'edad':edad}
     #puede recibir la info como diccionario
-    html_string = render_to_string('ResultadosDeLaboratorio.html')
+    html_string = render_to_string('ResultadosDeLaboratorio.html',data)
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
     result = html.write_pdf()
     response = HttpResponse(content_type='application/pdf')
