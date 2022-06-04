@@ -33,9 +33,13 @@
 </header>
 <body>    
         <div class="col">
-            <center><a href="#" class="data-paciente" >Nombre:{{nombrePaciente}}</a>
-            <a href="#" class="data-paciente">Edad:{{edadPaciente}} Años</a><br>
-            <a href="#" class="data-paciente" >Examen Solicitado:{{edadPaciente}}</a></center>
+            {% if paciente %}
+            
+                <center><a href="#" class="data-paciente" >Nombre:&nbsp;{{paciente.nombre_paciente}}&nbsp;{{ paciente.apellido_paciente }}</a>
+                <a href="#" class="data-paciente">Edad:&nbsp;{{edad.years}} Años</a><br>
+                <a href="#" class="data-paciente" >Examen Solicitado:</a></center>
+            
+            {% endif %}
         </div>
         <div class="conten">
             <table class="table table-hover">
@@ -108,7 +112,7 @@
         text-transform: uppercase;
         color:#18191F ;
         text-decoration: none;
-        padding: 0px 25px;
+        padding: 0px 0px;
     }
     .conten table, tr, td{
         font-size: 10pt;
