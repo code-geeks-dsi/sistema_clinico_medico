@@ -150,8 +150,14 @@ def elaborar_resultados_examen(request,id_resultado):
                 data['form-'+str(i)+'-dato']=valor.dato
         formset=ContieneValorFormSet(data)
         if request.method=='GET':
+            paciente= EsperaExamen.objects.get(resultado=id_resultado).expediente.id_paciente
+            edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
             response={
-                'formset':formset
+                'formset':formset,
+                'nombre_examen':examen.nombre_examen,
+                'paciente':paciente,
+                'edad':edad,
+                'cantidad_valores':len(valores)
             }
             return render(request,'laboratorio/resultados.html',response)
         elif request.method=='POST':
