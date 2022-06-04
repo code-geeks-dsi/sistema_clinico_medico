@@ -26,16 +26,19 @@ import tempfile
 
 # Templete Sala de Espera laboratorio
 def sala_laboratorio(request):
-    categorias= Categoria.objects.all()
-    rutina=CategoriaExamen.objects.filter(categoria=1)
-    roles=Rol.objects.values_list('codigo_rol','id_rol').all()
-    data={}
-    data["Categoria"]=categorias 
-    data["Examen"]=rutina
-    data['rol']=request.user.roles.id_rol
-    for rol in roles:
-        data[rol[0]]=rol[1]
-    return render(request,"laboratorio/salaLaboratorio.html",data)
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
+        categorias= Categoria.objects.all()
+        rutina=CategoriaExamen.objects.filter(categoria=1)
+        roles=Rol.objects.values_list('codigo_rol','id_rol').all()
+        data={}
+        data["Categoria"]=categorias 
+        data["Examen"]=rutina
+        data['rol']=request.user.roles.id_rol
+        for rol in roles:
+            data[rol[0]]=rol[1]
+        return render(request,"laboratorio/salaLaboratorio.html",data)
+    else:
+        return render(request,"Control/error403.html")
 
 #View Recuperar Examenes por categoria
 def get_categoria_examen(request, id_categoria):
