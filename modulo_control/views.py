@@ -50,7 +50,7 @@ def logearse(request):
                 mensaje="Estas Logeado"
                 if request.user.roles.codigo_rol=='ROL_ADMIN':
                     return redirect('vistaGestionEmpleados')
-                elif request.user.roles.codigo_rol=='ROL_SECRETARIA' or request.user.roles.codigo_rol=='ROL_DOCTOR':
+                elif request.user.roles.codigo_rol=='ROL_SECRETARIA' or request.user.roles.codigo_rol=='ROL_DOCTOR' or request.user.roles.codigo_rol=='ROL_ENFERMERA':
                     return redirect('sala_consulta')
                 elif request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
                     return redirect('sala_laboratorio')

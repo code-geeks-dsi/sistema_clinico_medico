@@ -67,14 +67,14 @@ def agregar_cola(request, id_paciente):
     idExpediente=expediente.id_expediente
     fecha=datetime.now()
     try:
-        contieneconsulta=ContieneConsulta.objects.get(expediente_id=idExpediente, fecha_de_cola__year=fecha.year, fecha_de_cola__month=fecha.month, fecha_de_cola__day=fecha.day)
+        contieneconsulta=ContieneConsulta.objects.get(expediente_id=expediente, fecha_de_cola__year=fecha.year, fecha_de_cola__month=fecha.month, fecha_de_cola__day=fecha.day)
         response={
             'type':'warning',
             'title':'Error',
             'data':'El Paciente ya existe en la cola'
         }
         return JsonResponse(response, safe=False)
-    except ContieneConsulta.DoesNotExist:
+    except:
         try:
             numero=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                             fecha_de_cola__month=fecha.month, 
@@ -91,8 +91,9 @@ def agregar_cola(request, id_paciente):
         consulta.signos_vitales_id=signosvitales.id_signos_vitales
         consulta.save()
         #receta medica
+        print("SERa la receta?")
         receta=RecetaMedica()
-        receta.id_consulta=consulta
+        receta.Consulta=consulta
         receta.save()
         #Creando Objeto contieneCola
         contieneconsulta=ContieneConsulta()
