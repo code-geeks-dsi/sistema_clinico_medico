@@ -43,13 +43,14 @@ def autocompletado_apellidos(request):
 def sala_consulta(request):
     roles=Rol.objects.values_list('codigo_rol','id_rol').all()
     data={}
+    data['titulo']="Sala de Espera"
     data['rol']=request.user.roles.id_rol
     for rol in roles:
         data[rol[0]]=rol[1]
     if request.user.roles.id_rol !=data['ROL_ADMIN']:
         return render(request,"expediente/sala.html",data)
     else:
-        return render(request,"Control/error403.html")
+        return render(request,"Control/error403.html", data)
 
 
 #Metodo que devuelve los datos del paciente en json
