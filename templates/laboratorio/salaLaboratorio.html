@@ -252,7 +252,11 @@ function get_cola_examenes(){
     console.log(data)
     if(data.type=='warning'){
       toastr[data.type](`${data.data}`);
+      {% if rol == ROL_LIC_LABORATORIO %}
+      tabla_examenes_cola.insertAdjacentHTML("beforeend", `<tr colspan="10" ><td colspan="10" style="text-align:center">${data.data}</td></tr>`);
+      {% elif rol == ROL_SECRETARIA %}
       tabla_examenes_cola.insertAdjacentHTML("beforeend", `<tr colspan="9" ><td colspan="9" style="text-align:center">${data.data}</td></tr>`);
+      {% endif %}
     }else{
       data.data.forEach(examenItem => {
       //Recorre los elemntos del objeto
