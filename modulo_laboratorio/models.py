@@ -1,4 +1,6 @@
 from datetime import datetime
+from platform import mac_ver
+from pydoc import describe
 from re import S
 from unittest import result
 from django.db import models
@@ -56,7 +58,10 @@ class Resultado(models.Model):
     id_resultado = models.AutoField(primary_key=True)
     lic_laboratorio = models.ForeignKey('modulo_control.LicLaboratorioClinico', on_delete=models.CASCADE,null=True)
     examen_laboratorio= models.ForeignKey('ExamenLaboratorio', on_delete=models.DO_NOTHING,null=False)
-    
+    resultado=models.CharField(null=False,blank=True,default="",max_length=25)
+    observaciones=models.TextField(null=False,blank=True,default="")
+    fecha_hora_toma_de_muestra=models.DateTimeField(null=True,blank=True)
+    fecha_hora_elaboracion_de_reporte=models.DateTimeField(null=True,blank=True)
 
     def __str__(self):
         return self.id_resultado
@@ -72,16 +77,28 @@ class ContieneValor(models.Model):
 
 class ExamenLaboratorio(models.Model):
     OPCIONES_MUESTRA=(
+        ('NA',''),
         ('1', 'sangre'),
         ('2', 'orina'),
         ('3', 'heces'),
         ('4', 'tejidos'),
     )
+    OPCIONES_RESULTADO=(
+        ('NA',''),
+        ('P','POSITIVO'),
+        ('N','NEGATIVO'),
+        ('NAF','NEGATIVO A LA FECHA'),
+        ('R','REACTIVO'),
+        ('NR','NO REACTIVO'),
+        ('NRAF','NO REACTIVO A LA FECHA'),
+    )
     id_examen_laboratorio=models.AutoField(primary_key=True)
     categoria=models.ManyToManyField('Categoria', through='CategoriaExamen')
     codigo_examen=models.CharField(max_length=8, null=False, blank=False)
     nombre_examen=models.CharField(max_length=40, null=False,blank=False) #tipo_examen
-    tipo_muestra=models.CharField(max_length=15,choices=OPCIONES_MUESTRA ,null=False,blank=False)
+    tipo_muestra=models.CharField(max_length=15,choices=OPCIONES_MUESTRA ,null=False,blank=True,default=OPCIONES_MUESTRA[0][0])
+    nota=models.CharField(null=False,blank=True,default="",max_length=75)
+    resultado_por_defecto=models.CharField(max_length=22,choices=OPCIONES_RESULTADO ,null=False,blank=True,default=OPCIONES_RESULTADO[0][0])
     def __str__(self):
         return self.nombre_examen
 
@@ -107,10 +124,19 @@ class Parametro(models.Model):
     id_parametro = models.AutoField(primary_key=True)
     nombre_parametro = models.CharField(max_length=40,null=False, blank=False)
     unidad_parametro = models.CharField(max_length=40, null=True,blank=False)
-    examen_de_laboratorio = models.ForeignKey('ExamenLaboratorio', models.DO_NOTHING, blank=False, null=True)
+    examen_de_laboratorio = models.ForeignKey('ExamenLaboratorio', models.CASCADE, blank=False, null=True)
+    valor_por_defecto=models.CharField( null=False,blank=True,default="",max_length=10)
 
     def __str__(self):
         return self.nombre_parametro + " "+self.examen_de_laboratorio.nombre_examen
+
+class RangoDeReferencia(models.Model):
+    id_rango_referencia=models.AutoField(primary_key=True)
+    parametro= models.ForeignKey('Parametro', models.CASCADE, blank=False, null=False)
+    descripcion=models.CharField(null=False,blank=True,default="",max_length=25)
+    valor_maximo=models.CharField(null=True,max_length=15)
+    valor_minimo=models.CharField(null=True,max_length=15)
+    unidad=models.CharField(null=False,blank=True,default="",max_length=8)
 
 class ServicioDeLaboratorioClinico(models.Model):
     id_servicio =models.AutoField(primary_key=True)
