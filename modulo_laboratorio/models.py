@@ -97,7 +97,7 @@ class ExamenLaboratorio(models.Model):
     #codigo_examen=models.CharField(max_length=8, null=False, blank=False)
     nombre_examen=models.CharField(max_length=40, null=False,blank=False) #tipo_examen
     tipo_muestra=models.CharField(max_length=15,choices=OPCIONES_MUESTRA ,null=False,blank=True,default=OPCIONES_MUESTRA[0][0])
-    nota=models.CharField(null=False,blank=True,default="",max_length=75)
+    nota=models.CharField(null=False,blank=True,default="",max_length=100)
     #resultado_por_defecto=models.CharField(max_length=22,choices=OPCIONES_RESULTADO ,null=False,blank=True,default=OPCIONES_RESULTADO[0][0])
     def __str__(self):
         return self.nombre_examen
@@ -123,7 +123,7 @@ class Categoria(models.Model):
 class Parametro(models.Model):
     id_parametro = models.AutoField(primary_key=True)
     nombre_parametro = models.CharField(max_length=40,null=False, blank=False)
-    unidad_parametro = models.CharField(max_length=40, null=True,blank=False)
+    unidad_parametro = models.CharField(max_length=40, null=True,blank=True)
     examen_de_laboratorio = models.ForeignKey('ExamenLaboratorio', models.CASCADE, blank=False, null=True)
     valor_por_defecto=models.CharField( null=True,blank=True,default="",max_length=10)
 
@@ -133,10 +133,13 @@ class Parametro(models.Model):
 class RangoDeReferencia(models.Model):
     id_rango_referencia=models.AutoField(primary_key=True)
     parametro= models.ForeignKey('Parametro', models.CASCADE, blank=False, null=False)
-    descripcion=models.CharField(null=False,blank=True,default="",max_length=25)
-    valor_maximo=models.CharField(null=True,max_length=15)
-    valor_minimo=models.CharField(null=True,max_length=15)
+    descripcion=models.CharField(null=False,blank=True,default="",max_length=75)
+    valor_maximo=models.CharField(null=True,blank=True,max_length=15)
+    valor_minimo=models.CharField(null=True,blank=True,max_length=15)
+    valor=models.CharField(null=True,blank=True,max_length=15)
     unidad=models.CharField(null=False,blank=True,default="",max_length=8)
+    def __str__(self):
+        return self.parametro.nombre_parametro+" "+self.descripcion
 
 class ServicioDeLaboratorioClinico(models.Model):
     id_servicio =models.AutoField(primary_key=True)
