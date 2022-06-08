@@ -123,7 +123,7 @@ class Categoria(models.Model):
 class Parametro(models.Model):
     id_parametro = models.AutoField(primary_key=True)
     nombre_parametro = models.CharField(max_length=40,null=False, blank=False)
-    unidad_parametro = models.CharField(max_length=40, null=True,blank=False)
+    unidad_parametro = models.CharField(max_length=40, null=True,blank=True)
     examen_de_laboratorio = models.ForeignKey('ExamenLaboratorio', models.CASCADE, blank=False, null=True)
     valor_por_defecto=models.CharField( null=True,blank=True,default="",max_length=10)
 
@@ -136,6 +136,7 @@ class RangoDeReferencia(models.Model):
     descripcion=models.CharField(null=False,blank=True,default="",max_length=25)
     valor_maximo=models.CharField(null=True,max_length=15)
     valor_minimo=models.CharField(null=True,max_length=15)
+    valor=models.CharField(null=True,max_length=15)
     unidad=models.CharField(null=False,blank=True,default="",max_length=8)
 
 class ServicioDeLaboratorioClinico(models.Model):
