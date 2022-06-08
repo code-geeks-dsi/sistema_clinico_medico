@@ -133,7 +133,7 @@ class Parametro(models.Model):
 class RangoDeReferencia(models.Model):
     id_rango_referencia=models.AutoField(primary_key=True)
     parametro= models.ForeignKey('Parametro', models.CASCADE, blank=False, null=False)
-    descripcion=models.CharField(null=False,blank=True,default="",max_length=25)
+    descripcion=models.CharField(null=False,blank=True,default="",max_length=75)
     valor_maximo=models.CharField(null=True,blank=True,max_length=15)
     valor_minimo=models.CharField(null=True,blank=True,max_length=15)
     valor=models.CharField(null=True,blank=True,max_length=15)
