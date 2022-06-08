@@ -134,7 +134,11 @@ def get_cola_examenes(request):
 
 def elaborar_resultados_examen(request,id_resultado):
         data={}
+        lic_laboratorio=LicLaboratorioClinico.objects.get(empleado=request.user)
+        print()
         resultado=Resultado.objects.get(id_resultado=id_resultado)
+        resultado.lic_laboratorio=lic_laboratorio
+        resultado.save()
         examen=resultado.examen_laboratorio
         valores=ContieneValor.objects.filter(resultado=resultado)
         parametros=Parametro.objects.filter(examen_de_laboratorio=examen)
