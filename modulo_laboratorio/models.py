@@ -52,19 +52,19 @@ class EsperaExamen(models.Model):
             
         return cola_item
     def __str__(self):
-        return str(self.id_examina)+" - "+str(self.id_paciente)
+        return str(self.get_fase_examenes_lab_display())+" - "+str(self.expediente.id_paciente.nombre_paciente)
 
 class Resultado(models.Model):
     id_resultado = models.AutoField(primary_key=True)
     lic_laboratorio = models.ForeignKey('modulo_control.LicLaboratorioClinico', on_delete=models.CASCADE,null=True)
-    examen_laboratorio= models.ForeignKey('ExamenLaboratorio', on_delete=models.DO_NOTHING,null=False)
+    examen_laboratorio= models.ForeignKey('ExamenLaboratorio', on_delete=models.CASCADE,null=False)
     resultado=models.CharField(null=False,blank=True,default="",max_length=25)
     observaciones=models.TextField(null=False,blank=True,default="")
     fecha_hora_toma_de_muestra=models.DateTimeField(null=True,blank=True)
     fecha_hora_elaboracion_de_reporte=models.DateTimeField(null=True,blank=True)
 
     def __str__(self):
-        return self.id_resultado
+        return self.examen_laboratorio.nombre_examen
 
 class ContieneValor(models.Model):
     resultado = models.ForeignKey('Resultado', on_delete=models.CASCADE)
@@ -94,7 +94,7 @@ class ExamenLaboratorio(models.Model):
     )
     id_examen_laboratorio=models.AutoField(primary_key=True)
     categoria=models.ManyToManyField('Categoria', through='CategoriaExamen')
-    codigo_examen=models.CharField(max_length=8, null=False, blank=False)
+    #codigo_examen=models.CharField(max_length=8, null=False, blank=False)
     nombre_examen=models.CharField(max_length=40, null=False,blank=False) #tipo_examen
     tipo_muestra=models.CharField(max_length=15,choices=OPCIONES_MUESTRA ,null=False,blank=True,default=OPCIONES_MUESTRA[0][0])
     nota=models.CharField(null=False,blank=True,default="",max_length=75)
@@ -108,7 +108,7 @@ class CategoriaExamen(models.Model):
     examen_laboratorio=models.ForeignKey('ExamenLaboratorio', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.categoria.nombre_categoria +" "+ self.examen_laboratorio.nombre_examen
+        return self.categoria.descripcion_categoria +" "+ self.examen_laboratorio.nombre_examen
     
 
 class Categoria(models.Model):
