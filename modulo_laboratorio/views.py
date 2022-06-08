@@ -22,6 +22,7 @@ from weasyprint import HTML
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
+from django.utils.timezone import now
 # Create your views here.
 
 # Templete Sala de Espera laboratorio
@@ -198,6 +199,7 @@ def cambiar_fase_secretaria(request):
     id_expediente=request.POST.get('id_expediente',0)
     item=EsperaExamen.objects.get(resultado__id_resultado=id_resultado,expediente__id_expediente=id_expediente)
     item.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]
+    item.resultado.fecha_hora_toma_de_muestra=now
    
     item.save()
     response={
@@ -213,7 +215,7 @@ def cambiar_fase_laboratorio(request):
     id_expediente=request.POST.get('id_expediente',0)
     item=EsperaExamen.objects.get(resultado__id_resultado=id_resultado,expediente__id_expediente=id_expediente)
     item.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[2][0]
-   
+    item.resultado.fecha_hora_elaboracion_de_reporte=now
     item.save()
     response={
             'type':'success',
