@@ -113,11 +113,11 @@ class CategoriaExamen(models.Model):
 
 class Categoria(models.Model):
     id_categoria=models.AutoField(primary_key=True)
-    nombre_categoria=models.CharField(max_length=30, null=False,blank=False)
+    # nombre_categoria=models.CharField(max_length=30, null=False,blank=False)
     descripcion_categoria=models.CharField(max_length=40, null=True,blank=True)
 
     def __str__(self):
-        return self.nombre_categoria
+        return self.descripcion_categoria
 
 
 class Parametro(models.Model):
