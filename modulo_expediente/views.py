@@ -43,13 +43,14 @@ def autocompletado_apellidos(request):
 def sala_consulta(request):
     roles=Rol.objects.values_list('codigo_rol','id_rol').all()
     data={}
+    data['titulo']="Sala de Espera"
     data['rol']=request.user.roles.id_rol
     for rol in roles:
         data[rol[0]]=rol[1]
-    if request.user.roles.id_rol !=data['ROL_ADMIN']:
+    if request.user.roles.codigo_rol =="ROL_SECRETARIA" or request.user.roles.codigo_rol=="ROL_DOCTOR":
         return render(request,"expediente/sala.html",data)
     else:
-        return render(request,"Control/error403.html")
+        return render(request,"Control/error403.html", data)
 
 
 #Metodo que devuelve los datos del paciente en json
@@ -67,14 +68,14 @@ def agregar_cola(request, id_paciente):
     idExpediente=expediente.id_expediente
     fecha=datetime.now()
     try:
-        contieneconsulta=ContieneConsulta.objects.get(expediente_id=idExpediente, fecha_de_cola__year=fecha.year, fecha_de_cola__month=fecha.month, fecha_de_cola__day=fecha.day)
+        contieneconsulta=ContieneConsulta.objects.get(expediente_id=expediente, fecha_de_cola__year=fecha.year, fecha_de_cola__month=fecha.month, fecha_de_cola__day=fecha.day)
         response={
             'type':'warning',
             'title':'Error',
             'data':'El Paciente ya existe en la cola'
         }
         return JsonResponse(response, safe=False)
-    except ContieneConsulta.DoesNotExist:
+    except:
         try:
             numero=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
                             fecha_de_cola__month=fecha.month, 
@@ -91,8 +92,9 @@ def agregar_cola(request, id_paciente):
         consulta.signos_vitales_id=signosvitales.id_signos_vitales
         consulta.save()
         #receta medica
+        print("SERa la receta?")
         receta=RecetaMedica()
-        receta.id_consulta=consulta
+        receta.Consulta=consulta
         receta.save()
         #Creando Objeto contieneCola
         contieneconsulta=ContieneConsulta()

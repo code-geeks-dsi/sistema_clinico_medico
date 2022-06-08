@@ -10,10 +10,11 @@ import json
 from datetime import datetime
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
-from modulo_control.models import Rol
+from modulo_control.models import Empleado, LicLaboratorioClinico, Rol
 from modulo_expediente.models import Expediente, Paciente
+from modulo_expediente.serializers import PacienteSerializer
 from modulo_laboratorio.forms import ContieneValorForm
-from modulo_laboratorio.models import Categoria, CategoriaExamen, ContieneValor, EsperaExamen, ExamenLaboratorio, Parametro, Resultado
+from modulo_laboratorio.models import Categoria, CategoriaExamen, ContieneValor, EsperaExamen, ExamenLaboratorio, Parametro, RangoDeReferencia, Resultado
 from modulo_laboratorio.serializers import CategoriaExamenSerializer
 from dateutil.relativedelta import relativedelta
 from django.template.loader import get_template
@@ -21,20 +22,25 @@ from weasyprint import HTML
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
+from django.utils.timezone import now
 # Create your views here.
 
 # Templete Sala de Espera laboratorio
 def sala_laboratorio(request):
-    categorias= Categoria.objects.all()
-    rutina=CategoriaExamen.objects.filter(cetegoria=categorias[0])
-    roles=Rol.objects.values_list('codigo_rol','id_rol').all()
-    data={}
-    data["Categoria"]=categorias 
-    data["Examen"]=rutina
-    data['rol']=request.user.roles.id_rol
-    for rol in roles:
-        data[rol[0]]=rol[1]
-    return render(request,"laboratorio/salaLaboratorio.html",data)
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
+        categorias= Categoria.objects.all()
+        rutina=CategoriaExamen.objects.filter(cetegoria=categorias[0])
+        roles=Rol.objects.values_list('codigo_rol','id_rol').all()
+        data={}
+        data["Categoria"]=categorias 
+        data["Examen"]=rutina
+        data['rol']=request.user.roles.id_rol
+        for rol in roles:
+            data[rol[0]]=rol[1]
+        return render(request,"laboratorio/salaLaboratorio.html",data)
+    else:
+        return render(request,"Control/error403.html")
+
 
 #View Recuperar Examenes por categoria
 def get_categoria_examen(request, id_categoria):
@@ -75,6 +81,7 @@ def agregar_examen_cola(request):
     return JsonResponse(response, safe=False)
 #View que retorna lista de examenes en espera
 def get_cola_examenes(request):
+    tipo_consulta=request.GET.get('tipo_consulta','')
     fecha_hoy=datetime.now()
     lista=[]
     if(request.user.roles.codigo_rol=='ROL_SECRETARIA'):
@@ -82,9 +89,13 @@ def get_cola_examenes(request):
                         fecha__month=fecha_hoy.month, 
                         fecha__day=fecha_hoy.day).select_related('expediente__id_paciente').order_by('numero_cola_laboratorio')
     elif (request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO'):
-        espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
+        if tipo_consulta=="1":
+            espera_examen=EsperaExamen.objects.filter(fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente').order_by('numero_cola_laboratorio')                
+        else:
+            espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
                         fecha__month=fecha_hoy.month, 
                         fecha__day=fecha_hoy.day,fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente').order_by('numero_cola_laboratorio')
+        
     for fila in espera_examen:
         diccionario={
             "numero_cola_laboratorio":"",
@@ -125,7 +136,11 @@ def get_cola_examenes(request):
 
 def elaborar_resultados_examen(request,id_resultado):
         data={}
+        lic_laboratorio=LicLaboratorioClinico.objects.get(empleado=request.user)
+        print()
         resultado=Resultado.objects.get(id_resultado=id_resultado)
+        resultado.lic_laboratorio=lic_laboratorio
+        resultado.save()
         examen=resultado.examen_laboratorio
         valores=ContieneValor.objects.filter(resultado=resultado)
         parametros=Parametro.objects.filter(examen_de_laboratorio=examen)
@@ -150,8 +165,14 @@ def elaborar_resultados_examen(request,id_resultado):
                 data['form-'+str(i)+'-dato']=valor.dato
         formset=ContieneValorFormSet(data)
         if request.method=='GET':
+            paciente= EsperaExamen.objects.get(resultado=id_resultado).expediente.id_paciente
+            edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
             response={
-                'formset':formset
+                'formset':formset,
+                'nombre_examen':examen.nombre_examen,
+                'paciente':paciente,
+                'edad':edad,
+                'cantidad_valores':len(valores)
             }
             return render(request,'laboratorio/resultados.html',response)
         elif request.method=='POST':
@@ -179,6 +200,7 @@ def cambiar_fase_secretaria(request):
     id_expediente=request.POST.get('id_expediente',0)
     item=EsperaExamen.objects.get(resultado__id_resultado=id_resultado,expediente__id_expediente=id_expediente)
     item.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]
+    item.resultado.fecha_hora_toma_de_muestra=now
    
     item.save()
     response={
@@ -194,7 +216,7 @@ def cambiar_fase_laboratorio(request):
     id_expediente=request.POST.get('id_expediente',0)
     item=EsperaExamen.objects.get(resultado__id_resultado=id_resultado,expediente__id_expediente=id_expediente)
     item.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[2][0]
-   
+    item.resultado.fecha_hora_elaboracion_de_reporte=now
     item.save()
     response={
             'type':'success',
@@ -206,9 +228,27 @@ def cambiar_fase_laboratorio(request):
 #Método para descargar examenes de laboratorio
 #Método que genera los pdf 
 def generar_pdf(request,id_resultado):
+    data={}
+    esperaExamen=EsperaExamen.objects.get(resultado_id=id_resultado)
+    idExpediente=esperaExamen.expediente_id
+    expediente=Expediente.objects.get(id_expediente=idExpediente)
+    idpaciente=expediente.id_paciente_id
+    paciente=Paciente.objects.get(id_paciente=idpaciente)
+    resultado=Resultado.objects.get(id_resultado=id_resultado)
+    idexamen=resultado.examen_laboratorio_id
+    examenlab=ExamenLaboratorio.objects.get(id_examen_laboratorio=idexamen)
+    fecha=resultado.fecha_hora_elaboracion_de_reporte
+    id_lic=resultado.lic_laboratorio_id
+    licdeLab=LicLaboratorioClinico.objects.get(id_lic_laboratorio=id_lic)
+    codigo_empleado=licdeLab.empleado_id
+    empleado=Empleado.objects.get(codigo_empleado=codigo_empleado)
+    edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+    contieneValor=ContieneValor.objects.filter(resultado_id=id_resultado)
+    
+    data={'contieneValor':contieneValor, 'paciente':paciente,'edad':edad,'fecha':fecha,'empleado':empleado,'examenlab':examenlab}
     #puede recibir la info como diccionario
-    html_string = render_to_string('ResultadosDeLaboratorio.html')
-    html = HTML(string=html_string)
+    html_string = render_to_string('ResultadosDeLaboratorio.html',data)
+    html = HTML(string=html_string, base_url=request.build_absolute_uri())
     result = html.write_pdf()
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="resultados.pdf"'

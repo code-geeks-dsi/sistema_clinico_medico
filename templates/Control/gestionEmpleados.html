@@ -2,8 +2,8 @@
 {% load static %}
 {% block titulo %} Administración de Empleados {% endblock %}
 {% block content %}
-<div class="container pt-4">
-    <h1 class="fw-bold text-secondary">Administración de Empleados</h2>    
+<div class="container pt-1">
+    <h2 class="fw-bold text-secondary">Administración de Empleados</h2>    
 </div>
 <div class="container pt-4 d-none d-sm-block">
     <div class="row ">
@@ -205,6 +205,7 @@
 {% endblock %}
 {% block js %}
 <script>
+    $( "#side_gestion_usuarios" ).addClass( "active" );
     url="{% url 'registrarEmpleado' %}";
     let nombres;
     let apellidos;

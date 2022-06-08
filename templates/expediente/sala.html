@@ -7,12 +7,9 @@
 <!--Titulo-->
 {% block titulo %} Sala de Espera {% endblock %}
 {% block content %}
-<div class="container py-4">
-  
-</div>
-<div class="container py-2 rounded">
+<div class="container py-1 rounded">
   <div class="row g-0">
-    <h1 class="fw-bold text-secondary">Sala de Espera</h1>
+    <h5 class="fw-bold text-secondary">Sala de Espera</h5>
     <div class="col-12 col-md-12">
       <!--Busqueda por Apellidos-->
       {% if rol == ROL_SECRETARIA or rol == ROL_DOCTOR %}
@@ -58,7 +55,7 @@
         </li>
         {% if rol == ROL_SECRETARIA  %}
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Examenes de Laboratorio</button>
+          <a class="nav-link" id="profile-tab" href="{% url 'sala_laboratorio' %}">Examenes de Laboratorio</a>
         </li>
         {% endif %}
       </ul>
@@ -105,6 +102,9 @@
           <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Agregar Paciente a Cola</h5>
+                <div class="spinner-border text-primary" role="status" id="load">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
@@ -247,6 +247,8 @@
 {% block js %}
 <script src="{% static 'js/sistemaClinico.js' %}"></script>
 <script>
+    $('#load').hide();
+    $( "#side_expediente" ).addClass( "active" );
     const url = "{% url 'autocompletado_apellidos' %}";
     const urlFiltro = "{% url 'busqueda_paciente' %}";
     const complementoConsulta = "?apellido_paciente=";
@@ -366,6 +368,7 @@
     }
     //Voy a ocupar la misma funcion para agregar y eliminar.
     function accionServer(id, accion){
+      $('#load').show();
       let url_accion="";
       {% if rol == ROL_ENFERMERA %}
       url_accion = "/expediente/modificar-signosVitales/";
@@ -395,7 +398,8 @@
 
                   {% endif %}
                 },
-                success: function(data){ 
+                success: function(data){
+                  $('#load').hide(); 
                   toastr[data.type](data.data);           
                   consultarCola(url_consulta, tablaCola);
                 }

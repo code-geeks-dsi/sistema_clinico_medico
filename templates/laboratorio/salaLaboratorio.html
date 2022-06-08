@@ -7,12 +7,9 @@
 <!--Titulo-->
 {% block titulo %} Sala de Espera Laboratorio{% endblock %}
 {% block content %}
-<div class="container py-4">
-  
-</div>
 <div class="container py-2 rounded">
   <div class="row g-0">
-    <h1 class="fw-bold text-secondary">Sala de Espera</h1>
+    <h2 class="fw-bold text-secondary">Sala de Espera</h2>
     <div class="col-12 col-md-12">
       <!--Busqueda por Apellidos-->
       {% if rol == ROL_SECRETARIA or rol == ROL_DOCTOR %}
@@ -53,9 +50,21 @@
 
       <!--Navegación Entre Consultas y Examenes de Laboratorio-->
       <ul class="nav nav-tabs" id="myTab" role="tablist">
+        {% if rol == ROL_LIC_LABORATORIO %}
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#consultaMedica" type="button" role="tab" aria-controls="home" aria-selected="true">Examenes de Laboratorio</button>  
         </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="profile-tab" onclick="get_cola_examenes(1);" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Examenes Pendientes</button>
+        </li>
+        {% elif rol == ROL_SECRETARIA  %}
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" href="{% url 'sala_consulta' %}" id="profile-tab" >Consulta Medica</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#consultaMedica" type="button" role="tab" aria-controls="home" aria-selected="true">Examenes de Laboratorio</button>  
+        </li>
+        {% endif %}
       </ul>
       <div class="tab-content " id="myTabContent">
         <div class="tab-pane fade show active" id="consultaMedica" role="tabpanel" aria-labelledby="home-tab">
@@ -85,7 +94,33 @@
             </table>
           </div>
         </div>
-        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <!--Tabla de examenes Pendientes--> 
+          <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead class="table-secondary">
+                  <tr>
+                    
+                    <th scope="col">Numero Cola</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellidos</th>  
+                    <th scope="col">Examen</th>            
+                    <th scope="col">Fase</th>                                        
+                    <th scope="col">Fecha</th>    
+                    <th scope="col">Consumo</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Cambiar<br/>Fase</th>     
+                    {% if rol == ROL_LIC_LABORATORIO %}               
+                    <th scope="col">Elaborar<br/>Resultado</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tbody id="tabla_cola_pendientes">
+                  
+                </tbody>
+            </table>
+          </div>
+        </div>
         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
       </div>
 
@@ -189,12 +224,13 @@
         </div>
       </div>
     </div>   
-  </div>
+</div>
 {% endblock %}
 <!--Js de la vista-->
 {% block js %}
 <script src="{% static 'js/laboratorioBusqueda.js' %}"></script>
 <script>
+$( "#side_laboratorio" ).addClass( "active" );
 const url = "{% url 'autocompletado_apellidos' %}";
 const urlFiltro = "{% url 'busqueda_paciente' %}";
 const complementoConsulta = "?apellido_paciente=";
@@ -207,6 +243,7 @@ const url_consulta="{% url 'get_contieneConsulta' %}"
 let tablaCola=document.getElementById(tablaColaConsulta);
 let tablaData=document.getElementById(tablaResultado);
 let tabla_examenes_cola=document.getElementById(tabla_examenes);
+let tabla_examenes_cola_pendientes=document.getElementById("tabla_cola_pendientes");
 let cargando=false;
 
 // al agregar examen de laboratorio a la cola, retorna json para notificar
@@ -233,26 +270,39 @@ function agregarExamen(){
           $('#modalSelectExamen').modal('hide');
           $('#busquedaPacienteModal').modal('hide');
           toastr[data.type](`${data.data}`);
-          get_cola_examenes();
+          get_cola_examenes(0);
           cargando=false;
         }
   });
   }
   
 }
-
-function get_cola_examenes(){
+//Tipo consulta == 0, Examenes del dia, tipo_consulta == 1, Examenes sin finalizar
+function get_cola_examenes(tipo_consulta){
+  let tabla;
+  if (tipo_consulta==1){
+    tabla=tabla_examenes_cola_pendientes;
+  }
+  else{
+    tabla=tabla_examenes_cola;
+  }
   $.ajax({
   url: url_consulta,
   url: "{% url 'get_cola_examenes' %}",
   type:"GET",
-  dataType: "json",data: {},
+  dataType: "json",data: {
+    'tipo_consulta':tipo_consulta.toString()
+  },
   success: function(data){ 
-    tabla_examenes_cola.innerHTML=null; //borrando los datos previos en la cola examenes
+    tabla.innerHTML=null; //borrando los datos previos en la cola examenes
     console.log(data)
     if(data.type=='warning'){
       toastr[data.type](`${data.data}`);
-      tabla_examenes_cola.insertAdjacentHTML("beforeend", `<tr colspan="9" ><td colspan="9" style="text-align:center">${data.data}</td></tr>`);
+      {% if rol == ROL_LIC_LABORATORIO %}
+      tabla.insertAdjacentHTML("beforeend", `<tr colspan="10" ><td colspan="10" style="text-align:center">${data.data}</td></tr>`);
+      {% elif rol == ROL_SECRETARIA %}
+      tabla.insertAdjacentHTML("beforeend", `<tr colspan="9" ><td colspan="9" style="text-align:center">${data.data}</td></tr>`);
+      {% endif %}
     }else{
       data.data.forEach(examenItem => {
       //Recorre los elemntos del objeto
@@ -309,7 +359,7 @@ function get_cola_examenes(){
       
     {% endif %}
       nodeFila.appendChild(nodeColumna);      
-      tabla_examenes_cola.appendChild(nodeFila);            
+      tabla.appendChild(nodeFila);            
       });
     }}});
 }
@@ -323,7 +373,7 @@ document.getElementById("filtro_buscar").addEventListener("click",function(){
 //Invocando Funciones
 getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
 
-get_cola_examenes();
+get_cola_examenes(0);
 
 function cambiar_fase(id_resultado,id_expediente) {
   $.ajax({
@@ -345,7 +395,7 @@ function cambiar_fase(id_resultado,id_expediente) {
       //disable button
 
       toastr[data.type](`${data.data}`);
-      get_cola_examenes();
+      get_cola_examenes(0);
     }
   });
 }
@@ -363,7 +413,7 @@ function descargar_examen(id_resultado) {
       //disable button
 
       toastr[data.type](`${data.data}`);
-      get_cola_examenes();
+      get_cola_examenes(0);
     }
   });
 }
