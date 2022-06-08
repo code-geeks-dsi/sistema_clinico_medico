@@ -58,7 +58,7 @@ class Resultado(models.Model):
     id_resultado = models.AutoField(primary_key=True)
     lic_laboratorio = models.ForeignKey('modulo_control.LicLaboratorioClinico', on_delete=models.CASCADE,null=True)
     examen_laboratorio= models.ForeignKey('ExamenLaboratorio', on_delete=models.CASCADE,null=False)
-    resultado=models.CharField(null=False,blank=True,default="",max_length=25)
+    #resultado=models.CharField(null=False,blank=True,default="",max_length=25)
     observaciones=models.TextField(null=False,blank=True,default="")
     fecha_hora_toma_de_muestra=models.DateTimeField(null=True,blank=True)
     fecha_hora_elaboracion_de_reporte=models.DateTimeField(null=True,blank=True)
@@ -98,7 +98,7 @@ class ExamenLaboratorio(models.Model):
     nombre_examen=models.CharField(max_length=40, null=False,blank=False) #tipo_examen
     tipo_muestra=models.CharField(max_length=15,choices=OPCIONES_MUESTRA ,null=False,blank=True,default=OPCIONES_MUESTRA[0][0])
     nota=models.CharField(null=False,blank=True,default="",max_length=75)
-    resultado_por_defecto=models.CharField(max_length=22,choices=OPCIONES_RESULTADO ,null=False,blank=True,default=OPCIONES_RESULTADO[0][0])
+    #resultado_por_defecto=models.CharField(max_length=22,choices=OPCIONES_RESULTADO ,null=False,blank=True,default=OPCIONES_RESULTADO[0][0])
     def __str__(self):
         return self.nombre_examen
 
@@ -125,7 +125,7 @@ class Parametro(models.Model):
     nombre_parametro = models.CharField(max_length=40,null=False, blank=False)
     unidad_parametro = models.CharField(max_length=40, null=True,blank=False)
     examen_de_laboratorio = models.ForeignKey('ExamenLaboratorio', models.CASCADE, blank=False, null=True)
-    valor_por_defecto=models.CharField( null=False,blank=True,default="",max_length=10)
+    valor_por_defecto=models.CharField( null=True,blank=True,default="",max_length=10)
 
     def __str__(self):
         return self.nombre_parametro + " "+self.examen_de_laboratorio.nombre_examen
