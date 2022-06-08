@@ -24,17 +24,17 @@
   <body>
       <main>        
         <!--Sidebar-->
-        <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" id="side_bar_base">
-          <a href="#" class="nav-link text-white" id="">
-            <div class="d-flex align-items-start">
-              <span onclick="reducir();" class="material-symbols-outlined">medical_services</span>
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark vh-100" id="side_bar_base">
+          <a href="#" class="nav-link text-white p-0 m-0" id="">
+            <div class="d-flex align-items-start px-3 pb-3">
+              <span class="material-symbols-outlined">medical_services</span>
               <div class="px-2 txt_link" id="txt_link">
                 SCM
               </div>
             </div>
           </a>
-          <hr>
-          <ul class="nav nav-pills flex-column mb-auto">
+          <hr class="p-0 m-0">
+          <ul class="nav nav-pills flex-column mb-auto pt-2">
             <li>
               <a href="" class="nav-link text-white" id="">
                 <div class="d-flex align-items-start">
@@ -111,11 +111,8 @@
             </ul>
           </div>
         </div>
-            
-      
-        <div class="b-example-divider" id="divider_side"></div>
-
-        <div class="flex-fill scrollarea">
+        
+        <div class="flex-fill scrollarea bg-light vh-100">
           <div class="d-flex flex-column">
           
             {% include "nav/navbar.html" %}
@@ -144,6 +141,8 @@
     {% endblock %}
     <script>
       let letras_ocultas=0;
+      let side_oculto=0;
+      reducir();
 
       if ($(window).width()<500){
           ocultar();
@@ -171,8 +170,20 @@
     }
     function reducir(){
       if (letras_ocultas==0){
+        if(($(window).width()<500)){
+          if(side_oculto==0){
+            mostrar();
+            $( ".txt_link" ).hide();
+            side_oculto=1;
+          }
+          else{
+            ocultar();
+            side_oculto=0;
+          }
+        }else{
         $( ".txt_link" ).hide();
         letras_ocultas=1;
+        }
       }
       else{
         $( ".txt_link" ).show();
