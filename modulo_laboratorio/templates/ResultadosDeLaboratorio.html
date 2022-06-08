@@ -31,21 +31,20 @@
     </div>
 </div>
 </header>
-<body>    
+<body >    
         <div class="col">
             {% if paciente %}
             
                 <center><a href="#" class="data-paciente" >Nombre:&nbsp;{{paciente.nombre_paciente}}&nbsp;{{ paciente.apellido_paciente }}</a>
-                <a href="#" class="data-paciente">Edad:&nbsp;{{edad.years}} Años</a><br>
-                <a href="#" class="data-paciente" >Examen Solicitado:</a></center>
-            
+                <a href="#" class="data-paciente">Edad:&nbsp;{{edad.years}} Años</a><br></center>
             {% endif %}
         </div>
         <div class="conten">
             <table class="table table-hover">
                 <tr>
-                    <th>Parametro</th>
-                    <th>Valor</th>
+                    <th>Examen Solicitado: <br><center>{{examenlab.nombre_examen}}</center> </th>
+                    <th>Resultado</th>
+                    <th>Rango de Referencia</th>
                 </tr>
                 {% if contieneValor %}
                 {% for cv in contieneValor %}
@@ -59,8 +58,10 @@
             </table>
         </div> 
         <div class="col">
-            <center><a href="#" class="data-paciente" >Responsable:_____________________</a>
-            <a href="#" class="data-paciente">Fecha:</a><br>
+            <p class="data-paciente">Nota:</p>
+            <center>
+                <a href="#" class="data-paciente" >Responsable: {{empleado.nombres}}&nbsp;{{empleado.apellidos}}</a>
+                <a href="#" class="data-paciente">Fecha:{{fecha.date}}</a><br>
         </div>
 </body>
 </html>
@@ -96,21 +97,21 @@
     }
     .conten{
         background-image:url("{% static 'img/microscopio.png'%}");
-        width:60%;
+        width:80%;
         height:300px;
         background-size:cover;
         position:relative;
-        margin-left: 150px;
+        margin-left: 110px;
         padding-top: 20px;
     }
 
     .data-paciente {
-        font-size: 10px;
+        font-size: 12px;
         margin: 0 50px;
         line-height: 20px;
         width: max-content;
         text-transform: uppercase;
-        color:#18191F ;
+        color:#243F60 ;
         text-decoration: none;
         padding: 0px 0px;
     }

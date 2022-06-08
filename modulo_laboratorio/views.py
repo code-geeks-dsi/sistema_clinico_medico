@@ -10,11 +10,11 @@ import json
 from datetime import datetime
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
-from modulo_control.models import Rol
+from modulo_control.models import Empleado, LicLaboratorioClinico, Rol
 from modulo_expediente.models import Expediente, Paciente
 from modulo_expediente.serializers import PacienteSerializer
 from modulo_laboratorio.forms import ContieneValorForm
-from modulo_laboratorio.models import Categoria, CategoriaExamen, ContieneValor, EsperaExamen, ExamenLaboratorio, Parametro, Resultado
+from modulo_laboratorio.models import Categoria, CategoriaExamen, ContieneValor, EsperaExamen, ExamenLaboratorio, Parametro, RangoDeReferencia, Resultado
 from modulo_laboratorio.serializers import CategoriaExamenSerializer
 from dateutil.relativedelta import relativedelta
 from django.template.loader import get_template
@@ -227,9 +227,18 @@ def generar_pdf(request,id_resultado):
     expediente=Expediente.objects.get(id_expediente=idExpediente)
     idpaciente=expediente.id_paciente_id
     paciente=Paciente.objects.get(id_paciente=idpaciente)
+    resultado=Resultado.objects.get(id_resultado=id_resultado)
+    idexamen=resultado.examen_laboratorio_id
+    examenlab=ExamenLaboratorio.objects.get(id_examen_laboratorio=idexamen)
+    fecha=resultado.fecha_hora_elaboracion_de_reporte
+    id_lic=resultado.lic_laboratorio_id
+    licdeLab=LicLaboratorioClinico.objects.get(id_lic_laboratorio=id_lic)
+    codigo_empleado=licdeLab.empleado_id
+    empleado=Empleado.objects.get(codigo_empleado=codigo_empleado)
     edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
     contieneValor=ContieneValor.objects.filter(resultado_id=id_resultado)
-    data={'contieneValor':contieneValor, 'paciente':paciente,'edad':edad}
+    
+    data={'contieneValor':contieneValor, 'paciente':paciente,'edad':edad,'fecha':fecha,'empleado':empleado,'examenlab':examenlab}
     #puede recibir la info como diccionario
     html_string = render_to_string('ResultadosDeLaboratorio.html',data)
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
