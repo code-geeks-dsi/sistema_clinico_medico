@@ -163,7 +163,7 @@
                         <label for="selectCategoria" class="form-label">Seleccione el Perfil</label>
                         <select id="selectCategoria" class="form-select">
                           {% for c in Categoria %}
-                            <option value="{{ c.id_categoria }}">{{ c.nombre_categoria }}</option>
+                            <option value="{{ c.id_categoria }}">{{ c.descripcion_categoria }}</option>
                           {% endfor %}
                         </select>
                       </div>

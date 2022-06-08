@@ -13,7 +13,7 @@ from modulo_expediente.models import Dosis, Medicamento, Paciente, ContieneConsu
 class PacienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Paciente
-        fields = '__all__'
+        exclude=('dui','pasaporte',)
 class MedicamentoSerializer(serializers.ModelSerializer):
     presentacion = serializers.CharField(source='get_presentacion_display')
     class Meta:

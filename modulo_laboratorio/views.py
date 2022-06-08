@@ -26,7 +26,7 @@ import tempfile
 # Templete Sala de Espera laboratorio
 def sala_laboratorio(request):
     categorias= Categoria.objects.all()
-    rutina=CategoriaExamen.objects.filter(categoria=1)
+    rutina=CategoriaExamen.objects.filter(cetegoria=categorias[0])
     roles=Rol.objects.values_list('codigo_rol','id_rol').all()
     data={}
     data["Categoria"]=categorias 
