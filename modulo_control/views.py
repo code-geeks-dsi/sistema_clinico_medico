@@ -53,7 +53,7 @@ def logearse(request):
                 elif request.user.roles.codigo_rol=='ROL_SECRETARIA' or request.user.roles.codigo_rol=='ROL_DOCTOR' or request.user.roles.codigo_rol=='ROL_ENFERMERA':
                     return redirect('sala_consulta')
                 elif request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
-                    return redirect('sala_laboratorio')
+                    return redirect('inicio_lab')
 
                 
             else:

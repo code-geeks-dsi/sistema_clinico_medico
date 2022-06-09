@@ -35,7 +35,7 @@
           </a>
           <hr class="p-0 m-0">
           <ul class="nav nav-pills flex-column mb-auto pt-2">
-            <li>
+            <li hidden>
               <a href="" class="nav-link text-white" id="">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">home</span>
@@ -45,6 +45,7 @@
                 </div>
               </a>
             </li>
+            {% if request.user.roles.codigo_rol == "ROL_SECRETARIA" or request.user.roles.codigo_rol == "ROL_DOCTOR" or request.user.roles.codigo_rol == "ROL_ENFERMERA"%}
             <li>
               <a href="{% url 'sala_consulta' %}" class="nav-link text-white" id="side_expediente">
                 <div class="d-flex align-items-start">
@@ -55,7 +56,9 @@
                 </div>
               </a>
             </li>
-            <li>
+            {% endif %}
+            {% if request.user.roles.codigo_rol == "ROL_SECRETARIA" %}
+            <li>             
               <a href="{% url 'sala_laboratorio' %}" class="nav-link text-white" id="side_laboratorio">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">biotech</span>
@@ -65,7 +68,40 @@
                 </div>
               </a>
             </li>
-            <li>
+            {% endif %}
+            {% if request.user.roles.codigo_rol == "ROL_LIC_LABORATORIO" %}
+            <li>             
+              <a href="{% url 'inicio_lab' %}" class="nav-link text-white" id="side_laboratorio">
+                <div class="d-flex align-items-start">
+                  <span class="material-symbols-outlined">biotech</span>
+                  <div class="px-2 txt_link" id="txt_link">
+                    Laboratorio
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li>             
+              <a href="{% url 'bitacora_lab' %}" class="nav-link text-white" id="side_bitacora">
+                <div class="d-flex align-items-start">
+                  <span class="material-symbols-outlined">list_alt</span>
+                  <div class="px-2 txt_link" id="txt_link">
+                    Bitacora
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li>             
+              <a href="{% url 'pendientes_lab' %}" class="nav-link text-white" id="side_pendientes">
+                <div class="d-flex align-items-start">
+                  <span class="material-symbols-outlined">list</span>
+                  <div class="px-2 txt_link" id="txt_link">
+                    Examenes Pendientes
+                  </div>
+                </div>
+              </a>
+            </li>
+            {% endif %}
+            <li hidden>
               <a href="#" class="nav-link text-white">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">monitoring</span>
@@ -75,7 +111,7 @@
                 </div>
               </a>
             </li>
-            <li>
+            <li hidden>
               <a href="#" class="nav-link text-white">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">thumbs_up_down</span>
@@ -85,6 +121,7 @@
                 </div>
               </a>
             </li>
+            {% if request.user.roles.codigo_rol == "ROL_ADMIN" %}
             <li>
               <a href="{% url 'vistaGestionEmpleados' %}" class="nav-link text-white" id="side_gestion_usuarios">
                 <div class="d-flex align-items-start">
@@ -95,6 +132,7 @@
                 </div>
               </a>
             </li>
+            {% endif %}
           </ul>
           <hr>
           <div class="dropdown">
