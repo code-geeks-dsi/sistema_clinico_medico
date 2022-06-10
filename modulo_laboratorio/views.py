@@ -269,3 +269,21 @@ def generar_pdf(request,id_resultado):
         output = open(output.name, 'rb')
         response.write(output.read())
     return response
+
+def inicio(request):
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
+        return render(request,"laboratorio/laboratorio.html")
+    else:
+        return render(request,"Control/error403.html")
+
+def examenes_pendientes(request):
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
+        return render(request,"laboratorio/examenes_pendientes.html")
+    else:
+        return render(request,"Control/error403.html")
+
+def bitacora_templete(request):
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
+        return render(request,"laboratorio/bitacora.html")
+    else:
+        return render(request,"Control/error403.html")

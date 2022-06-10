@@ -4,6 +4,7 @@ from asgiref.sync import async_to_sync
 from datetime import datetime
 from modulo_laboratorio.models import EsperaExamen
 from django.urls import reverse
+from channels.exceptions import StopConsumer
 
 class ColaLaboratorioConsumer(WebsocketConsumer):
       
@@ -74,4 +75,6 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                         self.room_group_name,
                         {'type':'cola_laboratorio'}
                 )
-       
+        def disconnect(self, code):
+                # super().disconnect(code)
+                raise StopConsumer()
