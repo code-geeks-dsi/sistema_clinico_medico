@@ -137,10 +137,13 @@ def get_cola_examenes(request):
 def elaborar_resultados_examen(request,id_resultado):
         data={}
         lic_laboratorio=LicLaboratorioClinico.objects.get(empleado=request.user)
-        print()
         resultado=Resultado.objects.get(id_resultado=id_resultado)
         resultado.lic_laboratorio=lic_laboratorio
         resultado.save()
+        # verificando si los resultados han sido entregados
+        espera_examen=EsperaExamen.objects.get(resultado=resultado)
+        if espera_examen.fase_examenes_lab==EsperaExamen.OPCIONES_FASE[3][0]:
+            readonly=True
         examen=resultado.examen_laboratorio
         valores=ContieneValor.objects.filter(resultado=resultado)
         parametros=Parametro.objects.filter(examen_de_laboratorio=examen)
@@ -178,6 +181,8 @@ def elaborar_resultados_examen(request,id_resultado):
         elif request.method=='POST':
             
             if formset.is_valid():
+                resultado.fecha_hora_elaboracion_de_reporte=datetime.now()
+                resultado.save()
                 for i in range(cantidad_parametros):
                     dato=request.POST.get('form-'+str(i)+'-dato')
                     obj, created=ContieneValor.objects.update_or_create(parametro=parametros[i],resultado=resultado,defaults={'dato':dato})
@@ -230,6 +235,10 @@ def cambiar_fase_laboratorio(request):
 def generar_pdf(request,id_resultado):
     data={}
     esperaExamen=EsperaExamen.objects.get(resultado_id=id_resultado)
+    # actualizando la fase del resultado
+    esperaExamen.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[3][0]
+    esperaExamen.save()
+
     idExpediente=esperaExamen.expediente_id
     expediente=Expediente.objects.get(id_expediente=idExpediente)
     idpaciente=expediente.id_paciente_id
