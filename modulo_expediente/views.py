@@ -48,7 +48,7 @@ def sala_consulta(request):
     for rol in roles:
         data[rol[0]]=rol[1]
     if request.user.roles.codigo_rol =="ROL_SECRETARIA" or request.user.roles.codigo_rol=="ROL_DOCTOR" or request.user.roles.codigo_rol =="ROL_ENFERMERA":
-        return render(request,"expediente/sala.html",data)
+        return render(request,"expediente/salaEspera.html",data)
     else:
         return render(request,"Control/error403.html", data)
 
@@ -133,30 +133,7 @@ def  get_cola(request):
     lista=[]
     rol=request.user.roles.codigo_rol
 
-    if(rol=='ROL_SECRETARIA'):
-        contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
-                        fecha_de_cola__month=fecha.month, 
-                        fecha_de_cola__day=fecha.day).select_related('expediente__id_paciente')
-        
-        for fila in contiene_consulta:
-            diccionario={
-                "id_consulta":"",
-                "numero_cola":"",
-                "nombre":"",
-                "apellidos":"",
-                "fase_cola_medica":"",
-                "consumo_medico":"",
-                "estado_cola_medica":"",
-            }
-            diccionario['id_consulta']=fila.consulta.id_consulta
-            diccionario["numero_cola"]= fila.numero_cola
-            diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
-            diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
-            diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
-            diccionario["consumo_medico"]= fila.consumo_medico
-            diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
-            lista.append(diccionario)
-    elif(rol=='ROL_DOCTOR'):
+    if(rol=='ROL_DOCTOR'):
         #en la vista doctor se retorna el apellido de la barra de busqueda del paciente
         apellido_paciente=request.GET.get('apellido_paciente','')
         year=int(request.GET.get('year',0))
@@ -198,28 +175,7 @@ def  get_cola(request):
             diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
             diccionario["fecha_de_cola"]= fila.fecha_de_cola
             lista.append(diccionario)
-            # del diccionario
-                
-    elif (rol=='ROL_ENFERMERA'):
-        # recupera los pacientes en cola en fase anotado
-        contiene_consulta=ContieneConsulta.objects.filter(fecha_de_cola__year=fecha.year, 
-                        fecha_de_cola__month=fecha.month, 
-                        fecha_de_cola__day=fecha.day,fase_cola_medica=ContieneConsulta.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente')
-        
-        
-        for fila in contiene_consulta:
-            diccionario={
-                "id_consulta":"",
-                "numero_cola":"",
-                "nombre":"",
-                "apellidos":"",
-            }
-            diccionario['id_consulta']=fila.consulta.id_consulta
-            diccionario["numero_cola"]= fila.numero_cola
-            diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
-            diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
-            lista.append(diccionario)
-            # del diccionario
+            del diccionario
     return JsonResponse( lista, safe=False)
 
 #Método que elimina una persona de la cola

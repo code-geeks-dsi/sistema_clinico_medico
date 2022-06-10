@@ -5,13 +5,10 @@ function getAutocompletado(url, id_component, urlFiltro, complementoConsulta, ta
     consultaData.onload = function (e) {
       if (consultaData.readyState === 4) {
         if (consultaData.status === 200) {
-            $( function() {
-        
+            $( function() {        
               dataAutoComletado=JSON.parse(consultaData.responseText).data
               $( "#"+id_component ).autocomplete({
                 source: dataAutoComletado,
-              
-          
               });
             } );
         } else {
