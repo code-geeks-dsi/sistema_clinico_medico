@@ -235,14 +235,12 @@
   let tabla_examenes_cola_pendientes=document.getElementById("tabla_cola_pendientes");
   {% endif %}
   // let tabla;
-  let url2=`ws://${window.location.host}/ws/laboratorio/cola/`;
-  // let data=JSON.parse(data.data);
-  // document.getElementById('messageList').insertAdjacentHTML('beforeend',`<li>${data.message}</li>`)
-    // Recibiendo datos de la cola por medio del socket
-    const colaLaboratorioSocket=new WebSocket(url2);
+  let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
+  let socket_url=`${ws_scheme}://${window.location.host}/ws/laboratorio/cola/`;
+  const colaLaboratorioSocket=new WebSocket(socket_url);
     colaLaboratorioSocket.onmessage=(message)=>{
       let data=JSON.parse(message.data);
-      console.log(data);
+      // let data=json_data.data;
       //borrando los datos previos en la cola examenes
       tabla_examenes_cola_pendientes.innerHTML=null; 
 
@@ -366,7 +364,9 @@ function agregarExamen(){
           $('#modalSelectExamen').modal('hide');
           $('#busquedaPacienteModal').modal('hide');
           toastr[data.type](`${data.data}`);
-          // get_cola_examenes(0);
+          colaLaboratorioSocket.send(JSON.stringify({
+              'message':'sync'
+            }));
           cargando=false;
         }
   });
@@ -490,10 +490,11 @@ function cambiar_fase(id_resultado,id_expediente) {
         'id_resultado':id_resultado
       },
     success: function(data){ 
-      //disable button
+      colaLaboratorioSocket.send(JSON.stringify({
+              'message':'sync'
+            }));
 
       toastr[data.type](`${data.data}`);
-      // get_cola_examenes(0);
     }
   });
 }
@@ -525,7 +526,6 @@ function accionServer(id, accion){
           url_accion="/laboratorio/examen/";
           url_agregar_cola=url_accion+id;
           metodo="GET";
-          console.log("prueba")
           break;
       }
 

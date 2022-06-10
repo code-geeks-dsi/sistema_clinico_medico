@@ -74,11 +74,8 @@ def agregar_examen_cola(request):
                 'type':'warning',
                 'data':'El examen ya existe en la cola!'
             }
-
     return JsonResponse(response, safe=False)
 
-
-    return JsonResponse(response, safe=False)
 #View que retorna lista de examenes en espera
 def get_cola_examenes(request):
     tipo_consulta=request.GET.get('tipo_consulta','')
