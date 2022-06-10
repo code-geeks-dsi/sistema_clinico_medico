@@ -227,8 +227,6 @@
 {% block js %}
 <script src="{% static 'js/laboratorioBusqueda.js' %}"></script>
 <script>
-  // const tabla_examenes="tabla_cola";
-  // let tabla_examenes_cola=document.getElementById(tabla_examenes);
   {% if rol == ROL_SECRETARIA %}
   let tabla_examenes_cola_pendientes=document.getElementById("tabla_cola");
   {% else %}
@@ -312,17 +310,6 @@
       }
 
     }
-    // function get_cola_examenes(tipo_consulta){
-    //   if (tipo_consulta==1){
-    //     tabla=tabla_examenes_cola_pendientes;
-    //   }
-    //   else{
-    //     tabla=tabla_examenes_cola;
-    //   }
-    //   colaLaboratorioSocket.send(JSON.stringify(data: {
-    //     'tipo_consulta':tipo_consulta.toString()
-    //   }));
-    // }
 </script>
 <script>
 $( "#side_laboratorio" ).addClass( "active" );
@@ -369,97 +356,9 @@ function agregarExamen(){
             }));
           cargando=false;
         }
-  });
-  }
-  
+    });
+  } 
 }
-//Tipo consulta == 0, Examenes del dia, tipo_consulta == 1, Examenes sin finalizar
-// function get_cola_examenes(tipo_consulta){
-//   let tabla;
-//   if (tipo_consulta==1){
-//     tabla=tabla_examenes_cola_pendientes;
-//   }
-//   else{
-//     tabla=tabla_examenes_cola;
-//   }
-//   $.ajax({
-//   url: url_consulta,
-//   url: "{% url 'get_cola_examenes' %}",
-//   type:"GET",
-//   dataType: "json",data: {
-//     'tipo_consulta':tipo_consulta.toString()
-//   },
-//   success: function(data){ 
-//     tabla.innerHTML=null; //borrando los datos previos en la cola examenes
-//     console.log(data)
-//     if(data.type=='warning'){
-//       toastr[data.type](`${data.data}`);
-//       {% if rol == ROL_LIC_LABORATORIO %}
-//       tabla.insertAdjacentHTML("beforeend", `<tr colspan="10" ><td colspan="10" style="text-align:center">${data.data}</td></tr>`);
-//       {% elif rol == ROL_SECRETARIA %}
-//       tabla.insertAdjacentHTML("beforeend", `<tr colspan="9" ><td colspan="9" style="text-align:center">${data.data}</td></tr>`);
-//       {% endif %}
-//     }else{
-//       data.data.forEach(examenItem => {
-//       //Recorre los elemntos del objeto
-//       let elemento='<tr>';
-//       const nodeFila = document.createElement("tr");
-//       for (const property in examenItem) {
-//           /**
-//            * Si es lic de lab entonces se recive una url que redirige a la elaboracion de resultados, si es secretaria entonces le envia el el id_expediente y el id_resultados
-//            * ya que la combinacion de estos es la key primary de espera examen
-//           */
-//         {% if rol == ROL_LIC_LABORATORIO %}
-//           if(property!='url_resultado'&& property!='id_resultado' && property!='id_expediente'){
-//         {% elif rol == ROL_SECRETARIA %}
-//           if(property!='id_resultado' && property!='id_expediente' && property!='url_resultado_pdf'){
-//         {% endif %}
-//           /** 
-//            * desplegando cada atributo del examen en una columna que luego es agregada a una fila
-//            * que es agregada a la tabla luego de agregar el boton de cambiar fase o elaborar 
-//            * resultados de examen
-//            */
-//             const nodeColumna = document.createElement("td");
-//             const textnode = document.createTextNode(`${examenItem[property]}`);
-//             nodeColumna.appendChild(textnode);
-//             nodeFila.appendChild(nodeColumna);
-            
-//         }
-        
-//       }
-//       /**
-//        * Agregando el boton de cambiar fase o elaborar resultados de examen
-//       */
-//       let nodeColumna = document.createElement("td");
-//     {% if rol == ROL_LIC_LABORATORIO %}
-//       nodeColumna.innerHTML=`<div 
-//                             class="material-symbols-outlined btn btn-outline-primary"
-//                             onclick="cambiar_fase(${examenItem['id_resultado']},${examenItem['id_expediente']})">done</div>`;
-//       nodeFila.appendChild(nodeColumna);
-//       nodeColumna = document.createElement("td");
-//       nodeColumna.innerHTML=`<a href="${examenItem['url_resultado']}" target="_blank"><div class="material-symbols-outlined btn btn-outline-primary">open_in_new</div></a>`;
-
-//     {% elif rol == ROL_SECRETARIA %}
-//       if(examenItem['fase_examenes_lab']=='Resultados en Proceso'){
-//         nodeColumna.innerHTML=`<button type="button"
-//                             class="material-symbols-outlined btn btn-primary" disabled>done</button>`;
-//       }else if(examenItem['fase_examenes_lab']=='Resultados Listos'){
-//         nodeColumna.innerHTML=`<a target="_blank"
-//                             class="material-symbols-outlined btn btn-outline-success"
-//                             href="${examenItem['url_resultado_pdf']}" >download</a>`;
-//       }else{
-//         nodeColumna.innerHTML=`<button type="button"
-//                             class="material-symbols-outlined btn btn-outline-primary"
-//                             onclick="cambiar_fase(${examenItem['id_resultado']},${examenItem['id_expediente']})">done</button>`;
-//       }
-      
-//     {% endif %}
-//       nodeFila.appendChild(nodeColumna);      
-//       tabla.appendChild(nodeFila);            
-//       });
-//     }}});
-// }
-
     
  //Al presionar la lupa
 {% if rol == ROL_SECRETARIA %}
@@ -509,8 +408,6 @@ function descargar_examen(id_resultado) {
         'id_resultado':id_resultado
       },
     success: function(data){ 
-      //disable button
-
       toastr[data.type](`${data.data}`);
       // get_cola_examenes(0);
     }
