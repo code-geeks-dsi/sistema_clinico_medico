@@ -76,5 +76,5 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                         {'type':'cola_laboratorio'}
                 )
         def disconnect(self, code):
-                super().disconnect(code)
+                # super().disconnect(code)
                 raise StopConsumer()

@@ -291,7 +291,7 @@
         if(examenItem['fase_examenes_lab']=='Resultados en Proceso'){
           nodeColumna.innerHTML=`<button type="button"
                               class="material-symbols-outlined btn btn-primary" disabled>done</button>`;
-        }else if(examenItem['fase_examenes_lab']=='Resultados Listos'){
+        }else if(examenItem['fase_examenes_lab']=='Resultados Listos'||examenItem['fase_examenes_lab']=='Resultados Entregado'){
           nodeColumna.innerHTML=`<a target="_blank"
                               class="material-symbols-outlined btn btn-outline-success"
                               href="${examenItem['url_resultado_pdf']}" >download</a>`;

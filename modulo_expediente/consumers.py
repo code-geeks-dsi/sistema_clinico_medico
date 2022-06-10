@@ -99,5 +99,5 @@ class ColaExpedienteConsumer(WebsocketConsumer):
                         {'type':'cola_expediente'}# aqui se especifica el handler para enviar este mensaje, para el caso es el metodo cola_expediente
                 )
         def disconnect(self, code):
-                super().disconnect(code)
+                # super().disconnect(code)
                 raise StopConsumer()
