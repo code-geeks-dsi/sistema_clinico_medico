@@ -263,8 +263,8 @@
     //socket
     let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
     let socket_url=`${ws_scheme}://${window.location.host}/ws/expediente/cola/`;
-    const colaLaboratorioSocket=new WebSocket(socket_url);
-    colaLaboratorioSocket.onmessage=(message)=>{
+    const colaExpedienteSocket=new WebSocket(socket_url);
+    colaExpedienteSocket.onmessage=(message)=>{
       let data=JSON.parse(message.data);
       let elemento;
       let icon;
@@ -354,10 +354,7 @@
     {% if rol == ROL_DOCTOR or rol == ROL_SECRETARIA %}
     //Lenar autocompletado
     getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
-    {% endif %}
-    
-    // consultarCola(url_consulta, tablaCola);
-    
+    {% endif %} 
     
     function consultarCola(url_consulta, tablaCola,data={}){
       $.ajax({
@@ -384,25 +381,14 @@
                     for (const property in x) {
                         elemento = elemento+'<td valign="middle">'+`${x[property]}`+'</td>';
                     }
-                    {% if rol == ROL_ENFERMERA %}
-                    icon="monitor_heart";
-                    modal="data-bs-toggle='modal' data-bs-target='#agregarSignosVitalesModal'";
-                    strfuncion="modificar_btn_editar_signos("+id_consulta+");";
-                    click="onclick='"+strfuncion+"';";
-
-                    {% else %}
+                    
                     click="";
                     icon = "more_vert";
-                    {% endif %}
-                    {% if rol == ROL_DOCTOR %}
                     elemento=elemento+`<td>
                       <a role="button"   class="btn btn-outline-primary" href="/expediente/consulta/${id_consulta}">
                       <div class="material-symbols-outlined">edit_note</div>
                       <div>Abrir Consulta</div> 
                       </a></td>`;
-                    {% else %}
-                    elemento=elemento+'<td><div class="material-symbols-outlined btn" '+click+' '+modal+' >'+icon+'</div></td>';
-                    {% endif %}
                     elemento=elemento+'</tr>';                    
                     tablaCola.insertAdjacentHTML("beforeend", elemento);
                     });
@@ -420,8 +406,6 @@
       url_accion = "/expediente/cola/";
       {% endif %}
       url_agregar_cola=url_accion+id;
-      console.log(url_agregar_cola);
-      //console.log($('#inputTemperatura').val().toString());
 
       $.ajax({
         url: url_consulta,
@@ -438,14 +422,14 @@
                   'valor_saturacion_oxigeno': $('#inputSaturacionOxigeno').val(),
                   'unidad_temperatura':$('#select_temperatura').val(),
                   'unidad_peso':$('#select_peso').val()
-                  {% else %}
-
                   {% endif %}
                 },
                 success: function(data){
                   $('#load').hide(); 
                   toastr[data.type](data.data);           
-                  // consultarCola(url_consulta, tablaCola);
+                  colaExpedienteSocket.send(JSON.stringify({
+                    'message':'sync'
+                  }));
                 }
       });
       
@@ -454,12 +438,8 @@
     function modificar_btn_editar_signos(id_consulta){
       edit = document.getElementById("guarda_signos_vitales");
       strfuncion="accionServer("+id_consulta+");";
-
       edit.setAttribute("OnClick", strfuncion);
     }
-    // setInterval(() => {
-    //   consultarCola(url_consulta, tablaCola);
-    // }, 60*1000);
     
 </script>
 

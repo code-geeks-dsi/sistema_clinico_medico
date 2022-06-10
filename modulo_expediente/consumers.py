@@ -30,7 +30,7 @@ class ColaExpedienteConsumer(WebsocketConsumer):
                                 diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
                                 diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
                                 diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
-                                diccionario["consumo_medico"]= fila.consumo_medico
+                                diccionario["consumo_medico"]= str(fila.consumo_medico)
                                 diccionario["estado_cola_medica"]= fila.get_estado_cola_medica_display()
                                 lista.append(diccionario)
                 elif(rol=='ROL_DOCTOR'):
@@ -57,7 +57,7 @@ class ColaExpedienteConsumer(WebsocketConsumer):
                                 diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
                                 diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
                                 diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
-                                diccionario["fecha_de_cola"]= fila.fecha_de_cola
+                                diccionario["fecha_de_cola"]= str(fila.fecha_de_cola)
                                 lista.append(diccionario)
                                 
                 elif (rol=='ROL_ENFERMERA'):

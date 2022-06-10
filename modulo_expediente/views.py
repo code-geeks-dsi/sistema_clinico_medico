@@ -48,7 +48,7 @@ def sala_consulta(request):
     for rol in roles:
         data[rol[0]]=rol[1]
     if request.user.roles.codigo_rol =="ROL_SECRETARIA" or request.user.roles.codigo_rol=="ROL_DOCTOR" or request.user.roles.codigo_rol =="ROL_ENFERMERA":
-        return render(request,"expediente/sala_espera.html",data)
+        return render(request,"expediente/salaEspera.html",data)
     else:
         return render(request,"Control/error403.html", data)
 

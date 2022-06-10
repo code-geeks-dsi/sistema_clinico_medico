@@ -238,8 +238,6 @@
   const colaLaboratorioSocket=new WebSocket(socket_url);
     colaLaboratorioSocket.onmessage=(message)=>{
       let data=JSON.parse(message.data);
-      // let data=json_data.data;
-      //borrando los datos previos en la cola examenes
       tabla_examenes_cola_pendientes.innerHTML=null; 
 
       if(data.type=='warning'){
