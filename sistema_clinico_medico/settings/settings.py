@@ -16,7 +16,6 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -28,6 +27,7 @@ INSTALLED_APPS = [
     'modulo_expediente',
     'modulo_laboratorio',
     'django_filters',
+    'channels',
 ]
 ASGI_APPLICATION='sistema_clinico_medico.asgi.application'
 
