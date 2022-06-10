@@ -18,7 +18,7 @@ class RolSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class EmpleadoSerializer(serializers.ModelSerializer):
-    nombre_rol = serializers.CharField(source='roles.nombre_rol')
+    nombre_rol = serializers.CharField(source='roles')
     class Meta:
         model = Empleado
         field = fields=['codigo_empleado','nombres', 'apellidos', 'nombre_rol']

@@ -7,12 +7,9 @@
 <!--Titulo-->
 {% block titulo %} Sala de Espera {% endblock %}
 {% block content %}
-<div class="container py-4">
-  
-</div>
-<div class="container py-2 rounded">
+<div class="container py-1 rounded">
   <div class="row g-0">
-    <h1 class="fw-bold text-secondary">Sala de Espera</h1>
+    <h5 class="fw-bold text-secondary">Sala de Espera</h5>
     <div class="col-12 col-md-12">
       <!--Busqueda por Apellidos-->
       {% if rol == ROL_SECRETARIA or rol == ROL_DOCTOR %}
@@ -58,7 +55,7 @@
         </li>
         {% if rol == ROL_SECRETARIA  %}
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Examenes de Laboratorio</button>
+          <a class="nav-link" id="profile-tab" href="{% url 'sala_laboratorio' %}">Examenes de Laboratorio</a>
         </li>
         {% endif %}
       </ul>
@@ -66,7 +63,7 @@
         <div class="tab-pane fade show active" id="consultaMedica" role="tabpanel" aria-labelledby="home-tab">
           <!--Tabla de pacientes en cola-->
           <div class="table-responsive">
-            <table class="table table-bordered text-center">
+            <table class="table table-bordered text-center bg-white">
                 <thead class="table-secondary">
                   <tr>
                     
@@ -105,12 +102,15 @@
           <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Agregar Paciente a Cola</h5>
+                <div class="spinner-border text-primary" role="status" id="load">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
                 <!--Tabla de pacientes buscados-->
                 <div class="table-responsive" id="tabla_busqueda">
-                  <table class="table table-bordered text-center">
+                  <table class="table table-bordered text-center bg-white">
                     <thead class="table-secondary">
                       <tr>
                           <th>ID</th>
@@ -245,7 +245,10 @@
 {% endblock %}
 <!--Js de la vista-->
 {% block js %}
+<script src="{% static 'js/sistemaClinico.js' %}"></script>
 <script>
+    $('#load').hide();
+    $( "#side_expediente" ).addClass( "active" );
     const url = "{% url 'autocompletado_apellidos' %}";
     const urlFiltro = "{% url 'busqueda_paciente' %}";
     const complementoConsulta = "?apellido_paciente=";
@@ -330,7 +333,7 @@
                     id_consulta=x.id_consulta;
                     delete x.id_consulta;
                     for (const property in x) {
-                        elemento = elemento+'<td>'+`${x[property]}`+'</td>';
+                        elemento = elemento+'<td valign="middle">'+`${x[property]}`+'</td>';
                     }
                     {% if rol == ROL_ENFERMERA %}
                     icon="monitor_heart";
@@ -342,7 +345,15 @@
                     click="";
                     icon = "more_vert";
                     {% endif %}
+                    {% if rol == ROL_DOCTOR %}
+                    elemento=elemento+`<td>
+                      <a role="button"   class="btn btn-outline-primary" href="/expediente/consulta/${id_consulta}">
+                      <div class="material-symbols-outlined">edit_note</div>
+                      <div>Abrir Consulta</div> 
+                      </a></td>`;
+                    {% else %}
                     elemento=elemento+'<td><div class="material-symbols-outlined btn" '+click+' '+modal+' >'+icon+'</div></td>';
+                    {% endif %}
                     elemento=elemento+'</tr>';
         
         //   <input type="button"  value="Agregar a cola para examenes de Lab">
@@ -357,6 +368,7 @@
     }
     //Voy a ocupar la misma funcion para agregar y eliminar.
     function accionServer(id, accion){
+      $('#load').show();
       let url_accion="";
       {% if rol == ROL_ENFERMERA %}
       url_accion = "/expediente/modificar-signosVitales/";
@@ -386,7 +398,8 @@
 
                   {% endif %}
                 },
-                success: function(data){ 
+                success: function(data){
+                  $('#load').hide(); 
                   toastr[data.type](data.data);           
                   consultarCola(url_consulta, tablaCola);
                 }
@@ -400,6 +413,9 @@
 
       edit.setAttribute("OnClick", strfuncion);
     }
+    setInterval(() => {
+      consultarCola(url_consulta, tablaCola);
+    }, 60*1000);
     
 </script>
 

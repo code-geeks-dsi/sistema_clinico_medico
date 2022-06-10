@@ -1,5 +1,3 @@
-
-
 from pathlib import Path
 import os
 import environ
@@ -18,6 +16,7 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -30,7 +29,13 @@ INSTALLED_APPS = [
     'modulo_laboratorio',
     'django_filters',
 ]
+ASGI_APPLICATION='sistema_clinico_medico.asgi.application'
 
+CHANNEL_LAYERS={
+    'default':{
+        'BACKEND':'channels.layers.InMemoryChannelLayer'
+    }
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -117,8 +122,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-
-
-

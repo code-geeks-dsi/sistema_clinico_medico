@@ -38,7 +38,7 @@ class EmpleadoManager(BaseUserManager):
         #Crear usuario
         empleado=self.model(
             codigo_empleado=codigo,
-            email=self.normalize_email(email),
+            email=self.normalize_email(email).lower(),
             nombres=nombres,
             apellidos=apellidos,
             password=password
@@ -64,7 +64,7 @@ class EmpleadoManager(BaseUserManager):
 class Rol(models.Model):
     id_rol=models.AutoField(primary_key=True)
     nombre_rol=models.CharField(max_length=15,null=False,blank=False)
-    codigo_rol=models.CharField(max_length=15,null=False,blank=False)
+    codigo_rol=models.CharField(max_length=20,null=False,blank=False)
     def __str__(self):
         return f'{self.nombre_rol}'
 

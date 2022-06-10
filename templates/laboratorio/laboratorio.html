@@ -1,0 +1,80 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+<style>
+  .material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 700,
+    'GRAD' 0,
+    'opsz' 48
+  }
+  </style>
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Sala de Espera Laboratorio{% endblock %}
+{% block content %}
+<div class="container py-2 rounded">
+  <div class="row g-0">
+    <h2 class="fw-bold text-secondary text-center">Laboratorio Clinico</h2>
+  </div>
+</div>
+<div class="container py-2">
+  <div class="row">
+    <!--Bitacora-->
+    <div class="col-6">
+      <div class="d-grid gap-2">
+        <a class="btn btn-outline-primary" type="button" href="{% url 'bitacora_lab' %}">
+          <p class="pt-3">Bitacora de Examenes</p>
+          <span class="material-symbols-outlined pb-3">
+            list_alt
+          </span>
+        </a>
+      </div>
+    </div>
+    <!--Examenes Pendientes-->
+    <div class="col-6">
+      <div class="d-grid gap-2">
+        <a class="btn btn-outline-primary" type="button" href="{% url 'pendientes_lab' %}">
+          <p class="pt-3">Examenes Pendientes</p>
+          <span class="material-symbols-outlined pb-3">
+            biotech
+          </span>
+        </a>
+      </div>
+    </div>
+    <!--Examenes Listos-->
+    <div class="col-6 pt-4" hidden>
+      <div class="d-grid gap-2">
+        <a class="btn btn-outline-primary" type="button">
+          <p class="pt-3">Examenes Listos</p>
+          <span class="material-symbols-outlined pb-3">
+            fact_check
+          </span>
+        </a>
+      </div>
+    </div>
+    <!--Filtrar-->
+    <div class="col-6 pt-4" hidden>
+      <div class="d-grid gap-2">
+        <a class="btn btn-outline-primary" type="button">
+          <p class="pt-3">Filtrar Examenes</p>
+          <span class="material-symbols-outlined pb-3">
+            calendar_month
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+<!--Js de la vista-->
+{% block js %}
+<script src="{% static 'js/laboratorioBusqueda.js' %}"></script>
+<script>
+$( "#side_laboratorio" ).addClass( "active" );
+</script>
+
+{% endblock %}

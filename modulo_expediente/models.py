@@ -1,6 +1,7 @@
 from datetime import datetime
 from pyexpat import model
 from secrets import choice
+from unittest.mock import DEFAULT
 from xmlrpc.client import TRANSPORT_ERROR
 from django.db import models
 from django.core.validators import MaxValueValidator
@@ -30,7 +31,9 @@ class Paciente(models.Model):
     sexo_paciente = models.CharField( max_length=1,choices=OPCIONES_SEXO, blank=False, null=False )
     direccion_paciente=models.CharField( max_length=120, blank=True,null=True,default="")
     email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True,default="")
-    responsable=models.CharField(max_length=40,blank=True,null=True,default='')
+    responsable=models.CharField(max_length=40,blank=True,null=False,default="")
+    dui=models.CharField(max_length=10,blank=True,null=True)
+    pasaporte=models.CharField(max_length=15,blank=True,null=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
     
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)
@@ -92,15 +95,14 @@ class SignosVitales(models.Model):
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
-    constancia_medica= models.OneToOneField('ConstanciaMedica',on_delete=models.DO_NOTHING,parent_link=True,null=True, blank=False)
     signos_vitales= models.OneToOneField('SignosVitales',on_delete=models.DO_NOTHING,null=False, blank=False)
-    examen_de_laboratorio= models.OneToOneField('OrdenExamenLaboratorio', on_delete=models.DO_NOTHING, blank=True, null=True)
-    diagnostico=models.CharField(max_length=200, blank=True, null=False)
-    sintoma=models.CharField(max_length=200, blank=True, null=False)
+    diagnostico=models.TextField(max_length=200, blank=True, null=False)
+    sintoma=models.TextField(max_length=200, blank=True, null=False)
 
 class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)
     fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
+    consulta=models.ForeignKey('Consulta',on_delete=models.DO_NOTHING,null=False, blank=False)
     examen_de_laboratorio=models.ForeignKey('modulo_laboratorio.ExamenLaboratorio',on_delete=models.DO_NOTHING,null=False, blank=False)
 
 class Hospital(models.Model):
@@ -112,6 +114,7 @@ class Hospital(models.Model):
 
 class ReferenciaMedica(models.Model):
     id_referencia_medica= models.AutoField(primary_key=True)
+    consulta=models.ForeignKey('Consulta',models.DO_NOTHING,null=False, blank=False)
     hospital=models.ForeignKey(Hospital,models.DO_NOTHING,null=False, blank=False)
     especialidad=models.CharField(max_length=30,null=False, blank=False)
     fecha_referencia=models.DateField(default=datetime.now,null=False, blank=False)
@@ -121,22 +124,27 @@ class ReferenciaMedica(models.Model):
 class RecetaMedica(models.Model):
     id_receta_medica= models.AutoField(primary_key=True)
     Consulta = models.ForeignKey(Consulta, on_delete=models.CASCADE,null=False, blank=False)
+    def __str__(self):
+        return str(self.id_receta_medica)+" - Consultata: "+str(self.Consulta.id_consulta)
 
 class Medicamento(models.Model):
-    '''
-    UNIDADES_DE_MEDIDA_MEDICAMENTO=(
-    (3,'L','litro'),
-    (4,'mL','mililitro'),
-    (5,'µL','microlitro'),
-    (6,'cc / cm³','centímetro cúbico'),
-    (7,'fl oz',	'onza líquida'),
-    (10,'Kg','kilogramo'),
-    (11,'g','gramo'),
-    (12,'mg','miligramo'),
-    (13,'oz','onza'),
-    (15,'capsulas','cápsulas'),
+    PRESENTACION_MEDICAMENTO=(
+    ('1','Frasco'),
+    ('2','Ampolla'),
+    ('3','Frasco vial'),
+    ('4','Sobre'),
+    ('5','Jeringa prellenada'),
+    ('6','Bolsa'),
+    ('7','Tubo'),
+    ('8','Tarro'),
+    ('9','Dispositivo precargado'),
+    ('10','Pluma multidosis'),
+    ('11','Cartucho'),
+    ('12','Frasco gotero'),
+    ('13','Capsulas'),
+    ('14','Spray'),
+    ('15','Suspensión'),
     )
-    '''
     UNIDADES_DE_MEDIDA_MEDICAMENTO=(
     ('L','litro'),
     ('mL','mililitro'),
@@ -154,34 +162,21 @@ class Medicamento(models.Model):
     nombre_generico=models.CharField(max_length=25,null=False, blank=False)
     cantidad_medicamento=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False)
     unidad_medicamento=models.CharField(max_length=8,choices=UNIDADES_DE_MEDIDA_MEDICAMENTO,null=False, blank=False)
+    presentacion=models.CharField(choices=PRESENTACION_MEDICAMENTO,null=False,blank=False,default=PRESENTACION_MEDICAMENTO[12][0],max_length=25)
+    def __str__(self):
+        if(self.nombre_comercial):
+            return self.nombre_generico+" - "+self.nombre_comercial+" - "+self.PRESENTACION_MEDICAMENTO[int(self.presentacion)][1]
+        else:
+            return self.nombre_generico+" - "+self.PRESENTACION_MEDICAMENTO[int(self.presentacion)][1]
 
 class Dosis(models.Model):
     OPCIONES_TIEMPO = (
-        (1, 'Hora(s)'),
-        (2, 'Dia(s)'),
-        (3, 'Semana(s)'),
-        (4, 'Mes(es)'),
+        ('h', 'Hora(s)'),
+        ('d', 'Dia(s)'),
+        ('s', 'Semana(s)'),
+        ('m', 'Mes(es)'),
     )
-    #Solo pueden ser dos (1,2)
-    '''
-    UNIDADES_DE_MEDIDA_DOSIS = (
-    (1,'got'	'gota'),
-    (2,'mgota / µgota',	'microgota'),
-    (3,'L',	'litro'),
-    (4,'mL',	'mililitro'),
-    (5,'µL',	'microlitro'),
-    (6,'cc / cm³',	'centímetro cúbico'),
-    (7,'fl oz',	'onza líquida'),
-    (8,'cdita',	'cucharadita'),
-    (9,'cda',	'cucharada'),
-    (10,'Kg',	'kilogramo'),
-    (11,'g',	'gramo'),
-    (12,'mg',	'miligramo'),
-    (13,'oz',	'onza'),
-    (14,'disparos'	,'disparos'),
-    (15,'capsulas',	'cápsulas'),
-    )
-    '''
+   
     UNIDADES_DE_MEDIDA_DOSIS = (
         ('got',	'gota'),
         ('mgota / µgota', 'microgota'),
@@ -200,14 +195,19 @@ class Dosis(models.Model):
         ('capsulas','cápsulas'),
     )
     id_dosis= models.AutoField(primary_key=True)
-    periodo_dosis=models.IntegerField(null=False,blank=False)
-    unidad_periodo_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False)
-    frecuencia_dosis=models.IntegerField(null=False,blank=False)#fields.E120
-    unidad_frecuencia_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False)
-    cantidad_dosis=models.DecimalField(decimal_places=2,max_digits=5,null=False,blank=False)
-    unidad_de_medida_dosis=models.CharField(choices=UNIDADES_DE_MEDIDA_DOSIS,max_length=17,null=False,blank=False)
-    medicamento=models.OneToOneField(Medicamento,on_delete=models.DO_NOTHING,null=False, blank=False)
+    periodo_dosis=models.IntegerField(null=False,blank=False,default=7,validators=[MinValueValidator(1)])
+    unidad_periodo_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False,default=OPCIONES_TIEMPO[1][0])
+    frecuencia_dosis=models.IntegerField(null=False,blank=False,default=8,validators=[MinValueValidator(1)])
+    unidad_frecuencia_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False,default=OPCIONES_TIEMPO[0][0])
+    cantidad_dosis=models.DecimalField(decimal_places=2,max_digits=5,null=False,blank=False,default=1,validators=[MinValueValidator(1)])
+    unidad_de_medida_dosis=models.CharField(choices=UNIDADES_DE_MEDIDA_DOSIS,max_length=17,null=False,blank=False,default=UNIDADES_DE_MEDIDA_DOSIS[14][0])
+    medicamento=models.ForeignKey(Medicamento,on_delete=models.DO_NOTHING,null=False, blank=False)
     receta_medica=models.ForeignKey(RecetaMedica,on_delete=models.DO_NOTHING,null=False, blank=False)
+    class Meta:
+        unique_together = (('medicamento', 'receta_medica'),)
+    def __str__(self):
+        return str(self.id_dosis)+" - Medicamento: "+str(self.medicamento.id_medicamento)+" - Consulta: "+str(self.receta_medica.Consulta.id_consulta)
+
 
 class BrindaConsulta(models.Model):
     OPCIONES_TURNO=(
@@ -221,7 +221,7 @@ class BrindaConsulta(models.Model):
 
 class ConstanciaMedica(models.Model):
     id_constancia_medica= models.AutoField(primary_key=True)
-    #consulta= models.ForeignKey(Consulta, models.DO_NOTHING, blank=False, null=False)
+    consulta= models.ForeignKey('Consulta', models.DO_NOTHING, blank=False, null=False)
     fecha_de_emision=models.DateField(default=datetime.now, blank=False, null=False)
     dias_reposo=models.IntegerField(blank=False, null=False)#Los integer no llevan max_length
     diagnostico_constancia=models.CharField(max_length=200, blank=False, null=False)
