@@ -3,6 +3,7 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from datetime import datetime
 from modulo_expediente.models import ContieneConsulta
+from channels.exceptions import StopConsumer
 class ColaExpedienteConsumer(WebsocketConsumer):
        
         def cola_inicial(self):
@@ -97,4 +98,6 @@ class ColaExpedienteConsumer(WebsocketConsumer):
                         self.room_group_name,
                         {'type':'cola_expediente'}# aqui se especifica el handler para enviar este mensaje, para el caso es el metodo cola_expediente
                 )
-       
+        def disconnect(self, code):
+                super().disconnect(code)
+                raise StopConsumer()
