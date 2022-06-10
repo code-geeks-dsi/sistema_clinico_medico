@@ -238,23 +238,28 @@ def generar_pdf(request,id_resultado):
     # actualizando la fase del resultado
     esperaExamen.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[3][0]
     esperaExamen.save()
-
+    #consultando datos del paciente
     idExpediente=esperaExamen.expediente_id
     expediente=Expediente.objects.get(id_expediente=idExpediente)
     idpaciente=expediente.id_paciente_id
     paciente=Paciente.objects.get(id_paciente=idpaciente)
+    edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+    #consultando datos del examen
     resultado=Resultado.objects.get(id_resultado=id_resultado)
     idexamen=resultado.examen_laboratorio_id
     examenlab=ExamenLaboratorio.objects.get(id_examen_laboratorio=idexamen)
     fecha=resultado.fecha_hora_elaboracion_de_reporte
+    #Consultando datos del encargado de emitir examen
     id_lic=resultado.lic_laboratorio_id
     licdeLab=LicLaboratorioClinico.objects.get(id_lic_laboratorio=id_lic)
     codigo_empleado=licdeLab.empleado_id
     empleado=Empleado.objects.get(codigo_empleado=codigo_empleado)
-    edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+    #Consultando resultados
     contieneValor=ContieneValor.objects.filter(resultado_id=id_resultado)
+    parametros=ContieneValor.objects.filter(resultado_id=id_resultado).values('parametro').distinct()
+    referencias=RangoDeReferencia.objects.filter(parametro__in=parametros)
     
-    data={'contieneValor':contieneValor, 'paciente':paciente,'edad':edad,'fecha':fecha,'empleado':empleado,'examenlab':examenlab}
+    data={'contieneValor':contieneValor, 'paciente':paciente,'edad':edad,'fecha':fecha,'empleado':empleado,'examenlab':examenlab,'referencias':referencias}
     #puede recibir la info como diccionario
     html_string = render_to_string('ResultadosDeLaboratorio.html',data)
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
