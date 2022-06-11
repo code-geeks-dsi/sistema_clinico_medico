@@ -204,8 +204,10 @@
       //aqui el codigo que se ejecutara cuando se redimencione la ventana
         if ($(window).width()<1000){
           reducir();
-        }else if(($(window).width()<500)){
+        }else if(($(window).width()<700 and $(window).width()<500)){
           ocultar();
+        }else if(($(window).width()<500)){
+
         }
         else{
           mostrar();
