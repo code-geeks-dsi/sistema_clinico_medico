@@ -50,24 +50,19 @@
           <div class="table-responsive">
             <table class="table table-bordered text-center bg-white">
                 <thead class="table-secondary">
-                  <tr>
-                    
-                    
+                  <tr>           
                     <th scope="col">Numero Cola</th>
                     <th scope="col">Nombre</th>
                     <th scope="col">Apellidos</th>
-
                     <th scope="col">Fase</th>
-
-
                     <th scope="col">Fecha</th>
- 
- 
                     <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody id="tabla_cola">
-                  
+                  <tr>
+                    <td colspan="100%">Resultado de Busqueda</td>
+                  </tr>
                 </tbody>
             </table>
           </div>
@@ -144,39 +139,7 @@
     let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
     let socket_url=`${ws_scheme}://${window.location.host}/ws/expediente/cola/`;
     const colaExpedienteSocket=new WebSocket(socket_url);
-    colaExpedienteSocket.onmessage=(message)=>{
-      let data=JSON.parse(message.data);
-      let elemento;
-      let icon;
-      let modal="";
-      //limpia la tabla de resultados
-      tablaCola.innerHTML=null;
-      //si no hay resultados muestra un mensaje de que no hay resultados
-      if (data.length==0){
-        elemento='<tr><td colspan="100%">No hay pacientes en espera</td></tr>';
-        tablaCola.insertAdjacentHTML("beforeend", elemento);
-      }else{
-        //llenado de tabla
-        data.map((x)=>{
-        elemento='<tr>';
-        //necesito el id_signos
-        id_consulta=x.id_consulta;
-        delete x.id_consulta;
-        for (const property in x) {
-            elemento = elemento+'<td valign="middle">'+`${x[property]}`+'</td>';
-        }
-        click="";
-        icon = "more_vert";
-        elemento=elemento+`<td>
-          <a role="button"   class="btn btn-outline-primary" href="/expediente/consulta/${id_consulta}">
-          <div class="material-symbols-outlined">edit_note</div>
-          <div>Abrir Consulta</div> 
-          </a></td>`;
-        elemento=elemento+'</tr>';                    
-        tablaCola.insertAdjacentHTML("beforeend", elemento);
-        });
-      }
-    }
+
     //event listeners para buscar pacientes o filtrar consultas
     document.getElementById(id_component).addEventListener('keypress',(e)=>{
       if (e.key === 'Enter') {
