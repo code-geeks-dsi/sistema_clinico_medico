@@ -23,9 +23,11 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
 from django.utils.timezone import now
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 # Templete Sala de Espera laboratorio
+@login_required(login_url='/login/')  
 def sala_laboratorio(request):
     if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
         categorias= Categoria.objects.all()
@@ -286,18 +288,19 @@ def generar_pdf(request,id_resultado):
         response.write(output.read())
     return response
 
+@login_required(login_url='/login/')   
 def inicio(request):
     if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
         return render(request,"laboratorio/laboratorio.html")
     else:
         return render(request,"Control/error403.html")
-
+@login_required(login_url='/login/')   
 def examenes_pendientes(request):
     if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
         return render(request,"laboratorio/examenes_pendientes.html")
     else:
         return render(request,"Control/error403.html")
-
+@login_required(login_url='/login/')   
 def bitacora_templete(request):
     if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
         return render(request,"laboratorio/bitacora.html")
