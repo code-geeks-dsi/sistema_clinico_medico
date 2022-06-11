@@ -27,7 +27,10 @@ se coloque en modo producción.
 
 #Login
 def vista_iniciarsesion(request):
-    return render(request,"login.html")
+    data={'mensaje':"",
+          'type':'',
+        }
+    return render(request,"login.html",data)
 
 def cerrar_sesion(request):
     logout(request)
