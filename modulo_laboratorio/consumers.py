@@ -2,7 +2,7 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from datetime import datetime
-from modulo_laboratorio.models import EsperaExamen
+from .models import EsperaExamen
 from django.urls import reverse
 from channels.exceptions import StopConsumer
 
