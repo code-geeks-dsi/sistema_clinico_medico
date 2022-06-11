@@ -463,3 +463,9 @@ def eliminar_dosis(request, id_dosis):
                 'data':'Acceso denegado'
             }
     return JsonResponse(response, safe=False)
+
+def buscar_expediente(request):
+    if request.user.roles.codigo_rol=='ROL_DOCTOR':
+        return render(request,"expediente/buscar_expediente.html")
+    else:
+        return render(request,"Control/error403.html")
