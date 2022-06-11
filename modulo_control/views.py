@@ -117,7 +117,7 @@ def registrar_empleado(request):
             direccion = request.POST['direccion_empleado']
             fecha_nacimiento = request.POST['fecha_nacimiento']
             sexo_empleado = request.POST['sexo_empleado']
-            rol_empleado = request.user.roles.codigo_rol
+            rol_empleado = request.POST['rol_empleado']
 
             if nombres != "" and apellidos != "" and email != "" and password != "" and fecha_nacimiento != "" and direccion != "" and sexo_empleado != "" and rol_empleado != "":
                 if (len(password)>5):
@@ -181,7 +181,7 @@ def editar_empleado(request):
             direccion_empleado = request.POST['direccion_empleado']
             fecha_nacimiento = request.POST['fecha_nacimiento']
             sexo_empleado = request.POST['sexo_empleado']
-            rol_empleado = request.user.roles.codigo_rol
+            rol_empleado = request.POST['rol_empleado']
             is_active = request.POST['es_activo']
             cod_empleado=request.POST['cod_empleado']
             #En esta vista no se editaran los datos de inicio de sesión del empleado
