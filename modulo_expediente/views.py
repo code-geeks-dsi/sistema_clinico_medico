@@ -92,7 +92,6 @@ def agregar_cola(request, id_paciente):
         consulta.signos_vitales_id=signosvitales.id_signos_vitales
         consulta.save()
         #receta medica
-        print("SERa la receta?")
         receta=RecetaMedica()
         receta.Consulta=consulta
         receta.save()
@@ -173,7 +172,7 @@ def  get_cola(request):
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
             diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
-            diccionario["fecha_de_cola"]= fila.fecha_de_cola
+            diccionario["fecha_de_cola"]= fila.fecha_de_cola.strftime("%d/%b/%Y")
             lista.append(diccionario)
             del diccionario
     return JsonResponse( lista, safe=False)
