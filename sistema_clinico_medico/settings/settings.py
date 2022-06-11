@@ -3,8 +3,6 @@ import os
 import environ
 env = environ.Env()
 environ.Env.read_env()
-import django
-django.setup()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
