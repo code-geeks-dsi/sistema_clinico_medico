@@ -2,7 +2,7 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from datetime import datetime
-from modulo_expediente.models import ContieneConsulta
+from .models import ContieneConsulta
 from channels.exceptions import StopConsumer
 class ColaExpedienteConsumer(WebsocketConsumer):
        

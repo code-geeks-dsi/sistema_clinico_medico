@@ -1,10 +1,6 @@
-from webbrowser import get
-from django import views
-from django.contrib import admin
 from django.urls import path
-from modulo_expediente.views import agregar_cola
-from modulo_laboratorio.views import agregar_examen_cola, cambiar_fase_secretaria, cambiar_fase_laboratorio,get_cola_examenes, sala_laboratorio
-from modulo_laboratorio.views import get_categoria_examen,elaborar_resultados_examen, generar_pdf, inicio, examenes_pendientes, bitacora_templete
+from .views import agregar_examen_cola, cambiar_fase_secretaria, cambiar_fase_laboratorio,get_cola_examenes, sala_laboratorio
+from .views import get_categoria_examen,elaborar_resultados_examen, generar_pdf, inicio, examenes_pendientes, bitacora_templete
 
 urlpatterns = [
     path('sala/', sala_laboratorio, name='sala_laboratorio'),
