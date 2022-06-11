@@ -284,12 +284,12 @@
         for (const property in x) {
             elemento = elemento+'<td valign="middle">'+`${x[property]}`+'</td>';
         }
-        {% if rol == ROL_ENFERMERA %}
+        {% if request.user.roles.codigo_rol == "ROL_ENFERMERA" %}
         icon="monitor_heart";
         modal="data-bs-toggle='modal' data-bs-target='#agregarSignosVitalesModal'";
         strfuncion="modificar_btn_editar_signos("+id_consulta+");";
         click="onclick='"+strfuncion+"';";
-
+        elemento=elemento+'<td><div class="material-symbols-outlined btn" '+click+' '+modal+' >'+icon+'</div></td>';
         {% else %}
         click="";
         icon = "more_vert";
@@ -300,7 +300,7 @@
           <div class="material-symbols-outlined">edit_note</div>
           <div>Abrir Consulta</div> 
           </a></td>`;
-        // {% else %}
+        {% else %}
         // elemento=elemento+'<td><div class="material-symbols-outlined btn" '+click+' '+modal+' >'+icon+'</div></td>';
         {% endif %}
         elemento=elemento+'</tr>';                    
