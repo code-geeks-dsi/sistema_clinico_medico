@@ -302,8 +302,8 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Agregar Paciente a Cola</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <h5 class="modal-title">Buscar Medicamento</h5>
+                <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
             </div>
             <div class="modal-body">
                 <div class="table-responsive" id="tabla_busqueda">
@@ -340,6 +340,11 @@
     let id_receta_medica={{id_receta}};
     
     $('#load').hide();
+
+    //Cerrar modal de medicamentos
+    $('#cerar_modal_busqueda_medicamento').click(function() {
+        $('#busquedaMedicamentoModal').modal('toggle');
+    });
 
     document.getElementById("btn_agregar_a_receta").addEventListener("click",function(){
         agregarMedicamentoReceta(id_receta_medica, url_agregar_a_receta)
