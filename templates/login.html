@@ -106,5 +106,9 @@
 
     <script src="{% static 'js/toastr.min.js' %}"></script>
     <script src="{% static 'js/sistemaClinico.js' %}"></script>
+
+    <script>
+    toastr[ '{{ data.type }}' ]( '{{ mensaje }}' );
+    </script>
   </body>
 </html>

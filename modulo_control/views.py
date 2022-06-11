@@ -54,8 +54,6 @@ def logearse(request):
                     return redirect('sala_consulta')
                 elif request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
                     return redirect('inicio_lab')
-
-                
             else:
                 mensaje="usuario/contraseña no válido"
         else:
@@ -67,14 +65,16 @@ def logearse(request):
                     login(request, user)
                     mensaje="Estas logeado"
                 else:
-                    mensaje="password incorrecta"
+                    mensaje="usuario/contraseña no válido"
             except:
-                mensaje="Empleado o correo incorrectos"
+                mensaje="usuario/contraseña no válido"
     else:
         mensaje="Los datos no se enviaron de forma segura"
     
-    data={'Mensaje':mensaje}
-    return JsonResponse(data)
+    data={'mensaje':mensaje,
+          'type':'warning',
+        }
+    return render(request,"login.html",data)
 
     
 
