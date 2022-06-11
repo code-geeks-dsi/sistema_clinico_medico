@@ -59,11 +59,15 @@
                                         {% if r.descripcion  %}
                                             {{r.descripcion}}
                                         {% endif %}
-                                        {% if r.valor_minimo %}
-                                            {{r.valor_minimo}}
-                                        {% endif %}
-                                        {% if r.valor_maximo %}
-                                            {{r.valor_maximo}}
+                                        {% if r.valor_minimo and r.valor_maximo %}
+                                            {{r.valor_minimo}} - {{r.valor_maximo}}
+                                        {% else %}
+                                            {% if r.valor_minimo %}
+                                                 Mayor de&nbsp;{{r.valor_minimo}}
+                                            {% endif %}
+                                            {% if r.valor_maximo %}
+                                                Menor de&nbsp;{{r.valor_maximo}}
+                                            {% endif %}
                                         {% endif %}
                                         {% if r.unidad %}
                                             {{r.unidad}}
