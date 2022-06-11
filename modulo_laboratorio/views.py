@@ -186,16 +186,22 @@ def elaborar_resultados_examen(request,id_resultado):
         elif request.method=='POST':
             
             if formset.is_valid():
-                resultado.fecha_hora_elaboracion_de_reporte=datetime.now()
-                resultado.save()
-                for i in range(cantidad_parametros):
-                    dato=request.POST.get('form-'+str(i)+'-dato')
-                    obj, created=ContieneValor.objects.update_or_create(parametro=parametros[i],resultado=resultado,defaults={'dato':dato})
-                    
-                response={
-                    'type':'success',
-                    'data':'Guardado!'
-                }
+                try:
+                    resultado.fecha_hora_elaboracion_de_reporte=datetime.now()
+                    resultado.save()
+                    for i in range(cantidad_parametros):
+                        dato=request.POST.get('form-'+str(i)+'-dato')
+                        obj, created=ContieneValor.objects.update_or_create(parametro=parametros[i],resultado=resultado,defaults={'dato':dato})
+                        
+                    response={
+                        'type':'success',
+                        'data':'Guardado!'
+                    }
+                except:
+                    response={
+                        'type':'warning',
+                        'data':"Datos no validos!"
+                    }
             else:
                 response={
                     'type':'warning',
