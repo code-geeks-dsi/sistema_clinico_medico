@@ -20,6 +20,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sistema_clinico_medico.settings
 
 application = ProtocolTypeRouter({
         'http':get_asgi_application(),
+        'https':get_asgi_application(),
         'websocket':AuthMiddlewareStack(
                 URLRouter([
                         re_path(r'ws/laboratorio/cola/',ColaLaboratorioConsumer.as_asgi()),

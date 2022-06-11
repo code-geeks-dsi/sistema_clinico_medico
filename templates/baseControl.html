@@ -53,6 +53,18 @@
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">medical_information</span>
                   <div class="px-2 txt_link" id="txt_link">
+                    Sala de Espera
+                  </div>
+                </div>
+              </a>
+            </li>
+            {% endif %}
+            {% if request.user.roles.codigo_rol == "ROL_DOCTOR" %}
+            <li>
+              <a href="{% url 'buscar_expediente' %}" class="nav-link text-white" id="side_buscar_expediente">
+                <div class="d-flex align-items-start">
+                  <span class="material-symbols-outlined">content_paste</span>
+                  <div class="px-2 txt_link" id="txt_link">
                     Expediente
                   </div>
                 </div>

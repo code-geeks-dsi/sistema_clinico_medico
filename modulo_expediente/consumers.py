@@ -58,7 +58,7 @@ class ColaExpedienteConsumer(WebsocketConsumer):
                                 diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
                                 diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
                                 diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
-                                diccionario["fecha_de_cola"]= str(fila.fecha_de_cola)
+                                diccionario["fecha_de_cola"]= fila.fecha_de_cola.strftime("%d/%b/%Y")
                                 lista.append(diccionario)
                                 
                 elif (rol=='ROL_ENFERMERA'):
