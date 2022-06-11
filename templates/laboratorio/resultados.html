@@ -29,12 +29,22 @@
                                 <div class="col-6 col-md-2">
                                         <div class="pt-2 fw-bold">
                                                 <p>Edad: </p>
-                                                <p>Email: </p>
+                                                <p>Sexo: </p>
                                         </div>
                                 </div>
                                 <div class="col-6 col-md-4">
                                         <div class="pt-2">
                                                 <p>{{ edad.years }} años</p>
+                                                <p>{{ paciente.get_sexo_paciente_display }}</p>
+                                        </div>
+                                </div>
+                                <div class="col-6 col-md-2">
+                                        <div class="pt-2 fw-bold">
+                                                <p>Email: </p>
+                                        </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                        <div class="pt-2">
                                                 <p>{{ paciente.email_paciente }}</p>
                                         </div>
                                 </div>
