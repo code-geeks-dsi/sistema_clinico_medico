@@ -192,56 +192,62 @@
     
     {% endblock %}
     <script>
-      let letras_ocultas=0;
-      let side_oculto=0;
+      let letras_ocultas="0";
+      //side_oculto = 0 (El sidebar se muestra)
+      //side_oculto = 1 (el sidebar no se mestra)
+      let side_oculto="0";
       reducir();
 
       if ($(window).width()<500){
           ocultar();
         }
 
-      $(window).resize(function(){
-      //aqui el codigo que se ejecutara cuando se redimencione la ventana
-        if ($(window).width()<1000){
-          reducir();
-        }else if(($(window).width()<500)){
-          ocultar();
-        }
-        else{
-          mostrar();
-        }
-      })
 
       function ocultar(){
         $( "#side_bar_base" ).addClass( "d-none" );
         $( "#divider_side" ).addClass( "d-none" );
-    }
-    function mostrar(){
-        $( "#side_bar_base").removeClass( "d-none" );
-        $( "#divider_side" ).removeClass( "d-none" );
-    }
-    function reducir(){
-      if (letras_ocultas==0){
-        if(($(window).width()<500)){
-          if(side_oculto==0){
-            mostrar();
-            $( ".txt_link" ).hide();
-            side_oculto=1;
+        side_oculto="1";
+        letras_ocultas="1";
+      }
+      function mostrar(){
+          $( "#side_bar_base").removeClass( "d-none" );
+          $( "#divider_side" ).removeClass( "d-none" );
+          side_oculto="0";
+      }
+      function reducir(){
+        console.log("sidebar "+side_oculto);
+        console.log("letras "+ letras_ocultas);
+        //Si la pantalla es menor a 600 pixeles y el side esta oculto
+        if(side_oculto=="0"){
+          if ($(window).width()<600){
+            //Si el side esta visible
+            if (side_oculto=="0"){
+              ocultar();
+            }
+            //Si el side esta oculto
+            else{
+              mostrar();
+            }
           }
           else{
-            ocultar();
-            side_oculto=0;
+            //Si solo se ven los iconos
+            if (letras_ocultas=="0"){
+              $( ".txt_link" ).hide();
+              letras_ocultas=1;
+              }
+            //Si se ve el texto
+            else{
+              $( ".txt_link" ).show();
+              letras_ocultas="0";
+            }
           }
-        }else{
-        $( ".txt_link" ).hide();
-        letras_ocultas=1;
+        }else{//Si el sidebar esta oculto
+            mostrar();
+            $( ".txt_link" ).hide();
         }
+        console.log("sidebar "+side_oculto);
+        console.log("letras "+ letras_ocultas);
       }
-      else{
-        $( ".txt_link" ).show();
-        letras_ocultas=0;
-      }
-    }
     </script>
   </body>
 </html>
