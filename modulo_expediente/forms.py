@@ -71,7 +71,7 @@ class IngresoMedicamentos(ModelForm):
               } 
             ),
             'unidad_medicamento': Select(
-               attrs={'class': 'form-control'
+               attrs={'class': 'form-select'
               } 
             ),
         }

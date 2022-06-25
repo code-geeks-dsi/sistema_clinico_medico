@@ -70,6 +70,16 @@
                 </div>
               </a>
             </li>
+            <li>
+              <a href="{% url 'agregar_nuevo_medicamento' %}" class="nav-link text-white" id="side_nuevo_medicamento">
+                <div class="d-flex align-items-start">
+                  <span class="material-symbols-outlined">medication_liquid</span>
+                  <div class="px-2 txt_link" id="txt_link">
+                    Nuevo Medicamento
+                  </div>
+                </div>
+              </a>
+            </li>
             {% endif %}
             {% if request.user.roles.codigo_rol == "ROL_SECRETARIA" %}
             <li>             
