@@ -85,7 +85,7 @@
                                         </div>
                                         <div class="col-6">
                                                 <div class="pt-3 text-end">
-                                                        <button class="btn btn-outline-success" type="submit">Guardar</button>
+                                                        <button class="btn btn-outline-success" type="submit" id="btn_guardar_resultado">Guardar</button>
                                                 </div>
                                         </div>
                                 </div>
@@ -98,17 +98,25 @@
 {% block js %}
 <!--Js de la vista-->
 <script>
-        $('#load').hide();
-        $("form").on("submit", function (event) {
-                $('#load').show();
-                event.preventDefault();
+    //Recueperando la fase de examen
+    let fase_examen = "{{fase}}"
 
-                var formValues = $(this).serialize();
+    $('#load').hide();
+    $("form").on("submit", function (event) {
+        $('#load').show();
+        event.preventDefault();
+        var formValues = $(this).serialize();
 
-                $.post('{{request.path}}', formValues, function (data) {
-                        $('#load').hide();
-                        toastr[data.type](`${data.data}`);
-                });
+        $.post('{{request.path}}', formValues, function (data) {
+            $('#load').hide();
+            toastr[data.type](`${data.data}`);
         });
+    });
+
+    if(fase_examen == "3" || fase_examen =="4" || fase_examen=="5"){
+        console.log("Restringido");
+        $('.form-control').attr("disabled", true);
+        $('#btn_guardar_resultado').hide();
+    }  
 </script>
 {% endblock %}

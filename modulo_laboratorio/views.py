@@ -142,15 +142,14 @@ def get_cola_examenes(request):
     return JsonResponse( response , safe=False)
 
 def elaborar_resultados_examen(request,id_resultado):
-        data={}
+        data={} 
         lic_laboratorio=LicLaboratorioClinico.objects.get(empleado=request.user)
         resultado=Resultado.objects.get(id_resultado=id_resultado)
         resultado.lic_laboratorio=lic_laboratorio
         resultado.save()
         # verificando si los resultados han sido entregados
         espera_examen=EsperaExamen.objects.get(resultado=resultado)
-        if espera_examen.fase_examenes_lab==EsperaExamen.OPCIONES_FASE[3][0]:
-            readonly=True
+
         examen=resultado.examen_laboratorio
         valores=ContieneValor.objects.filter(resultado=resultado)
         parametros=Parametro.objects.filter(examen_de_laboratorio=examen)
@@ -182,12 +181,22 @@ def elaborar_resultados_examen(request,id_resultado):
                 'nombre_examen':examen.nombre_examen,
                 'paciente':paciente,
                 'edad':edad,
-                'cantidad_valores':len(valores)
+                'cantidad_valores':len(valores),
+                'fase':espera_examen.fase_examenes_lab
             }
             return render(request,'laboratorio/resultados.html',response)
         elif request.method=='POST':
-            
-            if formset.is_valid():
+
+            print(espera_examen.fase_examenes_lab)
+            #Si el examen esta listo
+            if espera_examen.fase_examenes_lab=='3' or espera_examen.fase_examenes_lab=='4' or espera_examen.fase_examenes_lab=='5':
+                response={
+                    'type':'warning',
+                    'data':'No se pueden moficiar los examenes de laboratorio'
+                }
+            #Los examenes listos no se pueden mdificar    
+            #Fin de la validación     
+            elif formset.is_valid():
                 try:
                     resultado.fecha_hora_elaboracion_de_reporte=datetime.now()
                     resultado.save()
