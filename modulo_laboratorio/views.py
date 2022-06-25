@@ -23,9 +23,11 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
 from django.utils.timezone import now
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 # Templete Sala de Espera laboratorio
+@login_required(login_url='/login/')  
 def sala_laboratorio(request):
     if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
         categorias= Categoria.objects.all()
@@ -101,15 +103,20 @@ def get_cola_examenes(request):
             "numero_cola_laboratorio":"",
             "nombre":"",
             "apellidos":"",
+            "sexo":"",
+            "edad":"",
             "examen":"",
             "fase_examenes_lab":"",
             "fecha":"",
             "consumo_laboratorio":"",
             "estado_pago_laboratorio":"",
         }
+        edad=relativedelta(datetime.now(), fila.expediente.id_paciente.fecha_nacimiento_paciente).years 
         diccionario["numero_cola_laboratorio"]= fila.numero_cola_laboratorio
         diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
         diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+        diccionario["sexo"]=fila.expediente.id_paciente.get_sexo_paciente_display()
+        diccionario["edad"]= edad 
         diccionario["examen"]=fila.resultado.examen_laboratorio.nombre_examen
         diccionario["fase_examenes_lab"]= fila.get_fase_examenes_lab_display()
         diccionario["fecha"]=fila.fecha.strftime("%d/%b/%Y")
@@ -181,16 +188,22 @@ def elaborar_resultados_examen(request,id_resultado):
         elif request.method=='POST':
             
             if formset.is_valid():
-                resultado.fecha_hora_elaboracion_de_reporte=datetime.now()
-                resultado.save()
-                for i in range(cantidad_parametros):
-                    dato=request.POST.get('form-'+str(i)+'-dato')
-                    obj, created=ContieneValor.objects.update_or_create(parametro=parametros[i],resultado=resultado,defaults={'dato':dato})
-                    
-                response={
-                    'type':'success',
-                    'data':'Guardado!'
-                }
+                try:
+                    resultado.fecha_hora_elaboracion_de_reporte=datetime.now()
+                    resultado.save()
+                    for i in range(cantidad_parametros):
+                        dato=request.POST.get('form-'+str(i)+'-dato')
+                        obj, created=ContieneValor.objects.update_or_create(parametro=parametros[i],resultado=resultado,defaults={'dato':dato})
+                        
+                    response={
+                        'type':'success',
+                        'data':'Guardado!'
+                    }
+                except:
+                    response={
+                        'type':'warning',
+                        'data':"Datos no validos!"
+                    }
             else:
                 response={
                     'type':'warning',
@@ -275,20 +288,21 @@ def generar_pdf(request,id_resultado):
         response.write(output.read())
     return response
 
+@login_required(login_url='/login/')   
 def inicio(request):
-    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
         return render(request,"laboratorio/laboratorio.html")
     else:
         return render(request,"Control/error403.html")
-
+@login_required(login_url='/login/')   
 def examenes_pendientes(request):
-    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
         return render(request,"laboratorio/examenes_pendientes.html")
     else:
         return render(request,"Control/error403.html")
-
+@login_required(login_url='/login/')   
 def bitacora_templete(request):
-    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
         return render(request,"laboratorio/bitacora.html")
     else:
         return render(request,"Control/error403.html")

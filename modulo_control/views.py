@@ -27,7 +27,10 @@ se coloque en modo producción.
 
 #Login
 def vista_iniciarsesion(request):
-    return render(request,"login.html")
+    data={'mensaje':"",
+          'type':'',
+        }
+    return render(request,"login.html",data)
 
 def cerrar_sesion(request):
     logout(request)
@@ -54,8 +57,6 @@ def logearse(request):
                     return redirect('sala_consulta')
                 elif request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
                     return redirect('inicio_lab')
-
-                
             else:
                 mensaje="usuario/contraseña no válido"
         else:
@@ -67,14 +68,16 @@ def logearse(request):
                     login(request, user)
                     mensaje="Estas logeado"
                 else:
-                    mensaje="password incorrecta"
+                    mensaje="usuario/contraseña no válido"
             except:
-                mensaje="Empleado o correo incorrectos"
+                mensaje="usuario/contraseña no válido"
     else:
         mensaje="Los datos no se enviaron de forma segura"
     
-    data={'Mensaje':mensaje}
-    return JsonResponse(data)
+    data={'mensaje':mensaje,
+          'type':'warning',
+        }
+    return render(request,"login.html",data)
 
     
 
@@ -114,7 +117,7 @@ def registrar_empleado(request):
             direccion = request.POST['direccion_empleado']
             fecha_nacimiento = request.POST['fecha_nacimiento']
             sexo_empleado = request.POST['sexo_empleado']
-            rol_empleado = request.user.roles.codigo_rol
+            rol_empleado = request.POST['rol_empleado']
 
             if nombres != "" and apellidos != "" and email != "" and password != "" and fecha_nacimiento != "" and direccion != "" and sexo_empleado != "" and rol_empleado != "":
                 if (len(password)>5):
@@ -178,7 +181,7 @@ def editar_empleado(request):
             direccion_empleado = request.POST['direccion_empleado']
             fecha_nacimiento = request.POST['fecha_nacimiento']
             sexo_empleado = request.POST['sexo_empleado']
-            rol_empleado = request.user.roles.codigo_rol
+            rol_empleado = request.POST['rol_empleado']
             is_active = request.POST['es_activo']
             cod_empleado=request.POST['cod_empleado']
             #En esta vista no se editaran los datos de inicio de sesión del empleado
@@ -254,7 +257,7 @@ def vista_adminitracion_empleados(request):
 def lista_empleados(request):
     if request.user.roles.codigo_rol == 'ROL_ADMIN':
         empleados = Empleado.objects.all().order_by('-roles').reverse()
-        print(empleados[0].roles)
+        #print(empleados[0].roles)
         serializer = EmpleadoSerializer(empleados, many=True)
         return JsonResponse(serializer.data, safe=False)
     else:

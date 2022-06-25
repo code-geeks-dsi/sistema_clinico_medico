@@ -73,7 +73,9 @@
                     
                     <th scope="col">Numero Cola</th>
                     <th scope="col">Nombre</th>
-                    <th scope="col">Apellidos</th>  
+                    <th scope="col">Apellidos</th>
+                    <th scope="col">Sexo</th> 
+                    <th scope="col">Edad</th>  
                     <th scope="col">Examen</th>            
                     <th scope="col">Fase</th>                                        
                     <th scope="col">Fecha</th>    
@@ -249,6 +251,7 @@
         {% endif %}
       }else{
         data.data.forEach(examenItem => {
+          console.log(examenItem);
         //Recorre los elemntos del objeto
         let elemento='<tr>';
         const nodeFila = document.createElement("tr");

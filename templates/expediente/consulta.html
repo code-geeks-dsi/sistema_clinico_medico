@@ -57,22 +57,48 @@
                     <h5 class="card-title text-secondary">Signos Vitales</h5>
                     <hr class="dropdown-divider">
                     <div class="row">
-                        <div class="col-6">
-                            <div class="pt-2 fw-bold">
-                                <p>Temperatura: </p>
-                                <p>Frecuencia Cardiaca: </p>
-                                <p>Peso: </p>
-                                <p>Presión Arterial: </p>
-                                <p>Saturación Oxigeno: </p>
-                            </div>
-                        </div>
-                        <div class="col-6">
+                        <div class="col-12">
                             <div class="pt-2">
-                                <p>{{ signos_vitales.valor_temperatura }} {{ signos_vitales.unidad_temperatura }}</p>
-                                <p>{{ signos_vitales.valor_frecuencia_cardiaca }} {{ signos_vitales.unidad_frecuencia_cardiaca }}</p>
-                                <p>{{ signos_vitales.valor_peso }} {{ signos_vitales.unidad_peso }}</p>
-                                <p>{{ signos_vitales.valor_presion_arterial_sistolica }}/{{ signos_vitales.valor_presion_arterial_diastolica }}</p>
-                                <p>{{ signos_vitales.valor_saturacion_oxigeno }} %</p>
+                                <div class="row">
+                                    <div class="col fw-bold">
+                                        <p>Temperatura: </p>
+                                    </div>
+                                    <div class="col">
+                                        <p>{{ signos_vitales.valor_temperatura }} {{ signos_vitales.unidad_temperatura }}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col fw-bold">
+                                        <p>Frecuencia Cardiaca: </p>
+                                    </div>
+                                    <div class="col">
+                                        <p>{{ signos_vitales.valor_frecuencia_cardiaca }} {{ signos_vitales.unidad_frecuencia_cardiaca }}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col fw-bold">
+                                        <p>Peso: </p>
+                                    </div>
+                                    <div class="col">
+                                        <p>{{ signos_vitales.valor_peso }} {{ signos_vitales.unidad_peso }}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col fw-bold">
+                                        <p>Presión Arterial: </p>
+                                    </div>
+                                    <div class="col">
+                                        <p>{{ signos_vitales.valor_presion_arterial_sistolica }}/{{ signos_vitales.valor_presion_arterial_diastolica }}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col fw-bold">
+                                        <p>Saturación Oxigeno: </p>
+                                    </div>
+                                    <div class="col">
+                                        <p>{{ signos_vitales.valor_saturacion_oxigeno }} %</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -302,8 +328,8 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Agregar Paciente a Cola</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <h5 class="modal-title">Buscar Medicamento</h5>
+                <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
             </div>
             <div class="modal-body">
                 <div class="table-responsive" id="tabla_busqueda">
@@ -340,6 +366,11 @@
     let id_receta_medica={{id_receta}};
     
     $('#load').hide();
+
+    //Cerrar modal de medicamentos
+    $('#cerar_modal_busqueda_medicamento').click(function() {
+        $('#busquedaMedicamentoModal').modal('toggle');
+    });
 
     document.getElementById("btn_agregar_a_receta").addEventListener("click",function(){
         agregarMedicamentoReceta(id_receta_medica, url_agregar_a_receta)
