@@ -359,6 +359,8 @@ def editar_consulta(request,id_consulta):
             consulta_form=ConsultaFormulario(request.POST,instance=consulta)
             if consulta_form.is_valid():
                 consulta=consulta_form.save()
+                contiene_consulta.fase_cola_medica = '6'
+                contiene_consulta.save()
                 messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
         else:
             consulta_form=ConsultaFormulario(instance=consulta)
