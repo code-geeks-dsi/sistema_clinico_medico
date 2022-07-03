@@ -470,3 +470,6 @@ def buscar_expediente(request):
         return render(request,"expediente/buscar_expediente.html")
     else:
         return render(request,"Control/error403.html")
+
+def templete_agenda(request):
+    return render(request,"expediente/agenda.html")
