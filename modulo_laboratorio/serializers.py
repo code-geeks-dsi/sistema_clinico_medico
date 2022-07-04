@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from modulo_laboratorio.models import CategoriaExamen
+from .models import CategoriaExamen
 
 class CategoriaExamenSerializer(serializers.ModelSerializer):
     nombre_examen = serializers.CharField(source='examen_laboratorio.nombre_examen')

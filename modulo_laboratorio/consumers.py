@@ -2,8 +2,10 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from datetime import datetime
-from modulo_laboratorio.models import EsperaExamen
+from .models import EsperaExamen
 from django.urls import reverse
+from channels.exceptions import StopConsumer
+from dateutil.relativedelta import relativedelta
 
 class ColaLaboratorioConsumer(WebsocketConsumer):
       
@@ -16,22 +18,26 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                                         fecha__day=fecha_hoy.day).select_related('expediente__id_paciente').order_by('numero_cola_laboratorio')
                 elif (self.scope["user"].roles.codigo_rol=='ROL_LIC_LABORATORIO'):
                                 espera_examen=EsperaExamen.objects.filter(fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente').order_by('numero_cola_laboratorio')                
-                        
-                        
+                     
                 for fila in espera_examen:
                         diccionario={
                         "numero_cola_laboratorio":"",
                         "nombre":"",
                         "apellidos":"",
+                        "sexo":"",
+                        "Edad":"",
                         "examen":"",
                         "fase_examenes_lab":"",
                         "fecha":"",
                         "consumo_laboratorio":"",
                         "estado_pago_laboratorio":"",
                         }
+                        edad=relativedelta(datetime.now(), fila.expediente.id_paciente.fecha_nacimiento_paciente).years 
                         diccionario["numero_cola_laboratorio"]= fila.numero_cola_laboratorio
                         diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
                         diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+                        diccionario["sexo"]=fila.expediente.id_paciente.get_sexo_paciente_display()
+                        diccionario["Edad"]= edad 
                         diccionario["examen"]=fila.resultado.examen_laboratorio.nombre_examen
                         diccionario["fase_examenes_lab"]= fila.get_fase_examenes_lab_display()
                         diccionario["fecha"]=fila.fecha.strftime("%d/%b/%Y")
@@ -74,4 +80,6 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                         self.room_group_name,
                         {'type':'cola_laboratorio'}
                 )
-       
+        def disconnect(self, code):
+                # super().disconnect(code)
+                raise StopConsumer()

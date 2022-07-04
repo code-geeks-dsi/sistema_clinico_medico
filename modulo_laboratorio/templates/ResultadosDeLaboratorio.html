@@ -43,26 +43,53 @@
             <table class="table table-hover">
                 <tr>
                     <th>Examen Solicitado: <br><center>{{examenlab.nombre_examen}}</center> </th>
-                    <th>Resultado</th>
+                    <th><center>Resultado</center></th>
                     <th>Rango de Referencia</th>
                 </tr>
                 {% if contieneValor %}
                 {% for cv in contieneValor %}
                     <tr>
-                        <td>{{ cv.parametro.nombre_parametro }}</td>
-                        <td>{{ cv.dato }}&nbsp;{{ cv.parametro.unidad_parametro }}</td>
+                        <td><center>{{ cv.parametro.nombre_parametro }}</center></td>
+                        <td><center>{{ cv.dato }}&nbsp;{{ cv.parametro.unidad_parametro }}</center></td>
+                        
+                        <td>
+                            {% for r in referencias %}
+                                {% if r.parametro == cv.parametro %}
+                                    
+                                        {% if r.descripcion  %}
+                                            {{r.descripcion}}
+                                        {% endif %}
+                                        {% if r.valor_minimo %}
+                                            {{r.valor_minimo}}
+                                        {% endif %}
+                                        {% if r.valor_maximo %}
+                                            {{r.valor_maximo}}
+                                        {% endif %}
+                                        {% if r.unidad %}
+                                            {{r.unidad}}
+                                        {% endif %}
+                                        {% if r.valor %}
+                                            {{r.valor}}
+                                        {% endif %}
+                                {% endif %}
+                                <br>
+                            {% endfor%}
+                            
+                        </td>            
+                                
                         
                     </tr>
                 {% endfor %}
                 {% endif %}
             </table>
-        </div> 
-        <div class="col">
-            <p class="data-paciente">Nota:</p>
-            <center>
+            <div>
+                <p class="data-paciente">Nota:</p><br>
                 <a href="#" class="data-paciente" >Responsable: {{empleado.nombres}}&nbsp;{{empleado.apellidos}}</a>
-                <a href="#" class="data-paciente">Fecha:{{fecha.date}}</a><br>
-        </div>
+                <a href="#" class="data-paciente">Firma:______________</a><br><br>
+                <center><a href="#" class="data-paciente">Fecha:{{fecha.date}}</a></center>
+            </div>
+        </div> 
+        
 </body>
 </html>
 <style>
@@ -101,13 +128,13 @@
         height:300px;
         background-size:cover;
         position:relative;
-        margin-left: 110px;
+        margin-left: 60px;
         padding-top: 20px;
     }
 
     .data-paciente {
         font-size: 12px;
-        margin: 0 50px;
+        margin: 0 10px;
         line-height: 20px;
         width: max-content;
         text-transform: uppercase;
@@ -119,7 +146,8 @@
         font-size: 10pt;
         font-family: Arial;
         border-collapse: collapse;
-        z-index: 100;   
+        z-index: 100; 
+        margin-top:3px ;
     }        
     .conten table th, td{
         border: 1.5px solid #243F60;

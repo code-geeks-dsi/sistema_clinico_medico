@@ -23,9 +23,11 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
 from django.utils.timezone import now
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 # Templete Sala de Espera laboratorio
+@login_required(login_url='/login/')  
 def sala_laboratorio(request):
     if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
         categorias= Categoria.objects.all()
@@ -101,15 +103,20 @@ def get_cola_examenes(request):
             "numero_cola_laboratorio":"",
             "nombre":"",
             "apellidos":"",
+            "sexo":"",
+            "edad":"",
             "examen":"",
             "fase_examenes_lab":"",
             "fecha":"",
             "consumo_laboratorio":"",
             "estado_pago_laboratorio":"",
         }
+        edad=relativedelta(datetime.now(), fila.expediente.id_paciente.fecha_nacimiento_paciente).years 
         diccionario["numero_cola_laboratorio"]= fila.numero_cola_laboratorio
         diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
         diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
+        diccionario["sexo"]=fila.expediente.id_paciente.get_sexo_paciente_display()
+        diccionario["edad"]= edad 
         diccionario["examen"]=fila.resultado.examen_laboratorio.nombre_examen
         diccionario["fase_examenes_lab"]= fila.get_fase_examenes_lab_display()
         diccionario["fecha"]=fila.fecha.strftime("%d/%b/%Y")
@@ -135,15 +142,14 @@ def get_cola_examenes(request):
     return JsonResponse( response , safe=False)
 
 def elaborar_resultados_examen(request,id_resultado):
-        data={}
+        data={} 
         lic_laboratorio=LicLaboratorioClinico.objects.get(empleado=request.user)
         resultado=Resultado.objects.get(id_resultado=id_resultado)
         resultado.lic_laboratorio=lic_laboratorio
         resultado.save()
         # verificando si los resultados han sido entregados
         espera_examen=EsperaExamen.objects.get(resultado=resultado)
-        if espera_examen.fase_examenes_lab==EsperaExamen.OPCIONES_FASE[3][0]:
-            readonly=True
+
         examen=resultado.examen_laboratorio
         valores=ContieneValor.objects.filter(resultado=resultado)
         parametros=Parametro.objects.filter(examen_de_laboratorio=examen)
@@ -175,22 +181,38 @@ def elaborar_resultados_examen(request,id_resultado):
                 'nombre_examen':examen.nombre_examen,
                 'paciente':paciente,
                 'edad':edad,
-                'cantidad_valores':len(valores)
+                'cantidad_valores':len(valores),
+                'fase':espera_examen.fase_examenes_lab
             }
             return render(request,'laboratorio/resultados.html',response)
         elif request.method=='POST':
-            
-            if formset.is_valid():
-                resultado.fecha_hora_elaboracion_de_reporte=datetime.now()
-                resultado.save()
-                for i in range(cantidad_parametros):
-                    dato=request.POST.get('form-'+str(i)+'-dato')
-                    obj, created=ContieneValor.objects.update_or_create(parametro=parametros[i],resultado=resultado,defaults={'dato':dato})
-                    
+
+            print(espera_examen.fase_examenes_lab)
+            #Si el examen esta listo
+            if espera_examen.fase_examenes_lab=='3' or espera_examen.fase_examenes_lab=='4' or espera_examen.fase_examenes_lab=='5':
                 response={
-                    'type':'success',
-                    'data':'Guardado!'
+                    'type':'warning',
+                    'data':'No se pueden moficiar los examenes de laboratorio'
                 }
+            #Los examenes listos no se pueden mdificar    
+            #Fin de la validación     
+            elif formset.is_valid():
+                try:
+                    resultado.fecha_hora_elaboracion_de_reporte=datetime.now()
+                    resultado.save()
+                    for i in range(cantidad_parametros):
+                        dato=request.POST.get('form-'+str(i)+'-dato')
+                        obj, created=ContieneValor.objects.update_or_create(parametro=parametros[i],resultado=resultado,defaults={'dato':dato})
+                        
+                    response={
+                        'type':'success',
+                        'data':'Guardado!'
+                    }
+                except:
+                    response={
+                        'type':'warning',
+                        'data':"Datos no validos!"
+                    }
             else:
                 response={
                     'type':'warning',
@@ -238,23 +260,28 @@ def generar_pdf(request,id_resultado):
     # actualizando la fase del resultado
     esperaExamen.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[3][0]
     esperaExamen.save()
-
+    #consultando datos del paciente
     idExpediente=esperaExamen.expediente_id
     expediente=Expediente.objects.get(id_expediente=idExpediente)
     idpaciente=expediente.id_paciente_id
     paciente=Paciente.objects.get(id_paciente=idpaciente)
+    edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+    #consultando datos del examen
     resultado=Resultado.objects.get(id_resultado=id_resultado)
     idexamen=resultado.examen_laboratorio_id
     examenlab=ExamenLaboratorio.objects.get(id_examen_laboratorio=idexamen)
     fecha=resultado.fecha_hora_elaboracion_de_reporte
+    #Consultando datos del encargado de emitir examen
     id_lic=resultado.lic_laboratorio_id
     licdeLab=LicLaboratorioClinico.objects.get(id_lic_laboratorio=id_lic)
     codigo_empleado=licdeLab.empleado_id
     empleado=Empleado.objects.get(codigo_empleado=codigo_empleado)
-    edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+    #Consultando resultados
     contieneValor=ContieneValor.objects.filter(resultado_id=id_resultado)
+    parametros=ContieneValor.objects.filter(resultado_id=id_resultado).values('parametro').distinct()
+    referencias=RangoDeReferencia.objects.filter(parametro__in=parametros)
     
-    data={'contieneValor':contieneValor, 'paciente':paciente,'edad':edad,'fecha':fecha,'empleado':empleado,'examenlab':examenlab}
+    data={'contieneValor':contieneValor, 'paciente':paciente,'edad':edad,'fecha':fecha,'empleado':empleado,'examenlab':examenlab,'referencias':referencias}
     #puede recibir la info como diccionario
     html_string = render_to_string('ResultadosDeLaboratorio.html',data)
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
@@ -269,3 +296,22 @@ def generar_pdf(request,id_resultado):
         output = open(output.name, 'rb')
         response.write(output.read())
     return response
+
+@login_required(login_url='/login/')   
+def inicio(request):
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
+        return render(request,"laboratorio/laboratorio.html")
+    else:
+        return render(request,"Control/error403.html")
+@login_required(login_url='/login/')   
+def examenes_pendientes(request):
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
+        return render(request,"laboratorio/examenes_pendientes.html")
+    else:
+        return render(request,"Control/error403.html")
+@login_required(login_url='/login/')   
+def bitacora_templete(request):
+    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
+        return render(request,"laboratorio/bitacora.html")
+    else:
+        return render(request,"Control/error403.html")

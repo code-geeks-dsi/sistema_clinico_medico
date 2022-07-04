@@ -92,7 +92,6 @@ def agregar_cola(request, id_paciente):
         consulta.signos_vitales_id=signosvitales.id_signos_vitales
         consulta.save()
         #receta medica
-        print("SERa la receta?")
         receta=RecetaMedica()
         receta.Consulta=consulta
         receta.save()
@@ -173,7 +172,7 @@ def  get_cola(request):
             diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
             diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
             diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
-            diccionario["fecha_de_cola"]= fila.fecha_de_cola
+            diccionario["fecha_de_cola"]= fila.fecha_de_cola.strftime("%d/%b/%Y")
             lista.append(diccionario)
             del diccionario
     return JsonResponse( lista, safe=False)
@@ -360,6 +359,8 @@ def editar_consulta(request,id_consulta):
             consulta_form=ConsultaFormulario(request.POST,instance=consulta)
             if consulta_form.is_valid():
                 consulta=consulta_form.save()
+                contiene_consulta.fase_cola_medica = '6'
+                contiene_consulta.save()
                 messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
         else:
             consulta_form=ConsultaFormulario(instance=consulta)
@@ -463,3 +464,9 @@ def eliminar_dosis(request, id_dosis):
                 'data':'Acceso denegado'
             }
     return JsonResponse(response, safe=False)
+
+def buscar_expediente(request):
+    if request.user.roles.codigo_rol=='ROL_DOCTOR':
+        return render(request,"expediente/buscar_expediente.html")
+    else:
+        return render(request,"Control/error403.html")

@@ -1,7 +1,5 @@
 
 from dataclasses import fields
-from pyexpat import model
-from tkinter.tix import Select
 from django import forms
 from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
@@ -73,7 +71,7 @@ class IngresoMedicamentos(ModelForm):
               } 
             ),
             'unidad_medicamento': Select(
-               attrs={'class': 'form-control'
+               attrs={'class': 'form-select'
               } 
             ),
         }

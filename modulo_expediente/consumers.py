@@ -2,7 +2,8 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from datetime import datetime
-from modulo_expediente.models import ContieneConsulta
+from .models import ContieneConsulta
+from channels.exceptions import StopConsumer
 class ColaExpedienteConsumer(WebsocketConsumer):
        
         def cola_inicial(self):
@@ -57,7 +58,7 @@ class ColaExpedienteConsumer(WebsocketConsumer):
                                 diccionario["nombre"]=fila.expediente.id_paciente.nombre_paciente
                                 diccionario["apellidos"]=fila.expediente.id_paciente.apellido_paciente
                                 diccionario["fase_cola_medica"]= fila.get_fase_cola_medica_display()
-                                diccionario["fecha_de_cola"]= str(fila.fecha_de_cola)
+                                diccionario["fecha_de_cola"]= fila.fecha_de_cola.strftime("%d/%b/%Y")
                                 lista.append(diccionario)
                                 
                 elif (rol=='ROL_ENFERMERA'):
@@ -97,4 +98,6 @@ class ColaExpedienteConsumer(WebsocketConsumer):
                         self.room_group_name,
                         {'type':'cola_expediente'}# aqui se especifica el handler para enviar este mensaje, para el caso es el metodo cola_expediente
                 )
-       
+        def disconnect(self, code):
+                # super().disconnect(code)
+                raise StopConsumer()
