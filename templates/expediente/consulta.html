@@ -145,7 +145,7 @@
                                         </div>
                                     </div>
                                 </a>
-                                <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta">
+                                <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta" hidden>
                                     <div class="row align-items-center">
                                         <div class="col-2">
                                             <span class="material-symbols-outlined g-0 w-0">
@@ -157,7 +157,7 @@
                                         </div>
                                     </div>
                                 </a>
-                                <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta">
+                                <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta" hidden>
                                     <div class="row align-items-center">
                                         <div class="col-2">
                                             <span class="material-symbols-outlined g-0 w-0">
@@ -188,8 +188,15 @@
                 <div class="modal-body">
                     <div class="container">
                         <!--Sección de busqueda de medicamentos-->
-                    <p class="fw-bold text-secondary">Busqueda de Medicamentos</p>
                     <div class="row">
+                        <div class="col-6">
+                            <p class="fw-bold text-secondary">Busqueda de Medicamentos</p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <a href="{% url 'agregar_nuevo_medicamento' %}" class="btn btn-outline-primary">Registrar Medicamento Nuevo</a>
+                        </div>
+                    </div>
+                    <div class="row pt-2">
                         <div class="col-12">
                             <div class="mb-3">
                                 <div class="input-group">

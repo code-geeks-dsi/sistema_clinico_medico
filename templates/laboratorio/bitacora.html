@@ -54,10 +54,9 @@
                     <th scope="col">Fase</th>                                        
                     <th scope="col">Fecha</th>    
                     <th scope="col">Consumo</th>
-                    <th scope="col">Estado</th>
-                    <th scope="col">Cambiar<br/>Fase</th>     
+                    <th scope="col">Estado</th> 
                     {% if rol == ROL_LIC_LABORATORIO %}               
-                    <th scope="col">Elaborar<br/>Resultado</th>
+                    <th scope="col">Ver<br/>Resultados</th>
                     {% endif %}
                   </tr>
                 </thead>
@@ -159,11 +158,8 @@ function get_cola_examenes(tipo_consulta){
       */
       let nodeColumna = document.createElement("td");
     {% if rol == ROL_LIC_LABORATORIO %}
-      nodeColumna.innerHTML=`<div 
-                            class="material-symbols-outlined btn btn-outline-primary"
-                            onclick="cambiar_fase(${examenItem['id_resultado']},${examenItem['id_expediente']})">done</div>`;
       nodeFila.appendChild(nodeColumna);
-      nodeColumna = document.createElement("td");
+   
       nodeColumna.innerHTML=`<a href="${examenItem['url_resultado']}" target="_blank"><div class="material-symbols-outlined btn btn-outline-primary">open_in_new</div></a>`;
 
     {% elif rol == ROL_SECRETARIA %}
