@@ -259,64 +259,24 @@ def crear_expediente(request):
   
 @csrf_exempt
 def modificar_signosVitales(request, id_signos_vitales):
-    response={
-                'type':'warning',
-                'title':'Modificado',
-                'data':'aun no funciona'
-            }
-    unidad_temperatura=request.POST['unidad_temperatura']
-    unidad_peso=request.POST['unidad_peso']
-    valor_temperatura=request.POST['valor_temperatura']
-    valor_peso=request.POST['valor_peso']
-    valor_arterial_diasolica=request.POST['valor_presion_arterial_diastolica']
-    valor_arterial_sistolica=request.POST['valor_presion_arterial_sistolica']
-    valor_frecuencia_cardiaca=request.POST['valor_frecuencia_cardiaca']
-    valor_saturacion_oxigeno=request.POST['valor_saturacion_oxigeno']
+    datos={
+        "empleado":request.user,
+        "id_signos":int(id_signos_vitales),
+        "unidad_temperatura":request.POST['unidad_temperatura'],
+        "unidad_peso":request.POST['unidad_peso'],
+        "valor_temperatura":request.POST['valor_temperatura'],
+        "valor_peso":request.POST['valor_peso'],
+        "valor_arterial_diasolica":request.POST['valor_presion_arterial_diastolica'],
+        "valor_arterial_sistolica":request.POST['valor_presion_arterial_sistolica'],
+        "valor_frecuencia_cardiaca":request.POST['valor_frecuencia_cardiaca'],
+        "valor_saturacion_oxigeno":request.POST['valor_saturacion_oxigeno'],
+    }
+    response=SignosVitales.objects.modificar_signos_vitales(datos)
+    consulta=Consulta.objects.get(signos_vitales_id=id_signos_vitales)
+    contieneConsulta=ContieneConsulta.objects.get(consulta_id=consulta.id_consulta)
+    contieneConsulta.fase_cola_medica="3"
+    contieneConsulta.save()
 
-    id_signos=int(id_signos_vitales)
-    if unidad_temperatura=="1" or unidad_temperatura == "2": 
-        if unidad_peso == "1" or unidad_peso=="2":
-            #if id_signos_vitales!=0:    
-            try:
-                enfermera= Enfermera.objects.get(empleado=request.user.codigo_empleado)
-                signosvitales=SignosVitales.objects.get(id_signos_vitales=id_signos)
-                if unidad_temperatura=="1":
-                    signosvitales.unidad_temperatura='F'
-                elif unidad_temperatura=="2":
-                    signosvitales.unidad_temperatura='C'
-                if unidad_peso=="1":
-                    signosvitales.unidad_peso='Lbs'
-                elif unidad_peso=="2":
-                    signosvitales.unidad_peso='Kgs'
-                signosvitales.unidad_presion_arterial_diastolica='mmHg'
-                signosvitales.unidad_presion_arterial_sistolica='mmHg'
-                signosvitales.unidad_frecuencia_cardiaca="PPM"
-                signosvitales.unidad_saturacion_oxigeno="%"
-                signosvitales.valor_temperatura=valor_temperatura
-                signosvitales.valor_peso=valor_peso
-                signosvitales.valor_presion_arterial_diastolica=valor_arterial_diasolica
-                signosvitales.valor_presion_arterial_sistolica=valor_arterial_sistolica
-                signosvitales.valor_frecuencia_cardiaca=int(valor_frecuencia_cardiaca)
-                signosvitales.valor_saturacion_oxigeno=valor_saturacion_oxigeno
-                signosvitales.enfermera= enfermera
-                signosvitales.save()
-
-                consulta=Consulta.objects.get(signos_vitales_id=id_signos)
-                contieneConsulta=ContieneConsulta.objects.get(consulta_id=consulta.id_consulta)
-                contieneConsulta.fase_cola_medica="3"
-                contieneConsulta.save()
-                response['type']='success'
-                response['data']='Se han registrado los signos vitales'
-            except ValueError:
-                response['data']="Ingrese todos los datos."
-            except:
-                response['data']="Error de datos, posiblemente no tienen el nivel de acceso necesario."
-            #else:
-            #    response['data']="Signos vitales invalidos"
-        else:
-            response['data']="Ingrese las unidades del peso."
-    else:
-        response['data']="Ingrese la unidad de la temperatura."
     return JsonResponse(response, safe=False)
 
 def agregar_medicamento(request):

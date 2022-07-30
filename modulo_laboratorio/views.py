@@ -5,7 +5,6 @@ from wsgiref.util import request_uri
 from django.urls import reverse
 import datetime
 from django.forms import formset_factory
-#from curses import pair_content
 import json
 from datetime import datetime
 from django.http import HttpResponse, JsonResponse
