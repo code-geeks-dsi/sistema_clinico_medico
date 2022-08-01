@@ -1,17 +1,17 @@
-from gzip import READ
-from time import time
-from xml.dom import INVALID_CHARACTER_ERR
+import json
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
-from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales,ConstanciaMedica
+from modulo_expediente.models import (
+    Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
+    RecetaMedica, SignosVitales,ConstanciaMedica)
 from modulo_control.models import Enfermera, Empleado, Rol
-from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos
+from .forms import (
+    ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm)
 from django.http import JsonResponse
-import json
 from datetime import date
 from django.urls import reverse
 from urllib.parse import urlencode
@@ -23,6 +23,7 @@ from django.contrib import messages
 from dateutil.relativedelta import relativedelta
 from django.views import View 
 from django.views.generic.edit import CreateView
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 # Create your views here.
 

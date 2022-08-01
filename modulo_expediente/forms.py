@@ -3,7 +3,7 @@ from dataclasses import fields
 from django import forms
 from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
-from .models import Consulta, Dosis, Paciente, Medicamento
+from .models import Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
