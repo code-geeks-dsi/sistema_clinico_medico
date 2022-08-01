@@ -456,3 +456,23 @@ class ConstanciaMedicaCreate(CreateView):
 def templete_agenda(request):
     return render(request,"expediente/agenda.html")
 
+class ReferenciaMedicaView(View):
+    form_class = ReferenciaMedicaForm
+    initial = {'key': 'value'}
+    template_name = 'expediente/create_update_referencia_medica.html'
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class(initial=self.initial)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            # <process form cleaned data>
+            return HttpResponseRedirect('/success/')
+
+        return render(request, self.template_name, {'form': form})
+
+    
+    
+    
