@@ -467,13 +467,17 @@ class ReferenciaMedicaView(View):
     template_name = 'expediente/referencia/create_update_referencia_medica.html'
 
     def get(self, request, *args, **kwargs):
-        form = self.form_class()
+        id_referencia=request.GET.get('id', None)
+        if id_referencia!= None:
+            initial_data={'id_referencia_medica':int(id_referencia)}
+            form = self.form_class( instance=ReferenciaMedica.objects.get(**initial_data))
+        else:
+            form = self.form_class()
         return render(request, self.template_name, {'form': form})
 
     def post(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta']) 
         id_referencia=request.GET.get('id', None)
-        print(id_referencia)
         if id_referencia!= None:
             initial_data={'id_referencia_medica':int(id_referencia)}
             form = self.form_class(request.POST, instance=ReferenciaMedica.objects.get(**initial_data))
