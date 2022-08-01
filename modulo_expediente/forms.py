@@ -111,6 +111,5 @@ class DosisFormulario(ModelForm):
 class ReferenciaMedicaForm(ModelForm):
     class Meta:
       model=ReferenciaMedica
-      # fields = ['dias_reposo','fecha_de_emision','consulta','diagnostico_constancia',]
       fields='__all__'
       exclude=['consulta']

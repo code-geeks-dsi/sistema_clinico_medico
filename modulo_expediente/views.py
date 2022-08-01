@@ -472,20 +472,11 @@ class ReferenciaMedicaView(View):
 
     def post(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta']) 
-        
-        #Recupera la url actual
-        # url=request.get_full_path()
         form = self.form_class(request.POST)
         if form.is_valid():
             referencia_medica=form.save(commit=False)
             referencia_medica.consulta=Consulta.objects.get(id_consulta=id_consulta)
             referencia_medica.save()
-
-            # response={
-            #     'type':'success',
-            #     'data':'Guardado!'
-            # }
-            # return JsonResponse(response)
             return redirect(reverse('referencia-medica-update',
                             kwargs={'id_consulta': id_consulta,'id_referencia':referencia_medica.id_referencia_medica},))
 
