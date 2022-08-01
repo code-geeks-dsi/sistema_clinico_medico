@@ -118,6 +118,9 @@ class Hospital(models.Model):
     telefono_hospital=models.CharField(max_length=9)
     codigo_pais=models.CharField(max_length=3)
 
+    def __str__(self):
+        return str(self.nombre_hospital)
+
 class ReferenciaMedica(models.Model):
     id_referencia_medica= models.AutoField(primary_key=True)
     consulta=models.ForeignKey('Consulta',models.DO_NOTHING,null=False, blank=False)

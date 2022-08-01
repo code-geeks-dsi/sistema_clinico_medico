@@ -1,16 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-</head>
-<body>
-        <form method="post" >{% csrf_token %}
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Referencia Medica {% endblock %}
+{% block content %}
+        <form method="post" id="referencia-medica">
+                {% csrf_token %}
                 {{ form.as_p }}
-                <input type="submit" value="Save">
+                <input type="submit" value="Guardar">
             </form>
-            <!-- {{ view.kwargs.this_name }} -->
-</body>
-</html>
+<script>
+        {% if update %}
+        $('#referencia-medica').submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                type: 'POST',
+                url: $("form").attr("action"),
+                data: $("form").serialize(), 
+                success: function(response) { 
+                        toastr[response.type](response.data); 
+                },
+                });
+        });
+        {% endif %}
+</script>
+{% endblock %}
