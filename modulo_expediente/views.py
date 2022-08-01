@@ -1,17 +1,17 @@
-from gzip import READ
-from time import time
-from xml.dom import INVALID_CHARACTER_ERR
+import json
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
-from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales,ConstanciaMedica
+from modulo_expediente.models import (
+    Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
+    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica)
 from modulo_control.models import Enfermera, Empleado, Rol
-from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos
+from .forms import (
+    ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm)
 from django.http import JsonResponse
-import json
 from datetime import date
 from django.urls import reverse
 from urllib.parse import urlencode
@@ -22,7 +22,8 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from dateutil.relativedelta import relativedelta
 from django.views import View 
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.template.loader import get_template
 from weasyprint import HTML
@@ -333,6 +334,7 @@ def editar_consulta(request,id_consulta):
         else:
             consulta_form=ConsultaFormulario(instance=consulta)
         edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        referencias_medicas= ReferenciaMedica.objects.filter(consulta=consulta)
         datos={
             'paciente':paciente,
             'signos_vitales':signos_vitales,
@@ -341,7 +343,8 @@ def editar_consulta(request,id_consulta):
             'consulta_form':consulta_form,
             'edad':edad,
             'dosis_form':DosisFormulario(),
-            'dosis':dosis
+            'dosis':dosis,
+            'referencias':referencias_medicas
         }
         
         return render(request,"expediente/consulta.html",datos)
@@ -461,6 +464,11 @@ class ConstanciaMedicaView(View):
             response.write(output.read())
         return response
     def post(self, request, *args, **kwargs): 
+        #crear constancia medica
+        pass
+
+    def put(self, request, *args, **kwargs): 
+        #update constancia medica
         pass
 
 class ConstanciaMedicaCreate(CreateView):
@@ -473,3 +481,49 @@ class ConstanciaMedicaCreate(CreateView):
 def templete_agenda(request):
     return render(request,"expediente/agenda.html")
 
+class ReferenciaMedicaView(View):
+    form_class = ReferenciaMedicaForm
+    template_name = 'expediente/referencia/create_update_referencia_medica.html'
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta']) 
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            referencia_medica=form.save(commit=False)
+            referencia_medica.consulta=Consulta.objects.get(id_consulta=id_consulta)
+            referencia_medica.save()
+            return redirect(reverse('referencia-medica-update',
+                            kwargs={'id_consulta': id_consulta,'id_referencia':referencia_medica.id_referencia_medica},))
+
+class ReferenciaMedicaUpdate(View):
+    form_class = ReferenciaMedicaForm
+    template_name = 'expediente/referencia/create_update_referencia_medica.html'
+
+    def get(self, request, *args, **kwargs):
+        id_referencia=int(self.kwargs['id_referencia']) 
+        initial_data={'id_referencia_medica':int(id_referencia)}
+        form = self.form_class(instance=ReferenciaMedica.objects.get(**initial_data))
+        return render(request, self.template_name, {'form': form, 'update':True})
+
+    def post(self, request, *args, **kwargs):
+        id_referencia=int(self.kwargs['id_referencia']) 
+        initial_data={'id_referencia_medica':int(id_referencia)}
+        form = self.form_class(request.POST, instance=ReferenciaMedica.objects.get(**initial_data))
+        if form.is_valid():
+            form.save()
+            response={
+                'type':'success',
+                'data':'Guardado!'
+            }
+            return JsonResponse(response)
+
+  
+        
+
+    
+    
+    
