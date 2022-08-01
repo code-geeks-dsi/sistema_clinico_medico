@@ -22,7 +22,7 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from dateutil.relativedelta import relativedelta
 from django.views import View 
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 # Create your views here.
@@ -466,41 +466,46 @@ def templete_agenda(request):
 
 class ReferenciaMedicaView(View):
     form_class = ReferenciaMedicaForm
-    # initial = {'key': 'value'}s
     template_name = 'expediente/referencia/create_update_referencia_medica.html'
 
     def get(self, request, *args, **kwargs):
-        id_referencia=request.GET.get('id', None)
-        if id_referencia!= None:
-            initial_data={'id_referencia_medica':int(id_referencia)}
-            form = self.form_class( instance=ReferenciaMedica.objects.get(**initial_data))
-        else:
-            form = self.form_class()
+        form = self.form_class()
         return render(request, self.template_name, {'form': form})
 
     def post(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta']) 
-        id_referencia=request.GET.get('id', None)
-        #Recupera la url actual
-        #url_actual=request.get_full_path()
-
-        if id_referencia!= None:
-            initial_data={'id_referencia_medica':int(id_referencia)}
-            form = self.form_class(request.POST, instance=ReferenciaMedica.objects.get(**initial_data))
-        else:
-            form = self.form_class(request.POST)
+        form = self.form_class(request.POST)
         if form.is_valid():
             referencia_medica=form.save(commit=False)
             referencia_medica.consulta=Consulta.objects.get(id_consulta=id_consulta)
-            form.save()
-            return redirect(f'/expediente/consulta/{id_consulta}')
-    def put(self, request, *args, **kwargs):
-        form = self.form_class(request.PUT)
-        if form.is_valid():
-            # <process form cleaned data>
-            return HttpResponseRedirect('/success/')
+            referencia_medica.save()
+            return redirect(reverse('referencia-medica-update',
+                            kwargs={'id_consulta': id_consulta,'id_referencia':referencia_medica.id_referencia_medica},))
 
-        return render(request, self.template_name, {'form': form})
+class ReferenciaMedicaUpdate(View):
+    form_class = ReferenciaMedicaForm
+    template_name = 'expediente/referencia/create_update_referencia_medica.html'
+
+    def get(self, request, *args, **kwargs):
+        id_referencia=int(self.kwargs['id_referencia']) 
+        initial_data={'id_referencia_medica':int(id_referencia)}
+        form = self.form_class(instance=ReferenciaMedica.objects.get(**initial_data))
+        return render(request, self.template_name, {'form': form, 'update':True})
+
+    def post(self, request, *args, **kwargs):
+        id_referencia=int(self.kwargs['id_referencia']) 
+        initial_data={'id_referencia_medica':int(id_referencia)}
+        form = self.form_class(request.POST, instance=ReferenciaMedica.objects.get(**initial_data))
+        if form.is_valid():
+            form.save()
+            response={
+                'type':'success',
+                'data':'Guardado!'
+            }
+            return JsonResponse(response)
+
+  
+        
 
     
     
