@@ -6,6 +6,9 @@ from xmlrpc.client import TRANSPORT_ERROR
 from django.db import models
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
+from .managers import (
+    SignosVitalesManager
+)
 
 # Create your models here.
 class Expediente(models.Model):
@@ -80,7 +83,7 @@ class SignosVitales(models.Model):
     )
     id_signos_vitales= models.AutoField(primary_key=True)
     #consulta=models.ForeignKey(Consulta,on_delete=models.DO_NOTHING,null=False, blank=False)
-    enfermera=models.ForeignKey('modulo_control.Enfermera',on_delete=models.DO_NOTHING,null=True, blank=True)
+    enfermera=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
     unidad_temperatura=models.CharField(max_length=1,choices=UNIDADES_TEMPERATURA,null=False, blank=True,default=2)
     unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True,default=1)
     unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
@@ -93,6 +96,7 @@ class SignosVitales(models.Model):
     valor_presion_arterial_sistolica=models.IntegerField(validators=[MaxValueValidator(350),MinValueValidator(0)],null=True, blank=True)
     valor_frecuencia_cardiaca=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=True, blank=True)
     valor_saturacion_oxigeno=models.IntegerField(validators=[MaxValueValidator(101),MinValueValidator(0)],null=True, blank=True)
+    objects= SignosVitalesManager()
     #Cuando se utiliza integerField, Django ignora el max_length, fields.w122
 
 class Consulta(models.Model):
@@ -226,4 +230,4 @@ class ConstanciaMedica(models.Model):
     consulta= models.ForeignKey('Consulta', models.DO_NOTHING, blank=False, null=False)
     fecha_de_emision=models.DateField(default=datetime.now, blank=False, null=False)
     dias_reposo=models.IntegerField(blank=False, null=False)#Los integer no llevan max_length
-    diagnostico_constancia=models.CharField(max_length=200, blank=False, null=False)
+    diagnostico_constancia=models.TextField(blank=True, null=True)
