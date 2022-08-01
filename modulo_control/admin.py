@@ -10,17 +10,17 @@ class UserAdmin(BaseUserAdmin):
                   {'fields':('email','password')}), 
                   ('Información Personal',{'fields':('nombres', 'apellidos','fechaNacimiento'
                   ,'fechaCreacion')}),
-                  ('Permissions',{'fields':('es_staff','es_activo', 'es_superuser')})
+                  ('Permissions',{'fields':('es_staff','es_activo', 'es_superuser','groups', 'user_permissions')})
                   ,)
     add_fieldsets = ((None, {'classes': ('wide',), 'fields': ('email', 'password1', 'password2')}),)
     #form = CustomUserChangeForm
     #add_form = CustomUserCreationForm
     search_fields =('email',)
     ordering = ('email',)
-    filter_horizontal = ()
+    filter_horizontal = ('groups', 'user_permissions',)
 
 admin.site.register(Empleado, UserAdmin)
-admin.site.unregister(Group)
+
 admin.site.register(Enfermera)
 admin.site.register(Doctor)
 admin.site.register(Secretaria)

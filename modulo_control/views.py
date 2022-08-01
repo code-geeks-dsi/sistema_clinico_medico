@@ -1,13 +1,8 @@
-from contextlib import nullcontext
-from multiprocessing import context
-from pickle import TRUE
-import select
-from urllib import request
+
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseNotFound,Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from pkg_resources import normalize_path
 from modulo_control.forms import EmpleadoForm,LicLaboratorioClinicoForm,DoctorForm
 from modulo_control.models import *
 from modulo_control.serializers import EmpleadoSerializer, RolSerializer, SimpleEmpleadoSerializer
@@ -137,22 +132,24 @@ def registrar_empleado(request):
                             nuevo_empleado.sexo = sexo_empleado
                             nuevo_empleado.roles=Rol.objects.get(id_rol=int(rol_empleado))
                             nuevo_empleado.save()
-                            
-                            if rol_empleado == 'ROL_DOCTOR':
+                            if rol_empleado == '1':
                                 #De momento todos los medicos van a tener la especialidad General y 
                                 #JVPM 12345678
                                 #La gestión de las especialidades constituye a mi criterio una Historia adicional
                                 #--- Es necesario agregar la TABLA ---ESPECIALIDAD---
+                                Empleado.objects.set_permissions_doctor(nuevo_empleado)
                                 especialidad="Medicina General"
                                 jvmp_d=12345678
                                 Doctor.objects.create(especialidad_doctor=especialidad, jvmp=jvmp_d, empleado=nuevo_empleado)
-                            elif rol_empleado == 'ROL_ENFERMERA':
+                            elif rol_empleado == '2':
+                                Empleado.objects.set_permissions_enfermera(nuevo_empleado)
                                 Enfermera.objects.create(empleado = nuevo_empleado)
-                            elif rol_empleado =='ROL_LIC_LABORATORIO':
+                            elif rol_empleado =='3':
                                 jvplc_n=12345678
+                                Empleado.objects.set_permissions_lic_laboratorio(nuevo_empleado)
                                 LicLaboratorioClinico.objects.create(jvplc=jvplc_n, empleado=nuevo_empleado)
-                            elif rol_empleado == 'ROL_SECRETARIA':
-                                Secretaria.objects.create(empleado=nuevo_empleado)
+                            elif rol_empleado == '4':
+                                Empleado.objects.set_permissions_secretaria(nuevo_empleado)
                             data['type']="success"
                             data['data']="Empleado Registrado"
                         except:
@@ -202,7 +199,7 @@ def editar_empleado(request):
                     edit_empleado.es_activo=int(is_active)
                     edit_empleado.save()
 
-                    if rol_empleado == 'ROL_DOCTOR':
+                    if rol_empleado == '1':
                         #De momento todos los medicos van a tener la especialidad General y 
                         #JVPM 12345678
                         #La gestión de las especialidades constituye a mi criterio una Historia adicional
@@ -211,25 +208,29 @@ def editar_empleado(request):
                         jvmp_d=12345678
                         if rol_antiguo!=rol_empleado:
                             try:
+                                Empleado.objects.set_permissions_doctor(edit_empleado)
                                 Doctor.objects.create(especialidad_doctor=especialidad, jvmp=jvmp_d, empleado=edit_empleado)
                             except:
                                 data['data']="Información actualizada"
-                    elif rol_empleado == 'ROL_ENFERMERA':
+                    elif rol_empleado == '2':
                         if rol_antiguo!=rol_empleado:
                             try:
+                                Empleado.objects.set_permissions_enfermera(edit_empleado)
                                 Enfermera.objects.create(empleado = edit_empleado)
                             except:
                                 data['data']="Información actualizada"
-                    elif rol_empleado =='ROL_LIC_LABORATORIO':
+                    elif rol_empleado =='3':
                         jvplc_n=12345678
                         if rol_antiguo!=rol_empleado:
                             try:
+                                Empleado.objects.set_permissions_lic_laboratorio(edit_empleado)
                                 LicLaboratorioClinico.objects.create(jvplc=jvplc_n, empleado=edit_empleado)
                             except:
                                 data['data']="Información actualizada"
-                    elif rol_empleado == 'ROL_SECRETARIA':
+                    elif rol_empleado == '4':
                         if rol_antiguo!=rol_empleado:
                             try:
+                                Empleado.objects.set_permissions_secretaria(edit_empleado)
                                 Secretaria.objects.create(empleado=edit_empleado)
                             except:
                                 data['data']="Información actualizada"
@@ -248,6 +249,8 @@ def editar_empleado(request):
 @login_required(login_url='/login/')        
 def vista_adminitracion_empleados(request):
     if request.user.roles.codigo_rol=='ROL_ADMIN':
+        #Empleado.objects.permissions_doctor()
+        #print(request.user.get_user_permissions())
         roles = Rol.objects.all()
         return render(request,"Control/gestionEmpleados.html", {"Rol":roles})
     else:
@@ -273,75 +276,5 @@ def get_empleado(request, cod_empleado):
         data = "Acceso denegado"
         return JsonResponse({'data': data}, safe=False)  
 
-# def registrarEmpleado(request):
-#     form=EmpleadoForm(request.GET)
-#     return render(request, 'registroEmpleado.html',{'form':form})
 
-
-# def registrarDoctor(request):
-#     doctorForm = DoctorForm()
-#     return render(request, 'registroDoctor.html', {'doctorForm':doctorForm})
-
-# @csrf_exempt
-# def agregarDoctor(request):
-#     if request.method == 'POST':
-#         doctor = Doctor()
-#         doctorForm = DoctorForm(request.POST)
-
-#         if doctorForm.is_valid():
-#             doctor = doctorForm.save(commit=False)
-#             doctor.save()
-
-
-#     return redirect('index') ##luego cambiar a que redireccione a lista de doctores o algo asi
-
-# def registrarEnfermera(request):
-#     enfermeraForm = EnfermeraForm()
-#     return render(request, 'registroEnfermera.html', {'enfermeraForm':enfermeraForm})
-
-
-# def agregarEnfermera(request):
-#     if request.method == 'POST':
-#         enfermera = Enfermera()
-#         enfermeraForm = EnfermeraForm(request.POST)
-
-#         if enfermeraForm.is_valid():
-#             enfermera = enfermeraForm.save(commit=False)
-#             enfermera.save()
-    
-#     return redirect('index') ##luego cambiar a que redireccione a lista de enfermeras o algo asi
-
-# def registrarLicLaboratorioClinico(request):
-#     licLaboratorioClinicoForm = LicLaboratorioClinicoForm()
-#     return render(request, 'registroLicLaboratorioClinico.html', {'licLaboratorioClinicoForm':licLaboratorioClinicoForm})
-
-# @csrf_exempt
-# def agregarLicLaboratorioClinico(request):
-#     if request.method == 'POST':
-#         licLaboratorioClinico = LicLaboratorioClinico()
-#         licLaboratorioClinicoForm = LicLaboratorioClinicoForm(request.POST)
-
-#         if licLaboratorioClinicoForm.is_valid():
-#             licLaboratorioClinico = licLaboratorioClinicoForm.save()
-#             licLaboratorioClinico.save()
-#     return redirect('index') ##luego cambiar a que redireccione a lista de lics o algo asi
-
-# def registrarSecretaria(request):
-#     secretariaForm = SecretariaForm()
-#     return render(request, 'registroSecretaria.html', {'secretariaForm':secretariaForm})
-
-# @csrf_exempt
-# def agregarSecretaria(request):
-#     if request.method == 'POST':
-#         secretaria = Secretaria()
-#         secretariaForm = SecretariaForm(request.POST)
-
-#         if secretaria.is_valid():
-#             secretaria = secretariaForm.save()
-#             secretaria.save()
-#     return redirect('index') ##luego cambiar a que redireccione a lista de secretaria o algo asi
-
-
-# def indexEmpleado(request):
-#     return render(request, 'indexEmpleado.html')
 

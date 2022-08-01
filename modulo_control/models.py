@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import Permission
+from django.db.models import Q
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 import datetime
 
@@ -60,6 +63,34 @@ class EmpleadoManager(BaseUserManager):
         empleado.es_superuser=True
         empleado.save()
         return empleado
+    
+    def set_permissions_doctor(self, empleado):
+        permission = Permission.objects.filter(
+            #Todos los permisos para el modulo expediente
+            Q(content_type__app_label='modulo_expediente')
+        )
+        empleado.user_permissions.set(permission)
+    
+    def set_permissions_enfermera(self, empleado):
+        permission = Permission.objects.filter(
+            #Ver modulo expediente y editar signos vitales
+            Q(content_type__app_label='modulo_expediente', codename__contains="view")|Q(content_type__model='signosvitales')
+        )
+        empleado.user_permissions.set(permission)
+    
+    def set_permissions_lic_laboratorio(self, empleado):
+        permission = Permission.objects.filter(
+            #Todos los permisos para el modulo Laboratorio
+            Q(content_type__app_label='modulo_laboratorio')
+        )
+        empleado.user_permissions.set(permission)
+    
+    def set_permissions_secretaria(self, empleado):
+        permission = Permission.objects.filter(
+            #Ver contiene consulta                                              #Gestionar expedientes               #Ver todo dentro de laboratorio                                                   
+            Q(content_type__model='contieneconsulta', codename__contains='view')|Q(content_type__model='expediente')|Q(content_type__app_label='modulo_laboratorio',codename__contains='view')
+        )
+        empleado.user_permissions.set(permission)
 
 class Rol(models.Model):
     id_rol=models.AutoField(primary_key=True)
@@ -90,12 +121,6 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f'{self.email}'
-    
-    def has_perm(self,perm,obj = None):
-        return True
-    
-    def has_module_perms(self,app_label):
-        return True
 
     @property
     def is_staff(self):
