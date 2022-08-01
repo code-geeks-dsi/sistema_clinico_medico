@@ -7,7 +7,7 @@ from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerial
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
-from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales
+from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales,ConstanciaMedica
 from modulo_control.models import Enfermera, Empleado, Rol
 from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos
 from django.http import JsonResponse
@@ -21,6 +21,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from dateutil.relativedelta import relativedelta
+from django.views import View 
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -431,5 +434,25 @@ def buscar_expediente(request):
     else:
         return render(request,"Control/error403.html")
 
+
+class ConstanciaMedicaView(View):
+
+    def get(self, request, *args, **kwargs):
+        id = self.kwargs['id'] 
+        # constancia = ConstanciaMedica.objects.get(id_constancia_medica=id)
+        context  = {'id':id}
+        return render(request, 'expediente/constancia_medica.html', context)
+
+    def post(self, request, *args, **kwargs): 
+        pass
+
+class ConstanciaMedicaCreate(CreateView):
+    model = ConstanciaMedica
+    template_name = 'expediente/crear_constancia_medica.html'
+    fields = ['dias_reposo','fecha_de_emision','consulta','diagnostico_constancia',]
+    success_url = reverse_lazy('constancia-medica',
+                            kwargs={'id': 1},)
+
 def templete_agenda(request):
     return render(request,"expediente/agenda.html")
+
