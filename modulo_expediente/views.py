@@ -329,6 +329,7 @@ def editar_consulta(request,id_consulta):
         else:
             consulta_form=ConsultaFormulario(instance=consulta)
         edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        referencias_medicas= ReferenciaMedica.objects.filter(consulta=consulta)
         datos={
             'paciente':paciente,
             'signos_vitales':signos_vitales,
@@ -337,7 +338,8 @@ def editar_consulta(request,id_consulta):
             'consulta_form':consulta_form,
             'edad':edad,
             'dosis_form':DosisFormulario(),
-            'dosis':dosis
+            'dosis':dosis,
+            'referencias':referencias_medicas
         }
         
         return render(request,"expediente/consulta.html",datos)
