@@ -49,6 +49,16 @@
             </li>
             {% if request.user.roles.codigo_rol == "ROL_SECRETARIA" or request.user.roles.codigo_rol == "ROL_DOCTOR" or request.user.roles.codigo_rol == "ROL_ENFERMERA"%}
             <li>
+              <a href="{% url 'ver_agenda' %}" class="nav-link text-white" id="side_agenda">
+                <div class="d-flex align-items-start">
+                  <span class="material-symbols-outlined">calendar_month</span>
+                  <div class="px-2 txt_link" id="txt_link">
+                    Agenda
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li>
               <a href="{% url 'sala_consulta' %}" class="nav-link text-white" id="side_expediente">
                 <div class="d-flex align-items-start">
                   <span class="material-symbols-outlined">medical_information</span>
@@ -60,6 +70,7 @@
             </li>
             {% endif %}
             {% if request.user.roles.codigo_rol == "ROL_DOCTOR" %}
+            <!--DOCTOR-->
             <li>
               <a href="{% url 'buscar_expediente' %}" class="nav-link text-white" id="side_buscar_expediente">
                 <div class="d-flex align-items-start">
@@ -173,12 +184,13 @@
             </ul>
           </div>
         </div>
-        
+        <!-- Dashboard -->
         <div class="flex-fill scrollarea bg-light vh-100">
           <div class="d-flex flex-column">
           
             {% include "nav/navbar.html" %}
             <div class="p-3">
+              <!--Contenido-->
               {% block content %}
             
               {% endblock %}
