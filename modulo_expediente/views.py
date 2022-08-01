@@ -479,6 +479,7 @@ class ReferenciaMedicaView(View):
     def post(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta']) 
         id_referencia=request.GET.get('id', None)
+        #Recupera la url actual
         url=request.get_full_path()
         if id_referencia!= None:
             initial_data={'id_referencia_medica':int(id_referencia)}
