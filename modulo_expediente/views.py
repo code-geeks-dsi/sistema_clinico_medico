@@ -9,7 +9,7 @@ from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales,ConstanciaMedica
 from modulo_control.models import Enfermera, Empleado, Rol
-from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos
+from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm
 from django.http import JsonResponse
 import json
 from datetime import date
@@ -444,6 +444,11 @@ class ConstanciaMedicaView(View):
         return render(request, 'expediente/constancia_medica.html', context)
 
     def post(self, request, *args, **kwargs): 
+        #crear constancia medica
+        pass
+
+    def put(self, request, *args, **kwargs): 
+        #update constancia medica
         pass
 
 class ConstanciaMedicaCreate(CreateView):
@@ -459,14 +464,27 @@ def templete_agenda(request):
 class ReferenciaMedicaView(View):
     form_class = ReferenciaMedicaForm
     initial = {'key': 'value'}
-    template_name = 'expediente/create_update_referencia_medica.html'
+    template_name = 'expediente/referencia/create_update_referencia_medica.html'
 
     def get(self, request, *args, **kwargs):
-        form = self.form_class(initial=self.initial)
+        form = self.form_class()
         return render(request, self.template_name, {'form': form})
 
     def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
+        id_consulta=int(self.kwargs['id_consulta']) 
+        id_referencia=request.GET.get('id', None)
+        if id_referencia!= None:
+            initial_data={'id_referencia_medica':int(id_referencia)}
+            form = self.form_class(request.POST, initial=initial_data)
+        else:
+            form = self.form_class(request.POST)
+        if form.is_valid():
+            referencia_medica=form.save(commit=False)
+            referencia_medica.consulta=Consulta.objects.get(id_consulta=id_consulta)
+            form.save()
+            return redirect('/')
+    def put(self, request, *args, **kwargs):
+        form = self.form_class(request.PUT)
         if form.is_valid():
             # <process form cleaned data>
             return HttpResponseRedirect('/success/')
