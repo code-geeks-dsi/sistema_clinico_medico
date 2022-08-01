@@ -107,3 +107,9 @@ class DosisFormulario(ModelForm):
         self.fields['unidad_de_medida_dosis'].widget.attrs.update({'class': 'form-select'})
         self.fields['periodo_dosis'].widget.attrs.update({'class': 'form-control'})
         self.fields['unidad_periodo_dosis'].widget.attrs.update({'class': 'form-select'})
+
+class ReferenciaMedicaForm(ModelForm):
+    class Meta:
+      model=ReferenciaMedica
+      # fields = ['dias_reposo','fecha_de_emision','consulta','diagnostico_constancia',]
+      fields='__all__'

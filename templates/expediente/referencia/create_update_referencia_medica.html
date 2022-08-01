@@ -7,6 +7,10 @@
         <title>Document</title>
 </head>
 <body>
-        
+        <form method="post" >{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Save">
+            </form>
+            <!-- {{ view.kwargs.this_name }} -->
 </body>
 </html>
