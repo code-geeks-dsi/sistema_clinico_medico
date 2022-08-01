@@ -329,6 +329,7 @@ def editar_consulta(request,id_consulta):
         else:
             consulta_form=ConsultaFormulario(instance=consulta)
         edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        referencias_medicas= ReferenciaMedica.objects.filter(consulta=consulta)
         datos={
             'paciente':paciente,
             'signos_vitales':signos_vitales,
@@ -337,7 +338,8 @@ def editar_consulta(request,id_consulta):
             'consulta_form':consulta_form,
             'edad':edad,
             'dosis_form':DosisFormulario(),
-            'dosis':dosis
+            'dosis':dosis,
+            'referencias':referencias_medicas
         }
         
         return render(request,"expediente/consulta.html",datos)
@@ -480,7 +482,8 @@ class ReferenciaMedicaView(View):
         id_consulta=int(self.kwargs['id_consulta']) 
         id_referencia=request.GET.get('id', None)
         #Recupera la url actual
-        url=request.get_full_path()
+        #url_actual=request.get_full_path()
+
         if id_referencia!= None:
             initial_data={'id_referencia_medica':int(id_referencia)}
             form = self.form_class(request.POST, instance=ReferenciaMedica.objects.get(**initial_data))
@@ -490,7 +493,7 @@ class ReferenciaMedicaView(View):
             referencia_medica=form.save(commit=False)
             referencia_medica.consulta=Consulta.objects.get(id_consulta=id_consulta)
             form.save()
-            return redirect(url)
+            return redirect(f'/expediente/consulta/{id_consulta}')
     def put(self, request, *args, **kwargs):
         form = self.form_class(request.PUT)
         if form.is_valid():

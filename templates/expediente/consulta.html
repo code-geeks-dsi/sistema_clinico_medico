@@ -223,7 +223,30 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">Lista de Referencias</h5>
-                        <p class="card-text">Idea 1 --Colocar una tabla con referencias --.</p>
+                        <!--Tabla de Referencias-->
+                        <div class="table-responsive" id="tabla_referencias_agregadas">
+                            <table class="table table-bordered text-center">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Hospital</th>
+                                    <th>Especialidad</th>
+                                    <th>Fecha</td>
+                                    <th>Opciones</td>
+                                </tr>
+                            </thead>
+                            <tbody id="medicamentos_dosis">
+                            <!--Datos del server -- dosis -- -->
+                                {% for referencia in referencias %}
+                                <tr>
+                                    <td>{{ referencia.hospital.nombre_hospital }}</td>
+                                    <td>{{ referencia.especialidad }}</td>
+                                    <td>{{ referencia.fecha_referencia }}</td>
+                                    <td><a class="material-symbols-outlined btn btn-sm" href="referencia-medica/?id={{referencia.id_referencia_medica}}">open_in_new</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            </table>
+                        </div>
                         <a href="referencia-medica/" class="btn btn-outline-primary w-0 my-1">Agregar Referencia Medica</a>
                         <a href="#" class="btn btn-outline-primary w-0 my-1">Descargar Referencia Medica</a>
                     </div>
@@ -259,137 +282,137 @@
                 <div class="modal-body">
                     <div class="container">
                         <!--Sección de busqueda de medicamentos-->
-                    <div class="row">
-                        <div class="col-6">
-                            <p class="fw-bold text-secondary">Busqueda de Medicamentos</p>
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="fw-bold text-secondary">Busqueda de Medicamentos</p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <a href="{% url 'agregar_nuevo_medicamento' %}" class="btn btn-outline-primary">Registrar Medicamento Nuevo</a>
+                            </div>
                         </div>
-                        <div class="col-6 text-end">
-                            <a href="{% url 'agregar_nuevo_medicamento' %}" class="btn btn-outline-primary">Registrar Medicamento Nuevo</a>
-                        </div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white" id="basic-addon1">
-                                      <span class="material-symbols-outlined btn-sm" id="search_voff">medication_liquid</span>
-                                    </span>
-                                    <input type="text" class="form-control" id="id_nombre_medicamento" placeholder="Buscar Medicamentos" aria-label="Nombres" aria-describedby="basic-addon1">
+                        <div class="row pt-2">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white" id="basic-addon1">
+                                        <span class="material-symbols-outlined btn-sm" id="search_voff">medication_liquid</span>
+                                        </span>
+                                        <input type="text" class="form-control" id="id_nombre_medicamento" placeholder="Buscar Medicamentos" aria-label="Nombres" aria-describedby="basic-addon1">
+                                        
+                                        <span class="input-group-text bg-white" id="filtro_buscar">
+                                        <span class="material-symbols-outlined btn btn-sm" id="agregar_medicamento_receta" data-bs-toggle="modal" data-bs-target="#busquedaMedicamentoModal">search</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="fw-bold text-secondary pt-2">Agregar Medicamento a Receta</p>
+                            <hr class="dropdown-divider">
+                            <!-- Formulario para agregar medicamento -->
+                            <div class="col-md-12 col-lg-4">
+                                <!--Medicamento-->
+                                <div class="mb-3 mt-3">
+                                    <label for="medicamento" class="form-label">Medicamento</label>
+                                    {{dosis_form.medicamento}}
+                                    <div id="emailHelp" class="form-text"></div>
+                                </div>
+                            </div>
+                            <!--Cantidad-->
+                            <div class="col-md-6 col-lg-2">
+                                <div class="mb-3 mt-3">
+                                    <label for="cantidad_dosis" class="form-label">Cantidad</label>
+                                    {{dosis_form.cantidad_dosis}}
+                                    <div id="emailHelp" class="form-text"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-2">
+                                <div class="mb-3 mt-3">
+                                    <label for="unidad_de_medida_dosis" class="form-label">Unidad de medida</label>
+                                    {{dosis_form.unidad_de_medida_dosis}}
+                                    <div id="emailHelp" class="form-text"></div>
+                                </div>
+                            </div>
+                            <!--Frecuencia-->
+                            <div class="col-md-6 col-lg-2">
+                                <div class="mb-3 mt-3">
+                                    <label for="id_frecuencia_dosis" class="form-label">Frecuencia</label>
+                                    {{dosis_form.frecuencia_dosis}}
+                                    <div id="emailHelp" class="form-text"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-2">
+                                <div class="mb-3 mt-3">
+                                    <label for="unidad_frecuencia_dosis" class="form-label">Unidad de Tiempo</label>
+                                    {{dosis_form.unidad_frecuencia_dosis}}
+                                    <div id="emailHelp" class="form-text"></div>
+                                </div>
+                            </div>
+                            <!--Periodo-->
+                            <div class="col-md-6 col-lg-4 d-none d-lg-block">
+                                <div class="text-center py-5">
+                                    <!--Spinner de caraga-->
+                                    <div class="spinner-border text-primary" role="status" id="load">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-2">
+                                <div class="mb-3 mt-3">
+                                    <label for="periodo_dosis" class="form-label">Periodo</label>
+                                    {{dosis_form.periodo_dosis}}
+                                    <div id="emailHelp" class="form-text"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-2">
+                                <div class="mb-3 mt-3">
+                                    <label for="unidad_periodo_dosis" class="form-label">Unidad de Tiempo</label>
+                                    {{dosis_form.unidad_periodo_dosis}}
+                                    <div id="emailHelp" class="form-text"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-4">
+                                <div class="mb-3 mt-3 text-end">
+                                    <div class="d-none d-lg-block py-3"></div>
                                     
-                                    <span class="input-group-text bg-white" id="filtro_buscar">
-                                      <span class="material-symbols-outlined btn btn-sm" id="agregar_medicamento_receta" data-bs-toggle="modal" data-bs-target="#busquedaMedicamentoModal">search</span>
-                                    </span>
+                                    <!--Boton de guardar-->
+                                    <input type="submit" class="btn btn-outline-success " id="btn_agregar_a_receta" value="Agregar Medicamento">
                                 </div>
                             </div>
-                        </div>
+                            <hr class="dropdown-divider">
+                            <!--Fin agregar medicamento-->
 
-                        <p class="fw-bold text-secondary pt-2">Agregar Medicamento a Receta</p>
-                        <hr class="dropdown-divider">
-                        <!-- Formulario para agregar medicamento -->
-                        <div class="col-md-12 col-lg-4">
-                            <!--Medicamento-->
-                            <div class="mb-3 mt-3">
-                                <label for="medicamento" class="form-label">Medicamento</label>
-                                {{dosis_form.medicamento}}
-                                <div id="emailHelp" class="form-text"></div>
+                            <!--Medicamentos agregados-->
+                            <p class="fw-bold text-secondary pt-2">Medicamentos Agregados</p>
+                            <div class="table-responsive" id="tabla_medicamentos_agregados">
+                                <table class="table table-bordered text-center">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th>Medicamento</th>
+                                        <th>Cantidad</th>
+                                        <th>Presentación</td>
+                                        <th>Frecuencia</td>
+                                        <th>Periodo</td>
+                                        <th>Opciones</td>
+                                    </tr>
+                                </thead>
+                                <tbody id="medicamentos_dosis">
+                                <!--Datos del server -- dosis -- -->
+                                    {% for medicamento in dosis %}
+                                    <tr>
+                                        <td>{{ medicamento.medicamento }}</td>
+                                        <td>{{ medicamento.cantidad_dosis }}</td>
+                                        <td>{{ medicamento.unidad_de_medida_dosis }}</td>
+                                        <td>{{ medicamento.frecuencia_dosis }} - {{ medicamento.get_unidad_frecuencia_dosis_display }}</td>
+                                        <td>{{ medicamento.periodo_dosis }} - {{ medicamento.get_unidad_periodo_dosis_display }}</td>
+                                        <td><span onclick="eliminarDosis({{ medicamento.id_dosis }}, {{ medicamento.receta_medica.id_receta_medica }});" class="material-symbols-outlined btn btn-sm">delete</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                </table>
                             </div>
-                        </div>
-                        <!--Cantidad-->
-                        <div class="col-md-6 col-lg-2">
-                            <div class="mb-3 mt-3">
-                                <label for="cantidad_dosis" class="form-label">Cantidad</label>
-                                {{dosis_form.cantidad_dosis}}
-                                <div id="emailHelp" class="form-text"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-2">
-                            <div class="mb-3 mt-3">
-                                <label for="unidad_de_medida_dosis" class="form-label">Unidad de medida</label>
-                                {{dosis_form.unidad_de_medida_dosis}}
-                                <div id="emailHelp" class="form-text"></div>
-                            </div>
-                        </div>
-                        <!--Frecuencia-->
-                        <div class="col-md-6 col-lg-2">
-                            <div class="mb-3 mt-3">
-                                <label for="id_frecuencia_dosis" class="form-label">Frecuencia</label>
-                                {{dosis_form.frecuencia_dosis}}
-                                <div id="emailHelp" class="form-text"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-2">
-                            <div class="mb-3 mt-3">
-                                <label for="unidad_frecuencia_dosis" class="form-label">Unidad de Tiempo</label>
-                                {{dosis_form.unidad_frecuencia_dosis}}
-                                <div id="emailHelp" class="form-text"></div>
-                            </div>
-                        </div>
-                        <!--Periodo-->
-                        <div class="col-md-6 col-lg-4 d-none d-lg-block">
-                            <div class="text-center py-5">
-                                <!--Spinner de caraga-->
-                                <div class="spinner-border text-primary" role="status" id="load">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-2">
-                            <div class="mb-3 mt-3">
-                                <label for="periodo_dosis" class="form-label">Periodo</label>
-                                {{dosis_form.periodo_dosis}}
-                                <div id="emailHelp" class="form-text"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-2">
-                            <div class="mb-3 mt-3">
-                                <label for="unidad_periodo_dosis" class="form-label">Unidad de Tiempo</label>
-                                {{dosis_form.unidad_periodo_dosis}}
-                                <div id="emailHelp" class="form-text"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-lg-4">
-                            <div class="mb-3 mt-3 text-end">
-                                <div class="d-none d-lg-block py-3"></div>
-                                
-                                <!--Boton de guardar-->
-                                <input type="submit" class="btn btn-outline-success " id="btn_agregar_a_receta" value="Agregar Medicamento">
-                            </div>
-                        </div>
-                        <hr class="dropdown-divider">
-                        <!--Fin agregar medicamento-->
-
-                        <!--Medicamentos agregados-->
-                        <p class="fw-bold text-secondary pt-2">Medicamentos Agregados</p>
-                        <div class="table-responsive" id="tabla_medicamentos_agregados">
-                            <table class="table table-bordered text-center">
-                              <thead class="table-secondary">
-                                <tr>
-                                    <th>Medicamento</th>
-                                    <th>Cantidad</th>
-                                    <th>Presentación</td>
-                                    <th>Frecuencia</td>
-                                    <th>Periodo</td>
-                                    <th>Opciones</td>
-                                </tr>
-                              </thead>
-                              <tbody id="medicamentos_dosis">
-                              <!--Datos del server -- dosis -- -->
-                                {% for medicamento in dosis %}
-                                <tr>
-                                    <td>{{ medicamento.medicamento }}</td>
-                                    <td>{{ medicamento.cantidad_dosis }}</td>
-                                    <td>{{ medicamento.unidad_de_medida_dosis }}</td>
-                                    <td>{{ medicamento.frecuencia_dosis }} - {{ medicamento.get_unidad_frecuencia_dosis_display }}</td>
-                                    <td>{{ medicamento.periodo_dosis }} - {{ medicamento.get_unidad_periodo_dosis_display }}</td>
-                                    <td><span onclick="eliminarDosis({{ medicamento.id_dosis }}, {{ medicamento.receta_medica.id_receta_medica }});" class="material-symbols-outlined btn btn-sm">delete</span></td>
-                                </tr>
-                                {% endfor %}
-                              </tbody>
-                            </table>
-                        </div>
 
 
-                        <!--Fin medicamentos agregados-->
+                            <!--Fin medicamentos agregados-->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -428,6 +451,7 @@
           </div>
         </div>
     </div>
+
 </div>    
 {% endblock %}
 {% block js %}
