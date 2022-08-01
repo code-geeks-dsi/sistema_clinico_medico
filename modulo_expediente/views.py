@@ -7,7 +7,7 @@ from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerial
 from django.core import serializers
 from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
-from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales,ConstanciaMedica
+from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica
 from modulo_control.models import Enfermera, Empleado, Rol
 from modulo_expediente.forms import ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm
 from django.http import JsonResponse
@@ -463,7 +463,7 @@ def templete_agenda(request):
 
 class ReferenciaMedicaView(View):
     form_class = ReferenciaMedicaForm
-    initial = {'key': 'value'}
+    # initial = {'key': 'value'}s
     template_name = 'expediente/referencia/create_update_referencia_medica.html'
 
     def get(self, request, *args, **kwargs):
@@ -473,9 +473,10 @@ class ReferenciaMedicaView(View):
     def post(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta']) 
         id_referencia=request.GET.get('id', None)
+        print(id_referencia)
         if id_referencia!= None:
             initial_data={'id_referencia_medica':int(id_referencia)}
-            form = self.form_class(request.POST, initial=initial_data)
+            form = self.form_class(request.POST, instance=ReferenciaMedica.objects.get(**initial_data))
         else:
             form = self.form_class(request.POST)
         if form.is_valid():
