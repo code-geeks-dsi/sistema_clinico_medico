@@ -20,162 +20,194 @@
         </ol>
     </nav>
 
-    <div class="row">
-        <!--Datos del paciente-->
-        <div class="col-md-12 col-lg-6 py-2">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title text-secondary">Datos del Paciente</h5>
-                    <hr class="dropdown-divider">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="pt-2 fw-bold">
-                                <p>Nombre: </p>
-                                <p>Apellido: </p>
-                                <p>Edad: </p>
-                                <p>Email: </p>
-                                <p>Responsable: </p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="pt-2">
-                                <p>{{ paciente.nombre_paciente }}</p>
-                                <p>{{ paciente.apellido_paciente }}</p>
-                                <p>{{ edad.years }} años</p>
-                                <p>{{ paciente.email_paciente }}</p>
-                                <p>{{ paciente.responsable }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>        
+    <!--Navegación Pestañas-->
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <button class="nav-link active" id="nav-historial-tab" data-bs-toggle="tab" data-bs-target="#nav-historial" type="button" role="tab" aria-controls="nav-historial" aria-selected="true">Historial Clinico</button>
+          <button class="nav-link" id="nav-contol-tab" data-bs-toggle="tab" data-bs-target="#nav-control" type="button" role="tab" aria-controls="nav-control" aria-selected="false">Control Subsecuente</button>
+          <button class="nav-link" id="nav-evolucion-tab" data-bs-toggle="tab" data-bs-target="#nav-evolucion" type="button" role="tab" aria-controls="nav-evolucion" aria-selected="false">Hoja de Evolución</button>
+          <button class="nav-link" id="nav-documentos-tab" data-bs-toggle="tab" data-bs-target="#nav-documentos" type="button" role="tab" aria-controls="nav-documentos" aria-selected="false">Documentos de la Consulta</button>
         </div>
-        <!--signos_vitales Vitales-->
-        <div class="col-md-12 col-lg-6 py-2">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title text-secondary">Signos Vitales</h5>
-                    <hr class="dropdown-divider">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="pt-2">
+      </nav>
+      <div class="tab-content " id="nav-tabContent">
+        <!--Historial Clinico-->
+        <div class="tab-pane fade show active" id="nav-historial" role="tabpanel" aria-labelledby="nav-historial-tab">
+            <div class="row">
+                <!--Datos del paciente-->
+                <div class="col-md-12 col-lg-4">
+                    <!--Datos Basicos-->
+                    <div class="py-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-secondary">Datos del Paciente</h5>
+                                <hr class="dropdown-divider">
                                 <div class="row">
-                                    <div class="col fw-bold">
-                                        <p>Temperatura: </p>
+                                    <div class="col-5">
+                                        <div class="pt-2 fw-bold">
+                                            <p>Nombre: </p>
+                                            <p>Apellido: </p>
+                                            <p>Edad: </p>
+                                            <p>Email: </p>
+                                            <p>Responsable: </p>
+                                        </div>
                                     </div>
-                                    <div class="col">
-                                        <p>{{ signos_vitales.valor_temperatura }} {{ signos_vitales.unidad_temperatura }}</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col fw-bold">
-                                        <p>Frecuencia Cardiaca: </p>
-                                    </div>
-                                    <div class="col">
-                                        <p>{{ signos_vitales.valor_frecuencia_cardiaca }} {{ signos_vitales.unidad_frecuencia_cardiaca }}</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col fw-bold">
-                                        <p>Peso: </p>
-                                    </div>
-                                    <div class="col">
-                                        <p>{{ signos_vitales.valor_peso }} {{ signos_vitales.unidad_peso }}</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col fw-bold">
-                                        <p>Presión Arterial: </p>
-                                    </div>
-                                    <div class="col">
-                                        <p>{{ signos_vitales.valor_presion_arterial_sistolica }}/{{ signos_vitales.valor_presion_arterial_diastolica }}</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col fw-bold">
-                                        <p>Saturación Oxigeno: </p>
-                                    </div>
-                                    <div class="col">
-                                        <p>{{ signos_vitales.valor_saturacion_oxigeno }} %</p>
+                                    <div class="col-7">
+                                        <div class="pt-2">
+                                            <p>{{ paciente.nombre_paciente }}</p>
+                                            <p>{{ paciente.apellido_paciente }}</p>
+                                            <p>{{ edad.years }} años</p>
+                                            <p>{{ paciente.email_paciente }}</p>
+                                            <p>{{ paciente.responsable }}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> 
+                    <!--Signos Vitales-->    
+                    <div class="py-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-secondary">Signos Vitales</h5>
+                                <hr class="dropdown-divider">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="pt-2">
+                                            <div class="row">
+                                                <div class="col fw-bold">
+                                                    <p>Temperatura: </p>
+                                                </div>
+                                                <div class="col">
+                                                    <p>{{ signos_vitales.valor_temperatura }} {{ signos_vitales.unidad_temperatura }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col fw-bold">
+                                                    <p>Frecuencia Cardiaca: </p>
+                                                </div>
+                                                <div class="col">
+                                                    <p>{{ signos_vitales.valor_frecuencia_cardiaca }} {{ signos_vitales.unidad_frecuencia_cardiaca }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col fw-bold">
+                                                    <p>Peso: </p>
+                                                </div>
+                                                <div class="col">
+                                                    <p>{{ signos_vitales.valor_peso }} {{ signos_vitales.unidad_peso }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col fw-bold">
+                                                    <p>Presión Arterial: </p>
+                                                </div>
+                                                <div class="col">
+                                                    <p>{{ signos_vitales.valor_presion_arterial_sistolica }}/{{ signos_vitales.valor_presion_arterial_diastolica }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col fw-bold">
+                                                    <p>Saturación Oxigeno: </p>
+                                                </div>
+                                                <div class="col">
+                                                    <p>{{ signos_vitales.valor_saturacion_oxigeno }} %</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>  
+                    </div>   
                 </div>
-            </div>  
+                <!--Consulta-->
+                <div class="col-md-12 col-lg-8">
+                    <!--Datos Consulta-->
+                    <div class="col-12 py-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-secondary">Datos de Consulta</h5>
+                                <hr class="dropdown-divider">
+            
+                                <form  method="post">
+                                    {% csrf_token %}
+                                    {{ form.non_field_errors }}
+                                    <div class="pt-2">      
+                                        {{consulta_form.diagnostico.errors}}
+                                        <label  for="{{ consulta_form.sintoma.id_for_label }}" class="form-label" >Sintomas</label>
+                                        <textarea name="{{consulta_form.sintoma.name}}" id="{{consulta_form.sintoma.id_for_label}}"  class="form-control" rows="3" maxlength="200">{{consulta_form.sintoma.value}}</textarea>
+                                    </div>
+                                    <div class="pt-2">
+                                        {{consulta_form.sintoma.errors}}
+                                        <label for="{{ consulta_form.diagnostico.id_for_label }}" class="form-label">Diagnostico</label>
+                                        <textarea name="{{consulta_form.diagnostico.name}}" id="{{consulta_form.diagnostico.id_for_label}}" class="form-control" rows="3" maxlength="200">{{consulta_form.diagnostico.value}}</textarea>
+                                    </div>
+                                    <!--Botones-->
+                                    <div class="row pt-3">
+                                        <div class="col-md-12 col-lg-4">
+                                            <input type="submit" class="btn btn-outline-success "  value="Guardar">
+                                        </div>
+                                        <div class="col-md-12 col-lg-8 text-end">
+                                            <a class="btn btn-outline-secondary w-0 my-1"  data-bs-toggle="modal" data-bs-target="#agregarReceta">
+                                                <div class="row align-items-center">
+                                                    <div class="col-2">
+                                                        <span class="material-symbols-outlined g-0 w-0">
+                                                            medication_liquid
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-10 text-center">
+                                                        Receta Medica
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta" hidden>
+                                                <div class="row align-items-center">
+                                                    <div class="col-2">
+                                                        <span class="material-symbols-outlined g-0 w-0">
+                                                            emergency
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-10 text-center">
+                                                        Referencia Medica
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta" hidden>
+                                                <div class="row align-items-center">
+                                                    <div class="col-2">
+                                                        <span class="material-symbols-outlined g-0 w-0">
+                                                            biotech
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-10 text-center">
+                                                        Orden de Examen
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>                        
+                    </div>                   
+                </div>
+            </div>
         </div>
-    
-       
-        <!--Datos Consulta-->
-        <div class="col-12 py-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title text-secondary">Datos de Consulta</h5>
-                    <hr class="dropdown-divider">
+        <!--Control Subsecuente-->
+        <div class="tab-pane fade" id="nav-control" role="tabpanel" aria-labelledby="nav-control-tab">
+            Control
+        </div>
+        <!--Hoja de Evoluación-->
+        <div class="tab-pane fade" id="nav-evolucion" role="tabpanel" aria-labelledby="nav-evolucion-tab">
+            Evolución
+        </div>
+        <!--Documentos-->
+        <div class="tab-pane fade" id="nav-documentos" role="tabpanel" aria-labelledby="nav-documentos-tab">
+            Documentos
+        </div>
+      </div>
 
-                    <form  method="post">
-                        {% csrf_token %}
-                        {{ form.non_field_errors }}
-                        <div class="pt-2">      
-                            {{consulta_form.diagnostico.errors}}
-                            <label  for="{{ consulta_form.sintoma.id_for_label }}" class="form-label" >Sintomas</label>
-                            <textarea name="{{consulta_form.sintoma.name}}" id="{{consulta_form.sintoma.id_for_label}}"  class="form-control" rows="3" maxlength="200">{{consulta_form.sintoma.value}}</textarea>
-                        </div>
-                        <div class="pt-2">
-                            {{consulta_form.sintoma.errors}}
-                            <label for="{{ consulta_form.diagnostico.id_for_label }}" class="form-label">Diagnostico</label>
-                            <textarea name="{{consulta_form.diagnostico.name}}" id="{{consulta_form.diagnostico.id_for_label}}" class="form-control" rows="3" maxlength="200">{{consulta_form.diagnostico.value}}</textarea>
-                        </div>
-                        <!--Botones-->
-                        <div class="row pt-3">
-                            <div class="col-md-12 col-lg-4">
-                                <input type="submit" class="btn btn-outline-success "  value="Guardar">
-                            </div>
-                            <div class="col-md-12 col-lg-8 text-end">
-                                <a class="btn btn-outline-secondary w-0 my-1"  data-bs-toggle="modal" data-bs-target="#agregarReceta">
-                                    <div class="row align-items-center">
-                                        <div class="col-2">
-                                            <span class="material-symbols-outlined g-0 w-0">
-                                                medication_liquid
-                                            </span>
-                                        </div>
-                                        <div class="col-10 text-center">
-                                            Receta Medica
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta" hidden>
-                                    <div class="row align-items-center">
-                                        <div class="col-2">
-                                            <span class="material-symbols-outlined g-0 w-0">
-                                                emergency
-                                            </span>
-                                        </div>
-                                        <div class="col-10 text-center">
-                                            Referencia Medica
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta" hidden>
-                                    <div class="row align-items-center">
-                                        <div class="col-2">
-                                            <span class="material-symbols-outlined g-0 w-0">
-                                                biotech
-                                            </span>
-                                        </div>
-                                        <div class="col-10 text-center">
-                                            Orden de Examen
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>                        
-        </div>
-    </div>
+    
 
     <!--Modal Agregar medicamento  DC-61 -->
     <div class="modal" tabindex="-1" id="agregarReceta"  aria-hidden="true" aria-labelledby="modalTitle">
