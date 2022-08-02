@@ -22,6 +22,7 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from dateutil.relativedelta import relativedelta
 from django.views import View 
+from django.views.generic import View, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -530,6 +531,8 @@ class ReferenciaMedicaUpdate(View):
             }
             return JsonResponse(response)
 
+class ReferenciaMedicaPdf(TemplateView):
+    template_name='expediente/referencia/reporteReferenciaMedica.html'
   
         
 
