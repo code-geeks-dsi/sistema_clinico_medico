@@ -73,12 +73,13 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="pt-2">
+                                        {% for signo_vital in signos_vitales %}
                                             <div class="row">
                                                 <div class="col fw-bold">
                                                     <p>Temperatura: </p>
                                                 </div>
                                                 <div class="col">
-                                                    <p>{{ signos_vitales.valor_temperatura }} {{ signos_vitales.unidad_temperatura }}</p>
+                                                    <p>{{ signo_vital.valor_temperatura }} {{ signo_vital.unidad_temperatura }}</p>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -86,7 +87,7 @@
                                                     <p>Frecuencia Cardiaca: </p>
                                                 </div>
                                                 <div class="col">
-                                                    <p>{{ signos_vitales.valor_frecuencia_cardiaca }} {{ signos_vitales.unidad_frecuencia_cardiaca }}</p>
+                                                    <p>{{ signo_vital.valor_frecuencia_cardiaca }} {{ signo_vital.unidad_frecuencia_cardiaca }}</p>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -94,7 +95,7 @@
                                                     <p>Peso: </p>
                                                 </div>
                                                 <div class="col">
-                                                    <p>{{ signos_vitales.valor_peso }} {{ signos_vitales.unidad_peso }}</p>
+                                                    <p>{{ signo_vital.valor_peso }} {{ signo_vital.unidad_peso }}</p>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -102,7 +103,7 @@
                                                     <p>Presión Arterial: </p>
                                                 </div>
                                                 <div class="col">
-                                                    <p>{{ signos_vitales.valor_presion_arterial_sistolica }}/{{ signos_vitales.valor_presion_arterial_diastolica }}</p>
+                                                    <p>{{ signo_vital.valor_presion_arterial_sistolica }}/{{ signo_vital.valor_presion_arterial_diastolica }}</p>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -110,9 +111,10 @@
                                                     <p>Saturación Oxigeno: </p>
                                                 </div>
                                                 <div class="col">
-                                                    <p>{{ signos_vitales.valor_saturacion_oxigeno }} %</p>
+                                                    <p>{{ signo_vital.valor_saturacion_oxigeno }} %</p>
                                                 </div>
                                             </div>
+                                        {% endfor %}
                                         </div>
                                     </div>
                                 </div>
@@ -132,16 +134,8 @@
                                 <form  method="post">
                                     {% csrf_token %}
                                     {{ form.non_field_errors }}
-                                    <div class="pt-2">      
-                                        {{consulta_form.diagnostico.errors}}
-                                        <label  for="{{ consulta_form.sintoma.id_for_label }}" class="form-label" >Sintomas</label>
-                                        <textarea name="{{consulta_form.sintoma.name}}" id="{{consulta_form.sintoma.id_for_label}}"  class="form-control" rows="3" maxlength="200">{{consulta_form.sintoma.value}}</textarea>
-                                    </div>
-                                    <div class="pt-2">
-                                        {{consulta_form.sintoma.errors}}
-                                        <label for="{{ consulta_form.diagnostico.id_for_label }}" class="form-label">Diagnostico</label>
-                                        <textarea name="{{consulta_form.diagnostico.name}}" id="{{consulta_form.diagnostico.id_for_label}}" class="form-control" rows="3" maxlength="200">{{consulta_form.diagnostico.value}}</textarea>
-                                    </div>
+                                    {{ consulta_form.as_p }}
+                                    
                                     <!--Botones-->
                                     <div class="row pt-3">
                                         <div class="col-md-12 col-lg-4">

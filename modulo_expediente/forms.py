@@ -82,18 +82,22 @@ class ConsultaFormulario(ModelForm):
     fields=['consulta_por','presente_enfermedad','examen_fisico','diagnostico']
     widgets = {
             'consulta_por': forms.Textarea(attrs={
+                                                  'class': 'form-control', 
                                                   "rows":5,
                                                   "cols":20
                                                   }),
             'presente_enfermedad': forms.Textarea(attrs={
+                                                  'class': 'form-control',               
                                                   "rows":5,
                                                   "cols":20
                                                   }),
             'examen_fisico': forms.Textarea(attrs={
+                                                  'class': 'form-control',  
                                                   "rows":5,
                                                   "cols":20
                                                   }),
             'diagnostico': forms.Textarea(attrs={
+                                                  'class': 'form-control',  
                                                   "rows":5,
                                                   "cols":20
                                                   }),

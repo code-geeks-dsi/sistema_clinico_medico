@@ -9,7 +9,7 @@ class SignosVitalesManager(models.Manager):
         }
         if datos["empleado"].roles.codigo_rol =='ROL_ENFERMERA':
             try:
-                self.filter(id_signos_vitales=datos["id_signos"]).update(
+                self.filter(consulta=datos["id_consulta"]).update(
                     unidad_temperatura=datos["unidad_temperatura"],
                     unidad_peso=datos["unidad_peso"],
                     valor_temperatura=datos["valor_temperatura"],
