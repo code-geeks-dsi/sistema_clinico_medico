@@ -8,7 +8,7 @@ from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
     RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica)
-from modulo_control.models import Enfermera, Empleado, Rol
+from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
     ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm)
 from django.http import JsonResponse
@@ -93,16 +93,15 @@ def agregar_cola(request, id_paciente):
             numero=1
         
         #Creando objetos signos vitales
-        signosvitales=SignosVitales()
+
         #signosvitales.enfermera=Enfermera.objects.get(id_enfermera=CODIGO_EMPLEADO)
-        signosvitales.save()
+
         #Creando objeto Consulta
         consulta=Consulta()
-        consulta.signos_vitales_id=signosvitales.id_signos_vitales
         consulta.save()
         #receta medica
         receta=RecetaMedica()
-        receta.Consulta=consulta
+        receta.consulta=consulta
         receta.save()
         #Creando Objeto contieneCola
         contieneconsulta=ContieneConsulta()
