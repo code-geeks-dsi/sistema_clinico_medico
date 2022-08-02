@@ -1,0 +1,30 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Referencia Medica {% endblock %}
+{% block content %}
+        <form method="post" id="referencia-medica">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Guardar">
+            </form>
+<script>
+        {% if update %}
+        $('#referencia-medica').submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                type: 'POST',
+                url: $("form").attr("action"),
+                data: $("form").serialize(), 
+                success: function(response) { 
+                        toastr[response.type](response.data); 
+                },
+                });
+        });
+        {% endif %}
+</script>
+{% endblock %}

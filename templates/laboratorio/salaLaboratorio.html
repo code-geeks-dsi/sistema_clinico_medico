@@ -1,0 +1,459 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Sala de Espera Laboratorio{% endblock %}
+{% block content %}
+<div class="container py-2 rounded">
+  <div class="row g-0">
+    <h2 class="fw-bold text-secondary">Sala de Espera</h2>
+    <div class="col-12 col-md-12">
+      <!--Busqueda por Apellidos-->
+      {% if rol == ROL_SECRETARIA or rol == ROL_DOCTOR %}
+      <div class="input-group  py-4">
+          <span class="input-group-text bg-white" id="basic-addon1">
+            <span class="material-symbols-outlined btn-sm" id="search_voff">face</span>
+          </span>
+          <input type="text" class="form-control" id="id_apellido_paciente" placeholder="Apellidos" aria-label="Nombres" aria-describedby="basic-addon1">
+          {% if rol == ROL_SECRETARIA %}
+          <span class="input-group-text bg-white" id="filtro_buscar">
+            <span class="material-symbols-outlined btn btn-sm" id="" data-bs-toggle="modal" data-bs-target="#busquedaPacienteModal">search</span>
+          </span>
+          {% elif rol == ROL_DOCTOR %}
+          <input type="date" name="fecha_consulta" id="fecha_consulta" class="form-control" style="max-width: fit-content;">
+          <span class="input-group-text bg-white" id="filtro_buscar">
+            <span class="material-symbols-outlined btn btn-sm" >search</span>
+          </span>
+          {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    <!--Boton abregar nuevo -->
+    {% if rol == ROL_SECRETARIA  %}
+    <div class="col-lg-12 pb-3 text-end">
+      <div class="text-end">
+        <a href="{% url 'crear_expediente'%}" class="btn btn-outline-secondary" id="buscar-nombre" >Abrir Expediente Nuevo</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+<div class="container">
+    <div class="row g-0">
+    
+      <!--Navegación Entre Consultas y Examenes de Laboratorio-->
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        {% if rol == ROL_LIC_LABORATORIO %}
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#consultaMedica" type="button" role="tab" aria-controls="home" aria-selected="true">Examenes de Laboratorio</button>  
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="profile-tab"data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Examenes Pendientes</button>
+        </li>
+        {% elif rol == ROL_SECRETARIA  %}
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" href="{% url 'sala_consulta' %}" id="profile-tab" >Consulta Medica</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#consultaMedica" type="button" role="tab" aria-controls="home" aria-selected="true">Examenes de Laboratorio</button>  
+        </li>
+        {% endif %}
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="consultaMedica" role="tabpanel" aria-labelledby="home-tab">
+          <!--Tabla de pacientes en cola-->
+          <div class="table-responsive">
+            <table class="table table-bordered text-center bg-white">
+                <thead class="table-secondary">
+                  <tr>
+                    
+                    <th scope="col">Numero Cola</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellidos</th>
+                    <th scope="col">Sexo</th> 
+                    <th scope="col">Edad</th>  
+                    <th scope="col">Examen</th>            
+                    <th scope="col">Fase</th>                                        
+                    <th scope="col">Fecha</th>    
+                    <th scope="col">Consumo</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Cambiar<br/>Fase</th>     
+                    {% if rol == ROL_LIC_LABORATORIO %}               
+                    <th scope="col">Elaborar<br/>Resultado</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tbody id="tabla_cola">
+                  
+                </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <!--Tabla de examenes Pendientes--> 
+          <div class="table-responsive">
+            <table class="table table-bordered text-center bg-white">
+                <thead class="table-secondary">
+                  <tr>                    
+                    <th scope="col">Numero Cola</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellidos</th>  
+                    <th scope="col">Examen</th>            
+                    <th scope="col">Fase</th>                                        
+                    <th scope="col">Fecha</th>    
+                    <th scope="col">Consumo</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Cambiar<br/>Fase</th>     
+                    {% if rol == ROL_LIC_LABORATORIO %}               
+                    <th scope="col">Elaborar<br/>Resultado</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tbody id="tabla_cola_pendientes">
+                  
+                </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+      </div>
+
+
+      <!--Modal Datos del Paciente-->
+      <div class="modal fade" id="busquedaPacienteModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Paciente a Cola</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <!--Tabla de pacientes buscados-->
+                <div class="table-responsive" id="tabla_busqueda">
+                  <table class="table table-bordered text-center">
+                    <thead class="table-secondary">
+                      <tr>
+                          <th>ID</th>
+                          <th>Nombre</th>
+                          <th>Apellidos</th>
+                          <th>Fecha Nacimiento</td>
+                          <th>Sexo</th>
+                          <th>Direccion</th>
+                          <th>Email</th>
+                          <th>Responsable</th>
+                          <th>Agregar Examen</th>
+                        </tr>
+                    </thead>
+                    <tbody  id="datos_pacientes">
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!--Modal seleccionar Examen-->
+      <div class="modal" tabindex="-1" id="modalSelectExamen"  aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Seleccionar Examen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <!--Datos del paciente-->
+                  <p class="fw-bold text-secondary">Datos del Paciente</p>
+                  <hr class="dropdown-divider">
+                  <div class="row">
+                    <div class="col-md-12 col-lg-6">
+                      <div class="mb-3">
+                        <label for="nombrePaciente" class="form-label">Nombre del paciente:</label>
+                        <input type="text" class="form-control" id="nombrePaciente" aria-describedby="emailHelp" disabled>
+                      </div>
+                    </div>
+                    <div class="col-md-12 col-lg-6">
+                      <div class="mb-3">
+                        <label for="edadPaciente" class="form-label">Edad del paciente:</label>
+                        <input type="text" class="form-control" id="edadPaciente" aria-describedby="emailHelp" disabled>
+                      </div>
+                    </div>
+                  </div>
+                  <input type="text" id="pacienteId" hidden>
+                  <!--Datos del Examen-->
+                  <p class="fw-bold text-secondary pt-2">Examen a Realizar</p>
+                  <hr class="dropdown-divider">
+                  <div class="row">
+                    <div class="col-md-12 col-lg-6">
+                      <div class="mb-3">
+                        <label for="selectCategoria" class="form-label">Seleccione el Perfil</label>
+                        <select id="selectCategoria" class="form-select">
+                          {% for c in Categoria %}
+                            <option value="{{ c.id_categoria }}">{{ c.descripcion_categoria }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-12 col-lg-6">
+                      <div class="mb-3">
+                        <label for="selectExamen" class="form-label">Seleccione el Examen</label>
+                        <select id="selectExamen" class="form-select">
+                          {% for e in Examen %}
+                            <option value="{{ e.examen_laboratorio.id_examen_laboratorio }}">{{ e.examen_laboratorio.nombre_examen }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary"
+                    onclick="agregarExamen();">Save changes</button>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>   
+</div>
+
+{% endblock %}
+<!--Js de la vista-->
+{% block js %}
+<script src="{% static 'js/laboratorioBusqueda.js' %}"></script>
+<script>
+  {% if rol == ROL_SECRETARIA %}
+  let tabla_examenes_cola_pendientes=document.getElementById("tabla_cola");
+  {% else %}
+  let tabla_examenes_cola_pendientes=document.getElementById("tabla_cola_pendientes");
+  {% endif %}
+  // let tabla;
+  let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
+  let socket_url=`${ws_scheme}://${window.location.host}/ws/laboratorio/cola/`;
+  const colaLaboratorioSocket=new WebSocket(socket_url);
+    colaLaboratorioSocket.onmessage=(message)=>{
+      let data=JSON.parse(message.data);
+      tabla_examenes_cola_pendientes.innerHTML=null; 
+
+      if(data.type=='warning'){
+        toastr[data.type](`${data.data}`);
+        {% if rol == ROL_LIC_LABORATORIO %}
+        tabla.insertAdjacentHTML("beforeend", `<tr colspan="10" ><td colspan="10" style="text-align:center">${data.data}</td></tr>`);
+        {% elif rol == ROL_SECRETARIA %}
+        tabla.insertAdjacentHTML("beforeend", `<tr colspan="9" ><td colspan="9" style="text-align:center">${data.data}</td></tr>`);
+        {% endif %}
+      }else{
+        data.data.forEach(examenItem => {
+          console.log(examenItem);
+        //Recorre los elemntos del objeto
+        let elemento='<tr>';
+        const nodeFila = document.createElement("tr");
+        for (const property in examenItem) {
+            /**
+             * Si es lic de lab entonces se recive una url que redirige a la elaboracion de resultados, si es secretaria entonces le envia el el id_expediente y el id_resultados
+             * ya que la combinacion de estos es la key primary de espera examen
+            */
+          {% if rol == ROL_LIC_LABORATORIO %}
+            if(property!='url_resultado'&& property!='id_resultado' && property!='id_expediente'){
+          {% elif rol == ROL_SECRETARIA %}
+            if(property!='id_resultado' && property!='id_expediente' && property!='url_resultado_pdf'){
+          {% endif %}
+            /** 
+             * desplegando cada atributo del examen en una columna que luego es agregada a una fila
+             * que es agregada a la tabla luego de agregar el boton de cambiar fase o elaborar 
+             * resultados de examen
+             */
+              const nodeColumna = document.createElement("td");
+              const textnode = document.createTextNode(`${examenItem[property]}`);
+              nodeColumna.appendChild(textnode);
+              nodeFila.appendChild(nodeColumna);
+              
+          }
+          
+        }
+        /**
+         * Agregando el boton de cambiar fase o elaborar resultados de examen
+        */
+        let nodeColumna = document.createElement("td");
+      {% if rol == ROL_LIC_LABORATORIO %}
+        nodeColumna.innerHTML=`<div 
+                              class="material-symbols-outlined btn btn-outline-primary"
+                              onclick="cambiar_fase(${examenItem['id_resultado']},${examenItem['id_expediente']})">done</div>`;
+        nodeFila.appendChild(nodeColumna);
+        nodeColumna = document.createElement("td");
+        nodeColumna.innerHTML=`<a href="${examenItem['url_resultado']}" target="_blank"><div class="material-symbols-outlined btn btn-outline-primary">open_in_new</div></a>`;
+
+      {% elif rol == ROL_SECRETARIA %}
+        if(examenItem['fase_examenes_lab']=='Resultados en Proceso'){
+          nodeColumna.innerHTML=`<button type="button"
+                              class="material-symbols-outlined btn btn-primary" disabled>done</button>`;
+        }else if(examenItem['fase_examenes_lab']=='Resultados Listos'||examenItem['fase_examenes_lab']=='Resultados Entregado'){
+          nodeColumna.innerHTML=`<a target="_blank"
+                              class="material-symbols-outlined btn btn-outline-success"
+                              href="${examenItem['url_resultado_pdf']}" >download</a>`;
+        }else{
+          nodeColumna.innerHTML=`<button type="button"
+                              class="material-symbols-outlined btn btn-outline-primary"
+                              onclick="cambiar_fase(${examenItem['id_resultado']},${examenItem['id_expediente']})">done</button>`;
+        }
+        
+      {% endif %}
+        nodeFila.appendChild(nodeColumna);      
+        tabla_examenes_cola_pendientes.appendChild(nodeFila);            
+        });
+      }
+
+    }
+</script>
+<script>
+$( "#side_laboratorio" ).addClass( "active" );
+const url = "{% url 'autocompletado_apellidos' %}";
+const urlFiltro = "{% url 'busqueda_paciente' %}";
+const complementoConsulta = "?apellido_paciente=";
+const id_component="id_apellido_paciente";
+const id_modal="AgregarCola";
+const tablaResultado = "datos_pacientes"; //El id de una tabal en la que saldran los resultados
+const tablaColaConsulta="tabla_cola";
+
+const url_consulta="{% url 'get_contieneConsulta' %}"
+let tablaCola=document.getElementById(tablaColaConsulta);
+let tablaData=document.getElementById(tablaResultado);
+
+let cargando=false;
+
+// al agregar examen de laboratorio a la cola, retorna json para notificar
+function agregarExamen(){
+  
+  let id_examen_laboratorio=$('#selectExamen').val()
+
+  let id_paciente=parseInt(document.getElementById('pacienteId').value);
+  if(cargando==false){
+    cargando=true;
+    $.ajax({
+    url: url_consulta,
+        url:"{% url 'agregar_examen_cola' %}",
+        type:"POST",
+        dataType: "json",
+        headers: {
+                  'X-CSRFToken': "{{csrf_token }}"
+                },
+        data: {
+                'id_paciente':id_paciente,
+                'id_examen_laboratorio':id_examen_laboratorio
+              },
+        success: function(data){ 
+          $('#modalSelectExamen').modal('hide');
+          $('#busquedaPacienteModal').modal('hide');
+          toastr[data.type](`${data.data}`);
+          colaLaboratorioSocket.send(JSON.stringify({
+              'message':'sync'
+            }));
+          cargando=false;
+        }
+    });
+  } 
+}
+    
+ //Al presionar la lupa
+{% if rol == ROL_SECRETARIA %}
+document.getElementById("filtro_buscar").addEventListener("click",function(){
+  getDatosFiltrados(tablaData, id_component,urlFiltro, complementoConsulta);
+});
+{% endif %}
+//Invocando Funciones
+getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
+//llenando la cola de pacientes por defecto
+// {% if rol == ROL_SECRETARIA %}
+// get_cola_examenes(1);
+// {% endif %}
+function cambiar_fase(id_resultado,id_expediente) {
+  $.ajax({
+    url: url_consulta,
+    {% if rol == ROL_LIC_LABORATORIO %}
+    url: "{% url 'cambiar_fase_laboratorio' %}",
+    {% else %}
+    url: "{% url 'cambiar_fase_secretaria' %}",
+    {% endif %}
+    type:"POST",
+    dataType: "json",
+    headers: {
+                  'X-CSRFToken': "{{csrf_token }}"
+      }, data: {
+        'id_expediente':id_expediente,
+        'id_resultado':id_resultado
+      },
+    success: function(data){ 
+      toastr[data.type](`${data.data}`);
+      colaLaboratorioSocket.send(JSON.stringify({
+              'message':'sync'
+            }));
+
+    }
+  });
+}
+function descargar_examen(id_resultado) {
+  $.ajax({
+    url: url_consulta,
+    url: "{% url 'cambiar_fase_secretaria' %}",
+    type:"GET",
+    dataType: "json",
+    data: {
+        'id_expediente':id_expediente,
+        'id_resultado':id_resultado
+      },
+    success: function(data){ 
+      toastr[data.type](`${data.data}`);
+      colaLaboratorioSocket.send(JSON.stringify({
+              'message':'sync'
+            }));
+    }
+  });
+}
+
+
+
+function accionServer(id, accion){
+      let url_accion="";
+      switch (accion){
+        case 2:
+          url_accion="/laboratorio/examen/";
+          url_agregar_cola=url_accion+id;
+          metodo="GET";
+          break;
+      }
+
+      $.ajax({
+        url: url_consulta,
+                url: url_agregar_cola,
+                type:metodo,
+                dataType: "json",
+                data: {
+                  
+                },
+                success: function(data){ 
+                  switch(data.accion){
+                    case 2:
+                      $('#selectExamen').fadeIn(1000).html(data);
+                      let selectExamen=document.getElementById('selectExamen');
+                      selectExamen.innerHTML=null
+                      let elemento=""
+                      data.data.map((x)=>{
+                        elemento= elemento+'<option value="'+x.id_examen+'">'+x.nombre_examen+'</option>';
+                      });
+                      selectExamen.insertAdjacentHTML("beforeend", elemento);
+                      break;
+                  }           
+                }
+      });
+
+    }
+</script>
+
+{% endblock %}

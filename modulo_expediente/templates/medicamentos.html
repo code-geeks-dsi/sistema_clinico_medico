@@ -1,0 +1,49 @@
+{% extends "baseControl.html" %}
+{% load static %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+{% block titulo %} Medicamentos {% endblock %}
+{% block content %}
+
+<body>
+<div class="container py-2 rounded">
+    <div class="row g-0">
+        <h1 class="fw-bold text-secondary">Registro de Medicamentos</h1>
+            <form class="" method="POST">
+                <div class="col-12  pt-3">
+                    <div class="row w-0">
+                        {% csrf_token %}
+                        {% for field in formulario.visible_fields %}
+                            <div class="col-12 col-md-6">
+                                <div class="">
+                                    <label for="exampleInputPassword1" class="form-label pt-4">{{field.label}}</label>
+                                    {{field}}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-lg-12 pb-3 text-end">
+                    <div class="text-end pt-4">
+                        <input type="submit" class="btn btn-outline-primary rounded"  value="Guardar Datos">
+                    </div>
+                </div>  
+            </form>   
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}
+{% block js %}
+<script>
+    $( "#side_nuevo_medicamento" ).addClass( "active" );
+    '{% for message in messages %}'
+        '{% if message.tags %}'
+        toastr[ '{{ message.tags }}' ]( '{{ message }}' );
+        '{% endif %}'
+    '{% endfor %}'
+</script>
+{% endblock %}

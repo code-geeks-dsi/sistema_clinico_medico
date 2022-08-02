@@ -1,0 +1,122 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} {{ nombre_examen }} {% endblock %}
+{% block content %}
+<!--Datos del paciente-->
+<div class="container pt-1">
+        <div class="card">
+                <div class="card-body">
+                        <h2 class="card-title text-secondary">Datos del Paciente</h2>
+                        <hr class="dropdown-divider">
+                        <div class="row">
+                                <div class="col-6 col-md-2">
+                                        <div class="pt-2 fw-bold">
+                                                <p>Nombre: </p>
+                                                <p>Apellido: </p>
+                                        </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                        <div class="pt-2">
+                                                <p>{{ paciente.nombre_paciente }}</p>
+                                                <p>{{ paciente.apellido_paciente }}</p>
+                                        </div>
+                                </div>
+                                <div class="col-6 col-md-2">
+                                        <div class="pt-2 fw-bold">
+                                                <p>Edad: </p>
+                                                <p>Sexo: </p>
+                                        </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                        <div class="pt-2">
+                                                <p>{{ edad.years }} años</p>
+                                                <p>{{ paciente.get_sexo_paciente_display }}</p>
+                                        </div>
+                                </div>
+                                <div class="col-6 col-md-2">
+                                        <div class="pt-2 fw-bold">
+                                                <p>Email: </p>
+                                        </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                        <div class="pt-2">
+                                                <p>{{ paciente.email_paciente }}</p>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+<!--Ingresar Resultados-->
+<div class="container pt-2">
+        <div class="card">
+                <div class="card-body">
+                        <h5 class="card-title text-secondary">Examen: {{ nombre_examen }}</h5>
+                        <hr class="dropdown-divider">
+                        <form action="" method="post" id="form">
+                                {% csrf_token %}
+                                {{ formset.management_form }}
+                                <div class="row">
+                                        {% for form in formset %}
+                                        <div class="col-8 col-md-4 pt-2">
+                                                <label for="{{form.dato.id_for_label}}" class="form-label">{{form.nombre_parametro.value}}</label>
+                                                {{form.dato}}
+                                        </div>
+                                        <div class="col-4 col-md-2 pt-2">
+                                                <label class="form-label text-white">Unidad</label>
+                                                <div class="input-group-text">
+                                                        {{form.unidad_parametro.value}}
+                                                </div>
+                                        </div>
+                                        {% endfor %}
+                                </div>
+                                <div class="row">
+                                        <div class="col-6">
+                                                <div class="pt-3 text-center">
+                                                        <div class="spinner-border text-primary" role="status" id="load">
+                                                                <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <div class="col-6">
+                                                <div class="pt-3 text-end">
+                                                        <button class="btn btn-outline-success" type="submit" id="btn_guardar_resultado">Guardar</button>
+                                                </div>
+                                        </div>
+                                </div>
+                        </form>
+                </div>
+        </div>
+
+</div>
+{% endblock %}
+{% block js %}
+<!--Js de la vista-->
+<script>
+    //Recueperando la fase de examen
+    let fase_examen = "{{fase}}"
+
+    $('#load').hide();
+    $("form").on("submit", function (event) {
+        $('#load').show();
+        event.preventDefault();
+        var formValues = $(this).serialize();
+
+        $.post('{{request.path}}', formValues, function (data) {
+            $('#load').hide();
+            toastr[data.type](`${data.data}`);
+        });
+    });
+
+    if(fase_examen == "3" || fase_examen =="4" || fase_examen=="5"){
+        console.log("Restringido");
+        $('.form-control').attr("disabled", true);
+        $('#btn_guardar_resultado').hide();
+    }  
+</script>
+{% endblock %}

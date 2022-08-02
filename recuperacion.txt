@@ -1,0 +1,40 @@
+
+views
+
+from django.views import View 
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+
+class ConstanciaMedicaView(View):
+
+    def get(self, request, *args, **kwargs):
+        id = self.kwargs['id'] 
+        # constancia = ConstanciaMedica.objects.get(id_constancia_medica=id)
+        context  = {'id':id}
+        return render(request, 'expediente/constancia_medica.html', context)
+
+    def post(self, request, *args, **kwargs): 
+        pass
+
+class ConstanciaMedicaCreate(CreateView):
+    model = ConstanciaMedica
+    template_name = 'expediente/crear_constancia_medica.html'
+    fields = ['dias_reposo','fecha_de_emision','consulta','diagnostico_constancia',]
+    success_url = reverse_lazy('constancia-medica',
+                            kwargs={'id': 1},)
+
+urls
+from modulo_expediente.views import buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate
+
+path('constancia-medica/<str:id>',ConstanciaMedicaView.as_view(),name='constancia-medica'),
+path('constancia-medica/',ConstanciaMedicaCreate.as_view(),name='crear-constancia-medica')
+
+
+crear_constancia_medica.html
+   <form method="post" >{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Save">
+            </form>
+
+constancia_medica.html        
+{{id}}

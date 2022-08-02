@@ -1,0 +1,455 @@
+{% extends "baseControl.html" %}
+{% load static %}
+{% block titulo %} Administración de Empleados {% endblock %}
+{% block content %}
+<div class="container pt-1">
+    <h2 class="fw-bold text-secondary">Administración de Empleados</h2>    
+</div>
+<div class="container pt-4 d-none d-sm-block">
+    <div class="row ">
+        <div class="col-lg-4">
+            <div class="p-3 border rounded text-secondary">Empleados registrados:</div>
+        </div>
+        <div class="col-lg-4">
+            <div class="p-3 border rounded text-secondary">Empleados habilitados:</div>
+        </div>
+        <div class="col-lg-4">
+            <div class="p-3 border rounded text-secondary">Empleados inactivos: </div>
+        </div>
+    </div>
+</div>
+<div class="container pt-4">
+    <div class="row">
+        <div class="col-9 col-lg-11">
+        <!--Busqueda por Apellidos-->
+            <div class="input-group  py-4">
+                <span class="input-group-text bg-white d-none d-sm-block" id="basic-addon1">
+                    <span class="material-symbols-outlined btn-sm " id="search_voff">face</span>
+                </span>
+                <input type="text" class="form-control" id="id_apellido_paciente" placeholder="Apellidos" aria-label="Nombres" aria-describedby="basic-addon1">
+                <span class="input-group-text bg-white" id="filtro_buscar">
+                    <span class="material-symbols-outlined btn btn-sm" id="" data-bs-toggle="modal" data-bs-target="#busquedaPacienteModal">search</span>
+                </span>
+            </div>
+        </div>
+        <!--Agregar Empleado-->
+        <div class="col-3 col-lg-1">
+            <div class="input-group py-4 text-center px-1">
+                <span class="input-group-text bg-white" id="basic-addon1">
+                    <span class="material-symbols-outlined btn btn-sm" id="btn_agregar_empleado" data-bs-toggle="modal" data-bs-target="#agregarEmpleadoModal">person_add</span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container pt-4">
+    <!--Tabla de pacientes buscados-->
+    <div class="table-responsive" id="tabla_busqueda">
+        <table class="table table-bordered text-center">
+            <thead class="table-secondary">
+            <tr>
+                <th>#</th>
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Rol</td>
+                <th>Administrar</th>
+                </tr>
+            </thead>
+            <tbody  id="datos_empleado">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <!--Modal Crear Empleado-->
+    <div class="modal fade" id="agregarEmpleadoModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100" id="titulo_modal"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              <div class="container">
+                
+                <form class="row g-3 needs-validation" action="" autocomplete="off" novalidate id="form_empleados">
+                    <div class="col-12">
+                        <div class="fw-bold border-bottom bg-secondary text-white">
+                            Datos Personales
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="validationCustom01" class="form-label">Nombres</label>
+                      <input type="text" class="form-control" id="id_nombre_empleado" value="" required>
+                      <div class="valid-feedback">
+                        ¡Correcto!
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="validationCustom02" class="form-label">Apellidos</label>
+                      <input type="text" class="form-control" id="id_apellido_empleado" value="" required>
+                      <div class="valid-feedback">
+                        ¡Correcto!
+                      </div>
+                    </div>
+                    
+                    <!--Dirección-->
+                    <div class="col-md-4">
+                        <label for="validationCustom02" class="form-label">Direccion</label>
+                        <input type="text" class="form-control" id="id_direccion_empleado" value="" required>
+                        <div class="valid-feedback">
+                          ¡Correcto!
+                        </div>
+                      </div>
+                    <!--Fecha nacimiento-->
+                    <div class="col-md-4">
+                        <label for="id_fecha_nacimiento" class="form-label">Fecha de nacimiento</label> 
+                        <input type="date" class="form-control" placeholder="Select a date" id="id_fecha_nacimiento" required>
+                        <div class="valid-feedback">
+                            ¡Correcto!
+                        </div>
+                    </div>
+                    <!--Sexo-->
+                    <div class="col-md-4">
+                        <label for="validationCustom04" class="form-label">Sexo</label>
+                        <select class="form-select" id="id_select_sexo" required>
+                          <option selected disabled value="">Selecione...</option>
+                          <option value="1">Maculino</option>
+                          <option value="2">Femenino</option>
+                        </select>
+                        <div class="invalid-feedback">
+                          Seleccione el sexo.
+                        </div>
+                    </div>
+                    <!--Separador-->
+                    <div class="col-12" id="inicio_sesion_datos">
+                        <div class="fw-bold border-bottom bg-secondary text-white">
+                            Datos de inicio de sesión
+                        </div>
+                        <div class="row">
+                          <!--Email-->
+                          <div class="col-md-6" id="div_email">
+                            <label for="validationCustomUsername" class="form-label">Email</label>
+                            <div class="input-group has-validation">
+                              <span class="input-group-text" id="inputGroupPrepend">@</span>
+                              <input type="text" class="form-control" id="id_email_empleado" aria-describedby="inputGroupPrepend" required>
+                              <div class="invalid-feedback">
+                                Ingrese el correo electrónico.
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+
+                          </div>
+                          <!--Password-->
+                          <div class="col-md-6 pt-4" div="div_password">
+                            <label for="validationCustomUsername" class="form-label">Contraseña</label>
+                            <div class="input-group has-validation">
+                              <input type="password" class="form-control" id="id_password_empleado" aria-describedby="inputGroupPrepend" required>
+                              <div class="invalid-feedback" id="passwordError">
+                                Ingrese una contraseña.
+                              </div>
+                            </div>
+                          </div>
+                          <!--Password 2-->
+                          <div class="col-md-6 pt-4" div="div_password">
+                            <label for="validationCustomUsername" class="form-label">Validar Contraseña</label>
+                              <div class="input-group has-validation">
+                                <input type="password" class="form-control" id="id_password_empleado_2" aria-describedby="inputGroupPrepend" required>
+                                <div class="invalid-feedback" id="passwordError2">
+                                  Ingrese una contraseña.
+                                </div>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                    <!--Separador Roles-->
+                    <div class="col-12">
+                        <div class="fw-bold border-bottom bg-secondary text-white">
+                            Roles
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <p class="form-label">Seleccione el cargo del empleado: </label>
+                    </div>
+                    <div class="col-lg-6">
+                        <select class="form-select" id="id_select_rol" required>
+                            <option selected disabled value="">Selecione...</option>
+                            {% for i in Rol %}
+                            <option value="{{ i.id_rol }}">{{ i.nombre_rol }}</option>
+                            {% endfor %}
+                          </select>
+                          <div class="invalid-feedback">
+                            Seleccione un rol.
+                          </div>
+                    </div>
+                    <div class="col-12" id="permitir_login">
+                      <div class='form-check form-switch'>
+                        <input class='form-check-input' name="login_switch" type='checkbox' id='login_switch'>
+                        <label class='form-check-label' for='login_switch'>Permitir inicio de sesión</label
+                      ></div>
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button class="btn btn-success" id="guardar_empleado" >Guardar Datos</button>
+                        <button class="btn btn-success" id="btn_editar_empleado" >Modificar Datos</button>
+                    </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+<script>
+    $( "#side_gestion_usuarios" ).addClass( "active" );
+    url="{% url 'registrarEmpleado' %}";
+    let nombres;
+    let apellidos;
+    let email;
+    let password;
+    let direccion;
+    let fecha_nacimiento;
+    let sexo;
+    const url_consulta="{% url 'listaEmpleados' %}"
+    const url_edit="{% url 'editarEmpleado' %}"
+    let tablaEmpleados=document.getElementById('datos_empleado');
+    let tituloModal = document.getElementById('titulo_modal');
+
+    consultarEmpleados(url_consulta, tablaEmpleados);
+
+    document.getElementById("guardar_empleado").addEventListener("click",function(){
+        nombres =  document.getElementById("id_nombre_empleado").value;
+        apellidos =  document.getElementById("id_apellido_empleado").value;
+        email = document.getElementById("id_email_empleado").value;
+        password = document.getElementById("id_password_empleado").value;
+        password2 = document.getElementById("id_password_empleado_2").value;
+        direccion = document.getElementById("id_direccion_empleado").value;
+        fecha_nacimiento = document.getElementById("id_fecha_nacimiento").value;
+        sexo = $('#id_select_sexo').val();
+        rol = $('#id_select_rol').val();
+
+        if ($("id_password_empleado").length <8){
+                $("id_password_empleado").addClass("is-invalid");
+                document.getElementById("passwordError").innerHTML=null;
+                parrafoError="<p>Debe tener almenos 6 caracteres.</p>";
+                document.getElementById("passwordError").insertAdjacentHTML("beforeend",parrafoError);
+              }
+        if (nombres!="", apellidos!="", email!="", password!="", direccion!="",fecha_nacimiento!="", sexo!=""){
+            //is-invalid
+          $.ajax({
+            url: url,
+            type:"POST",
+            dataType: "json",
+            data: {
+                'nombre_empleado':nombres,
+                'apellido_empleado':apellidos,
+                'email_empleado':email,
+                'password_empleado':password,
+                'password_empleado_2':password2,
+                'direccion_empleado':direccion,
+                'fecha_nacimiento':fecha_nacimiento,
+                'sexo_empleado':sexo,
+                'rol_empleado':rol
+            },
+            success: function(data){  
+                toastr[data.type](data.data);
+                //Si la contraseña es invalida
+                if (data.pass =="0"){
+                    password = document.getElementById("id_password_empleado");
+                    password2 = document.getElementById("id_password_empleado_2");
+                    parrafoError="<p>"+data.data+"</p>";
+                    document.getElementById("passwordError").innerHTML=null;
+                    document.getElementById("passwordError").insertAdjacentHTML("beforeend",parrafoError);
+                    document.getElementById("passwordError2").innerHTML=null;
+                    document.getElementById("passwordError2").insertAdjacentHTML("beforeend",parrafoError);
+                    password.value = password.value.substring(0, password.value.length - password.value.length);
+                    password2.value = password2.value.substring(0, password2.value.length - password2.value.length);
+                }
+                //Si todo esta correcto
+                if (data.type =="success"){
+                    tablaEmpleados.innerHTML=null;
+                    consultarEmpleados(url_consulta, tablaEmpleados);
+                    $('#id_select_sexo').val("");
+                    $('#id_select_rol').val("");
+                    $('#id_fecha_nacimiento').val("");
+                    $('#id_email_empleado').val("");
+                    $('#id_direccion_empleado').val("");
+                    $('#id_nombre_empleado').val("");
+                    $('#id_apellido_empleado').val("");
+                    $('#id_password_empleado').val("");
+                    $('#id_password_empleado_2').val("");
+                    document.getElementById('form_empleados').reset();
+                    $('#form_empleados').removeClass("was-validated");
+
+                }
+            }
+        });
+        }
+    });
+    //Presionar el boton agregar empleados
+    document.getElementById("btn_agregar_empleado").addEventListener("click", function(){
+        tituloModal.innerHTML=null;
+        tituloModal.innerHTML="Agregar Empleado";
+        $('#guardar_empleado').show(); 
+        $('#btn_editar_empleado').hide();
+        $('#id_select_sexo').val("");
+        $('#id_select_rol').val("");
+        $('#id_fecha_nacimiento').val("");
+        $('#id_email_empleado').val("");
+        $('#id_direccion_empleado').val("");
+        $('#id_nombre_empleado').val("");
+        $('#id_apellido_empleado').val("");
+        $('#id_password_empleado').val("");
+        $('#id_password_empleado_2').val("");
+        $('#permitir_login').hide();
+        $('#inicio_sesion_datos').show();
+        document.getElementById('form_empleados').reset();
+        $('#form_empleados').removeClass("was-validated");
+
+
+    })
+    
+    function consultarEmpleados(url_consulta, tablaEmpleados,data={}){
+      $.ajax({
+                url: url_consulta,
+                dataType: "json",
+                data: data,
+                success: function(data){  
+                  let elemento;
+                  //console.log(data);
+                  //limpia la tabla de resultados
+                  tablaEmpleados.innerHTML=null;
+                  //si no hay resultados muestra un mensaje de que no hay resultados
+                  if (data.length==0){
+                    elemento='<tr><td colspan="100%">No hay pacientes en espera</td></tr>';
+                    tablaEmpleados.insertAdjacentHTML("beforeend", elemento);
+                  }else{
+                    //llenado de tabla
+                    numero=1;
+                    data.map((x)=>{
+                        elemento='<tr>';
+                        elemento='<td>'+numero+'</td><td class="text-uppercase">';
+                    for (const property in x) {
+                        elemento = elemento+`${x[property]}`+'</td><td>';
+                    }
+                    elemento= elemento+ '<div onClick="accionServer('+"'"+Object.values(x)[0]+"'"+');"'+ "class="+"'material-symbols-outlined btn'"+" data-bs-toggle='modal' data-bs-target='#agregarEmpleadoModal'>"+"manage_accounts</div></td>";
+                    elemento=elemento+'</tr>';
+                    numero = numero +1;
+                    
+                    
+                    
+                    tablaEmpleados.insertAdjacentHTML("beforeend", elemento);
+                    });
+                  }
+                }
+            });
+    }
+    
+    function accionServer(id){
+        //Ocultar boton
+        $('#guardar_empleado').hide(); 
+        $('#btn_editar_empleado').show();  
+        let tituloModals = document.getElementById('titulo_modal');
+        let url_get_paciente="/control/empleados/lista/"+id;
+        tituloModals.innerHTML=null;
+        tituloModals.innerHTML="Editar Empleado";
+        $('#inicio_sesion_datos').hide();
+        $('#permitir_login').show();
+
+      $.ajax({
+        url: url_consulta,
+                url: url_get_paciente,
+                dataType: "json",
+                data: {
+
+                },
+                success: function(data){
+                    document.getElementById('id_nombre_empleado').value=data[0].nombres; 
+                    apellidos =  document.getElementById("id_apellido_empleado").value=data[0].apellidos;
+                    
+                    direccion = document.getElementById("id_direccion_empleado").value=data[0].direccion;
+                    $('#id_fecha_nacimiento').val(data[0].fechaNacimiento);
+                    $('#id_select_sexo').val(data[0].sexo);
+                    $('#id_select_rol').val(data[0].roles);
+
+                    edit = document.getElementById("btn_editar_empleado");
+                    edit.setAttribute("OnClick", "edit_Empleado("+"'"+id+"'"+");")
+                    $('#login_switch').prop("checked", data[0].es_activo);
+                    //console.log($('input:checkbox[name=login_switch]:checked').val())
+
+                    //toastr[data.type](data.data);           
+                    //consultarCola(url_consulta, tablaCola);
+                }
+      });
+      
+    }
+    
+    function edit_Empleado(cod_empleado){
+        //console.log(id_empleado);
+        let is_active;
+        if ($('input:checkbox[name=login_switch]:checked').val()=="on"){
+          is_active=1;
+        }
+        else {is_active = 0;}
+
+
+        $.ajax({
+            url: url_edit,
+            type:"POST",
+            dataType: "json",
+            data: {
+                'nombre_empleado':$('#id_nombre_empleado').val(),
+                'apellido_empleado':$('#id_apellido_empleado').val(),
+                'email_empleado':$('#id_email_empleado').val(),
+                'password_empleado':$('#id_password_empleado').val(),
+                'direccion_empleado':$('#id_direccion_empleado').val(),
+                'fecha_nacimiento':$('#id_fecha_nacimiento').val(),
+                'sexo_empleado':$('#id_select_sexo').val(),
+                'rol_empleado':$('#id_select_rol').val(),
+                'es_activo': is_active,
+                'cod_empleado':cod_empleado
+            },
+            success: function(data){  
+                toastr[data.type](data.data);
+                if (data.type =="success"){
+                    tablaEmpleados.innerHTML=null;
+                    consultarEmpleados(url_consulta, tablaEmpleados);
+                    document.getElementById('form_empleados').reset();
+                    $('#form_empleados').removeClass("was-validated");
+
+                }
+            }
+        });
+        console.log(is_active);
+    }
+
+</script>
+<script>  
+    (function () {
+    'use strict'
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll('.needs-validation')
+    let parrafoError;
+
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms)
+      .forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+
+          form.classList.add('was-validated')
+          event.stopPropagation()
+        }, false)
+      })
+  })()
+  </script>
+{% endblock %}
