@@ -138,6 +138,7 @@ class Hospital(models.Model):
 class ReferenciaMedica(models.Model):
     id_referencia_medica= models.AutoField(primary_key=True)
     consulta=models.ForeignKey('Consulta',models.DO_NOTHING,null=False, blank=False)
+    consulta_por=models.TextField(max_length=200, blank=True, null=False)
     hospital=models.ForeignKey('Hospital',models.DO_NOTHING,null=False, blank=False)
     especialidad=models.CharField(max_length=30,null=False, blank=False)
     fecha_referencia=models.DateField(default=datetime.now,null=False, blank=False)
