@@ -446,8 +446,17 @@ def buscar_expediente(request):
 class ConstanciaMedicaView(View):
 
     def get(self, request, *args, **kwargs):
-        
-        data={}
+        id_consulta=int(self.kwargs['id_consulta'])
+        #Consultando datos de la doctora
+        doctora=Doctor.objects.get(empleado=request.user)
+        jvmp=doctora.jvmp
+        #consultando datos del paciente
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        paciente=contiene_consulta.expediente.id_paciente
+        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        fecha=date.today()
+        constanciamedica=ConstanciaMedica.objects.filter(consulta__id_consulta=id_consulta)
+        data={'nombre':doctora,'jvmp':jvmp,'paciente':paciente,'edad':edad,'fecha':fecha, 'constanciamedica':constanciamedica}
         #generando pdf
         #puede recibir la info como diccionario
         html_string = render_to_string('expediente/constancia/reporteConstanciaMedica.html',data)
