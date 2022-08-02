@@ -124,6 +124,12 @@ class ReferenciaMedicaForm(ModelForm):
       fields='__all__'
       exclude=['consulta']
       widgets={
+        'consulta_por': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        ),
         'hospital': Select(
             attrs={'class': 'form-select'
           } 
