@@ -9,20 +9,19 @@
     <h1>Constancia Médica</h1>
     <i>A quien interese:</i>
     <p>
-      Por medio de la presente, yo doctor en medicina general, {{empleado.nombres}} con J.V.P.M. N. {{empleado.jvpm}}; doy fe de haber conocido Y tratado 
-      durante varios años al paciente {{paciente.nombre_paciente}} de {{edad.years}} años, quien presentaba los 
+      Por medio de la presente, yo doctor en medicina general, {{nombre}} con J.V.P.M. N. {{jvmp}}; doy fe de haber conocido Y tratado 
+      durante varios años al paciente {{paciente.nombre_paciente}} {{paciente.apellido_paciente}} de {{edad.years}} años, quien presentaba los 
       siguientes diagnósticos:
     </p>
-    <ol>
-      <li>XXXX</li>
-      <li>XXXX</li>
-      <li>XXXX</li>
-      <li>XXXX</li>
-    </ol>
-    <p>Por lo cual se extiende la presente el día {{fecha.date}}</p><br><br><br>
+      <ol>
+        {% for c in constanciamedica %}
+          <li>{{c.diagnostico_constancia}}</li><br>
+        {% endfor %}
+      </ol>
+    <p>Por lo cual se extiende la presente el día {{fecha}}</p><br><br><br>
     <p>F:________________________</p>
     <p>{{empleado.nombres}}</p>
-    <p>J.V.P.M   N.{{empleado.jvpm}} </p>
+    <p>J.V.P.M   N.{{jvmp}} </p>
 </html>
 
 
