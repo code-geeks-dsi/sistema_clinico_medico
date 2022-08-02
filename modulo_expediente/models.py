@@ -17,7 +17,7 @@ class Expediente(models.Model):
     id_paciente=models.OneToOneField('Paciente', models.CASCADE, blank=False, null=False)
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
     codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
-    contiene_consulta=models.ManyToManyField('Consulta',through='contieneConsulta')#blank=False,null=False, no se utilizan en ManyToMany fields.W122
+    contiene_consulta=models.ManyToManyField('Consulta',through='ContieneConsulta')#blank=False,null=False, no se utilizan en ManyToMany fields.W122
     def __str__(self):
         return str(self.id_expediente)+" - "+str(self.id_paciente.nombre_paciente)
 
@@ -82,7 +82,7 @@ class SignosVitales(models.Model):
         ('Kgs','Kilogramos'),
     )
     id_signos_vitales= models.AutoField(primary_key=True)
-    #consulta=models.ForeignKey(Consulta,on_delete=models.DO_NOTHING,null=False, blank=False)
+    consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
     enfermera=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
     unidad_temperatura=models.CharField(max_length=1,choices=UNIDADES_TEMPERATURA,null=False, blank=True,default=2)
     unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True,default=1)
@@ -101,9 +101,23 @@ class SignosVitales(models.Model):
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
-    signos_vitales= models.OneToOneField('SignosVitales',on_delete=models.DO_NOTHING,null=False, blank=False)
+    consulta_por=models.TextField(max_length=200, blank=True, null=False)
+    presente_enfermedad=models.TextField(max_length=200, blank=True, null=False)
+    examen_fisico=models.TextField(max_length=200, blank=True, null=False)
     diagnostico=models.TextField(max_length=200, blank=True, null=False)
-    sintoma=models.TextField(max_length=200, blank=True, null=False)
+    fecha=models.DateTimeField(auto_now_add=True)
+
+class EvolucionConsulta(models.Model):
+    id_evolucion= models.AutoField(primary_key=True)
+    consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
+    observacion=models.TextField(max_length=200, blank=True, null=False)
+    fecha=models.DateTimeField(auto_now_add=True)
+
+class ControlSubsecuente(models.Model):
+    id_control_subsecuente= models.AutoField(primary_key=True)
+    consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
+    observacion=models.TextField(max_length=200, blank=True, null=False)
+    fecha=models.DateTimeField(auto_now_add=True)
 
 class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)
@@ -124,7 +138,7 @@ class Hospital(models.Model):
 class ReferenciaMedica(models.Model):
     id_referencia_medica= models.AutoField(primary_key=True)
     consulta=models.ForeignKey('Consulta',models.DO_NOTHING,null=False, blank=False)
-    hospital=models.ForeignKey(Hospital,models.DO_NOTHING,null=False, blank=False)
+    hospital=models.ForeignKey('Hospital',models.DO_NOTHING,null=False, blank=False)
     especialidad=models.CharField(max_length=30,null=False, blank=False)
     fecha_referencia=models.DateField(default=datetime.now,null=False, blank=False)
 
@@ -132,7 +146,7 @@ class ReferenciaMedica(models.Model):
 
 class RecetaMedica(models.Model):
     id_receta_medica= models.AutoField(primary_key=True)
-    Consulta = models.ForeignKey(Consulta, on_delete=models.CASCADE,null=False, blank=False)
+    consulta = models.ForeignKey('Consulta', on_delete=models.CASCADE,null=False, blank=False)
     def __str__(self):
         return str(self.id_receta_medica)+" - Consultata: "+str(self.Consulta.id_consulta)
 
@@ -210,8 +224,8 @@ class Dosis(models.Model):
     unidad_frecuencia_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False,default=OPCIONES_TIEMPO[0][0])
     cantidad_dosis=models.DecimalField(decimal_places=2,max_digits=5,null=False,blank=False,default=1,validators=[MinValueValidator(1)])
     unidad_de_medida_dosis=models.CharField(choices=UNIDADES_DE_MEDIDA_DOSIS,max_length=17,null=False,blank=False,default=UNIDADES_DE_MEDIDA_DOSIS[14][0])
-    medicamento=models.ForeignKey(Medicamento,on_delete=models.DO_NOTHING,null=False, blank=False)
-    receta_medica=models.ForeignKey(RecetaMedica,on_delete=models.DO_NOTHING,null=False, blank=False)
+    medicamento=models.ForeignKey('Medicamento',on_delete=models.DO_NOTHING,null=False, blank=False)
+    receta_medica=models.ForeignKey('RecetaMedica',on_delete=models.DO_NOTHING,null=False, blank=False)
     class Meta:
         unique_together = (('medicamento', 'receta_medica'),)
     def __str__(self):

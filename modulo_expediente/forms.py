@@ -76,22 +76,27 @@ class IngresoMedicamentos(ModelForm):
             ),
         }
 class ConsultaFormulario(ModelForm):
-  # diagnostico=forms.CharField(widget=forms.Textarea(attrs={"rows":5, "cols":20}))
-  # sintoma=forms.CharField(widget=forms.Textarea(attrs={"resize": "vertical",
-  #   'min-width': '-webkit-fill-available'}))
+  
   class Meta:
     model=Consulta
-    fields=['diagnostico','sintoma']
+    fields=['consulta_por','presente_enfermedad','examen_fisico','diagnostico']
     widgets = {
+            'consulta_por': forms.Textarea(attrs={
+                                                  "rows":5,
+                                                  "cols":20
+                                                  }),
+            'presente_enfermedad': forms.Textarea(attrs={
+                                                  "rows":5,
+                                                  "cols":20
+                                                  }),
+            'examen_fisico': forms.Textarea(attrs={
+                                                  "rows":5,
+                                                  "cols":20
+                                                  }),
             'diagnostico': forms.Textarea(attrs={
                                                   "rows":5,
                                                   "cols":20
                                                   }),
-            'sintoma': forms.Textarea(attrs={
-                                                  "rows":5,
-                                                  "cols":20
-                                                  })
-
               }
 class DosisFormulario(ModelForm):
   medicamento= forms.ModelChoiceField(queryset=Medicamento.objects.all())
