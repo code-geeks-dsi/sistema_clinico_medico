@@ -25,6 +25,11 @@ from django.views import View
 from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.template.loader import get_template
+from weasyprint import HTML
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import tempfile
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -329,6 +334,7 @@ def editar_consulta(request,id_consulta):
         else:
             consulta_form=ConsultaFormulario(instance=consulta)
         edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        referencias_medicas= ReferenciaMedica.objects.filter(consulta=consulta)
         datos={
             'paciente':paciente,
             'signos_vitales':signos_vitales,
@@ -337,7 +343,8 @@ def editar_consulta(request,id_consulta):
             'consulta_form':consulta_form,
             'edad':edad,
             'dosis_form':DosisFormulario(),
-            'dosis':dosis
+            'dosis':dosis,
+            'referencias':referencias_medicas
         }
         
         return render(request,"expediente/consulta.html",datos)
@@ -439,11 +446,32 @@ def buscar_expediente(request):
 class ConstanciaMedicaView(View):
 
     def get(self, request, *args, **kwargs):
-        id = self.kwargs['id'] 
-        # constancia = ConstanciaMedica.objects.get(id_constancia_medica=id)
-        context  = {'id':id}
-        return render(request, 'expediente/constancia_medica.html', context)
-
+        id_consulta=int(self.kwargs['id_consulta'])
+        #Consultando datos de la doctora
+        doctora=Doctor.objects.get(empleado=request.user)
+        jvmp=doctora.jvmp
+        #consultando datos del paciente
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        paciente=contiene_consulta.expediente.id_paciente
+        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        fecha=date.today()
+        constanciamedica=ConstanciaMedica.objects.filter(consulta__id_consulta=id_consulta)
+        data={'nombre':doctora,'jvmp':jvmp,'paciente':paciente,'edad':edad,'fecha':fecha, 'constanciamedica':constanciamedica}
+        #generando pdf
+        #puede recibir la info como diccionario
+        html_string = render_to_string('expediente/constancia/reporteConstanciaMedica.html',data)
+        html = HTML(string=html_string, base_url=request.build_absolute_uri())
+        result = html.write_pdf()
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="constanciaMedica.pdf"'
+        response['Content-Transfer-Encoding'] = 'binary'
+        #Crea un archivo temporal
+        with tempfile.NamedTemporaryFile(delete=True) as output:
+            output.write(result)
+            output.flush()
+            output = open(output.name, 'rb')
+            response.write(output.read())
+        return response
     def post(self, request, *args, **kwargs): 
         #crear constancia medica
         pass
