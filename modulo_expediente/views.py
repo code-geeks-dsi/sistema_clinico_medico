@@ -454,9 +454,8 @@ class ConstanciaMedicaView(View):
         contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
         paciente=contiene_consulta.expediente.id_paciente
         edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
-        fecha=date.today()
         constanciamedica=ConstanciaMedica.objects.filter(consulta__id_consulta=id_consulta)
-        data={'nombre':doctora,'jvmp':jvmp,'paciente':paciente,'edad':edad,'fecha':fecha, 'constanciamedica':constanciamedica}
+        data={'nombre':doctora,'jvmp':jvmp,'paciente':paciente,'edad':edad, 'constanciamedica':constanciamedica}
         #generando pdf
         #puede recibir la info como diccionario
         html_string = render_to_string('expediente/constancia/reporteConstanciaMedica.html',data)
@@ -479,6 +478,7 @@ class ConstanciaMedicaView(View):
     def put(self, request, *args, **kwargs): 
         #update constancia medica
         pass
+
 
 class ConstanciaMedicaCreate(CreateView):
     model = ConstanciaMedica
