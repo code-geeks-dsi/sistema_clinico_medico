@@ -1,0 +1,54 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>PDF</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <header>
+    <div class="box">
+      <img src="{% static 'img/encabezado.png' %}"  alt=""/>
+    </div>
+  </header>
+  <body>
+    <p>Nombre del paciente:</p>
+    <p>Dirección:</p>
+    <p>Nombre del Resposable:</p>
+    <div>
+        <a>Teléfono:</a>
+        <a>Edad:</a>
+        <a>Fecha:</a>
+    </div>
+    <div>
+        <a>Peso:</a>
+        <a>Sat%:</a>
+        <a>Pulso:</a>
+        <a>Temperatura:</a>
+    </div>
+    <p>CX:</p>
+    <p>Referencia:</p>
+
+
+  </body>
+</html>
+<style>
+    @page {
+      margin: 2.50cm;
+      margin-left: 2.25cm;
+      margin-right: 2.25cm;
+    }
+    body{
+      font-size: 15px;
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      color:#171E31;
+    }
+    .box {
+      border: #243F60 3px solid;
+      margin: 10px;
+      padding: 5px;
+      border-radius:25px;
+      text-align: center;
+      padding-bottom: 5px;
+    }
+  </style>
