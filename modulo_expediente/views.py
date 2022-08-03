@@ -31,6 +31,7 @@ from weasyprint import HTML
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
+
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -531,8 +532,24 @@ class ReferenciaMedicaUpdate(View):
             }
             return JsonResponse(response)
 
-class ReferenciaMedicaPdf(TemplateView):
-    template_name='expediente/referencia/reporteReferenciaMedica.html'
+class ReferenciaMedicaPdf(View):
+        def get(self, request, *args, **kwargs):
+            
+            #generando pdf
+            #puede recibir la info como diccionario
+            html_string = render_to_string('expediente/referencia/reporteReferenciaMedica.html')
+            html = HTML(string=html_string, base_url=request.build_absolute_uri())
+            result = html.write_pdf()
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'inline; filename="constanciaMedica.pdf"'
+            response['Content-Transfer-Encoding'] = 'binary'
+            #Crea un archivo temporal
+            with tempfile.NamedTemporaryFile(delete=True) as output:
+                output.write(result)
+                output.flush()
+                output = open(output.name, 'rb')
+                response.write(output.read())
+            return response
   
         
 
