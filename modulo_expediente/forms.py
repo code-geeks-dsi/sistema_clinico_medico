@@ -1,5 +1,6 @@
 
 from dataclasses import fields
+from tkinter import Widget
 from django import forms
 from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
@@ -113,3 +114,27 @@ class ReferenciaMedicaForm(ModelForm):
       model=ReferenciaMedica
       fields='__all__'
       exclude=['consulta']
+      widgets={
+        'hospital': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+        'especialidad': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese la espacialidad.',
+              }
+        ),
+        'fecha_referencia': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese el nombre generico del medicamento',
+               'aria-disabled':"true",
+              }
+        ),
+        'fecha_referencia': forms.DateInput(
+                format=('%Y-%m-%d'),
+                attrs={'class': 'form-control', 
+               'placeholder': 'Select a date',
+               'type': 'date'
+              }),
+
+      }

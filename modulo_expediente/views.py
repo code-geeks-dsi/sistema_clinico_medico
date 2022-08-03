@@ -8,7 +8,7 @@ from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
     RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica)
-from modulo_control.models import Enfermera, Empleado, Rol
+from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
     ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm)
 from django.http import JsonResponse
