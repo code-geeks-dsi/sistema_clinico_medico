@@ -249,3 +249,4 @@ class ConstanciaMedica(models.Model):
     fecha_de_emision=models.DateField(default=datetime.now, blank=False, null=False)
     dias_reposo=models.IntegerField(blank=False, null=False)#Los integer no llevan max_length
     diagnostico_constancia=models.TextField(blank=True, null=True)
+    acompanante=models.CharField(blank=True,null=False,max_length=50)
