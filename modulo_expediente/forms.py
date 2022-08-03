@@ -3,7 +3,10 @@ from dataclasses import fields
 from django import forms
 from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
-from .models import Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica, ConstanciaMedica
+from .models import (
+  Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
+  ConstanciaMedica
+)
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
@@ -76,22 +79,31 @@ class IngresoMedicamentos(ModelForm):
             ),
         }
 class ConsultaFormulario(ModelForm):
-  # diagnostico=forms.CharField(widget=forms.Textarea(attrs={"rows":5, "cols":20}))
-  # sintoma=forms.CharField(widget=forms.Textarea(attrs={"resize": "vertical",
-  #   'min-width': '-webkit-fill-available'}))
+  
   class Meta:
     model=Consulta
-    fields=['diagnostico','sintoma']
+    fields=['consulta_por','presente_enfermedad','examen_fisico','diagnostico']
     widgets = {
-            'diagnostico': forms.Textarea(attrs={
+            'consulta_por': forms.Textarea(attrs={
+                                                  'class': 'form-control', 
                                                   "rows":5,
                                                   "cols":20
                                                   }),
-            'sintoma': forms.Textarea(attrs={
+            'presente_enfermedad': forms.Textarea(attrs={
+                                                  'class': 'form-control',               
                                                   "rows":5,
                                                   "cols":20
-                                                  })
-
+                                                  }),
+            'examen_fisico': forms.Textarea(attrs={
+                                                  'class': 'form-control',  
+                                                  "rows":5,
+                                                  "cols":20
+                                                  }),
+            'diagnostico': forms.Textarea(attrs={
+                                                  'class': 'form-control',  
+                                                  "rows":5,
+                                                  "cols":20
+                                                  }),
               }
 class DosisFormulario(ModelForm):
   medicamento= forms.ModelChoiceField(queryset=Medicamento.objects.all())
@@ -114,6 +126,12 @@ class ReferenciaMedicaForm(ModelForm):
       fields='__all__'
       exclude=['consulta']
       widgets={
+        'consulta_por': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        ),
         'hospital': Select(
             attrs={'class': 'form-select'
           } 
@@ -144,3 +162,14 @@ class ConstanciaMedicaForm(ModelForm):
       fields='__all__'
       exclude=['consulta']
       
+class HojaEvolucionForm(ModelForm):
+    class Meta:
+      model=EvolucionConsulta
+      fields=['observacion']
+      widgets={
+        'observacion': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        )}

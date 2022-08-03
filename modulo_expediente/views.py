@@ -1,4 +1,5 @@
 import json
+from urllib import response
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
@@ -7,10 +8,11 @@ from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
-    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica)
+    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente)
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
-    ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm)
+    ConsultaFormulario, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, 
+    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm)
 from django.http import JsonResponse
 from datetime import date
 from django.urls import reverse
@@ -29,6 +31,7 @@ from weasyprint import HTML
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
+from django.db.models import F, Func, Value, CharField
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -92,16 +95,17 @@ def agregar_cola(request, id_paciente):
             numero=1
         
         #Creando objetos signos vitales
-        signosvitales=SignosVitales()
+
         #signosvitales.enfermera=Enfermera.objects.get(id_enfermera=CODIGO_EMPLEADO)
-        signosvitales.save()
+
         #Creando objeto Consulta
         consulta=Consulta()
-        consulta.signos_vitales_id=signosvitales.id_signos_vitales
         consulta.save()
+        #Se crean los signos vitales, para que funcione de igual forma la función de actualizar
+        SignosVitales.objects.create(consulta=consulta)
         #receta medica
         receta=RecetaMedica()
-        receta.Consulta=consulta
+        receta.consulta=consulta
         receta.save()
         #Creando Objeto contieneCola
         contieneconsulta=ContieneConsulta()
@@ -266,10 +270,10 @@ def crear_expediente(request):
 
   
 @csrf_exempt
-def modificar_signosVitales(request, id_signos_vitales):
+def modificar_signosVitales(request, id_consulta):
     datos={
         "empleado":request.user,
-        "id_signos":int(id_signos_vitales),
+        "id_consulta":int(id_consulta),
         "unidad_temperatura":request.POST['unidad_temperatura'],
         "unidad_peso":request.POST['unidad_peso'],
         "valor_temperatura":request.POST['valor_temperatura'],
@@ -280,8 +284,7 @@ def modificar_signosVitales(request, id_signos_vitales):
         "valor_saturacion_oxigeno":request.POST['valor_saturacion_oxigeno'],
     }
     response=SignosVitales.objects.modificar_signos_vitales(datos)
-    consulta=Consulta.objects.get(signos_vitales_id=id_signos_vitales)
-    contieneConsulta=ContieneConsulta.objects.get(consulta_id=consulta.id_consulta)
+    contieneConsulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
     contieneConsulta.fase_cola_medica="3"
     contieneConsulta.save()
 
@@ -319,9 +322,9 @@ def editar_consulta(request,id_consulta):
     if request.user.roles.codigo_rol =='ROL_DOCTOR':
         contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
         paciente=contiene_consulta.expediente.id_paciente
-        signos_vitales=contiene_consulta.consulta.signos_vitales
-        consulta=Consulta.objects.get(id_consulta=id_consulta)
-        receta=RecetaMedica.objects.get(Consulta=consulta)
+        signos_vitales=SignosVitales.objects.filter(consulta=contiene_consulta.consulta)
+        consulta=contiene_consulta.consulta
+        receta=RecetaMedica.objects.get(consulta=consulta)
         dosis=Dosis.objects.filter(receta_medica=receta)
         if request.method=='POST':
             consulta_form=ConsultaFormulario(request.POST,instance=consulta)
@@ -340,6 +343,7 @@ def editar_consulta(request,id_consulta):
             'id_consulta':id_consulta,
             'id_receta':receta.id_receta_medica,
             'consulta_form':consulta_form,
+            'hoja_evolucion_form':HojaEvolucionForm(),
             'edad':edad,
             'dosis_form':DosisFormulario(),
             'dosis':dosis,
@@ -528,6 +532,37 @@ class ReferenciaMedicaUpdate(View):
                 'data':'Guardado!'
             }
             return JsonResponse(response)
+
+class CreateHojaEvolucion(View):
+    form_class = HojaEvolucionForm
+
+    def post(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta']) 
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            nota=form.save(commit=False)
+            nota.consulta=Consulta.objects.get(id_consulta=id_consulta)
+            nota.save()
+            response={
+                'type':'success',
+                'data':'Guardado!'
+            }
+            return JsonResponse(response) 
+
+class ListaHojaEvolucion(View):
+    def get(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta'])
+        data = list(EvolucionConsulta.objects.filter(consulta__id_consulta=id_consulta).annotate(
+        fecha_hora=Func(
+            F('fecha'),
+            Value('DD/MM/YYYY HH:MM:SS'),
+            function='to_char',
+            output_field=CharField()
+        )).values('observacion','fecha_hora','id_evolucion'))
+        return JsonResponse({'data':data}) 
+
+
+
 
   
 class ConstanciaMedicaView(View):

@@ -27,11 +27,14 @@
 				Datos de la Referencia.
 			</div>
 			<div class="card-body">
-				<h5 class="card-title"></h5>
 				<form method="post" id="referencia-medica">
 					{% csrf_token %}
-					{{ form.as_p }}
-					<div class="text-end">
+                                        {% for field in form %}
+                                        <label class="form-label fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+                                        {{ field }}
+                                        <p></p>
+                                        {% endfor %}
+					<div class="text-end pt-4">
 						<input class="btn btn-outline-primary" type="submit" value="Guardar">
 					</div>
 				</form>

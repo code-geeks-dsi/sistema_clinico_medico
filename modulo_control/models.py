@@ -13,7 +13,7 @@ def crear_codigo(nombres,apellidos):
         texto=texto+year
         
         try:
-            correlativo = correlativo = Empleado.objects.filter(codigo_empleado__startswith=texto).last().codigo_empleado
+            correlativo = Empleado.objects.filter(codigo_empleado__startswith=texto).last().codigo_empleado
             correlativo=int(correlativo[4:])
         except:
             correlativo=0
@@ -133,37 +133,37 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
         return self.es_superuser
 
 
-class Permiso(models.Model):
-    id_permiso = models.AutoField(primary_key=True)
-    empleado = models.ManyToManyField('Empleado', through='PermisoEmpleado')
-    nombre_permiso=models.CharField(max_length=20, null=False, blank= False)
-    descripcion_permiso=models.CharField(max_length=80, null=False, blank=False)
-    def __str__(self):
-        return self.nombre_permiso
+# class Permiso(models.Model):
+#     id_permiso = models.AutoField(primary_key=True)
+#     empleado = models.ManyToManyField('Empleado', through='PermisoEmpleado')
+#     nombre_permiso=models.CharField(max_length=20, null=False, blank= False)
+#     descripcion_permiso=models.CharField(max_length=80, null=False, blank=False)
+#     def __str__(self):
+#         return self.nombre_permiso
 
-class PermisoEmpleado(models.Model):
-    empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
-    permiso=models.ForeignKey('Permiso', on_delete=models.CASCADE)
-    def __str__(self):
-        return self.permiso
+# class PermisoEmpleado(models.Model):
+#     empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+#     permiso=models.ForeignKey('Permiso', on_delete=models.CASCADE)
+#     def __str__(self):
+#         return self.permiso
 
-class JefeFinanzas(models.Model):
-    id_jefe_finanzas=models.AutoField(primary_key=True)
-    empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
-    def __str__(self):
-        return self.empleado.nombres
+# class JefeFinanzas(models.Model):
+#     id_jefe_finanzas=models.AutoField(primary_key=True)
+#     empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+#     def __str__(self):
+#         return self.empleado.nombres
 
-class JefeRecursosHumanos(models.Model):
-    id_jefe_recursos_humanos=models.AutoField(primary_key=True)
-    empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
-    def __str__(self):
-        return self.empleado.nombres
+# class JefeRecursosHumanos(models.Model):
+#     id_jefe_recursos_humanos=models.AutoField(primary_key=True)
+#     empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+#     def __str__(self):
+#         return self.empleado.nombres
 
-class JefeMarketing(models.Model):
-    id_jefe_marketing=models.AutoField(primary_key=True)
-    empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
-    def __str__(self):
-        return self.empleado.nombres
+# class JefeMarketing(models.Model):
+#     id_jefe_marketing=models.AutoField(primary_key=True)
+#     empleado=models.ForeignKey('Empleado', on_delete=models.CASCADE)
+#     def __str__(self):
+#         return self.empleado.nombres
 
 class Enfermera(models.Model):
     id_enfermera=models.AutoField(primary_key=True)
@@ -179,11 +179,11 @@ class Doctor(models.Model):
     def __str__(self):
         return self.empleado.nombres
 
-class Clinica(models.Model):
-    id_clinica=models.AutoField(primary_key=True,unique=True)
-    nombre_clinica=models.CharField(max_length=40,null=False,blank=False)
-    direccion_clinica=models.CharField(max_length=80,null=False,blank=False)
-    telefono_clinica=models.CharField(max_length=8,null=False,blank=False)
+# class Clinica(models.Model):
+#     id_clinica=models.AutoField(primary_key=True,unique=True)
+#     nombre_clinica=models.CharField(max_length=40,null=False,blank=False)
+#     direccion_clinica=models.CharField(max_length=80,null=False,blank=False)
+#     telefono_clinica=models.CharField(max_length=8,null=False,blank=False)
     
 class Secretaria(models.Model):
     id_secretaria=models.AutoField(primary_key=True, null=False, blank=False)
@@ -198,8 +198,8 @@ class LicLaboratorioClinico(models.Model):
     def __str__(self):
         return self.empleado.nombres
 
-class LaboratorioClinico(models.Model):
-    id_laboratorio= models.AutoField(primary_key=True, null=False, blank=False)
-    nombre_laboratorio = models.CharField(max_length=50, null=False, blank=False)
-    codigo_laboratorio = models.CharField(max_length=10, null=False, blank=False)
+# class LaboratorioClinico(models.Model):
+#     id_laboratorio= models.AutoField(primary_key=True, null=False, blank=False)
+#     nombre_laboratorio = models.CharField(max_length=50, null=False, blank=False)
+#     codigo_laboratorio = models.CharField(max_length=10, null=False, blank=False)
     

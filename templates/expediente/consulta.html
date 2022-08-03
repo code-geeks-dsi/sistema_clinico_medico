@@ -73,12 +73,13 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="pt-2">
+                                        {% for signo_vital in signos_vitales %}
                                             <div class="row">
                                                 <div class="col fw-bold">
                                                     <p>Temperatura: </p>
                                                 </div>
                                                 <div class="col">
-                                                    <p>{{ signos_vitales.valor_temperatura }} {{ signos_vitales.unidad_temperatura }}</p>
+                                                    <p>{{ signo_vital.valor_temperatura }} {{ signo_vital.unidad_temperatura }}</p>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -86,7 +87,7 @@
                                                     <p>Frecuencia Cardiaca: </p>
                                                 </div>
                                                 <div class="col">
-                                                    <p>{{ signos_vitales.valor_frecuencia_cardiaca }} {{ signos_vitales.unidad_frecuencia_cardiaca }}</p>
+                                                    <p>{{ signo_vital.valor_frecuencia_cardiaca }} {{ signo_vital.unidad_frecuencia_cardiaca }}</p>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -94,7 +95,7 @@
                                                     <p>Peso: </p>
                                                 </div>
                                                 <div class="col">
-                                                    <p>{{ signos_vitales.valor_peso }} {{ signos_vitales.unidad_peso }}</p>
+                                                    <p>{{ signo_vital.valor_peso }} {{ signo_vital.unidad_peso }}</p>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -102,7 +103,7 @@
                                                     <p>Presión Arterial: </p>
                                                 </div>
                                                 <div class="col">
-                                                    <p>{{ signos_vitales.valor_presion_arterial_sistolica }}/{{ signos_vitales.valor_presion_arterial_diastolica }}</p>
+                                                    <p>{{ signo_vital.valor_presion_arterial_sistolica }}/{{ signo_vital.valor_presion_arterial_diastolica }}</p>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -110,9 +111,10 @@
                                                     <p>Saturación Oxigeno: </p>
                                                 </div>
                                                 <div class="col">
-                                                    <p>{{ signos_vitales.valor_saturacion_oxigeno }} %</p>
+                                                    <p>{{ signo_vital.valor_saturacion_oxigeno }} %</p>
                                                 </div>
                                             </div>
+                                        {% endfor %}
                                         </div>
                                     </div>
                                 </div>
@@ -132,16 +134,11 @@
                                 <form  method="post">
                                     {% csrf_token %}
                                     {{ form.non_field_errors }}
-                                    <div class="pt-2">      
-                                        {{consulta_form.diagnostico.errors}}
-                                        <label  for="{{ consulta_form.sintoma.id_for_label }}" class="form-label" >Sintomas</label>
-                                        <textarea name="{{consulta_form.sintoma.name}}" id="{{consulta_form.sintoma.id_for_label}}"  class="form-control" rows="3" maxlength="200">{{consulta_form.sintoma.value}}</textarea>
-                                    </div>
-                                    <div class="pt-2">
-                                        {{consulta_form.sintoma.errors}}
-                                        <label for="{{ consulta_form.diagnostico.id_for_label }}" class="form-label">Diagnostico</label>
-                                        <textarea name="{{consulta_form.diagnostico.name}}" id="{{consulta_form.diagnostico.id_for_label}}" class="form-control" rows="3" maxlength="200">{{consulta_form.diagnostico.value}}</textarea>
-                                    </div>
+                                    {% for field in consulta_form %}
+                                        <label class="form-label pt-3 fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+                                        {{ field }}
+                                    {% endfor %}
+                                    
                                     <!--Botones-->
                                     <div class="row pt-3">
                                         <div class="col-md-12 col-lg-4">
@@ -199,7 +196,17 @@
         </div>
         <!--Hoja de Evoluación-->
         <div class="tab-pane fade" id="nav-evolucion" role="tabpanel" aria-labelledby="nav-evolucion-tab">
-            Evolución
+            <h2>Hoja de Evolución</h2>
+            <div class="mv-3">
+                <form id="hoja-evolucion-form" action="{% url 'hoja-evolucion-create' id_consulta=id_consulta %}" method="post">
+                    {% csrf_token %}
+                    {{hoja_evolucion_form}}
+                    <button type="submit" class="btn btn-outline-primary mt-1">Agregar</button>
+                </form>
+            </div>
+            <div id="lista-hoja-evolucion" class="row row-cols-1 row-cols-md-2 mt-3"></div>
+
+
         </div>
         <!--Documentos-->
         <div class="tab-pane fade" id="nav-documentos" role="tabpanel" aria-labelledby="nav-documentos-tab">
@@ -485,6 +492,48 @@
         toastr[ '{{ message.tags }}' ]( '{{ message }}' );
         '{% endif %}'
     '{% endfor %}'
+
+
+    $('#hoja-evolucion-form').submit(function (event) {
+		event.preventDefault();
+		$.ajax({
+		type: 'POST',
+		url: $("#hoja-evolucion-form").attr("action"),
+		data: $("#hoja-evolucion-form").serialize(), 
+		success: function(response) { 
+            get_lista_notas_evolucion();
+			toastr[response.type](response.data); 
+		},
+		});
+	});
+
+    function get_lista_notas_evolucion() {
+        $.ajax({
+		type: 'GET',
+		url: "{% url 'hoja-evolucion-lista' id_consulta=id_consulta %}",
+		data: [], 
+		success: function(response) { 
+            document.getElementById("lista-hoja-evolucion").innerHTML="";
+            data=response.data
+            data.forEach(nota => {
+                
+                document.getElementById("lista-hoja-evolucion").insertAdjacentHTML("beforeend",
+                `<div class="col mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <p class="text-muted">${nota.fecha_hora}</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">${nota.observacion}</p>
+                        </div>
+                    </div>
+                </div>`);
+            });
+            console.log(response)
+		},
+		});
+    }
+    get_lista_notas_evolucion();
 </script>
 {% endblock %}
 
