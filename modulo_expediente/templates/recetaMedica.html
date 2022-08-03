@@ -1,0 +1,58 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>PDF</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <header>
+    <div class="box">
+        <img src="{% static 'img/encabezadoReceta.png' %}"  alt=""/>
+    </div>
+  </header>
+  <body>
+        <div>
+            <b>
+                <a>PACIENTE:</a>
+                <a>FECHA:</a>
+            </b>
+        </div>
+        <p>Rp</p>
+  </body>
+  <footer>
+    <div>
+        <a><img src="{% static 'img/piedepagina.png' %}"  alt=""/></a>
+        <a>HE AQUÍ YO LES TRAERÉ SANIDAD Y MEDICINA: Y LOS CURARÉ Y LES <br>REVELARÉ ABUNDANCIA Y VERDAD. JEREMÍAS:33.:6 </a>
+    </div>
+  </footer>
+</html>
+<style>
+    @page {
+      margin: 1.50cm;
+      margin-left: 1.00cm;
+      margin-right: 2.25cm;
+    }
+    body{
+      font-size: 15px;
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      color:#02257D ;
+    }
+ 
+    .box img{
+        width:60%;
+        height:200px;
+        margin-left: 60px;
+        padding-top: 20px;
+        border: #02257D 3px solid;
+    }
+    .box{
+        text-align: center;
+    }
+    img{
+        width: 90px;
+        height:90px;
+        margin-left: 60px;
+        padding-top: 20px;
+    }
+  </style>

@@ -551,7 +551,8 @@ class ReferenciaMedicaPdf(View):
                 response.write(output.read())
             return response
   
-        
+class RecetaMedicaPdf(TemplateView):     
+    template_name='recetaMedica.html'
 
     
     
