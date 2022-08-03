@@ -1,10 +1,9 @@
 
 from dataclasses import fields
-from tkinter import Widget
 from django import forms
 from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
-from .models import Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica
+from .models import Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica, ConstanciaMedica
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
@@ -138,3 +137,10 @@ class ReferenciaMedicaForm(ModelForm):
               }),
 
       }
+
+class ConstanciaMedicaForm(ModelForm):
+    class Meta:
+      model=ConstanciaMedica
+      fields='__all__'
+      exclude=['consulta']
+      
