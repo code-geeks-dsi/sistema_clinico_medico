@@ -442,7 +442,7 @@ def buscar_expediente(request):
         return render(request,"Control/error403.html")
 
 
-class ConstanciaMedicaView(View):
+class ConstanciaMedicaPDFView(View):
 
     def get(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta'])

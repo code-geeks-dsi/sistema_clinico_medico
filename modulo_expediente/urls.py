@@ -4,7 +4,9 @@ from django.urls import path
 from modulo_expediente.views import ReferenciaMedicaUpdate, agregar_medicamento, busqueda_paciente, autocompletado_apellidos, eliminar_cola, eliminar_dosis,sala_consulta,get_cola,get_paciente,agregar_cola, modificar_signosVitales, crear_expediente, editar_consulta
 from modulo_expediente.views import busqueda_medicamento, autocompletado_medicamento,dosis_medicamento, ConstanciaMedica
 
-from modulo_expediente.views import buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, templete_agenda, ReferenciaMedicaView, ConstanciaMedicaUpdate
+from modulo_expediente.views import (
+    buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, 
+    templete_agenda, ReferenciaMedicaView, ConstanciaMedicaUpdate, ConstanciaMedicaPDFView)
 
 
 urlpatterns = [
@@ -30,7 +32,7 @@ urlpatterns = [
 
     path('buscar/',buscar_expediente,name='buscar_expediente'),
 
-    path('<int:id_consulta>/constancia-medica/pdf',ConstanciaMedicaView.as_view(),name='constancia-medica'),
+    path('<int:id_consulta>/constancia-medica/pdf',ConstanciaMedicaPDFView.as_view(),name='constancia-medica'),
     path('constancia-medica/',ConstanciaMedicaCreate.as_view(),name='crear-constancia-medica'),
 
     path('constancia-medica/<str:id>',ConstanciaMedicaView.as_view(),name='constancia-medica'),
