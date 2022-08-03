@@ -1,0 +1,30 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Constancia Medica {% endblock %}
+{% block content %}
+        <form method="post" id="constancia-medica">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Guardar">
+            </form>
+<script>
+        {% if update %}
+        $('#constancia-medica').submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                type: 'POST',
+                url: $("form").attr("action"),
+                data: $("form").serialize(), 
+                success: function(response) { 
+                        toastr[response.type](response.data); 
+                },
+                });
+        });
+        {% endif %}
+</script>
+{% endblock %}

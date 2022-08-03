@@ -9,8 +9,9 @@ from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
     RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica)
 from modulo_control.models import Doctor, Enfermera, Empleado, Rol
+from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
-    ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm)
+    ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm)
 from django.http import JsonResponse
 from datetime import date
 from django.urls import reverse
@@ -26,7 +27,6 @@ from django.views.generic import View, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.template.loader import get_template
 from weasyprint import HTML
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -445,7 +445,7 @@ def buscar_expediente(request):
         return render(request,"Control/error403.html")
 
 
-class ConstanciaMedicaView(View):
+class ConstanciaMedicaPDFView(View):
 
     def get(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta'])
@@ -551,6 +551,7 @@ class ReferenciaMedicaPdfView(View):
                 response.write(output.read())
             return response
   
+
 class RecetaMedicaPdfView(View):  
     def get(self, request, *args, **kwargs):   
         #generando pdf
@@ -568,6 +569,47 @@ class RecetaMedicaPdfView(View):
             output = open(output.name, 'rb')
             response.write(output.read())
         return response
+
+class ConstanciaMedicaView(View):
+    form_class = ConstanciaMedicaForm
+    template_name = 'expediente/constancia/create_update_constancia_medica.html'
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta']) 
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            constancia_medica=form.save(commit=False)
+            constancia_medica.consulta=Consulta.objects.get(id_consulta=id_consulta)
+            constancia_medica.save()
+            return redirect(reverse('constancia-medica-update',
+                            kwargs={'id_consulta': id_consulta,'id_constancia':constancia_medica.id_constancia_medica},))
+       
+class ConstanciaMedicaUpdate(View):
+    form_class = ConstanciaMedicaForm
+    template_name = 'expediente/constancia/create_update_constancia_medica.html'
+
+    def get(self, request, *args, **kwargs):
+        id_constancia=int(self.kwargs['id_constancia']) 
+        initial_data={'id_constancia_medica':int(id_constancia)}
+        form = self.form_class(instance=ConstanciaMedica.objects.get(**initial_data))
+        return render(request, self.template_name, {'form': form, 'update':True})
+
+    def post(self, request, *args, **kwargs):
+        id_constancia=int(self.kwargs['id_constancia']) 
+        initial_data={'id_constancia_medica':int(id_constancia)}
+        form = self.form_class(request.POST, instance=ConstanciaMedica.objects.get(**initial_data))
+        if form.is_valid():
+            form.save()
+            response={
+                'type':'success',
+                'data':'Guardado!'
+            }
+            return JsonResponse(response)
+
     
     
     
