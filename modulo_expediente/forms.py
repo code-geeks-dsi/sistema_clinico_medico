@@ -4,7 +4,7 @@ from tkinter import Widget
 from django import forms
 from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
-from .models import Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica
+from .models import Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
@@ -153,3 +153,15 @@ class ReferenciaMedicaForm(ModelForm):
               }),
 
       }
+
+class HojaEvolucionForm(ModelForm):
+    class Meta:
+      model=EvolucionConsulta
+      fields=['observacion']
+      widgets={
+        'observacion': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        )}

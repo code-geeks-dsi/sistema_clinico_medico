@@ -1,4 +1,5 @@
 import json
+from urllib import response
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
@@ -7,10 +8,10 @@ from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
-    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica)
+    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente)
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
-    ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm)
+    ConsultaFormulario, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, IngresoMedicamentos, ReferenciaMedicaForm)
 from django.http import JsonResponse
 from datetime import date
 from django.urls import reverse
@@ -30,6 +31,7 @@ from weasyprint import HTML
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
+from django.db.models import F, Func, Value, CharField
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -341,6 +343,7 @@ def editar_consulta(request,id_consulta):
             'id_consulta':id_consulta,
             'id_receta':receta.id_receta_medica,
             'consulta_form':consulta_form,
+            'hoja_evolucion_form':HojaEvolucionForm(),
             'edad':edad,
             'dosis_form':DosisFormulario(),
             'dosis':dosis,
@@ -529,6 +532,37 @@ class ReferenciaMedicaUpdate(View):
                 'data':'Guardado!'
             }
             return JsonResponse(response)
+
+class CreateHojaEvolucion(View):
+    form_class = HojaEvolucionForm
+
+    def post(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta']) 
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            nota=form.save(commit=False)
+            nota.consulta=Consulta.objects.get(id_consulta=id_consulta)
+            nota.save()
+            response={
+                'type':'success',
+                'data':'Guardado!'
+            }
+            return JsonResponse(response) 
+
+class ListaHojaEvolucion(View):
+    def get(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta'])
+        data = list(EvolucionConsulta.objects.filter(consulta__id_consulta=id_consulta).annotate(
+        fecha_hora=Func(
+            F('fecha'),
+            Value('DD/MM/YYYY HH:MM:SS'),
+            function='to_char',
+            output_field=CharField()
+        )).values('observacion','fecha_hora','id_evolucion'))
+        return JsonResponse({'data':data}) 
+
+
+
 
   
         

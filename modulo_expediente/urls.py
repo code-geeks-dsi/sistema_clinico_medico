@@ -1,7 +1,7 @@
 from django import views
 from django.contrib import admin
 from django.urls import path
-from modulo_expediente.views import ReferenciaMedicaUpdate, agregar_medicamento, busqueda_paciente, autocompletado_apellidos, eliminar_cola, eliminar_dosis,sala_consulta,get_cola,get_paciente,agregar_cola, modificar_signosVitales, crear_expediente, editar_consulta
+from modulo_expediente.views import CreateHojaEvolucion, ListaHojaEvolucion, ReferenciaMedicaUpdate, agregar_medicamento, busqueda_paciente, autocompletado_apellidos, eliminar_cola, eliminar_dosis,sala_consulta,get_cola,get_paciente,agregar_cola, modificar_signosVitales, crear_expediente, editar_consulta
 from modulo_expediente.views import busqueda_medicamento, autocompletado_medicamento,dosis_medicamento
 
 from modulo_expediente.views import buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, templete_agenda, ReferenciaMedicaView
@@ -37,6 +37,8 @@ urlpatterns = [
     path('constancia-medica/',ConstanciaMedicaCreate.as_view(),name='crear-constancia-medica'),
     path('consulta/<int:id_consulta>/referencia-medica/',ReferenciaMedicaView.as_view(),name='referencia-medica'),
     path('consulta/<int:id_consulta>/referencia-medica/<int:id_referencia>/',ReferenciaMedicaUpdate.as_view(),name='referencia-medica-update'),
+    path('consulta/<int:id_consulta>/hoja-evolucion/',CreateHojaEvolucion.as_view(),name='hoja-evolucion-create'),
+    path('consulta/<int:id_consulta>/hoja-evolucion/lista',ListaHojaEvolucion.as_view(),name='hoja-evolucion-lista'),
     path('agenda/',templete_agenda,name='ver_agenda'),
 
 ]

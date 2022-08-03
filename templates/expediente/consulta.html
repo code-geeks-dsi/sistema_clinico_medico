@@ -196,7 +196,17 @@
         </div>
         <!--Hoja de Evoluación-->
         <div class="tab-pane fade" id="nav-evolucion" role="tabpanel" aria-labelledby="nav-evolucion-tab">
-            Evolución
+            <h2>Hoja de Evolución</h2>
+            <div class="mv-3">
+                <form id="hoja-evolucion-form" action="{% url 'hoja-evolucion-create' id_consulta=id_consulta %}" method="post">
+                    {% csrf_token %}
+                    {{hoja_evolucion_form}}
+                    <button type="submit" class="btn btn-outline-primary mt-1">Agregar</button>
+                </form>
+            </div>
+            <div id="lista-hoja-evolucion" class="row row-cols-1 row-cols-md-2 mt-3"></div>
+
+
         </div>
         <!--Documentos-->
         <div class="tab-pane fade" id="nav-documentos" role="tabpanel" aria-labelledby="nav-documentos-tab">
@@ -482,6 +492,48 @@
         toastr[ '{{ message.tags }}' ]( '{{ message }}' );
         '{% endif %}'
     '{% endfor %}'
+
+
+    $('#hoja-evolucion-form').submit(function (event) {
+		event.preventDefault();
+		$.ajax({
+		type: 'POST',
+		url: $("#hoja-evolucion-form").attr("action"),
+		data: $("#hoja-evolucion-form").serialize(), 
+		success: function(response) { 
+            get_lista_notas_evolucion();
+			toastr[response.type](response.data); 
+		},
+		});
+	});
+
+    function get_lista_notas_evolucion() {
+        $.ajax({
+		type: 'GET',
+		url: "{% url 'hoja-evolucion-lista' id_consulta=id_consulta %}",
+		data: [], 
+		success: function(response) { 
+            document.getElementById("lista-hoja-evolucion").innerHTML="";
+            data=response.data
+            data.forEach(nota => {
+                
+                document.getElementById("lista-hoja-evolucion").insertAdjacentHTML("beforeend",
+                `<div class="col mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <p class="text-muted">${nota.fecha_hora}</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">${nota.observacion}</p>
+                        </div>
+                    </div>
+                </div>`);
+            });
+            console.log(response)
+		},
+		});
+    }
+    get_lista_notas_evolucion();
 </script>
 {% endblock %}
 
