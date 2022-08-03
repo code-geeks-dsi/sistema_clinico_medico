@@ -10,7 +10,7 @@ from modulo_expediente.models import (
     RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica)
 from modulo_control.models import Enfermera, Empleado, Rol
 from .forms import (
-    ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm)
+    ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm)
 from django.http import JsonResponse
 from datetime import date
 from django.urls import reverse
@@ -531,7 +531,45 @@ class ReferenciaMedicaUpdate(View):
             return JsonResponse(response)
 
   
-        
+class ConstanciaMedicaView(View):
+    form_class = ConstanciaMedicaForm
+    template_name = 'expediente/constancia/create_update_constancia_medica.html'
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta']) 
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            constancia_medica=form.save(commit=False)
+            constancia_medica.consulta=Consulta.objects.get(id_consulta=id_consulta)
+            constancia_medica.save()
+            return redirect(reverse('constancia-medica-update',
+                            kwargs={'id_consulta': id_consulta,'id_constancia':constancia_medica.id_constancia_medica},))
+       
+class ConstanciaMedicaUpdate(View):
+    form_class = ConstanciaMedicaForm
+    template_name = 'expediente/constancia/create_update_constancia_medica.html'
+
+    def get(self, request, *args, **kwargs):
+        id_constancia=int(self.kwargs['id_constancia']) 
+        initial_data={'id_constancia_medica':int(id_constancia)}
+        form = self.form_class(instance=ConstanciaMedica.objects.get(**initial_data))
+        return render(request, self.template_name, {'form': form, 'update':True})
+
+    def post(self, request, *args, **kwargs):
+        id_constancia=int(self.kwargs['id_constancia']) 
+        initial_data={'id_constancia_medica':int(id_constancia)}
+        form = self.form_class(request.POST, instance=ConstanciaMedica.objects.get(**initial_data))
+        if form.is_valid():
+            form.save()
+            response={
+                'type':'success',
+                'data':'Guardado!'
+            }
+            return JsonResponse(response)
 
     
     

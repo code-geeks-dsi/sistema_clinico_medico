@@ -3,7 +3,7 @@ from dataclasses import fields
 from django import forms
 from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
-from .models import Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica
+from .models import Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica, ConstanciaMedica
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
@@ -113,3 +113,10 @@ class ReferenciaMedicaForm(ModelForm):
       model=ReferenciaMedica
       fields='__all__'
       exclude=['consulta']
+
+class ConstanciaMedicaForm(ModelForm):
+    class Meta:
+      model=ConstanciaMedica
+      fields='__all__'
+      exclude=['consulta']
+      
