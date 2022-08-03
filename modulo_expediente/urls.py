@@ -2,10 +2,10 @@ from django import views
 from django.contrib import admin
 from django.urls import path
 from modulo_expediente.models import RecetaMedica
-from modulo_expediente.views import RecetaMedicaPdf, ReferenciaMedicaUpdate, agregar_medicamento, busqueda_paciente, autocompletado_apellidos, eliminar_cola, eliminar_dosis,sala_consulta,get_cola,get_paciente,agregar_cola, modificar_signosVitales, crear_expediente, editar_consulta
+from modulo_expediente.views import  ReferenciaMedicaUpdate, agregar_medicamento, busqueda_paciente, autocompletado_apellidos, eliminar_cola, eliminar_dosis,sala_consulta,get_cola,get_paciente,agregar_cola, modificar_signosVitales, crear_expediente, editar_consulta
 from modulo_expediente.views import busqueda_medicamento, autocompletado_medicamento,dosis_medicamento
 
-from modulo_expediente.views import buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, templete_agenda, ReferenciaMedicaView, ReferenciaMedicaPdf
+from modulo_expediente.views import buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, templete_agenda, ReferenciaMedicaView, RecetaMedicaPdfView, ReferenciaMedicaPdfView
 
 
 urlpatterns = [
@@ -39,8 +39,8 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/referencia-medica/',ReferenciaMedicaView.as_view(),name='referencia-medica'),
     path('consulta/<int:id_consulta>/referencia-medica/<int:id_referencia>/',ReferenciaMedicaUpdate.as_view(),name='referencia-medica-update'),
     path('agenda/',templete_agenda,name='ver_agenda'),
-    path('referencia-medica/pdf',ReferenciaMedicaPdf.as_view(),name='referencia-medica-pdf' ),
-    path('receta-medica/pdf',RecetaMedicaPdf.as_view(),name='receta-medica-pdf' )
+    path('referencia-medica/pdf',ReferenciaMedicaPdfView.as_view(),name='referencia-medica-pdf' ),
+    path('receta-medica/pdf',RecetaMedicaPdfView.as_view(),name='receta-medica-pdf' )
 
 ]
 

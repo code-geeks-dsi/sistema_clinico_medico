@@ -532,7 +532,7 @@ class ReferenciaMedicaUpdate(View):
             }
             return JsonResponse(response)
 
-class ReferenciaMedicaPdf(View):
+class ReferenciaMedicaPdfView(View):
         def get(self, request, *args, **kwargs):
             
             #generando pdf
@@ -541,7 +541,7 @@ class ReferenciaMedicaPdf(View):
             html = HTML(string=html_string, base_url=request.build_absolute_uri())
             result = html.write_pdf()
             response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'inline; filename="constanciaMedica.pdf"'
+            response['Content-Disposition'] = 'inline; filename="referenciaMedica.pdf"'
             response['Content-Transfer-Encoding'] = 'binary'
             #Crea un archivo temporal
             with tempfile.NamedTemporaryFile(delete=True) as output:
@@ -551,9 +551,23 @@ class ReferenciaMedicaPdf(View):
                 response.write(output.read())
             return response
   
-class RecetaMedicaPdf(TemplateView):     
-    template_name='recetaMedica.html'
-
+class RecetaMedicaPdfView(View):  
+    def get(self, request, *args, **kwargs):   
+        #generando pdf
+        #puede recibir la info como diccionario
+        html_string = render_to_string('recetaMedica.html')
+        html = HTML(string=html_string, base_url=request.build_absolute_uri())
+        result = html.write_pdf()
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="recetaMedica.pdf"'
+        response['Content-Transfer-Encoding'] = 'binary'
+        #Crea un archivo temporal
+        with tempfile.NamedTemporaryFile(delete=True) as output:
+            output.write(result)
+            output.flush()
+            output = open(output.name, 'rb')
+            response.write(output.read())
+        return response
     
     
     
