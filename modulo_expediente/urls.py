@@ -37,7 +37,7 @@ urlpatterns = [
 
     path('buscar/',buscar_expediente,name='buscar_expediente'),
 
-    path('<int:id_consulta>/constancia-medica/pdf',ConstanciaMedicaPDFView.as_view(),name='constancia-medica'),
+    path('consulta/<int:id_consulta>/constancia-medica/pdf',ConstanciaMedicaPDFView.as_view(),name='constancia-medica'),
     path('constancia-medica/',ConstanciaMedicaCreate.as_view(),name='crear-constancia-medica'),
 
     path('constancia-medica/<str:id>',ConstanciaMedicaView.as_view(),name='constancia-medica'),
