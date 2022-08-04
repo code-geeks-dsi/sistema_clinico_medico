@@ -8,38 +8,49 @@
 {% block titulo %} Referencia Medica {% endblock %}
 {% block content %}
 	<div class="container py-4">
-		<h3 class="pb-4">Elaboración de Referencia Médica</h3>
-		
+		<div class="row">
+			<div class="col-6">
+				<h3 class="fw-bold text-secondary pb-4">Referencia Médica</h3>
+			</div>
+			<div class="col-6">
+				<div class="d-flex justify-content-end">
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb pt-3">
+							<li class="breadcrumb-item"><a href="{% url 'buscar_expediente' %}">Expediente</a></li>
+							<li class="breadcrumb-item"><a href="{% url 'editar_consulta' id_consulta=id_consulta %}">{{paciente.nombre_paciente}}</a></li>
+							<li class="breadcrumb-item active" aria-current="page">Referencia Médica</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+    	</div>
 		<div class="card">
-			<div class="card-header">
-			Datos del Paciente.
-			</div>
-			<div class="card-body">
-				<p></p>
-			</div>
-			<div class="card-header">
-				Datos de la consulta.
-			</div>
-			<div class="card-body">
-				<p></p>
-			</div>
-			<div class="card-header">
-				Datos de la Referencia.
+			<div class="card-header alert-primary text-primary" aria-expanded="true">
+				<div class="px-1 py-2">
+					Referencia Médica
+				</div>
 			</div>
 			<div class="card-body">
 				<form method="post" id="referencia-medica">
+					<label class="form-label fw-bold text-secondary" for="nombre-paciente">Nombre del paciente:</label>
+					<input type="text" class="form-control" value="{{ paciente.nombre_paciente }} {{paciente.apellido_paciente}}" disabled>
+					<p></p>
+					<label class="form-label fw-bold text-secondary" for="edad-paciente">Edad del paciente:</label>
+					<input type="text" class="form-control" value="{{ edad.years }} años" disabled>
+					<p></p>
 					{% csrf_token %}
-                                        {% for field in form %}
-                                        <label class="form-label fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
-                                        {{ field }}
-                                        <p></p>
-                                        {% endfor %}
+					{% for field in form %}
+					<label class="form-label fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+					{{ field }}
+					<p></p>
+					{% endfor %}
 					<div class="text-end pt-4">
 						<input class="btn btn-outline-primary" type="submit" value="Guardar">
 					</div>
 				</form>
 			</div>
 		</div>
+
 	</div>
 {% endblock %}
 {% block js %}

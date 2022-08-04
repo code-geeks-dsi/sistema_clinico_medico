@@ -11,17 +11,25 @@
 {% block titulo %} Consulta {% endblock %}
 {% block content %}
 
-<div class="container py-1">
-    <h2 class="fw-bold text-secondary">Consulta</h2>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb pt-3">
-            <li class="breadcrumb-item"><a href="{% url 'sala_consulta' %}">Expediente</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Consulta {{paciente.nombre_paciente}}</li>
-        </ol>
-    </nav>
+<div class="container py-3">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="fw-bold text-secondary">Consulta</h2>
+        </div>
+        <div class="col-6">
+            <div class="d-flex justify-content-end">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-3">
+                        <li class="breadcrumb-item"><a href="{% url 'sala_consulta' %}">Expediente</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Consulta {{paciente.nombre_paciente}}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
 
     <!--Navegación Pestañas-->
-    <nav>
+    <nav class="pt-2">
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
           <button class="nav-link active" id="nav-historial-tab" data-bs-toggle="tab" data-bs-target="#nav-historial" type="button" role="tab" aria-controls="nav-historial" aria-selected="true">Historial Clinico</button>
           <button class="nav-link" id="nav-contol-tab" data-bs-toggle="tab" data-bs-target="#nav-control" type="button" role="tab" aria-controls="nav-control" aria-selected="false">Control Subsecuente</button>
@@ -196,80 +204,107 @@
         </div>
         <!--Hoja de Evoluación-->
         <div class="tab-pane fade" id="nav-evolucion" role="tabpanel" aria-labelledby="nav-evolucion-tab">
-            <h2>Hoja de Evolución</h2>
-            <div class="mv-3">
-                <form id="hoja-evolucion-form" action="{% url 'hoja-evolucion-create' id_consulta=id_consulta %}" method="post">
-                    {% csrf_token %}
-                    {{hoja_evolucion_form}}
-                    <button type="submit" class="btn btn-outline-primary mt-1">Agregar</button>
-                </form>
+            <div class="pt-4">
+                <div class="card"> 
+                    <div class="card-header alert alert-primary text-primary">
+                        Hoja de Evolución
+                    </div>
+                    <div class="card-body">
+                        <div class="mv-3">
+                            <form id="hoja-evolucion-form" action="{% url 'hoja-evolucion-create' id_consulta=id_consulta %}" method="post">
+                                {% csrf_token %}
+                                {{hoja_evolucion_form}}
+                                <button type="submit" class="btn btn-outline-primary mt-1">Agregar</button>
+                            </form>
+                        </div>
+                        <div id="lista-hoja-evolucion" class="row row-cols-1 row-cols-md-2 mt-3"></div>
+                    </div>
+                </div>
             </div>
-            <div id="lista-hoja-evolucion" class="row row-cols-1 row-cols-md-2 mt-3"></div>
-
-
         </div>
         <!--Documentos-->
         <div class="tab-pane fade" id="nav-documentos" role="tabpanel" aria-labelledby="nav-documentos-tab">
             <div class="pt-4">
-                <!--Receta-->
-                <div class="card">
-                    <div class="card-header">
-                      Receta Medica
-                    </div>
-                    <div class="card-body">
-                        <a class="btn btn-outline-primary w-0 my-1"  data-bs-toggle="modal" data-bs-target="#agregarReceta">Agregar Receta Medica</a>
-                        <a href="#" class="btn btn-outline-primary w-0 my-1">Descargar Receta Medica</a>
-                    </div>
-                </div>
-            </div>
-            <div class="pt-4">
-                <!--Referencia-->
-                <div class="card">
-                    <div class="card-header">
-                    Referencias Medica
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Lista de Referencias</h5>
-                        <!--Tabla de Referencias-->
-                        <div class="table-responsive" id="tabla_referencias_agregadas">
-                            <table class="table table-bordered text-center">
-                            <thead class="table-secondary">
-                                <tr>
-                                    <th>Hospital</th>
-                                    <th>Especialidad</th>
-                                    <th>Fecha</td>
-                                    <th>Opciones</td>
-                                </tr>
-                            </thead>
-                            <tbody id="medicamentos_dosis">
-                            <!--Datos del server -- dosis -- -->
-                                {% for referencia in referencias %}
-                                <tr>
-                                    <td>{{ referencia.hospital.nombre_hospital }}</td>
-                                    <td>{{ referencia.especialidad }}</td>
-                                    <td>{{ referencia.fecha_referencia }}</td>
-                                    <td><a class="material-symbols-outlined btn btn-sm" href="referencia-medica/{{referencia.id_referencia_medica}}/"  target="_blank">open_in_new</a></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                            </table>
+                <div class="accordion" id="accordionDocumentos">
+                    <!--Receta Medica-->
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#documento-receta" aria-expanded="true" aria-controls="collapseOne">
+                          Receta Medica
+                        </button>
+                      </h2>
+                      <!--Receta Body-->
+                      <div id="documento-receta" class="accordion-collapse collapse show" aria-labelledby="headingOne">
+                        <div class="accordion-body">
+                                <div class="card-body">
+                                    <a class="btn btn-outline-primary w-0 my-1"  data-bs-toggle="modal" data-bs-target="#agregarReceta">Agregar Receta Medica</a>
+                                    <a href="#" class="btn btn-outline-primary w-0 my-1">Descargar Receta Medica</a>
+                                </div>
                         </div>
-                        <a href="referencia-medica/" class="btn btn-outline-primary w-0 my-1">Agregar Referencia Medica</a>
-                        <a href="#" class="btn btn-outline-primary w-0 my-1">Descargar Referencia Medica</a>
+                      </div>
                     </div>
-                </div>
-            </div>
-            <div class="pt-4">
-                <!--Constancia-->
-                <div class="card">
-                    <div class="card-header">
-                    Cosntancias Medica
+                    <!--Referencia Medica-->
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#documento-referencia" aria-expanded="true" aria-controls="documento-referencia">
+                          Referencia Médica
+                        </button>
+                      </h2>
+                      <!--Referencia Body-->
+                      <div id="documento-referencia" class="accordion-collapse collapse show" aria-labelledby="headingTwo" >
+                        <div class="accordion-body">
+                            <div class="card-body">
+                                <h5 class="card-title">Lista de Referencias</h5>
+                                <!--Tabla de Referencias-->
+                                <div class="table-responsive" id="tabla_referencias_agregadas">
+                                    <table class="table table-bordered text-center">
+                                        <thead class="table-secondary">
+                                            <tr>
+                                                <th>Hospital</th>
+                                                <th>Especialidad</th>
+                                                <th>Fecha</td>
+                                                <th>Opciones</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="medicamentos_dosis">
+                                        <!--Datos del server -- dosis -- -->
+                                            {% for referencia in referencias %}
+                                            <tr>
+                                                <td>{{ referencia.hospital.nombre_hospital }}</td>
+                                                <td>{{ referencia.especialidad }}</td>
+                                                <td>{{ referencia.fecha_referencia }}</td>
+                                                <td>
+                                                    <a class="material-symbols-outlined btn btn-sm" href="referencia-medica/{{referencia.id_referencia_medica}}/"  target="_blank">open_in_new</a>
+                                                    <a class="material-symbols-outlined btn btn-sm" href="referencia-medica/pdf/{{referencia.id_referencia_medica}}/"  target="_blank">file_download</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <a href="referencia-medica/" class="btn btn-outline-primary w-0 my-1">Agregar Referencia Medica</a>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="card-body">
-                    <h5 class="card-title">¿Tabla con constancias?</h5>
-                    <p class="card-text">...</p>
-                    <a href="#" class="btn btn-outline-primary w-0 my-1">Constancia Medica</a>
-                    <a href="#" class="btn btn-outline-primary w-0 my-1">Descargar Constancia Medica</a>
+                    <!--Constancia Medica-->
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#documento-constancia" aria-expanded="true" aria-controls="collapseThree">
+                          Constancia Médica
+                        </button>
+                      </h2>
+                      <!--Constancia Body-->
+                      <div id="documento-constancia" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+                        <div class="accordion-body">
+                            <div class="card-body">
+                                <h5 class="card-title">¿Tabla con constancias?</h5>
+                                <p class="card-text">...</p>
+                                <a href="constancia-medica/" class="btn btn-outline-primary w-0 my-1">Constancia Medica</a>
+                                <a href="constancia-medica/pdf" class="btn btn-outline-primary w-0 my-1">Descargar Constancia Medica</a>
+                            </div>
+                        </div>
+                      </div>
                     </div>
                 </div>
             </div>
@@ -424,7 +459,6 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary">Finalizar</button>
                 </div>
             </div>
         </div>

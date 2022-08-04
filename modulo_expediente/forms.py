@@ -161,6 +161,37 @@ class ConstanciaMedicaForm(ModelForm):
       model=ConstanciaMedica
       fields='__all__'
       exclude=['consulta']
+      widgets={
+        'diagnostico_constancia': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20,
+                                        'placeholder':'Ingrese el diagnostico de la consulta.'
+                                        }
+        ),
+        'dias_reposo': NumberInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese los días de reposo.',
+               'min':0
+              }
+        ),
+        'acompanante': TextInput(
+                attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese el nombre del acompañante.',
+              }
+        ),
+        'fecha_de_emision': forms.DateInput(
+                format=('%Y-%m-%d'),
+                attrs={'class': 'form-control', 
+               'placeholder': 'Select a date',
+               'type': 'date'
+              }),
+      }
+    def __init__(self, *args, **kwargs):
+      super().__init__(*args, **kwargs)
+      self.fields['acompanante'].label="Acompañante"
+      self.fields['dias_reposo'].label="Días de reposo"
+      self.fields['diagnostico_constancia'].label="Diagnóstico"
       
 class HojaEvolucionForm(ModelForm):
     class Meta:
