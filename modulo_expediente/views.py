@@ -456,7 +456,7 @@ class ConstanciaMedicaPDFView(View):
         contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
         paciente=contiene_consulta.expediente.id_paciente
         edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
-        constanciamedica=ConstanciaMedica.objects.filter(consulta__id_consulta=id_consulta)
+        constanciamedica=ConstanciaMedica.objects.get(consulta__id_consulta=id_consulta)
         data={'nombre':doctora,'jvmp':jvmp,'paciente':paciente,'edad':edad, 'constanciamedica':constanciamedica}
         #generando pdf
         #puede recibir la info como diccionario
