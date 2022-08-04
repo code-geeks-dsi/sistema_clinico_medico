@@ -25,6 +25,7 @@ from django.contrib import messages
 from dateutil.relativedelta import relativedelta
 from django.views import View 
 from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from weasyprint import HTML
@@ -490,16 +491,21 @@ class ConstanciaMedicaCreate(CreateView):
     success_url = reverse_lazy('constancia-medica',
                             kwargs={'id': 1},)
 
-def templete_agenda(request):
-    return render(request,"expediente/agenda.html")
-
 class ReferenciaMedicaView(View):
     form_class = ReferenciaMedicaForm
     template_name = 'expediente/referencia/create_update_referencia_medica.html'
 
     def get(self, request, *args, **kwargs):
+        ##Datos de la consulta
+        id_consulta=int(self.kwargs['id_consulta'])
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        consulta=contiene_consulta.consulta
+        paciente=contiene_consulta.expediente.id_paciente
+        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        ##Formulario
         form = self.form_class()
-        return render(request, self.template_name, {'form': form})
+        form.fields['consulta_por'].initial=consulta.consulta_por
+        return render(request, self.template_name, {'form': form, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
 
     def post(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta']) 
@@ -516,10 +522,17 @@ class ReferenciaMedicaUpdate(View):
     template_name = 'expediente/referencia/create_update_referencia_medica.html'
 
     def get(self, request, *args, **kwargs):
+        ##Datos de la consulta
+        id_consulta=int(self.kwargs['id_consulta'])
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        consulta=contiene_consulta.consulta
+        paciente=contiene_consulta.expediente.id_paciente
+        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+
         id_referencia=int(self.kwargs['id_referencia']) 
         initial_data={'id_referencia_medica':int(id_referencia)}
         form = self.form_class(instance=ReferenciaMedica.objects.get(**initial_data))
-        return render(request, self.template_name, {'form': form, 'update':True})
+        return render(request, self.template_name, {'form': form, 'update':True, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
 
     def post(self, request, *args, **kwargs):
         id_referencia=int(self.kwargs['id_referencia']) 
@@ -561,10 +574,6 @@ class ListaHojaEvolucion(View):
         )).values('observacion','fecha_hora','id_evolucion'))
         return JsonResponse({'data':data}) 
 
-
-
-
-  
 class ConstanciaMedicaView(View):
     form_class = ConstanciaMedicaForm
     template_name = 'expediente/constancia/create_update_constancia_medica.html'
@@ -605,6 +614,8 @@ class ConstanciaMedicaUpdate(View):
             }
             return JsonResponse(response)
 
-    
+#View Para imprimir Agenda
+class AgendaView(TemplateView):
+    template_name = "expediente/agenda.html"   
     
     
