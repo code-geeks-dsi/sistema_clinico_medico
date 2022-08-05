@@ -12,22 +12,22 @@
     </div>
   </header>
   <body>
-    <p>Nombre del paciente:</p>
-    <p>Dirección:</p>
-    <p>Nombre del Resposable:</p>
+    <p>Nombre del paciente: <b>{{paciente.nombre_paciente}} {{paciente.apellido_paciente}}</b></p>
+    <p>Dirección: <b>{{paciente.direccion_paciente}}</b></p>
+    <p>Nombre del Resposable:{{paciente.resposable}}</p>
     <div>
-        <a>Teléfono:</a>
-        <a>Edad:</a>
-        <a>Fecha:</a>
+      <a>Teléfono:<b>{{paciente.telefono}}</b></a>
+      <a>Edad: <b>{{edad.years}}</b></a>
+      <a>Fecha:<b>{{referencia.fecha_referencia}}</b></a>
     </div><br>
     <div>
-        <a>Peso:</a>
-        <a>Sat%:</a>
-        <a>Pulso:</a>
-        <a>Temperatura:</a>
+      <a>Peso:{{consulta.signosvitales.valor_peso}}</a>
+      <a>Sat%:{{signos_vitales.valor_saturacion_oxigeno}}</a>
+      <a>Pulso:{{signos_vitales.valor_frecuencia_cardiaca}}</a>
+      <a>Temperatura:{{signos_vitales.valor_temperatura}}</a>
     </div>
-    <p>CX:</p>
-    <p>Referencia:</p>
+    <p>CX:<b>{{referencia.consulta_por}}</b></p>
+    <p>Referencia:<b>{{hospital.nombre_hospital}}</b></p>
   </body>
 </html>
 <style>

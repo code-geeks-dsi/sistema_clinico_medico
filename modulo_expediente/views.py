@@ -1,3 +1,4 @@
+from curses.ascii import SI
 import json
 from django.shortcuts import redirect, render
 from django.db.models import Q
@@ -534,10 +535,21 @@ class ReferenciaMedicaUpdate(View):
 
 class ReferenciaMedicaPdfView(View):
         def get(self, request, *args, **kwargs):
-            
+            id_consulta=int(self.kwargs['id_consulta'])
+            #consultando datos del paciente
+            contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+            paciente=contiene_consulta.expediente.id_paciente
+            edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+            #consultando datos de la referencia
+            referencia=ReferenciaMedica.objects.get(consulta__id_consulta=id_consulta)
+            #consultando signosvitales
+            consulta=Consulta.objects.filter(id_consulta=id_consulta)
+            signos_vitales=SignosVitales.objects.filter(consulta__id_consulta=id_consulta)
+            hospital=referencia.hospital
+            data={'paciente':paciente, 'edad':edad,'referencia':referencia,'consulta':consulta,'signos_vitales':signos_vitales,'hospital':hospital}
             #generando pdf
             #puede recibir la info como diccionario
-            html_string = render_to_string('expediente/referencia/reporteReferenciaMedica.html')
+            html_string = render_to_string('expediente/referencia/reporteReferenciaMedica.html',data)
             html = HTML(string=html_string, base_url=request.build_absolute_uri())
             result = html.write_pdf()
             response = HttpResponse(content_type='application/pdf')

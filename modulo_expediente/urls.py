@@ -49,7 +49,7 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/referencia-medica/<int:id_referencia>/',ReferenciaMedicaUpdate.as_view(),name='referencia-medica-update'),
     path('agenda/',templete_agenda,name='ver_agenda'),
 
-    path('referencia-medica/pdf',ReferenciaMedicaPdfView.as_view(),name='referencia-medica-pdf' ),
+    path('<int:id_consulta>/referencia-medica/pdf',ReferenciaMedicaPdfView.as_view(),name='referencia-medica-pdf' ),
     path('receta-medica/pdf',RecetaMedicaPdfView.as_view(),name='receta-medica-pdf' ),
 
     path('consulta/<int:id_consulta>/constancia-medica/',ConstanciaMedicaView.as_view(),name='constancia-medica'),
