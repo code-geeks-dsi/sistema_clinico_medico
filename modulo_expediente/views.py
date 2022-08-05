@@ -565,10 +565,15 @@ class ReferenciaMedicaPdfView(View):
   
 
 class RecetaMedicaPdfView(View):  
-    def get(self, request, *args, **kwargs):   
+    def get(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta'])
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        paciente=contiene_consulta.expediente.id_paciente 
+        fecha=date.today()
+        data={'paciente':paciente,'fecha':fecha} 
         #generando pdf
         #puede recibir la info como diccionario
-        html_string = render_to_string('recetaMedica.html')
+        html_string = render_to_string('recetaMedica.html',data)
         html = HTML(string=html_string, base_url=request.build_absolute_uri())
         result = html.write_pdf()
         response = HttpResponse(content_type='application/pdf')

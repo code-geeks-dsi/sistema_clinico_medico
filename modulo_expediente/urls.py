@@ -50,7 +50,7 @@ urlpatterns = [
     path('agenda/',templete_agenda,name='ver_agenda'),
 
     path('<int:id_consulta>/referencia-medica/pdf',ReferenciaMedicaPdfView.as_view(),name='referencia-medica-pdf' ),
-    path('receta-medica/pdf',RecetaMedicaPdfView.as_view(),name='receta-medica-pdf' ),
+    path('<int:id_consulta>/receta-medica/pdf',RecetaMedicaPdfView.as_view(),name='receta-medica-pdf' ),
 
     path('consulta/<int:id_consulta>/constancia-medica/',ConstanciaMedicaView.as_view(),name='constancia-medica'),
     path('consulta/<int:id_consulta>/constancia-medica/<int:id_constancia>/',ConstanciaMedicaUpdate.as_view(),name='constancia-medica-update')

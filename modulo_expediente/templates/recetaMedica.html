@@ -14,15 +14,14 @@
   </header>
   <body>
         <div>
-            <b>
-                <a>PACIENTE:</a>
-                <a>FECHA:</a>
-            </b><br>
-            <p style="font-family:Brush Script MT">
-                <b>Rp</b>
-            </p>
-            
+            <center>
+                <a><b>PACIENTE:&nbsp;</b>{{paciente.nombre_paciente}} {{paciente.apellido_paciente}}</a>    
+                <a><b>&nbsp;FECHA:&nbsp;</b>{{fecha}}</a><br>
+            </center>
         </div>
+        <p style="font-family:Brush Script MT">
+            <b>Rp</b>
+        </p>
         <div>
             <b>
                 <a>Próxima Cita:</a>
@@ -89,4 +88,5 @@
         font-size: 10px;
         margin-left: -200px;
     }
+    
   </style>
