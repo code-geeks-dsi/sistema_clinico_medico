@@ -20,6 +20,7 @@ from django.urls import reverse
 from urllib.parse import urlencode
 from urllib.request import urlopen
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
 from django.contrib import messages
@@ -621,8 +622,11 @@ class AgendaView(TemplateView):
     template_name = "expediente/agenda.html"   
 
 #view Para Consulta
-class ConsultaView(TemplateView):
-    template_name = "expediente/consulta.html"  
+##Para acceder a esto es necesario que el usuario tenga el permiso para editar consulta
+class ConsultaView(PermissionRequiredMixin, TemplateView):
+    permission_required = ('modulo_expediente.change_consulta')
+    template_name = "expediente/consulta.html"
+    login_url='/login/'  
 
     def get(self, request, *args, **kwargs):
         id_consulta=self.kwargs['id_consulta'] 
