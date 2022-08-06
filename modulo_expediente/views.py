@@ -1,5 +1,6 @@
 import json
 from urllib import response
+import django
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
@@ -33,6 +34,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
 from django.db.models import F, Func, Value, CharField
+from django.http import Http404
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -617,5 +619,44 @@ class ConstanciaMedicaUpdate(View):
 #View Para imprimir Agenda
 class AgendaView(TemplateView):
     template_name = "expediente/agenda.html"   
+
+#view Para Consulta
+class ConsultaView(TemplateView):
+    template_name = "expediente/consulta.html"  
+
+    def get(self, request, *args, **kwargs):
+        id_consulta=self.kwargs['id_consulta'] 
+        try:
+            #Consultando Instancias
+            contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+            paciente=contiene_consulta.expediente.id_paciente
+            consulta=contiene_consulta.consulta
+            signos_vitales=SignosVitales.objects.filter(consulta=contiene_consulta.consulta)        
+            receta=RecetaMedica.objects.get(consulta=consulta)
+            dosis=Dosis.objects.filter(receta_medica=receta)
+            consulta_form=ConsultaFormulario(instance=consulta)
+            edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+            referencias_medicas= ReferenciaMedica.objects.filter(consulta=consulta)
+            datos={
+                'paciente':paciente,
+                'signos_vitales':signos_vitales,
+                'id_consulta':id_consulta,
+                'id_receta':receta.id_receta_medica,
+                'consulta_form':consulta_form,
+                'hoja_evolucion_form':HojaEvolucionForm(),
+                'edad':edad,
+                'dosis_form':DosisFormulario(),
+                'dosis':dosis,
+                'referencias':referencias_medicas
+            }
+        except ContieneConsulta.DoesNotExist:
+            raise Http404("Consulta no encontrada")
+        return render(request, self.template_name, datos)
     
-    
+    def post(self, request, *args, **kwargs):
+        consulta_form=ConsultaFormulario(request.POST, instance=Consulta.objects.get(id_consulta=self.kwargs['id_consulta']))
+        if consulta_form.is_valid():
+            consulta=consulta_form.save()
+            ContieneConsulta.objects.filter(consulta=consulta).update(fase_cola_medica='6')
+            messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
+            return redirect(reverse('editar_consulta', kwargs={'id_consulta':consulta.id_consulta}))
