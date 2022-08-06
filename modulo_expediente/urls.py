@@ -12,7 +12,7 @@ from modulo_expediente.views import (
 from modulo_expediente.views import (
     buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, 
     ReferenciaMedicaView, ConstanciaMedicaUpdate, ConstanciaMedicaPDFView,
-    AgendaView
+    AgendaView, ConsultaView
     )
 
 
@@ -30,7 +30,7 @@ urlpatterns = [
     path('cola/eliminar-paciente/<int:id_paciente>', eliminar_cola, name='eliminar_cola'),
     path('modificar-signosVitales/<int:id_consulta>',modificar_signosVitales, name='modificar_signosVitales'),
     path('receta_medica/agregar-medicamento', agregar_medicamento, name='agregar_nuevo_medicamento'),
-    path('consulta/<int:id_consulta>/',editar_consulta,name='editar_consulta'),
+    path('consulta/<int:id_consulta>/',ConsultaView.as_view(),name='editar_consulta'),
     path('medicamento/',busqueda_medicamento, name='agregar_medicamento'),
     path('receta/dosis',dosis_medicamento,name='agregar_dosis'),
 

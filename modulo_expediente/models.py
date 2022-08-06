@@ -70,7 +70,7 @@ class ContieneConsulta(models.Model):
     class Meta:
         unique_together = (('expediente', 'fecha_de_cola'),)
     def __str__(self):
-        return str(self.id_expediente)+" - "+str(self.consulta)
+        return str(self.expediente.id_expediente)+" - "+str(self.consulta)
 
 class SignosVitales(models.Model):
     UNIDADES_TEMPERATURA=(
