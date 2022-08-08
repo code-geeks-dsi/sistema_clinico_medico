@@ -582,8 +582,15 @@ class ConstanciaMedicaView(View):
     template_name = 'expediente/constancia/create_update_constancia_medica.html'
 
     def get(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta'])
+        #Datos de la consulta
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        paciente=contiene_consulta.expediente.id_paciente
+        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        ##Formulario
         form = self.form_class()
-        return render(request, self.template_name, {'form': form})
+        form.fields['diagnostico_constancia'].initial=contiene_consulta.consulta.consulta_por
+        return render(request, self.template_name, {'form': form, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
 
     def post(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta']) 
@@ -600,10 +607,16 @@ class ConstanciaMedicaUpdate(View):
     template_name = 'expediente/constancia/create_update_constancia_medica.html'
 
     def get(self, request, *args, **kwargs):
+        #Datos de la consulta
+        id_consulta=int(self.kwargs['id_consulta'])
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        paciente=contiene_consulta.expediente.id_paciente
+        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+        #Datos de la constancia
         id_constancia=int(self.kwargs['id_constancia']) 
         initial_data={'id_constancia_medica':int(id_constancia)}
         form = self.form_class(instance=ConstanciaMedica.objects.get(**initial_data))
-        return render(request, self.template_name, {'form': form, 'update':True})
+        return render(request, self.template_name, {'form': form, 'update':True, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
 
     def post(self, request, *args, **kwargs):
         id_constancia=int(self.kwargs['id_constancia']) 
