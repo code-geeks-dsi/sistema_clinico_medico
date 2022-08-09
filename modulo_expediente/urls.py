@@ -12,8 +12,9 @@ from modulo_expediente.views import (
 from modulo_expediente.views import (
     buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, 
     ReferenciaMedicaView, ConstanciaMedicaUpdate, ConstanciaMedicaPDFView,
-    AgendaView, ConsultaView
+    AgendaView, ConsultaView, RecetaMedicaPdfView, ReferenciaMedicaPdfView
     )
+
 
 
 urlpatterns = [
@@ -41,7 +42,7 @@ urlpatterns = [
 
     path('consulta/<int:id_consulta>/constancia-medica/pdf',ConstanciaMedicaPDFView.as_view(),name='constancia-medica'),
     path('constancia-medica/',ConstanciaMedicaCreate.as_view(),name='crear-constancia-medica'),
-
+    
     path('constancia-medica/<str:id>',ConstanciaMedicaView.as_view(),name='constancia-medica'),
     path('constancia-medica/',ConstanciaMedicaCreate.as_view(),name='crear-constancia-medica'),
     path('consulta/<int:id_consulta>/referencia-medica/',ReferenciaMedicaView.as_view(),name='referencia-medica'),
@@ -52,5 +53,10 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/constancia-medica/',ConstanciaMedicaView.as_view(),name='constancia-medica'),
     path('consulta/<int:id_consulta>/constancia-medica/<int:id_constancia>/',ConstanciaMedicaUpdate.as_view(),name='constancia-medica-update'),
 
+    path('consulta/<int:id_consulta>/referencia-medica/pdf',ReferenciaMedicaPdfView.as_view(),name='referencia-medica-pdf' ),
+    path('consulta/<int:id_consulta>/receta-medica/pdf',RecetaMedicaPdfView.as_view(),name='receta-medica-pdf' ),
+
+    path('consulta/<int:id_consulta>/constancia-medica/',ConstanciaMedicaView.as_view(),name='constancia-medica'),
+    path('consulta/<int:id_consulta>/constancia-medica/<int:id_constancia>/',ConstanciaMedicaUpdate.as_view(),name='constancia-medica-update')
 ]
 

@@ -1,0 +1,55 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>PDF</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <header>
+    <div class="box">
+      <img src="{% static 'img/encabezado.png' %}"  alt=""/>
+    </div>
+  </header>
+  <body>
+    <p>Nombre del paciente: <b>{{paciente.nombre_paciente}} {{paciente.apellido_paciente}}</b></p>
+    <p>Dirección: <b>{{paciente.direccion_paciente}}</b></p>
+    <p>Nombre del Resposable:{{paciente.resposable}}</p>
+    <div>
+      <a>Teléfono:<b>{{paciente.telefono}}</b></a>
+      <a>Edad: <b>{{edad.years}}</b></a>
+      <a>Fecha:<b>{{referencia.fecha_referencia}}</b></a>
+    </div><br>
+    <div>
+      <a>Peso:{{consulta.signosvitales.valor_peso}}</a>
+      <a>Sat%:{{signos_vitales.valor_saturacion_oxigeno}}</a>
+      <a>Pulso:{{signos_vitales.valor_frecuencia_cardiaca}}</a>
+      <a>Temperatura:{{signos_vitales.valor_temperatura}}</a>
+    </div>
+    <p>CX:<b>{{referencia.consulta_por}}</b></p>
+    <p>Referencia:<b>{{hospital.nombre_hospital}}</b></p>
+  </body>
+</html>
+<style>
+    @page {
+      margin: 2.50cm;
+      margin-left: 2.25cm;
+      margin-right: 2.25cm;
+    }
+    body{
+      font-size: 15px;
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      color:#171E31;
+    }
+ 
+    img{
+        width:30%;
+        height:200px;
+        margin-left: 60px;
+        padding-top: 20px;
+        border: #171E31 3px solid;
+    }
+    .box{
+        text-align: center;
+    }
+  </style>
