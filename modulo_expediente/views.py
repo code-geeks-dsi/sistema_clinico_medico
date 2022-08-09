@@ -1,3 +1,4 @@
+from curses.ascii import SI
 import json
 from django.shortcuts import redirect, render
 from django.db.models import Q
@@ -8,6 +9,7 @@ from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
     RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica)
+from modulo_control.models import Doctor, Enfermera, Empleado, Rol
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
     ConsultaFormulario, DatosDelPaciente, DosisFormulario, IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm)
@@ -22,6 +24,7 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from dateutil.relativedelta import relativedelta
 from django.views import View 
+from django.views.generic import View, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -29,6 +32,7 @@ from weasyprint import HTML
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
+
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -453,9 +457,8 @@ class ConstanciaMedicaPDFView(View):
         contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
         paciente=contiene_consulta.expediente.id_paciente
         edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
-        fecha=date.today()
-        constanciamedica=ConstanciaMedica.objects.filter(consulta__id_consulta=id_consulta)
-        data={'nombre':doctora,'jvmp':jvmp,'paciente':paciente,'edad':edad,'fecha':fecha, 'constanciamedica':constanciamedica}
+        constanciamedica=ConstanciaMedica.objects.get(consulta__id_consulta=id_consulta)
+        data={'nombre':doctora,'jvmp':jvmp,'paciente':paciente,'edad':edad, 'constanciamedica':constanciamedica}
         #generando pdf
         #puede recibir la info como diccionario
         html_string = render_to_string('expediente/constancia/reporteConstanciaMedica.html',data)
@@ -478,6 +481,7 @@ class ConstanciaMedicaPDFView(View):
     def put(self, request, *args, **kwargs): 
         #update constancia medica
         pass
+
 
 class ConstanciaMedicaCreate(CreateView):
     model = ConstanciaMedica
@@ -529,7 +533,60 @@ class ReferenciaMedicaUpdate(View):
             }
             return JsonResponse(response)
 
+class ReferenciaMedicaPdfView(View):
+        def get(self, request, *args, **kwargs):
+            id_consulta=int(self.kwargs['id_consulta'])
+            #consultando datos del paciente
+            contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+            paciente=contiene_consulta.expediente.id_paciente
+            edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+            #consultando datos de la referencia
+            referencia=ReferenciaMedica.objects.get(consulta__id_consulta=id_consulta)
+            #consultando signosvitales
+            consulta=Consulta.objects.filter(id_consulta=id_consulta)
+            signos_vitales=SignosVitales.objects.filter(consulta__id_consulta=id_consulta)
+            hospital=referencia.hospital
+            data={'paciente':paciente, 'edad':edad,'referencia':referencia,'consulta':consulta,'signos_vitales':signos_vitales,'hospital':hospital}
+            #generando pdf
+            #puede recibir la info como diccionario
+            html_string = render_to_string('expediente/referencia/reporteReferenciaMedica.html',data)
+            html = HTML(string=html_string, base_url=request.build_absolute_uri())
+            result = html.write_pdf()
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'inline; filename="referenciaMedica.pdf"'
+            response['Content-Transfer-Encoding'] = 'binary'
+            #Crea un archivo temporal
+            with tempfile.NamedTemporaryFile(delete=True) as output:
+                output.write(result)
+                output.flush()
+                output = open(output.name, 'rb')
+                response.write(output.read())
+            return response
   
+
+class RecetaMedicaPdfView(View):  
+    def get(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta'])
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        paciente=contiene_consulta.expediente.id_paciente 
+        fecha=date.today()
+        data={'paciente':paciente,'fecha':fecha} 
+        #generando pdf
+        #puede recibir la info como diccionario
+        html_string = render_to_string('recetaMedica.html',data)
+        html = HTML(string=html_string, base_url=request.build_absolute_uri())
+        result = html.write_pdf()
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="recetaMedica.pdf"'
+        response['Content-Transfer-Encoding'] = 'binary'
+        #Crea un archivo temporal
+        with tempfile.NamedTemporaryFile(delete=True) as output:
+            output.write(result)
+            output.flush()
+            output = open(output.name, 'rb')
+            response.write(output.read())
+        return response
+
 class ConstanciaMedicaView(View):
     form_class = ConstanciaMedicaForm
     template_name = 'expediente/constancia/create_update_constancia_medica.html'
