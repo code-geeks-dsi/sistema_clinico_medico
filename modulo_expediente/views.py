@@ -640,14 +640,21 @@ class ConstanciaMedicaView(View):
 
     def get(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta'])
-        #Datos de la consulta
-        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
-        paciente=contiene_consulta.expediente.id_paciente
-        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
-        ##Formulario
-        form = self.form_class()
-        form.fields['diagnostico_constancia'].initial=contiene_consulta.consulta.consulta_por
-        return render(request, self.template_name, {'form': form, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
+        #Verificar si existe constancia medica
+        try: 
+            constancia_medica= ConstanciaMedica.objects.get(consulta__id_consulta=id_consulta)
+            return redirect(reverse('constancia-medica-update',
+                            kwargs={'id_consulta': id_consulta,'id_constancia':constancia_medica.id_constancia_medica},))
+        #Si no se ha creado la constancia
+        except ConstanciaMedica.DoesNotExist:
+            #Datos de la consulta
+            contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+            paciente=contiene_consulta.expediente.id_paciente
+            edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+            ##Formulario
+            form = self.form_class()
+            form.fields['diagnostico_constancia'].initial=contiene_consulta.consulta.consulta_por
+            return render(request, self.template_name, {'form': form, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
 
     def post(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta']) 
@@ -666,14 +673,17 @@ class ConstanciaMedicaUpdate(View):
     def get(self, request, *args, **kwargs):
         #Datos de la consulta
         id_consulta=int(self.kwargs['id_consulta'])
-        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
-        paciente=contiene_consulta.expediente.id_paciente
-        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
-        #Datos de la constancia
-        id_constancia=int(self.kwargs['id_constancia']) 
-        initial_data={'id_constancia_medica':int(id_constancia)}
-        form = self.form_class(instance=ConstanciaMedica.objects.get(**initial_data))
-        return render(request, self.template_name, {'form': form, 'update':True, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
+        try:
+            contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+            paciente=contiene_consulta.expediente.id_paciente
+            edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+            #Datos de la constancia
+            id_constancia=int(self.kwargs['id_constancia']) 
+            initial_data={'id_constancia_medica':int(id_constancia)}
+            form = self.form_class(instance=ConstanciaMedica.objects.get(**initial_data))
+            return render(request, self.template_name, {'form': form, 'update':True, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
+        except ConstanciaMedica.DoesNotExist:
+            raise Http404("Constancia médica no encontrada.")
 
     def post(self, request, *args, **kwargs):
         id_constancia=int(self.kwargs['id_constancia']) 
