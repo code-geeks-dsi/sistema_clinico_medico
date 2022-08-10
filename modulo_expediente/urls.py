@@ -61,6 +61,6 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/constancia-medica/<int:id_constancia>/',ConstanciaMedicaUpdate.as_view(),name='constancia-medica-update'),
 
     ###URL de Pruebas para visualización de archivos en S3
-    path('documento/', storageurl, name="storage-url")
+    path('documento/<int:id_documento>/', storageurl, name="storage-url")
 ]
 
