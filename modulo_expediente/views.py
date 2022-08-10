@@ -1,7 +1,5 @@
-from curses.ascii import SI
 import json
 from urllib import response
-import django
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
@@ -10,7 +8,8 @@ from datetime import datetime
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
-    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente
+    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
+    Archivo
     )
     
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
@@ -40,6 +39,7 @@ from django.template.loader import render_to_string
 import tempfile
 from django.db.models import F, Func, Value, CharField
 from django.http import Http404
+import boto3
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -734,3 +734,17 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             ContieneConsulta.objects.filter(consulta=consulta).update(fase_cola_medica='6')
             messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
             return redirect(reverse('editar_consulta', kwargs={'id_consulta':consulta.id_consulta}))
+
+###Funcion de Prueba para recueperación de archivos s3
+##Esto genera una url para accdeder al archivo surante 60 segundos
+def storageurl(request):
+    documentos=Archivo.objects.get(id_archivo=1)
+    print(documentos)
+    print(documentos.archivo.url)
+    
+    client = boto3.client('s3')
+    response = client.generate_presigned_url('get_object',Params={'Bucket': 'isai-medico-test',
+                                                              'Key': f'static/{documentos.archivo}'},
+                                         HttpMethod="GET", ExpiresIn=60) #tiempo en segundos
+
+    return HttpResponse(response)

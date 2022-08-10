@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('modulo_expediente', '0003_referenciamedica_consulta_por'),
+        ('modulo_expediente', '0004_alter_signosvitales_unidad_temperatura'),
     ]
 
     operations = [
