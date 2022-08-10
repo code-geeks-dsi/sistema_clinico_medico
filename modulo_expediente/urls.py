@@ -7,7 +7,7 @@ from modulo_expediente.views import (
     modificar_signosVitales, crear_expediente, editar_consulta, CreateHojaEvolucion, ListaHojaEvolucion
     )
 from modulo_expediente.views import (
-    busqueda_medicamento, autocompletado_medicamento,dosis_medicamento, ConstanciaMedica)
+    busqueda_medicamento, autocompletado_medicamento,dosis_medicamento, ConstanciaMedica, storageurl)
 
 from modulo_expediente.views import (
     buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, 
@@ -57,6 +57,9 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/receta-medica/pdf',RecetaMedicaPdfView.as_view(),name='receta-medica-pdf' ),
 
     path('consulta/<int:id_consulta>/constancia-medica/',ConstanciaMedicaView.as_view(),name='constancia-medica'),
-    path('consulta/<int:id_consulta>/constancia-medica/<int:id_constancia>/',ConstanciaMedicaUpdate.as_view(),name='constancia-medica-update')
+    path('consulta/<int:id_consulta>/constancia-medica/<int:id_constancia>/',ConstanciaMedicaUpdate.as_view(),name='constancia-medica-update'),
+
+    ###URL de Pruebas para visualización de archivos en S3
+    path('documento/', storageurl, name="storage-url")
 ]
 

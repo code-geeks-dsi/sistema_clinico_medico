@@ -1,14 +1,11 @@
 from datetime import datetime
-from pyexpat import model
-from secrets import choice
-from unittest.mock import DEFAULT
-from xmlrpc.client import TRANSPORT_ERROR
 from django.db import models
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from .managers import (
     SignosVitalesManager
 )
+from storages.backends.s3boto3 import S3Boto3Storage
 
 # Create your models here.
 class Expediente(models.Model):
@@ -250,3 +247,8 @@ class ConstanciaMedica(models.Model):
     dias_reposo=models.IntegerField(blank=False, null=False)#Los integer no llevan max_length
     diagnostico_constancia=models.TextField(blank=True, null=True)
     acompanante=models.CharField(blank=True,null=False,max_length=50)
+
+###Modelo de prueba para amazon s3 
+class Archivo(models.Model):
+    id_archivo=models.AutoField(primary_key=True)
+    archivo=models.FileField(null=True, blank=True, storage=S3Boto3Storage(bucket_name='isai-medico-test'),upload_to='exams')
