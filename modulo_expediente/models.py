@@ -258,6 +258,6 @@ class Archivo(models.Model):
                             default_acl=None
                             ),upload_to='exams')
     archivo_publico=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
-                            bucket_name='isai-medico-test',
+
                             default_acl='public-read'
                             ),upload_to='exams')

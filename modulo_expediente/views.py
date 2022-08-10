@@ -767,8 +767,8 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
 
 ###Funcion de Prueba para recueperación de archivos s3
 ##Esto genera una url para accdeder al archivo surante 60 segundos
-def storageurl(request):
-    documentos=Archivo.objects.get(id_archivo=1)
+def storageurl(request, id_documento):
+    documentos=Archivo.objects.get(id_archivo=id_documento)
     print(documentos)
     print(documentos.archivo.url)
     
