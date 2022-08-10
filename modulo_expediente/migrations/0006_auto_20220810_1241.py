@@ -7,7 +7,7 @@ import storages.backends.s3boto3
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('modulo_expediente', '0005_archivo'),
+        ('modulo_expediente', '0006_auto_20220810_1030'),
     ]
 
     operations = [

@@ -110,10 +110,9 @@ LANGUAGE_CODE = 'es-es'
 TIME_ZONE = 'America/El_Salvador'
 
 USE_I18N = True
-
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 #STATIC_ROOT= os.path.join(BASE_DIR, 'static')
