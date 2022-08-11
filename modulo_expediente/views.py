@@ -578,13 +578,18 @@ class ListaHojaEvolucion(View):
         data = list(EvolucionConsulta.objects.filter(consulta__id_consulta=id_consulta).annotate(
         fecha_hora=Func(
             F('fecha'),
-            Value('DD/mm/YYYY HH:MM:SS'),
+            Value('DD/MM/YYYY HH:MI:SS'),
             function='to_char',
             output_field=CharField()
-        )).values('observacion','fecha_hora','id_evolucion'))
+        )).values('observacion','fecha_hora','id_evolucion', 'consulta'))
+        for item in data:
+            item['delete_url']=reverse_lazy('hoja-evolucion-delete',
+                            kwargs={'id_consulta': item['consulta'],
+                            'id_nota_evolucion': item['id_evolucion']},)
         return JsonResponse({'data':data}) 
+
 class DeleteNotaEvolucion(View):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         id_nota_evolucion=int(self.kwargs['id_nota_evolucion'])
         try:
             nota=EvolucionConsulta.objects.get(id_evolucion=id_nota_evolucion)
