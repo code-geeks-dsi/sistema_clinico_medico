@@ -66,6 +66,36 @@
                                             <p>{{ edad.years }} años</p>
                                             <p>{{ paciente.email_paciente }}</p>
                                             <p>{{ paciente.responsable }}</p>
+                                            <!-- <p>{{ expediente.antecedentes_personales }}</p>
+                                            <p>{{ expediente.antecedentes_famialiares }}</p> -->
+                                            
+                                            <button type="button" class="btn btn-outline-primary material-symbols-outlined" data-bs-toggle="modal" data-bs-target="#antecedentes_expediente">
+                                                 edit
+                                              </button>
+
+                                              <!-- Modal -->
+                                            <div class="modal fade" id="antecedentes_expediente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                    <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <form action="aqui url" method="post" id="antecentes_form">
+                                                        <div class="modal-body">
+                                                            <!-- aqui va formulario para antecedentes -->
+                                                            <!-- {@{ antecedentes_form }@} -->
+                                                            {% csrf_token %}
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Understood</button>
+                                                            </div>
+                                                    </form>
+                                                   
+                                                </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -605,7 +635,19 @@
 			toastr[response.type](response.data); 
         }});
     });
-   
+    $('#antecedentes_form').submit(function (event) {
+		event.preventDefault();
+		$.ajax({
+		type: 'POST',
+		url: $("#antecedentes_form").attr("action"),
+		data: $("#antecedentes_form").serialize(), 
+        headers: {
+            "X-CSRFToken": '{{ csrf_token }}',
+        },success: function(response) { 
+			toastr[response.type](response.data); 
+		},
+		});
+	});
 </script>
 {% endblock %}
 
