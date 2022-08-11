@@ -10,7 +10,7 @@ from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
     RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
-    Archivo
+    DocumentoExpediente
     )
     
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
@@ -773,13 +773,13 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
 ###Funcion de Prueba para recueperación de archivos s3
 ##Esto genera una url para accdeder al archivo surante 60 segundos
 def storageurl(request, id_documento):
-    documentos=Archivo.objects.get(id_archivo=id_documento)
+    documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
     print(documentos)
-    print(documentos.archivo.url)
+    print(documentos.documento.url)
     
     client = boto3.client('s3')
-    response = client.generate_presigned_url('get_object',Params={'Bucket': 'isai-medico-test',
-                                                              'Key': f'static/{documentos.archivo}'},
+    response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
+                                                              'Key': f'static/{documentos.documento}'},
                                          HttpMethod="GET", ExpiresIn=60) #tiempo en segundos
 
     return HttpResponse(response)

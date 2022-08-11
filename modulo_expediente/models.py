@@ -251,6 +251,17 @@ class ConstanciaMedica(models.Model):
     diagnostico_constancia=models.TextField(blank=True, null=True)
     acompanante=models.CharField(blank=True,null=False,max_length=50)
 
+class DocumentoExpediente(models.Model):
+    id_documento=models.AutoField(primary_key=True)
+    titulo=models.CharField(max_length=80, null=False, blank=False)
+    documento=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
+                            default_acl=None
+                            ),upload_to='exams')
+    fecha=models.DateTimeField(default=datetime.now, blank=False, null=False)
+    expediente=models.ForeignKey('Expediente', models.DO_NOTHING,null=False, blank=False)
+    empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+
+
 ###Modelo de prueba para amazon s3 
 class Archivo(models.Model):
     id_archivo=models.AutoField(primary_key=True)
