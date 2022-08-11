@@ -83,8 +83,8 @@ class SignosVitales(models.Model):
     id_signos_vitales= models.AutoField(primary_key=True)
     consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
     enfermera=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
-    unidad_temperatura=models.CharField(max_length=2,choices=UNIDADES_TEMPERATURA,null=False, blank=True,default=2)
-    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True,default=1)
+    unidad_temperatura=models.CharField(max_length=2,choices=UNIDADES_TEMPERATURA,default=UNIDADES_TEMPERATURA[1][0],null=False, blank=True)
+    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,default=UNIDADES_PESO[0][0],null=False, blank=True)
     unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
     unidad_presion_arterial_sistolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
     unidad_frecuencia_cardiaca=models.CharField(max_length=3,null=False, blank=True,default='PPM')
@@ -95,8 +95,9 @@ class SignosVitales(models.Model):
     valor_presion_arterial_sistolica=models.IntegerField(validators=[MaxValueValidator(350),MinValueValidator(0)],null=True, blank=True)
     valor_frecuencia_cardiaca=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=True, blank=True)
     valor_saturacion_oxigeno=models.IntegerField(validators=[MaxValueValidator(101),MinValueValidator(0)],null=True, blank=True)
+    fecha=models.DateTimeField(auto_now_add=True)
     objects= SignosVitalesManager()
-    #Cuando se utiliza integerField, Django ignora el max_length, fields.w122
+    
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
