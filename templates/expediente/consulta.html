@@ -216,6 +216,7 @@
                                 {{hoja_evolucion_form}}
                                 <button type="submit" class="btn btn-outline-primary mt-1">Agregar</button>
                             </form>
+                            
                         </div>
                         <div id="lista-hoja-evolucion" class="row row-cols-1 row-cols-md-2 mt-3"></div>
                     </div>
@@ -490,7 +491,27 @@
           </div>
         </div>
     </div>
-
+    <!-- Modal para confirmar eliminar -->
+    
+    
+        <div class="modal fade modal-dialog modal-dialog-centered" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Eliminar</h5>
+                    <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Desea eliminar esta nota de Evolución?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-secondary" id="eliminar-nota-evolucion-btn" >Si</button>
+                </div>
+              </div>
+            </div>
+        
+                
 </div>    
 {% endblock %}
 {% block js %}
@@ -505,12 +526,13 @@
     let url_agregar_a_receta="{% url 'agregar_dosis' %}"; 
     let tablaData=document.getElementById(tablaResultado);
     let id_receta_medica={{id_receta}};
+    let nota_evolucion_a_eliminar="";
     
     $('#load').hide();
 
     //Cerrar modal de medicamentos
     $('#cerar_modal_busqueda_medicamento').click(function() {
-        $('#busquedaMedicamentoModal').modal('toggle');
+        $('#busquedaMedicamentoModal').modal('show');
     });
 
     document.getElementById("btn_agregar_a_receta").addEventListener("click",function(){
@@ -553,7 +575,8 @@
                 `<div class="col mb-4">
                     <div class="card">
                         <div class="card-header">
-                            <p class="text-muted">${nota.fecha_hora}</p>
+                            <p class="text-muted d-flex justify-content-between">${nota.fecha_hora}<span class="material-symbols-outlined" type="button" onclick ="delete_nota('${nota.delete_url}')" >delete</span></p>
+                            
                         </div>
                         <div class="card-body">
                             <p class="card-text">${nota.observacion}</p>
@@ -561,11 +584,28 @@
                     </div>
                 </div>`);
             });
-            console.log(response)
 		},
 		});
     }
     get_lista_notas_evolucion();
+    function delete_nota(url) {
+        $('#modal-eliminar-nota-evolucion').modal('show');
+        nota_evolucion_a_eliminar=url;
+    }
+    $("#eliminar-nota-evolucion-btn").addEventListener('click',()=>{
+        $.ajax({
+		type: 'POST',
+		url: url,
+		data: {},  
+        headers: {
+            "X-CSRFToken": '{{ csrf_token }}',
+        },
+        success: function(response){
+            get_lista_notas_evolucion();
+			toastr[response.type](response.data); 
+        }});
+    });
+   
 </script>
 {% endblock %}
 
