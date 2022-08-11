@@ -589,7 +589,7 @@ class ListaHojaEvolucion(View):
         return JsonResponse({'data':data}) 
 
 class DeleteNotaEvolucion(View):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         id_nota_evolucion=int(self.kwargs['id_nota_evolucion'])
         try:
             nota=EvolucionConsulta.objects.get(id_evolucion=id_nota_evolucion)
