@@ -16,7 +16,7 @@ from modulo_expediente.models import (
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
     ConsultaFormulario, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, 
-    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm)
+    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm, DocumentoExpedienteForm)
 from django.http import JsonResponse
 from datetime import date
 from django.urls import reverse
@@ -769,6 +769,15 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             ContieneConsulta.objects.filter(consulta=consulta).update(fase_cola_medica='6')
             messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
             return redirect(reverse('editar_consulta', kwargs={'id_consulta':consulta.id_consulta}))
+
+#Clase para almacenamiento de archivos
+class ExamenesExternosView(TemplateView):
+    template_name = "expediente/almacenar_examenes_externos.html"
+    form_class = DocumentoExpedienteForm
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+        pass
 
 ###Funcion de Prueba para recueperación de archivos s3
 ##Esto genera una url para accdeder al archivo surante 60 segundos

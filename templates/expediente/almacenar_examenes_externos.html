@@ -1,0 +1,21 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Examenes Externos {% endblock %}
+{% block content %}
+<div class="container-fluid">
+  
+</div>
+{% endblock %}
+<!--Js de la vista-->
+{% block js %}
+<script src="{% static 'js/sistemaClinico.js' %}"></script>
+
+<script>
+    $( "#side_expediente" ).addClass( "active" );
+
+</script>
+{% endblock %}
