@@ -1,0 +1,69 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+<link href="{% static 'css/dropzone.css' %}" rel="stylesheet" />
+<link href="{% static 'css/custom-dropzone.css' %}" rel="stylesheet" />
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Exámenes Externos {% endblock %}
+{% block content %}
+<div class="container py-4">
+    <!--Navegación-->
+    <div class="row">
+        <div class="col-6">
+            <h3 class="fw-bold text-secondary pb-4">Exámenes de Laboratorio Externos</h3>
+        </div>
+        <div class="col-6">
+            <div class="d-flex justify-content-end">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-3">
+                        <li class="breadcrumb-item"><a href="{% url 'buscar_expediente' %}">Expediente</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'editar_consulta' id_consulta=consulta %}">{{paciente.nombre_paciente}}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Exámenes Externos</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!--Formulario de almacenamiento-->
+    <div class="card">
+        <div class="card-header alert-primary text-primary" aria-expanded="true">
+            <div class="px-1 py-2">
+                Registro de exámenes de laboratorio Externos
+            </div>
+        </div>
+        <div class="card-body">
+            <form action="{% url 'create_examenes_externos' id_consulta=consulta %}" class="dropzone" id="my-great-dropzone">
+                {% csrf_token %}
+                <div class="dz-default dz-message">
+                    <button class="dz-button" type="button">Arrastrar Archivos Aquí</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!--Js de la vista-->
+{% block js %}
+<script src="{% static 'js/sistemaClinico.js' %}"></script>
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+
+<script>
+    $( "#side_expediente" ).addClass( "active" );
+    //DropZone
+    Dropzone.options.myGreatDropzone = { // camelized version of the `id`
+        paramName: "file", // The name that will be used to transfer the file
+        maxFilesize: 40, // MB
+        acceptedFiles: '.jpg, application/pdf, .png',
+        dictRemoveFile:'Remover',
+        accept: function(file, done) {
+        if (file.name == "justinbieber.jpg") {
+            done("Naha, you don't.");
+        }
+        else { done(); }
+        }
+    };
+</script>
+
+{% endblock %}
