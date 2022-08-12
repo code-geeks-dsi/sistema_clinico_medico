@@ -1,5 +1,7 @@
 import json
+from time import strftime
 from urllib import response
+from urllib.error import HTTPError
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
@@ -39,7 +41,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
 from django.db.models import F, Func, Value, CharField
-from django.http import Http404
+from django.http import Http404, HttpResponseServerError
 import boto3
 from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
@@ -771,13 +773,32 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             return redirect(reverse('editar_consulta', kwargs={'id_consulta':consulta.id_consulta}))
 
 #Clase para almacenamiento de archivos
-class ExamenesExternosView(TemplateView):
-    template_name = "expediente/almacenar_examenes_externos.html"
+##Para esta vista es necesario tener permiso de ver expedientes
+class ExamenesExternosCreateView(PermissionRequiredMixin,TemplateView):
+    template_name = "expediente/examenes_externos/almacenar_examenes_externos.html"
+    permission_required = ('modulo_expediente.view_expediente')
     form_class = DocumentoExpedienteForm
     def get(self, request, *args, **kwargs):
+        id_consulta=self.kwargs['id_consulta']
         form = self.form_class()
-        return render(request, self.template_name, {'form': form})
-        pass
+        return render(request, self.template_name, {'form': form, 'consulta': id_consulta})
+    def post(self, request, *args, **kwargs):
+        id_consulta=self.kwargs['id_consulta']
+        expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).first().expediente
+        #Recueperando Archivo
+        archivo=request.FILES['file']
+        cantidad=DocumentoExpediente.objects.filter(titulo__startswith=archivo.name).count()
+        #archivo.name=f'{archivo.name} ({cantidad})'
+        #Almacenando archivo
+        DocumentoExpediente.objects.create(
+            titulo= archivo.name,
+            documento=archivo,
+            expediente=expediente,
+            empleado=request.user
+        )
+
+        return HttpResponse('upload')
+        #return HttpResponseServerError('PARA Errores')
 
 ###Funcion de Prueba para recueperación de archivos s3
 ##Esto genera una url para accdeder al archivo surante 60 segundos

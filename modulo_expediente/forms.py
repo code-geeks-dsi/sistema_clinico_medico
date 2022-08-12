@@ -209,3 +209,4 @@ class DocumentoExpedienteForm(ModelForm):
   class Meta:
     model=DocumentoExpediente
     fields='__all__'
+    exclude=['empleado']

@@ -255,6 +255,7 @@ class DocumentoExpediente(models.Model):
     id_documento=models.AutoField(primary_key=True)
     titulo=models.CharField(max_length=80, null=False, blank=False)
     documento=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
+                            bucket_name='code-geek-medic',
                             default_acl=None
                             ),upload_to='exams')
     fecha=models.DateTimeField(default=datetime.now, blank=False, null=False)
@@ -270,6 +271,6 @@ class Archivo(models.Model):
                             default_acl=None
                             ),upload_to='exams')
     archivo_publico=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
-
+                            bucket_name='code-geek-medic',
                             default_acl='public-read'
                             ),upload_to='exams')
