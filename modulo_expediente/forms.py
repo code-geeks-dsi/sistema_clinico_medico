@@ -205,8 +205,22 @@ class HojaEvolucionForm(ModelForm):
                                         }
         )}
 
+class ControlSubsecuenteform(ModelForm):
+  class Meta:
+    model=ControlSubsecuente
+    fields=['observacion']
+    widgets={
+        'observacion': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        )}
+
+
 class DocumentoExpedienteForm(ModelForm):
   class Meta:
     model=DocumentoExpediente
     fields='__all__'
     exclude=['empleado']
+

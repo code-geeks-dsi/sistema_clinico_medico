@@ -11,14 +11,24 @@ from django.utils import timezone
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
+
+    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,
+    Archivo
+
     RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
     DocumentoExpediente
+
     )
     
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
+
+    ConsultaFormulario, ControlSubsecuenteform, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, 
+    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm,)
+
     ConsultaFormulario, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, 
     IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm, DocumentoExpedienteForm)
+
 from django.http import JsonResponse
 from datetime import date
 from django.urls import reverse
@@ -755,6 +765,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
                 'id_receta':receta.id_receta_medica,
                 'consulta_form':consulta_form,
                 'hoja_evolucion_form':HojaEvolucionForm(),
+                'control_subsecuente_form':ControlSubsecuenteform(),
                 'edad':edad,
                 'dosis_form':DosisFormulario(),
                 'dosis':dosis,
@@ -771,6 +782,25 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             ContieneConsulta.objects.filter(consulta=consulta).update(fase_cola_medica='6')
             messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
             return redirect(reverse('editar_consulta', kwargs={'id_consulta':consulta.id_consulta}))
+
+    
+class CreateControlSubsecuente(View):
+        form_class = ControlSubsecuenteform
+
+        def post(self, request, *args, **kwargs):
+            id_consulta=int(self.kwargs['id_consulta']) 
+            form = self.form_class(request.POST)
+            if form.is_valid():
+                observacion=form.save(commit=False)
+                observacion.fecha=datetime.now()
+                observacion.consulta=Consulta.objects.get(id_consulta=id_consulta)
+                observacion.save()
+                response={
+                    'type':'success',
+                    'data':'Guardado!'
+                }
+                return JsonResponse(response)
+
 
 #Clase para almacenamiento de archivos
 ##Para esta vista es necesario tener permiso de ver expedientes
@@ -813,3 +843,4 @@ def storageurl(request, id_documento):
                                          HttpMethod="GET", ExpiresIn=60) #tiempo en segundos
 
     return HttpResponse(response)
+
