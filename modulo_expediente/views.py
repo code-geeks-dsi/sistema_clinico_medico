@@ -13,21 +13,15 @@ from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
 
     RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,
-    Archivo
-
-    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
-    DocumentoExpediente
+    Archivo, ControlSubsecuente,DocumentoExpediente
 
     )
     
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
-
     ConsultaFormulario, ControlSubsecuenteform, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, 
-    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm,)
-
-    ConsultaFormulario, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, 
-    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm, DocumentoExpedienteForm)
+    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm,DocumentoExpedienteForm
+    )
 
 from django.http import JsonResponse
 from datetime import date
