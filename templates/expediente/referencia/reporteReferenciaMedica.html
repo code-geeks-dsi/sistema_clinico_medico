@@ -12,27 +12,44 @@
     </div>
   </header>
   <body>
-    <p>Nombre del paciente: <b>{{paciente.nombre_paciente}} {{paciente.apellido_paciente}}</b></p>
-    <p>Dirección: <b>{{paciente.direccion_paciente}}</b></p>
-    <p>Nombre del Resposable:{{paciente.resposable}}</p>
-    <div>
-      <a>Teléfono:<b>{{paciente.telefono}}</b></a>
-      <a>Edad: <b>{{edad.years}}</b></a>
-      <a>Fecha:<b>{{referencia.fecha_referencia}}</b></a>
-    </div><br>
-    <div>
-      <a>Peso:{{consulta.signosvitales.valor_peso}}</a>
-      <a>Sat%:{{signos_vitales.valor_saturacion_oxigeno}}</a>
-      <a>Pulso:{{signos_vitales.valor_frecuencia_cardiaca}}</a>
-      <a>Temperatura:{{signos_vitales.valor_temperatura}}</a>
-    </div>
-    <p>CX:<b>{{referencia.consulta_por}}</b></p>
-    <p>Referencia:<b>{{hospital.nombre_hospital}}</b></p>
+    <p>Nombre del paciente: <b>{{paciente.nombre_paciente}} {{paciente.apellido_paciente}}.</b></p>
+    <p>Dirección: <b>{{paciente.direccion_paciente}}.</b></p>
+    <p>Nombre del Resposable: <b>{{paciente.resposable}}.</b></p>
+    <ul class="group-data">
+      <li class="group-data-item">
+        <a>Teléfono: <b>{{paciente.telefono}}</b></a>
+      </li>
+      <li class="group-data-item">
+        <a>Edad: <b>{{edad.years}}</b></a>
+      </li>
+      <li class="group-data-item">
+        <a>Fecha: <b>{{referencia_medica.fecha_referencia}}</b></a>
+      </li>
+    </ul>
+    {% for sv in signos_vitales %}
+      <ul class="group-data">
+        <li class="group-data-item">
+          <a>Peso: <b>{{sv.valor_peso}}{{sv.unidad_peso}}</b></a>
+        </li>
+        <li class="group-data-item">
+          <a>Sat%: <b>{{sv.valor_saturacion_oxigeno}}{{sv.unidad_saturacion_oxigeno}}</b></a>
+        </li>
+        <li class="group-data-item">
+          <a>Pulso: <b>{{sv.valor_frecuencia_cardiaca}}{{sv.unidad_frecuencia_cardiaca}}</b></a>
+        </li>
+        <li class="group-data-item">
+          <a>Temperatura: <b>{{sv.valor_temperatura}}{{sv.unidad_temperatura}}</b></a>
+        </li>
+      </ul>
+    {% endfor %}
+    <p>CX: <b>{{referencia_medica.consulta_por}}</b></p>
+    <p>Referencia: <b>{{referencia_medica.hospital.nombre_hospital}}.</b></p>
+    <p>Especialidad: <b>{{referencia_medica.especialidad}}.</b></p>
   </body>
 </html>
 <style>
     @page {
-      margin: 2.50cm;
+      margin: 1.00cm;
       margin-left: 2.25cm;
       margin-right: 2.25cm;
     }
@@ -43,13 +60,25 @@
     }
  
     img{
-        width:30%;
-        height:200px;
-        margin-left: 60px;
-        padding-top: 20px;
-        border: #171E31 3px solid;
+      width:80%;
+      height:200px;
+      margin-left: 50px;
+      padding-top: 20px;
+      margin-bottom: 50px;
+      border: #171E31 3px solid;
     }
-    .box{
-        text-align: center;
+  
+    .texto-justificado{
+      text-align: justify;
     }
+    .group-data{
+      display: flex;
+      list-style: none;
+      margin-left: -50px;
+    }
+    .group-data-item{
+      margin:0 10px;
+      width: max-content;
+    }
+    
   </style>
