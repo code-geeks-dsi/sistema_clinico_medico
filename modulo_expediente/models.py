@@ -1,14 +1,11 @@
 from datetime import datetime
-from pyexpat import model
-from secrets import choice
-from unittest.mock import DEFAULT
-from xmlrpc.client import TRANSPORT_ERROR
 from django.db import models
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from .managers import (
     SignosVitalesManager
 )
+from storages.backends.s3boto3 import S3Boto3Storage
 
 # Create your models here.
 class Expediente(models.Model):
@@ -17,7 +14,9 @@ class Expediente(models.Model):
     id_paciente=models.OneToOneField('Paciente', models.CASCADE, blank=False, null=False)
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
     codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
-    contiene_consulta=models.ManyToManyField('Consulta',through='ContieneConsulta')#blank=False,null=False, no se utilizan en ManyToMany fields.W122
+    contiene_consulta=models.ManyToManyField('Consulta',through='ContieneConsulta')
+    antecedentes_familiares=models.TextField(null=True,blank=True)
+    antecedentes_personales=models.TextField(null=True,blank=True)
     def __str__(self):
         return str(self.id_expediente)+" - "+str(self.id_paciente.nombre_paciente)
 
@@ -84,8 +83,8 @@ class SignosVitales(models.Model):
     id_signos_vitales= models.AutoField(primary_key=True)
     consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
     enfermera=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
-    unidad_temperatura=models.CharField(max_length=2,choices=UNIDADES_TEMPERATURA,null=False, blank=True,default=2)
-    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True,default=1)
+    unidad_temperatura=models.CharField(max_length=2,choices=UNIDADES_TEMPERATURA,default=UNIDADES_TEMPERATURA[1][0],null=False, blank=True)
+    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,default=UNIDADES_PESO[0][0],null=False, blank=True)
     unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
     unidad_presion_arterial_sistolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
     unidad_frecuencia_cardiaca=models.CharField(max_length=3,null=False, blank=True,default='PPM')
@@ -96,8 +95,9 @@ class SignosVitales(models.Model):
     valor_presion_arterial_sistolica=models.IntegerField(validators=[MaxValueValidator(350),MinValueValidator(0)],null=True, blank=True)
     valor_frecuencia_cardiaca=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=True, blank=True)
     valor_saturacion_oxigeno=models.IntegerField(validators=[MaxValueValidator(101),MinValueValidator(0)],null=True, blank=True)
+    fecha=models.DateTimeField(auto_now_add=True)
     objects= SignosVitalesManager()
-    #Cuando se utiliza integerField, Django ignora el max_length, fields.w122
+    
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
@@ -250,3 +250,15 @@ class ConstanciaMedica(models.Model):
     dias_reposo=models.IntegerField(blank=False, null=False)#Los integer no llevan max_length
     diagnostico_constancia=models.TextField(blank=True, null=True)
     acompanante=models.CharField(blank=True,null=False,max_length=50)
+
+###Modelo de prueba para amazon s3 
+class Archivo(models.Model):
+    id_archivo=models.AutoField(primary_key=True)
+    archivo=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
+                            bucket_name='isai-medico-test',
+                            default_acl=None
+                            ),upload_to='exams')
+    archivo_publico=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
+
+                            default_acl='public-read'
+                            ),upload_to='exams')

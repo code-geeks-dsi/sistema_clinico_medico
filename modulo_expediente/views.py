@@ -1,16 +1,16 @@
-from curses.ascii import SI
 import json
 from urllib import response
-import django
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
 from django.core import serializers
 from datetime import datetime
+from django.utils import timezone
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
-    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente
+    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
+    Archivo
     )
     
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
@@ -40,6 +40,8 @@ from django.template.loader import render_to_string
 import tempfile
 from django.db.models import F, Func, Value, CharField
 from django.http import Http404
+import boto3
+from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -561,6 +563,7 @@ class CreateHojaEvolucion(View):
         form = self.form_class(request.POST)
         if form.is_valid():
             nota=form.save(commit=False)
+            nota.fecha=datetime.now()
             nota.consulta=Consulta.objects.get(id_consulta=id_consulta)
             nota.save()
             response={
@@ -575,11 +578,43 @@ class ListaHojaEvolucion(View):
         data = list(EvolucionConsulta.objects.filter(consulta__id_consulta=id_consulta).annotate(
         fecha_hora=Func(
             F('fecha'),
-            Value('DD/MM/YYYY HH:MM:SS'),
+            Value('DD/MM/YYYY HH:MI:SS'),
             function='to_char',
             output_field=CharField()
-        )).values('observacion','fecha_hora','id_evolucion'))
+        )).values('observacion','fecha_hora','id_evolucion', 'consulta'))
+        for item in data:
+            item['delete_url']=reverse_lazy('hoja-evolucion-delete',
+                            kwargs={'id_consulta': item['consulta'],
+                            'id_nota_evolucion': item['id_evolucion']},)
         return JsonResponse({'data':data}) 
+
+class DeleteNotaEvolucion(View):
+    def post(self, request, *args, **kwargs):
+        id_nota_evolucion=int(self.kwargs['id_nota_evolucion'])
+        try:
+            nota=EvolucionConsulta.objects.get(id_evolucion=id_nota_evolucion)
+            current_datetime = datetime.now()
+            if(nota.fecha.month-current_datetime.month==nota.fecha.year-current_datetime.year==nota.fecha.day-current_datetime.day==nota.fecha.hour-current_datetime.hour==0 and nota.fecha.minute-current_datetime.minute <=5):
+                nota.delete()
+                response={
+                'type':'success',
+                'data':'Eliminado!'
+            }
+            else:
+                response={
+                'type':'warning',
+                'data':'El tiempo para eiminar esta nota ha caducado.'
+            }
+
+
+        except EvolucionConsulta.DoesNotExist:
+            response={
+                'type':'danger',
+                'data':'Nota de Evolución no existe.'
+            }
+        
+        return JsonResponse(response)
+
 class ReferenciaMedicaPdfView(View):
         def get(self, request, *args, **kwargs):
             id_referencia_medica=int(self.kwargs['id_referencia_medica'])
@@ -735,34 +770,3 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             ContieneConsulta.objects.filter(consulta=consulta).update(fase_cola_medica='6')
             messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
             return redirect(reverse('editar_consulta', kwargs={'id_consulta':consulta.id_consulta}))
-
-
-class ControlSubsecuenteUpdate(View):
-    form_class = ControlSubsecuenteform
-    template_name = 'expediente/referencia/create_update_referencia_medica.html'
-
-    def get(self, request, *args, **kwargs):
-        ##Datos de la consulta
-        fecha=int(self.kwargs['fecha'])
-        contiene_fecha=contiene_fecha.objects.get(fecha_fecha=fecha)
-        fecha=contiene_fecha.fecha
-        paciente=contiene_consulta.expediente.id_paciente
-        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
-
-        id_referencia=int(self.kwargs['id_referencia']) 
-        initial_data={'id_referencia_medica':int(id_referencia)}
-        form = self.form_class(instance=ReferenciaMedica.objects.get(**initial_data))
-        return render(request, self.template_name, {'form': form, 'update':True, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
-
-    def post(self, request, *args, **kwargs):
-        id_referencia=int(self.kwargs['id_referencia']) 
-        initial_data={'id_referencia_medica':int(id_referencia)}
-        form = self.form_class(request.POST, instance=ReferenciaMedica.objects.get(**initial_data))
-        if form.is_valid():
-            form.save()
-            response={
-                'type':'success',
-                'data':'Guardado!'
-            }
-            return JsonResponse(response)
-
