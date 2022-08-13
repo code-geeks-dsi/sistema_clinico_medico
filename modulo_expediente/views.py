@@ -619,8 +619,18 @@ class DeleteNotaEvolucion(View):
 
 class ReferenciaMedicaPdfView(View):
         def get(self, request, *args, **kwargs):
+            id_consulta=int(self.kwargs['id_consulta'])
             id_referencia_medica=int(self.kwargs['id_referencia_medica'])
-            data={}
+            #Colsultando datos ddel paciente
+            contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+            paciente=contiene_consulta.expediente.id_paciente
+            edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+            #Consultando signos vitales
+            signos_vitales=SignosVitales.objects.filter(consulta=contiene_consulta.consulta)
+            #Consultando datos de referencia
+            referencia_medica=ReferenciaMedica.objects.get(id_referencia_medica=id_referencia_medica)
+
+            data={'paciente':paciente,'edad':edad,'signos_vitales':signos_vitales,'referencia_medica':referencia_medica}
             #generando pdf
             #puede recibir la info como diccionario
             html_string = render_to_string('expediente/referencia/reporteReferenciaMedica.html',data)
