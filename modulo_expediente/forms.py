@@ -204,3 +204,14 @@ class HojaEvolucionForm(ModelForm):
                                         "cols":20
                                         }
         )}
+class ControlSubsecuenteform(ModelForm):
+  class Meta:
+    model=ControlSubsecuente
+    fields=['observacion']
+    widgets={
+        'observacion': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        )}
