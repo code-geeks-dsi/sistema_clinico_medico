@@ -4,15 +4,15 @@ from django.urls import path
 from modulo_expediente.views import (
     AgendaView, DeleteNotaEvolucion, ReferenciaMedicaUpdate, agregar_medicamento, busqueda_paciente, autocompletado_apellidos, 
     eliminar_cola, eliminar_dosis,sala_consulta,get_cola,get_paciente,agregar_cola, 
-    modificar_signosVitales, crear_expediente, editar_consulta, CreateHojaEvolucion, ListaHojaEvolucion
-    )
+    modificar_signosVitales, crear_expediente, editar_consulta, CreateHojaEvolucion, ListaHojaEvolucion, CreateControlSubsecuente)
+
 from modulo_expediente.views import (
-    busqueda_medicamento, autocompletado_medicamento,dosis_medicamento, ConstanciaMedica, storageurl)
+    busqueda_medicamento, autocompletado_medicamento,dosis_medicamento, ConstanciaMedica,)
 
 from modulo_expediente.views import (
     buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, 
     ReferenciaMedicaView, ConstanciaMedicaUpdate, ConstanciaMedicaPDFView,
-    AgendaView, ConsultaView, RecetaMedicaPdfView, ReferenciaMedicaPdfView
+    AgendaView, ConsultaView, RecetaMedicaPdfView, ReferenciaMedicaPdfView,
     )
 
 
@@ -60,7 +60,9 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/constancia-medica/',ConstanciaMedicaView.as_view(),name='constancia-medica'),
     path('consulta/<int:id_consulta>/constancia-medica/<int:id_constancia>/',ConstanciaMedicaUpdate.as_view(),name='constancia-medica-update'),
 
+    path('consulta/<int:id_consulta>/control-subsecuente/',CreateControlSubsecuente.as_view(),name='control-subsecuente-create'),
+
     ###URL de Pruebas para visualización de archivos en S3
-    path('documento/<int:id_documento>/', storageurl, name="storage-url")
+   # path('documento/<int:id_documento>/', storageurl, name="storage-url")
 ]
 
