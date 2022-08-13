@@ -5,7 +5,7 @@ from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
 from .models import (
   Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
-  ConstanciaMedica
+  ConstanciaMedica, DocumentoExpediente
 )
 
 class DateInput(forms.DateInput):
@@ -204,6 +204,7 @@ class HojaEvolucionForm(ModelForm):
                                         "cols":20
                                         }
         )}
+
 class ControlSubsecuenteform(ModelForm):
   class Meta:
     model=ControlSubsecuente
@@ -215,3 +216,11 @@ class ControlSubsecuenteform(ModelForm):
                                         "cols":20
                                         }
         )}
+
+
+class DocumentoExpedienteForm(ModelForm):
+  class Meta:
+    model=DocumentoExpediente
+    fields='__all__'
+    exclude=['empleado']
+

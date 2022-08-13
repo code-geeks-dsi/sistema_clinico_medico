@@ -12,7 +12,11 @@ from modulo_expediente.views import (
 from modulo_expediente.views import (
     buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, 
     ReferenciaMedicaView, ConstanciaMedicaUpdate, ConstanciaMedicaPDFView,
+
     AgendaView, ConsultaView, RecetaMedicaPdfView, ReferenciaMedicaPdfView,
+
+    AgendaView, ConsultaView, RecetaMedicaPdfView, ReferenciaMedicaPdfView, ExamenesExternosCreateView
+
     )
 
 
@@ -63,6 +67,11 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/control-subsecuente/',CreateControlSubsecuente.as_view(),name='control-subsecuente-create'),
 
     ###URL de Pruebas para visualización de archivos en S3
+
    # path('documento/<int:id_documento>/', storageurl, name="storage-url")
+
+    path('consulta/<int:id_consulta>/agregar-documento-externo/', ExamenesExternosCreateView.as_view(), name="create_examenes_externos"),
+    path('documento/<int:id_documento>/', storageurl, name="storage-url")
+
 ]
 
