@@ -35,6 +35,7 @@
           <button class="nav-link" id="nav-contol-tab" data-bs-toggle="tab" data-bs-target="#nav-control" type="button" role="tab" aria-controls="nav-control" aria-selected="false">Control Subsecuente</button>
           <button class="nav-link" id="nav-evolucion-tab" data-bs-toggle="tab" data-bs-target="#nav-evolucion" type="button" role="tab" aria-controls="nav-evolucion" aria-selected="false">Hoja de Evolución</button>
           <button class="nav-link" id="nav-documentos-tab" data-bs-toggle="tab" data-bs-target="#nav-documentos" type="button" role="tab" aria-controls="nav-documentos" aria-selected="false">Documentos de la Consulta</button>
+          <button class="nav-link" id="nav-documentos-tab" data-bs-toggle="tab" data-bs-target="#nav-examanes-externos" type="button" role="tab" aria-controls="nav-documentos" aria-selected="false">Exámenes de la Externos</button>
         </div>
       </nav>
       <div class="tab-content " id="nav-tabContent">
@@ -314,7 +315,7 @@
                                                 <th>Opciones</td>
                                             </tr>
                                         </thead>
-                                        <tbody id="medicamentos_dosis">
+                                        <tbody id="lista-referencias-consulta">
                                         <!--Datos del server -- dosis -- -->
                                             {% for referencia in referencias %}
                                             <tr>
@@ -353,6 +354,12 @@
                       </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <!--Examenes externos-->
+        <div class="tab-pane fade" id="nav-examanes-externos" role="tabpanel" aria-labelledby="nav-documentos-tab">
+            <div class="pt-4">
+                <p>l</p>
             </div>
         </div>
       </div>
@@ -460,8 +467,9 @@
                             </div>
                             <div class="col-md-12 col-lg-4">
                                 <div class="mb-3 mt-3 text-end">
-                                    <div class="d-none d-lg-block py-3"></div>
-                                    
+                                    <div class="d-none d-lg-block py-3">
+
+                                    </div>
                                     <!--Boton de guardar-->
                                     <input type="submit" class="btn btn-outline-success " id="btn_agregar_a_receta" value="Agregar Medicamento">
                                 </div>
@@ -500,7 +508,7 @@
                             </div>
 
 
-                            <!--Fin medicamentos agregados-->
+                        </div>    <!--Fin medicamentos agregados-->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -514,36 +522,35 @@
     <!--Modal resultado de medicamentos-->
     <div class="modal fade" id="busquedaMedicamentoModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
         <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Buscar Medicamento</h5>
-                <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
-            </div>
-            <div class="modal-body">
-                <div class="table-responsive" id="tabla_busqueda">
-                    <table class="table table-bordered text-center">
-                      <thead class="table-secondary">
-                        <tr>
-                            <th>id</th>
-                            <th>Nombre Comercial</th>
-                            <th>Nombre Generico</th>
-                            <th>Seleccionar</td>
-                          </tr>
-                      </thead>
-                      <tbody  id="datos_pacientes">
-                      </tbody>
-                    </table>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Buscar Medicamento</h5>
+                    <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive" id="tabla_busqueda">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>id</th>
+                                    <th>Nombre Comercial</th>
+                                    <th>Nombre Generico</th>
+                                    <th>Seleccionar</td>
+                                </tr>
+                            </thead>
+                            <tbody  id="datos_pacientes">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-          </div>
         </div>
     </div>
+
     <!-- Modal para confirmar eliminar -->
-    
-    
-        <div class="modal fade modal-dialog modal-dialog-centered" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
-            <div class="modal-dialog">
-              <div class="modal-content">
+    <div class="modal fade modal-dialog modal-dialog-centered" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Eliminar</h5>
                     <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
@@ -555,8 +562,9 @@
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
                     <button type="button" class="btn btn-secondary" id="eliminar-nota-evolucion-btn" >Si</button>
                 </div>
-              </div>
             </div>
+        </div>
+    </div>
         
                 
 </div>    
