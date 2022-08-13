@@ -36,7 +36,8 @@ class Paciente(models.Model):
     responsable=models.CharField(max_length=40,blank=True,null=False,default="")
     dui=models.CharField(max_length=10,blank=True,null=True)
     pasaporte=models.CharField(max_length=15,blank=True,null=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
-    
+    numero_telefono=models.CharField(max_length=8, null=True, blank=True)
+
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)
 
