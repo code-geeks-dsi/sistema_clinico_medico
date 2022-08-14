@@ -262,6 +262,8 @@ class DocumentoExpediente(models.Model):
     fecha=models.DateTimeField(default=datetime.now, blank=False, null=False)
     expediente=models.ForeignKey('Expediente', models.DO_NOTHING,null=False, blank=False)
     empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+    def __str__(self):
+        return f'{self.titulo} - {self.expediente.id_paciente.nombre_paciente}'
 
 
 ###Modelo de prueba para amazon s3 

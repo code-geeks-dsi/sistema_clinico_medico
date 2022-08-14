@@ -19,7 +19,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb pt-3">
                         <li class="breadcrumb-item"><a href="{% url 'buscar_expediente' %}">Expediente</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'editar_consulta' id_consulta=consulta %}">{{paciente.nombre_paciente}}</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'editar_consulta' id_consulta=consulta %}">{{paciente}}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Exámenes Externos</li>
                     </ol>
                 </nav>
@@ -27,19 +27,68 @@
         </div>
     </div>
     <!--Formulario de almacenamiento-->
-    <div class="card">
-        <div class="card-header alert-primary text-primary" aria-expanded="true">
-            <div class="px-1 py-2">
+    <div class="accordion" id="accordionDocumentos">
+        <!-- zona para subir archivos -->
+        <div class="accordion-item">
+            <button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#zona-para-almacenar" aria-expanded="true" aria-controls="collapseThree">
                 Registro de exámenes de laboratorio Externos
+            </button>
+            <!--zona para subir archivos Body-->
+            <div id="zona-para-almacenar" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+                <div class="accordion-body">
+                    <!--Formulario de Registro-->
+                    <p>Arrastre los archivos a la zona marcada para almacenar los documentos.</p>
+                    <form action="{% url 'create_examenes_externos' id_consulta=consulta %}" class="dropzone" id="my-great-dropzone">
+                        {% csrf_token %}
+                        <div class="dz-default dz-message">
+                            <button class="dz-button" type="button">
+                                <span class="material-symbols-outlined">cloud_upload</span>
+                                <p>Arrastrar Archivos Aquí</p>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-        <div class="card-body">
-            <form action="{% url 'create_examenes_externos' id_consulta=consulta %}" class="dropzone" id="my-great-dropzone">
-                {% csrf_token %}
-                <div class="dz-default dz-message">
-                    <button class="dz-button" type="button">Arrastrar Archivos Aquí</button>
+        <!--Lista de archivos-->
+        <div class="accordion-item">
+            <button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#lista-de-archivos" aria-expanded="true" aria-controls="collapseThree">
+                Lista de Archivos Registrados
+            </button>
+            <!--Lista de Archivos Body-->
+            <div id="lista-de-archivos" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+                <div class="accordion-body">
+                    <!--Tabla de Archivos-->
+                    <div class="table-responsive" id="tabla_archivos_agregadas">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Propietario</th>
+                                    <th>Fecha</td>
+                                    <th>Opciones</td>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-archivos-externos">
+                            <!--Datos del server -- dosis -- -->
+                                {% for archivo in archivos %}
+                                <tr>
+                                    <td>{{ archivo.titulo }}</td>
+                                    <td>{{ archivo.expediente.id_paciente.nombre_paciente }} {{ archivo.expediente.id_paciente.apellido_paciente }}</td>
+                                    <td>{{ archivo.fecha }}</td>
+                                    <td>
+                                        <a class="material-symbols-outlined btn btn-sm" href="{% url 'storage-url' id_documento=archivo.id_documento %}"  target="_blank">open_in_new</a>
+                                        <a class="material-symbols-outlined btn btn-sm" href="#" >file_download</a>
+                                        <a class="material-symbols-outlined btn btn-sm" href="#"  >delete</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -62,6 +111,20 @@
             done("Naha, you don't.");
         }
         else { done(); }
+        },
+        success: function(file, response){
+            $("#lista-archivos-externos").prepend(`
+            <tr>
+                <td>${file.name}</td>
+                <td>${response.propietario}</td>
+                <td>${response.fecha}</td>
+                <td>
+                    <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${response.id}/"  target="_blank">open_in_new</a>
+                    <a class="material-symbols-outlined btn btn-sm" href="#" >file_download</a>
+                    <a class="material-symbols-outlined btn btn-sm" href="#"  >delete</a>
+                </td>
+            </tr>
+            `);
         }
     };
 </script>

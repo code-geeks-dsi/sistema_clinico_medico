@@ -818,8 +818,15 @@ class ExamenesExternosCreateView(PermissionRequiredMixin,TemplateView):
     form_class = DocumentoExpedienteForm
     def get(self, request, *args, **kwargs):
         id_consulta=self.kwargs['id_consulta']
+        expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).values('expediente','expediente__id_paciente__nombre_paciente').first()
         form = self.form_class()
-        return render(request, self.template_name, {'form': form, 'consulta': id_consulta})
+        #Consultando Archivos
+        if expediente!= None:
+            archivos=DocumentoExpediente.objects.filter(expediente__id_expediente=expediente['expediente']).order_by('-fecha')
+            return render(request, self.template_name, {'form': form, 'consulta': id_consulta, 'archivos':archivos, 'paciente':expediente['expediente__id_paciente__nombre_paciente']})
+        else:
+            raise Http404("Consulta no encontrada")
+
     def post(self, request, *args, **kwargs):
         id_consulta=self.kwargs['id_consulta']
         expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).first().expediente
@@ -828,27 +835,28 @@ class ExamenesExternosCreateView(PermissionRequiredMixin,TemplateView):
         cantidad=DocumentoExpediente.objects.filter(titulo__startswith=archivo.name).count()
         #archivo.name=f'{archivo.name} ({cantidad})'
         #Almacenando archivo
-        DocumentoExpediente.objects.create(
+        documento=DocumentoExpediente.objects.create(
             titulo= archivo.name,
             documento=archivo,
             expediente=expediente,
             empleado=request.user
         )
-
-        return HttpResponse('upload')
+        response={
+                    'id':documento.id_documento,
+                    'fecha':documento.fecha.strftime('%d de %b de %Y a las %I:%M '),
+                    'propietario':f'{expediente.id_paciente.nombre_paciente} {expediente.id_paciente.apellido_paciente}'
+                }
+        return JsonResponse(response)
         #return HttpResponseServerError('PARA Errores')
 
 ###Funcion de Prueba para recueperación de archivos s3
 ##Esto genera una url para accdeder al archivo surante 60 segundos
 def storageurl(request, id_documento):
     documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
-    print(documentos)
-    print(documentos.documento.url)
-    
     client = boto3.client('s3')
     response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
                                                               'Key': f'static/{documentos.documento}'},
-                                         HttpMethod="GET", ExpiresIn=60) #tiempo en segundos
+                                         HttpMethod="GET", ExpiresIn=1800) #tiempo en segundos
 
-    return HttpResponse(response)
+    return redirect(response)
 
