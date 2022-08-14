@@ -655,10 +655,14 @@ class ReferenciaMedicaPdfView(View):
 class RecetaMedicaPdfView(View):  
     def get(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta'])
+        #consultando datos del paciente
         contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
         paciente=contiene_consulta.expediente.id_paciente 
         fecha=date.today()
-        data={'paciente':paciente,'fecha':fecha} 
+        #consultando datos de  la dosis  medicamento
+        receta=RecetaMedica.objects.get(consulta_id=id_consulta)
+        dosis=Dosis.objects.filter(receta_medica=receta.id_receta_medica)
+        data={'paciente':paciente,'fecha':fecha,'dosis':dosis} 
         #generando pdf
         #puede recibir la info como diccionario
         html_string = render_to_string('recetaMedica.html',data)
