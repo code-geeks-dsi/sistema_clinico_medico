@@ -17,7 +17,7 @@
     <p>Nombre del Resposable: <b>{{paciente.resposable}}.</b></p>
     <ul class="group-data">
       <li class="group-data-item">
-        <a>Teléfono: <b>{{paciente.telefono}}</b></a>
+        <a>Teléfono: <b>{{paciente.numero_telefono}}</b></a>
       </li>
       <li class="group-data-item">
         <a>Edad: <b>{{edad.years}}</b></a>
@@ -42,7 +42,7 @@
         </li>
       </ul>
     {% endfor %}
-    <p>CX: <b>{{referencia_medica.consulta_por}}</b></p>
+    <p>CX: <b>{{referencia_medica.consulta_por}}.</b></p>
     <p>Referencia: <b>{{referencia_medica.hospital.nombre_hospital}}.</b></p>
     <p>Especialidad: <b>{{referencia_medica.especialidad}}.</b></p>
   </body>
