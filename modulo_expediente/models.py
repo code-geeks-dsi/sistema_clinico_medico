@@ -36,7 +36,8 @@ class Paciente(models.Model):
     responsable=models.CharField(max_length=40,blank=True,null=False,default="")
     dui=models.CharField(max_length=10,blank=True,null=True)
     pasaporte=models.CharField(max_length=15,blank=True,null=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
-    
+    numero_telefono=models.CharField(max_length=8, null=True, blank=True)
+
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)
 
@@ -251,6 +252,20 @@ class ConstanciaMedica(models.Model):
     diagnostico_constancia=models.TextField(blank=True, null=True)
     acompanante=models.CharField(blank=True,null=False,max_length=50)
 
+class DocumentoExpediente(models.Model):
+    id_documento=models.AutoField(primary_key=True)
+    titulo=models.CharField(max_length=80, null=False, blank=False)
+    documento=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
+                            bucket_name='code-geek-medic',
+                            default_acl=None
+                            ),upload_to='exams')
+    fecha=models.DateTimeField(default=datetime.now, blank=False, null=False)
+    expediente=models.ForeignKey('Expediente', models.DO_NOTHING,null=False, blank=False)
+    empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+    def __str__(self):
+        return f'{self.titulo} - {self.expediente.id_paciente.nombre_paciente}'
+
+
 ###Modelo de prueba para amazon s3 
 class Archivo(models.Model):
     id_archivo=models.AutoField(primary_key=True)
@@ -259,6 +274,6 @@ class Archivo(models.Model):
                             default_acl=None
                             ),upload_to='exams')
     archivo_publico=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
-
+                            bucket_name='code-geek-medic',
                             default_acl='public-read'
                             ),upload_to='exams')

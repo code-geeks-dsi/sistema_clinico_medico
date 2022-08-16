@@ -76,6 +76,7 @@
                     {% if rol == ROL_SECRETARIA %}
                     <th scope="col">Consumo</th>
                     <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
                     {% endif %}
                     {% if rol == ROL_DOCTOR %}
                     <th scope="col">Ver Consulta</th>
@@ -284,6 +285,14 @@
         for (const property in x) {
             elemento = elemento+'<td valign="middle">'+`${x[property]}`+'</td>';
         }
+        {% if request.user.roles.codigo_rol == "ROL_SECRETARIA" %}
+        elemento=elemento+`
+        <td>
+          <a role="button" title="Almacenar exámenes externos"  href="/expediente/consulta/${id_consulta}/agregar-documento-externo/" target="_blank">
+            <div class="material-symbols-outlined">cloud_upload</div> 
+          </a>
+        </td>`;
+        {% endif %}
         {% if request.user.roles.codigo_rol == "ROL_ENFERMERA" %}
         icon="monitor_heart";
         modal="data-bs-toggle='modal' data-bs-target='#agregarSignosVitalesModal'";
