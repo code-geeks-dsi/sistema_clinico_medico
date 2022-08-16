@@ -527,7 +527,7 @@
     </div>
 
     <!-- Modal para confirmar eliminar -->
-    <div class="modal fade modal-dialog modal-dialog-centered" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+    <div class="modal fade modal-dialog-centered" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -629,12 +629,13 @@
     $('#eliminar-nota-evolucion-btn').click(()=>{
         $.ajax({
 		type: 'POST',
-		url: url,
+		url: nota_evolucion_a_eliminar,
 		data: {},  
         headers: {
             "X-CSRFToken": '{{ csrf_token }}',
         },
         success: function(response){
+            $('#modal-eliminar-nota-evolucion').modal('hide');
             get_lista_notas_evolucion();
 			toastr[response.type](response.data); 
         }});
