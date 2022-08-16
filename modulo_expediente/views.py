@@ -20,9 +20,8 @@ from modulo_expediente.models import (
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
     ConsultaFormulario, ControlSubsecuenteform, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, 
-    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm,DocumentoExpedienteForm
+    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm,DocumentoExpedienteForm, antecedentesForm
     )
-
 from django.http import JsonResponse
 from datetime import date
 from django.urls import reverse
@@ -774,6 +773,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
                 'consulta_form':consulta_form,
                 'hoja_evolucion_form':HojaEvolucionForm(),
                 'control_subsecuente_form':ControlSubsecuenteform(),
+                'antecedentes_form':antecedentesForm(instance=contiene_consulta.expediente),
                 'edad':edad,
                 'dosis_form':DosisFormulario(),
                 'dosis':dosis,
@@ -859,4 +859,30 @@ def storageurl(request, id_documento):
                                          HttpMethod="GET", ExpiresIn=1800) #tiempo en segundos
 
     return redirect(response)
+
+##class AntecedentesUpdate(View):
+  ##  form_class = antecedentesForm
+    ##template_name = 'expediente/antecedentes.html'
+
+    ##def get(self, request, *args, **kwargs):
+      ##  #Datos del expediente
+        ##id_expediente=int(self.kwargs['id_expediente'])
+        
+def antecedentesUpdate(request, id_expediente):
+    expediente = Expediente.objects.get(id=id_expediente)
+    if request.method == 'POST':
+        form = antecedentesForm(request.POST, instance=expediente)
+        if form.is_valid():
+            form.save
+            response={
+                'type':'success',
+                'data':'Guardado!'
+            }
+
+        else:
+            response={
+                'type':'warning',
+                'data':'No se pudo guardar. Intente de nuevo.'
+            }
+        return JsonResponse(response)
 
