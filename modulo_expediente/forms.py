@@ -5,7 +5,7 @@ from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
 from .models import (
   Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
-  ConstanciaMedica
+  ConstanciaMedica, Expediente
 )
 
 class DateInput(forms.DateInput):
@@ -204,3 +204,8 @@ class HojaEvolucionForm(ModelForm):
                                         "cols":20
                                         }
         )}
+        
+class antecedentesForm(ModelForm):
+  class Meta:
+    model=Expediente
+    fields=['antecedentes_familiares','antecedentes_personales']
