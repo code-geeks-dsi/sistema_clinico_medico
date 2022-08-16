@@ -230,5 +230,18 @@ class DocumentoExpedienteForm(ModelForm):
 class antecedentesForm(ModelForm):
   class Meta:
     model=Expediente
-    fields=['antecedentes_familiares','antecedentes_personales']
+    fields=['antecedentes_personales', 'antecedentes_familiares']
+    widgets={
+        'antecedentes_familiares': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        ),
+        'antecedentes_personales': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        )}
 

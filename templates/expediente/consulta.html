@@ -89,22 +89,27 @@
                                 </div>
                               </div>
                             </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header alert-primary text-primary py-3">
-                                Antecedentes                        
-                            </div>
-                            <div class="card-body">
-                                <p class="fw-bold">Antecedentes Personales</p>
-                                <p>{{ antecedentes_form.antecedentes_personales.value }}</p>
-                                <p class="fw-bold">Antecedentes Familiares</p>
-                                <p>{{ antecedentes_form.antecedentes_familiares.value }}</p>
-                                <div class="text-end">
-                                    <button type="button" class="btn btn-outline-primary material-symbols-outlined" data-bs-toggle="modal" data-bs-target="#antecedentes_expediente">
-                                        edit
-                                    </button>
+                            <!--Antecedentes-->
+                            <div class="accordion-item">
+                                <button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#antecedentes-acordion" aria-expanded="true" aria-controls="collapseThree">
+                                    Antecedentes
+                                </button>
+                                <!--Datos del Paciente Body-->
+                                <div id="antecedentes-acordion" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+                                    <div class="accordion-body">
+                                        <div id="antecedentes-data">
+                                            <p class="fw-bold">Antecedentes Personales</p>
+                                            <p>{{ antecedentes_form.antecedentes_personales.value }}</p>
+                                            <p class="fw-bold">Antecedentes Familiares</p>
+                                            <p>{{ antecedentes_form.antecedentes_familiares.value }}</p>
+                                        </div>
+                                        <div class="text-end">
+                                            <button type="button" class="btn btn-outline-primary material-symbols-outlined" data-bs-toggle="modal" data-bs-target="#antecedentes_expediente">
+                                                edit
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                
                             </div>
                         </div>
                     </div> 
@@ -529,27 +534,32 @@
             </div>
         </div>
     </div>
-        <!-- Modal -->
+    
+    <!-- Modal Para antecedentes-->
     <div class="modal fade" id="antecedentes_expediente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header ">
+                <h5 class="modal-title" id="staticBackdropLabel">Editar Antecedentes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'antecedentes-update' id_expediente=id_expediente %}" method="post" id="antecedentes_form">
+                    <div class="modal-body w-0">
+                        <!-- aqui va formulario para antecedentes -->
+                        {% csrf_token %}
+                        {% for field in antecedentes_form %}
+                            <label class="form-label fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+                            {{ field }}
+                            <p></p>
+                        {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                        </div>
+                </form>
+                
             </div>
-            <form action="{% url 'antecedentes-update' id_expediente=id_expediente %}" method="post" id="antecedentes_form">
-                <div class="modal-body">
-                    <!-- aqui va formulario para antecedentes -->
-                    {{ antecedentes_form }}
-                    {% csrf_token %}
-                    </div>
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Understood</button>
-                    </div>
-            </form>
-            
-        </div>
         </div>
     </div>
                 
@@ -657,7 +667,13 @@
         headers: {
             "X-CSRFToken": '{{ csrf_token }}',
         },success: function(response) { 
-			toastr[response.type](response.data); 
+			toastr[response.type](response.data);
+            $('#antecedentes-data').empty().append(`
+                <p class="fw-bold">Antecedentes Personales</p>
+                <p>${response.antecedentes_personales}</p>
+                <p class="fw-bold">Antecedentes Familiares</p>
+                <p>${response.antecedentes_familiares}</p>
+            `); 
 		}});
 	});
 </script>
