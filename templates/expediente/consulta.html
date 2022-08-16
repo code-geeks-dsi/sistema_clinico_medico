@@ -5,6 +5,10 @@
 {% block css %}
 <style>
     .ui-autocomplete { z-index:2147483647; }
+    .bg-card-custom{
+        color: #0c63e4;
+        background-color: #E7F1FF;
+    }
 </style>
 {% endblock %}
 <!--Titulo-->
@@ -45,28 +49,76 @@
                 <div class="col-md-12 col-lg-4">
                     <!--Datos Basicos-->
                     <div class="py-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title text-secondary">Datos del Paciente</h5>
-                                <hr class="dropdown-divider">
-                                <div class="row">
-                                    <div class="col-5">
-                                        <div class="pt-2 fw-bold">
-                                            <p>Nombre: </p>
-                                            <p>Apellido: </p>
-                                            <p>Edad: </p>
-                                            <p>Email: </p>
-                                            <p>Responsable: </p>
-                                        </div>
+                        <div class="accordion" id="accordionDocumentos">
+                            <!--Datos del Paciente-->
+                            <div class="accordion-item">
+                                <button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#datos-paciente-acordion" aria-expanded="true" aria-controls="collapseThree">
+                                    Datos del Paciente
+                                </button>
+                              <!--Datos del Paciente Body-->
+                              <div id="datos-paciente-acordion" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+                                <div class="accordion-body">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                          <tr>
+                                            <th>Nombre: </th>
+                                            <td>{{ paciente.nombre_paciente }} </td>
+                                          </tr>
+                                          <tr>
+                                            <th>Apellido: </th>
+                                            <td>{{ paciente.apellido_paciente }} </td>
+                                          </tr>
+                                          <tr>
+                                            <th>Edad:</th>
+                                            <td>{{ edad.years }} años</td>
+                                          </tr>
+                                          <tr>
+                                            <th>Email:</th>
+                                            <td>{{ paciente.email_paciente }}</td>
+                                          </tr>
+                                          <tr>
+                                            <th>Responsable:</th>
+                                            <td>{{ paciente.responsable }}</td>
+                                          </tr>
+                                        </tbody>
+                                    </table>
+                                    <!--Acceso a documentos externos-->
+                                    <div class="text-end">   
+                                        <a href="agregar-documento-externo/" class="btn btn-outline-primary" target="_blank">Ver Exámenes Externos</a>
                                     </div>
-                                    <div class="col-7">
-                                        <div class="pt-2">
-                                            <p>{{ paciente.nombre_paciente }}</p>
-                                            <p>{{ paciente.apellido_paciente }}</p>
-                                            <p>{{ edad.years }} años</p>
-                                            <p>{{ paciente.email_paciente }}</p>
-                                            <p>{{ paciente.responsable }}</p>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header alert-primary text-primary py-3">
+                                Datos del Paciente
+                            </div>
+                            <div class="card-body">
+                                <button type="button" class="btn btn-outline-primary material-symbols-outlined" data-bs-toggle="modal" data-bs-target="#antecedentes_expediente">
+                                    edit
+                                </button>
+                                <!-- Modal -->
+                                <div class="modal fade" id="antecedentes_expediente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
+                                        <form action="aqui url" method="post" id="antecentes_form">
+                                            <div class="modal-body">
+                                                <!-- aqui va formulario para antecedentes -->
+                                                <!-- {@{ antecedentes_form }@} -->
+                                                {% csrf_token %}
+                                                </div>
+                                                <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Understood</button>
+                                                </div>
+                                        </form>
+                                        
+                                    </div>
                                     </div>
                                 </div>
                             </div>
@@ -135,15 +187,15 @@
                     <!--Datos Consulta-->
                     <div class="col-12 py-4">
                         <div class="card">
+                            <div class="card-header bg-card-custom accordion-header py-3">
+                                Formulario de Consulta
+                            </div>
                             <div class="card-body">
-                                <h5 class="card-title text-secondary">Datos de Consulta</h5>
-                                <hr class="dropdown-divider">
-            
                                 <form  method="post">
                                     {% csrf_token %}
                                     {{ form.non_field_errors }}
                                     {% for field in consulta_form %}
-                                        <label class="form-label pt-3 fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+                                        <label class="form-label py-2 fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
                                         {{ field }}
                                     {% endfor %}
                                     
@@ -153,42 +205,6 @@
                                             <input type="submit" class="btn btn-outline-success "  value="Guardar">
                                         </div>
                                         <div class="col-md-12 col-lg-8 text-end">
-                                            <a class="btn btn-outline-secondary w-0 my-1"  data-bs-toggle="modal" data-bs-target="#agregarReceta">
-                                                <div class="row align-items-center">
-                                                    <div class="col-2">
-                                                        <span class="material-symbols-outlined g-0 w-0">
-                                                            medication_liquid
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-10 text-center">
-                                                        Receta Medica
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta" hidden>
-                                                <div class="row align-items-center">
-                                                    <div class="col-2">
-                                                        <span class="material-symbols-outlined g-0 w-0">
-                                                            emergency
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-10 text-center">
-                                                        Referencia Medica
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a class="btn btn-outline-secondary w-0 my-1" data-bs-toggle="modal" data-bs-target="#agregarReceta" hidden>
-                                                <div class="row align-items-center">
-                                                    <div class="col-2">
-                                                        <span class="material-symbols-outlined g-0 w-0">
-                                                            biotech
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-10 text-center">
-                                                        Orden de Examen
-                                                    </div>
-                                                </div>
-                                            </a>
                                         </div>
                                     </div>
                                 </form>
@@ -200,7 +216,24 @@
         </div>
         <!--Control Subsecuente-->
         <div class="tab-pane fade" id="nav-control" role="tabpanel" aria-labelledby="nav-control-tab">
-            Control
+            <div class="pt-4">
+                <div class="card"> 
+                    <div class="card-header alert alert-primary text-primary">
+                        Control Subsecuente
+                    </div>
+                    <div class="card-body">
+                        <div class="mv-3">
+                            <form id="control_subsecuente_form" action="{% url 'control-subsecuente-create' id_consulta=id_consulta %}" method="post">
+                                {% csrf_token %}
+                                {{control_subsecuente_form}}
+                                <button type="submit" class="btn btn-outline-primary mt-1">Agregar</button>
+                            </form>
+                            
+                        </div>
+                        <div id="lista-control-subsecuente" class="row row-cols-1 row-cols-md-2 mt-3"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!--Hoja de Evoluación-->
         <div class="tab-pane fade" id="nav-evolucion" role="tabpanel" aria-labelledby="nav-evolucion-tab">
@@ -239,7 +272,7 @@
                         <div class="accordion-body">
                                 <div class="card-body">
                                     <a class="btn btn-outline-primary w-0 my-1"  data-bs-toggle="modal" data-bs-target="#agregarReceta">Agregar Receta Medica</a>
-                                    <a href="#" class="btn btn-outline-primary w-0 my-1">Descargar Receta Medica</a>
+                                    <a href="receta-medica/pdf" class="btn btn-outline-primary w-0 my-1">Descargar Receta Medica</a>
                                 </div>
                         </div>
                       </div>
@@ -267,7 +300,7 @@
                                                 <th>Opciones</td>
                                             </tr>
                                         </thead>
-                                        <tbody id="medicamentos_dosis">
+                                        <tbody id="lista-referencias-consulta">
                                         <!--Datos del server -- dosis -- -->
                                             {% for referencia in referencias %}
                                             <tr>
@@ -413,8 +446,9 @@
                             </div>
                             <div class="col-md-12 col-lg-4">
                                 <div class="mb-3 mt-3 text-end">
-                                    <div class="d-none d-lg-block py-3"></div>
-                                    
+                                    <div class="d-none d-lg-block py-3">
+
+                                    </div>
                                     <!--Boton de guardar-->
                                     <input type="submit" class="btn btn-outline-success " id="btn_agregar_a_receta" value="Agregar Medicamento">
                                 </div>
@@ -453,7 +487,7 @@
                             </div>
 
 
-                            <!--Fin medicamentos agregados-->
+                        </div>    <!--Fin medicamentos agregados-->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -467,36 +501,35 @@
     <!--Modal resultado de medicamentos-->
     <div class="modal fade" id="busquedaMedicamentoModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
         <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Buscar Medicamento</h5>
-                <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
-            </div>
-            <div class="modal-body">
-                <div class="table-responsive" id="tabla_busqueda">
-                    <table class="table table-bordered text-center">
-                      <thead class="table-secondary">
-                        <tr>
-                            <th>id</th>
-                            <th>Nombre Comercial</th>
-                            <th>Nombre Generico</th>
-                            <th>Seleccionar</td>
-                          </tr>
-                      </thead>
-                      <tbody  id="datos_pacientes">
-                      </tbody>
-                    </table>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Buscar Medicamento</h5>
+                    <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive" id="tabla_busqueda">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>id</th>
+                                    <th>Nombre Comercial</th>
+                                    <th>Nombre Generico</th>
+                                    <th>Seleccionar</td>
+                                </tr>
+                            </thead>
+                            <tbody  id="datos_pacientes">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-          </div>
         </div>
     </div>
+
     <!-- Modal para confirmar eliminar -->
-    
-    
-        <div class="modal fade modal-dialog modal-dialog-centered" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
-            <div class="modal-dialog">
-              <div class="modal-content">
+    <div class="modal fade modal-dialog modal-dialog-centered" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Eliminar</h5>
                     <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
@@ -508,8 +541,9 @@
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
                     <button type="button" class="btn btn-secondary" id="eliminar-nota-evolucion-btn" >Si</button>
                 </div>
-              </div>
             </div>
+        </div>
+    </div>
         
                 
 </div>    
@@ -605,7 +639,19 @@
 			toastr[response.type](response.data); 
         }});
     });
-   
+    $('#antecedentes_form').submit(function (event) {
+		event.preventDefault();
+		$.ajax({
+		type: 'POST',
+		url: $("#antecedentes_form").attr("action"),
+		data: $("#antecedentes_form").serialize(), 
+        headers: {
+            "X-CSRFToken": '{{ csrf_token }}',
+        },success: function(response) { 
+			toastr[response.type](response.data); 
+		},
+		});
+	});
 </script>
 {% endblock %}
 

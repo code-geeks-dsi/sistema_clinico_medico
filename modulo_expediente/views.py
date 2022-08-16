@@ -1,5 +1,7 @@
 import json
+from time import strftime
 from urllib import response
+from urllib.error import HTTPError
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
@@ -9,14 +11,17 @@ from django.utils import timezone
 from modulo_expediente.filters import MedicamentoFilter, PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, Expediente, 
-    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
-    Archivo
+
+    RecetaMedica, SignosVitales,ConstanciaMedica, ReferenciaMedica,EvolucionConsulta,
+    Archivo, ControlSubsecuente,DocumentoExpediente
+
     )
     
 from modulo_control.models import Enfermera, Empleado, Rol, Doctor
 from .forms import (
-    ConsultaFormulario, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, 
-    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm, antecedentesForm)
+    ConsultaFormulario, ControlSubsecuenteform, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, 
+    IngresoMedicamentos, ReferenciaMedicaForm, ConstanciaMedicaForm,DocumentoExpedienteForm, antecedentesForm
+    )
 from django.http import JsonResponse
 from datetime import date
 from django.urls import reverse
@@ -39,7 +44,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
 from django.db.models import F, Func, Value, CharField
-from django.http import Http404
+from django.http import Http404, HttpResponseServerError
 import boto3
 from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
@@ -617,8 +622,18 @@ class DeleteNotaEvolucion(View):
 
 class ReferenciaMedicaPdfView(View):
         def get(self, request, *args, **kwargs):
+            id_consulta=int(self.kwargs['id_consulta'])
             id_referencia_medica=int(self.kwargs['id_referencia_medica'])
-            data={}
+            #Colsultando datos ddel paciente
+            contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+            paciente=contiene_consulta.expediente.id_paciente
+            edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+            #Consultando signos vitales
+            signos_vitales=SignosVitales.objects.filter(consulta=contiene_consulta.consulta)
+            #Consultando datos de referencia
+            referencia_medica=ReferenciaMedica.objects.get(id_referencia_medica=id_referencia_medica)
+
+            data={'paciente':paciente,'edad':edad,'signos_vitales':signos_vitales,'referencia_medica':referencia_medica}
             #generando pdf
             #puede recibir la info como diccionario
             html_string = render_to_string('expediente/referencia/reporteReferenciaMedica.html',data)
@@ -639,10 +654,14 @@ class ReferenciaMedicaPdfView(View):
 class RecetaMedicaPdfView(View):  
     def get(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta'])
+        #consultando datos del paciente
         contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
         paciente=contiene_consulta.expediente.id_paciente 
         fecha=date.today()
-        data={'paciente':paciente,'fecha':fecha} 
+        #consultando datos de  la dosis  medicamento
+        receta=RecetaMedica.objects.get(consulta_id=id_consulta)
+        dosis=Dosis.objects.filter(receta_medica=receta.id_receta_medica)
+        data={'paciente':paciente,'fecha':fecha,'dosis':dosis} 
         #generando pdf
         #puede recibir la info como diccionario
         html_string = render_to_string('recetaMedica.html',data)
@@ -753,6 +772,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
                 'id_receta':receta.id_receta_medica,
                 'consulta_form':consulta_form,
                 'hoja_evolucion_form':HojaEvolucionForm(),
+                'control_subsecuente_form':ControlSubsecuenteform(),
                 'antecedentes_form':antecedentesForm(instance=contiene_consulta.expediente),
                 'edad':edad,
                 'dosis_form':DosisFormulario(),
@@ -771,19 +791,74 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
             return redirect(reverse('editar_consulta', kwargs={'id_consulta':consulta.id_consulta}))
 
+    
+class CreateControlSubsecuente(View):
+        form_class = ControlSubsecuenteform
+
+        def post(self, request, *args, **kwargs):
+            id_consulta=int(self.kwargs['id_consulta']) 
+            form = self.form_class(request.POST)
+            if form.is_valid():
+                observacion=form.save(commit=False)
+                observacion.fecha=datetime.now()
+                observacion.consulta=Consulta.objects.get(id_consulta=id_consulta)
+                observacion.save()
+                response={
+                    'type':'success',
+                    'data':'Guardado!'
+                }
+                return JsonResponse(response)
+
+
+#Clase para almacenamiento de archivos
+##Para esta vista es necesario tener permiso de ver expedientes
+class ExamenesExternosCreateView(PermissionRequiredMixin,TemplateView):
+    template_name = "expediente/examenes_externos/almacenar_examenes_externos.html"
+    permission_required = ('modulo_expediente.view_expediente')
+    form_class = DocumentoExpedienteForm
+    def get(self, request, *args, **kwargs):
+        id_consulta=self.kwargs['id_consulta']
+        expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).values('expediente','expediente__id_paciente__nombre_paciente').first()
+        form = self.form_class()
+        #Consultando Archivos
+        if expediente!= None:
+            archivos=DocumentoExpediente.objects.filter(expediente__id_expediente=expediente['expediente']).order_by('-fecha')
+            return render(request, self.template_name, {'form': form, 'consulta': id_consulta, 'archivos':archivos, 'paciente':expediente['expediente__id_paciente__nombre_paciente']})
+        else:
+            raise Http404("Consulta no encontrada")
+
+    def post(self, request, *args, **kwargs):
+        id_consulta=self.kwargs['id_consulta']
+        expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).first().expediente
+        #Recueperando Archivo
+        archivo=request.FILES['file']
+        cantidad=DocumentoExpediente.objects.filter(titulo__startswith=archivo.name).count()
+        #archivo.name=f'{archivo.name} ({cantidad})'
+        #Almacenando archivo
+        documento=DocumentoExpediente.objects.create(
+            titulo= archivo.name,
+            documento=archivo,
+            expediente=expediente,
+            empleado=request.user
+        )
+        response={
+                    'id':documento.id_documento,
+                    'fecha':documento.fecha.strftime('%d de %b de %Y a las %I:%M '),
+                    'propietario':f'{expediente.id_paciente.nombre_paciente} {expediente.id_paciente.apellido_paciente}'
+                }
+        return JsonResponse(response)
+        #return HttpResponseServerError('PARA Errores')
+
 ###Funcion de Prueba para recueperación de archivos s3
 ##Esto genera una url para accdeder al archivo surante 60 segundos
 def storageurl(request, id_documento):
-    documentos=Archivo.objects.get(id_archivo=id_documento)
-    print(documentos)
-    print(documentos.archivo.url)
-    
+    documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
     client = boto3.client('s3')
-    response = client.generate_presigned_url('get_object',Params={'Bucket': 'isai-medico-test',
-                                                              'Key': f'static/{documentos.archivo}'},
-                                         HttpMethod="GET", ExpiresIn=60) #tiempo en segundos
+    response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
+                                                              'Key': f'static/{documentos.documento}'},
+                                         HttpMethod="GET", ExpiresIn=1800) #tiempo en segundos
 
-    return HttpResponse(response)
+    return redirect(response)
 
 ##class AntecedentesUpdate(View):
   ##  form_class = antecedentesForm
@@ -810,3 +885,4 @@ def antecedentesUpdate(request, id_expediente):
                 'data':'No se pudo guardar. Intente de nuevo.'
             }
         return JsonResponse(response)
+
