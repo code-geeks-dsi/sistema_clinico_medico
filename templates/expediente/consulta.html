@@ -106,7 +106,7 @@
                                         <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        <form action="{% url 'antecedentes-update' id_expediente=id_expediente %}" method="post" id="antecentes_form">
+                                        <form action="{% url 'antecedentes-update' id_expediente=id_expediente %}" method="post" id="antecedentes_form">
                                             <div class="modal-body">
                                                 <!-- aqui va formulario para antecedentes -->
                                                 {{ antecedentes_form }}
@@ -626,7 +626,7 @@
         $('#modal-eliminar-nota-evolucion').modal('show');
         nota_evolucion_a_eliminar=url;
     }
-    $("#eliminar-nota-evolucion-btn").addEventListener('click',()=>{
+    $('#eliminar-nota-evolucion-btn').click(()=>{
         $.ajax({
 		type: 'POST',
 		url: url,
@@ -639,6 +639,7 @@
 			toastr[response.type](response.data); 
         }});
     });
+
     $('#antecedentes_form').submit(function (event) {
 		event.preventDefault();
 		$.ajax({
@@ -649,8 +650,7 @@
             "X-CSRFToken": '{{ csrf_token }}',
         },success: function(response) { 
 			toastr[response.type](response.data); 
-		},
-		});
+		}});
 	});
 </script>
 {% endblock %}
