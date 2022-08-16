@@ -758,6 +758,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             #Consultando Instancias
             contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
             paciente=contiene_consulta.expediente.id_paciente
+            expediente=contiene_consulta.expediente.id_expediente
             consulta=contiene_consulta.consulta
             signos_vitales=SignosVitales.objects.filter(consulta=contiene_consulta.consulta)        
             receta=RecetaMedica.objects.get(consulta=consulta)
@@ -769,6 +770,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
                 'paciente':paciente,
                 'signos_vitales':signos_vitales,
                 'id_consulta':id_consulta,
+                'id_expediente':expediente,
                 'id_receta':receta.id_receta_medica,
                 'consulta_form':consulta_form,
                 'hoja_evolucion_form':HojaEvolucionForm(),
@@ -869,11 +871,11 @@ def storageurl(request, id_documento):
         ##id_expediente=int(self.kwargs['id_expediente'])
         
 def antecedentesUpdate(request, id_expediente):
-    expediente = Expediente.objects.get(id=id_expediente)
+    expediente = Expediente.objects.get(id_expediente=id_expediente)
     if request.method == 'POST':
         form = antecedentesForm(request.POST, instance=expediente)
         if form.is_valid():
-            form.save
+            form.save()
             response={
                 'type':'success',
                 'data':'Guardado!'

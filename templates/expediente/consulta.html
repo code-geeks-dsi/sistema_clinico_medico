@@ -106,10 +106,10 @@
                                         <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        <form action="aqui url" method="post" id="antecentes_form">
+                                        <form action="{% url 'antecedentes-update' id_expediente=id_expediente %}" method="post" id="antecentes_form">
                                             <div class="modal-body">
                                                 <!-- aqui va formulario para antecedentes -->
-                                                <!-- {@{ antecedentes_form }@} -->
+                                                {{ antecedentes_form }}
                                                 {% csrf_token %}
                                                 </div>
                                                 <div class="modal-footer">
