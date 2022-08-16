@@ -608,7 +608,7 @@ class DeleteNotaEvolucion(View):
             else:
                 response={
                 'type':'warning',
-                'data':'El tiempo para eiminar esta nota ha caducado.'
+                'data':'El tiempo para eliminar esta nota ha caducado.'
             }
 
 

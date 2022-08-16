@@ -79,9 +79,9 @@
                                           <tr>
                                             <th>Responsable:</th>
                                             <td>{{ paciente.responsable }}</td>
-                                          </tr>
-                                        </tbody>
-                                    </table>
+                                          </tr>                                       
+                                    </tbody>
+                                </table>
                                     <!--Acceso a documentos externos-->
                                     <div class="text-end">   
                                         <a href="agregar-documento-externo/" class="btn btn-outline-primary" target="_blank">Ver Exámenes Externos</a>
@@ -92,35 +92,19 @@
                         </div>
                         <div class="card">
                             <div class="card-header alert-primary text-primary py-3">
-                                Datos del Paciente
+                                Antecedentes                        
                             </div>
                             <div class="card-body">
-                                <button type="button" class="btn btn-outline-primary material-symbols-outlined" data-bs-toggle="modal" data-bs-target="#antecedentes_expediente">
-                                    edit
-                                </button>
-                                <!-- Modal -->
-                                <div class="modal fade" id="antecedentes_expediente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <form action="{% url 'antecedentes-update' id_expediente=id_expediente %}" method="post" id="antecentes_form">
-                                            <div class="modal-body">
-                                                <!-- aqui va formulario para antecedentes -->
-                                                {{ antecedentes_form }}
-                                                {% csrf_token %}
-                                                </div>
-                                                <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Understood</button>
-                                                </div>
-                                        </form>
-                                        
-                                    </div>
-                                    </div>
+                                <p class="fw-bold">Antecedentes Personales</p>
+                                <p>{{ antecedentes_form.antecedentes_personales.value }}</p>
+                                <p class="fw-bold">Antecedentes Familiares</p>
+                                <p>{{ antecedentes_form.antecedentes_familiares.value }}</p>
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-outline-primary material-symbols-outlined" data-bs-toggle="modal" data-bs-target="#antecedentes_expediente">
+                                        edit
+                                    </button>
                                 </div>
+                                
                             </div>
                         </div>
                     </div> 
@@ -526,9 +510,10 @@
         </div>
     </div>
 
+    
     <!-- Modal para confirmar eliminar -->
-    <div class="modal fade modal-dialog modal-dialog-centered" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
-        <div class="modal-dialog">
+    <div class="modal fade" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Eliminar</h5>
@@ -544,7 +529,29 @@
             </div>
         </div>
     </div>
-        
+        <!-- Modal -->
+    <div class="modal fade" id="antecedentes_expediente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'antecedentes-update' id_expediente=id_expediente %}" method="post" id="antecedentes_form">
+                <div class="modal-body">
+                    <!-- aqui va formulario para antecedentes -->
+                    {{ antecedentes_form }}
+                    {% csrf_token %}
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Understood</button>
+                    </div>
+            </form>
+            
+        </div>
+        </div>
+    </div>
                 
 </div>    
 {% endblock %}
@@ -626,19 +633,21 @@
         $('#modal-eliminar-nota-evolucion').modal('show');
         nota_evolucion_a_eliminar=url;
     }
-    $("#eliminar-nota-evolucion-btn").addEventListener('click',()=>{
+    $('#eliminar-nota-evolucion-btn').click(()=>{
         $.ajax({
 		type: 'POST',
-		url: url,
+		url: nota_evolucion_a_eliminar,
 		data: {},  
         headers: {
             "X-CSRFToken": '{{ csrf_token }}',
         },
         success: function(response){
+            $('#modal-eliminar-nota-evolucion').modal('hide');
             get_lista_notas_evolucion();
 			toastr[response.type](response.data); 
         }});
     });
+
     $('#antecedentes_form').submit(function (event) {
 		event.preventDefault();
 		$.ajax({
@@ -649,8 +658,7 @@
             "X-CSRFToken": '{{ csrf_token }}',
         },success: function(response) { 
 			toastr[response.type](response.data); 
-		},
-		});
+		}});
 	});
 </script>
 {% endblock %}
