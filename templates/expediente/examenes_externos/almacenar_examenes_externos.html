@@ -78,7 +78,7 @@
                                     <td>{{ archivo.fecha }}</td>
                                     <td>
                                         <a class="material-symbols-outlined btn btn-sm" href="{% url 'storage-url' id_documento=archivo.id_documento %}"  target="_blank">open_in_new</a>
-                                        <a class="material-symbols-outlined btn btn-sm" href="#" >file_download</a>
+                                        <a class="material-symbols-outlined btn btn-sm" href="{% url 'storage-url' id_documento=archivo.id_documento %}" target="_blank" download>file_download</a>
                                         <a class="material-symbols-outlined btn btn-sm" href="#"  >delete</a>
                                     </td>
                                 </tr>
@@ -120,7 +120,7 @@
                 <td>${response.fecha}</td>
                 <td>
                     <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${response.id}/"  target="_blank">open_in_new</a>
-                    <a class="material-symbols-outlined btn btn-sm" href="#" >file_download</a>
+                    <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${response.id}/"  download>file_download</a>
                     <a class="material-symbols-outlined btn btn-sm" href="#"  >delete</a>
                 </td>
             </tr>
