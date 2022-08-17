@@ -7,7 +7,7 @@ from modulo_expediente.views.Expediente import (antecedentesUpdate, busqueda_pac
     CreateControlSubsecuente, buscar_expediente, 
     AgendaView, ConsultaView, ExamenesExternosCreateView, storageurl)
     
-from modulo_expediente.views.EvolucionConsulta import (DeleteNotaEvolucion,ListaHojaEvolucion,CreateHojaEvolucion)
+from modulo_expediente.views.EvolucionConsulta import (DeleteNotaEvolucion,ListaHojaEvolucion,CreateHojaEvolucion,UpdateNotaEvolucion)
 from modulo_expediente.views.ConstanciaMedica import (ConstanciaMedicaPDFView,ConstanciaMedicaCreate, ConstanciaMedicaView, ConstanciaMedicaUpdate)
 from modulo_expediente.views.Medicamento import (dosis_medicamento, eliminar_dosis,
 agregar_medicamento, busqueda_medicamento, autocompletado_medicamento)
@@ -50,6 +50,7 @@ urlpatterns = [
     # Evolucion Consulta
     path('consulta/<int:id_consulta>/hoja-evolucion/',CreateHojaEvolucion.as_view(),name='hoja-evolucion-create'),
     path('consulta/<int:id_consulta>/hoja-evolucion/<int:id_nota_evolucion>',DeleteNotaEvolucion.as_view(),name='hoja-evolucion-delete'),
+    path('consulta/<int:id_consulta>/hoja-evolucion/update',UpdateNotaEvolucion.as_view(),name='hoja-evolucion-update'),
     path('consulta/<int:id_consulta>/hoja-evolucion/lista',ListaHojaEvolucion.as_view(),name='hoja-evolucion-lista'),
     # Control Subsecuente
     path('consulta/<int:id_consulta>/control-subsecuente/',CreateControlSubsecuente.as_view(),name='control-subsecuente-create'),
