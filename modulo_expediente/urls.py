@@ -9,7 +9,7 @@ from modulo_expediente.views import (
     CreateControlSubsecuente, busqueda_medicamento, autocompletado_medicamento,dosis_medicamento, 
     ConstanciaMedica, buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, 
     ReferenciaMedicaView, ConstanciaMedicaUpdate, ConstanciaMedicaPDFView,
-    AgendaView, ConsultaView, RecetaMedicaPdfView, ReferenciaMedicaPdfView, ExamenesExternosCreateView, storageurl, antecedentesUpdate
+    AgendaView, ConsultaView, RecetaMedicaPdfView, ReferenciaMedicaPdfView, ExamenesExternosCreateView, DocumentosExternosURLview, antecedentesUpdate
     )
 
 
@@ -65,7 +65,7 @@ urlpatterns = [
    # path('documento/<int:id_documento>/', storageurl, name="storage-url")
 
     path('consulta/<int:id_consulta>/agregar-documento-externo/', ExamenesExternosCreateView.as_view(), name="create_examenes_externos"),
-    path('documento/<int:id_documento>/', storageurl, name="storage-url")
+    path('documento/<int:id_documento>/', DocumentosExternosURLview.as_view(), name="storage-url")
     
 ]
 

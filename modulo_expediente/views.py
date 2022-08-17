@@ -1,10 +1,13 @@
 import json
+import environ
+import boto3
 from time import strftime
 from urllib import response
 from urllib.error import HTTPError
 from django.shortcuts import redirect, render
 from django.db.models import Q
-from modulo_expediente.serializers import DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer
+from modulo_expediente.serializers import (
+    DosisListSerializer, MedicamentoSerializer, PacienteSerializer, ContieneConsultaSerializer, DocumentoExternoSerializer)
 from django.core import serializers
 from datetime import datetime
 from django.utils import timezone
@@ -45,8 +48,10 @@ from django.template.loader import render_to_string
 import tempfile
 from django.db.models import F, Func, Value, CharField
 from django.http import Http404, HttpResponseServerError
-import boto3
 from django.core.exceptions import ObjectDoesNotExist
+##Para cargar las variables de netorno
+env = environ.Env()
+environ.Env.read_env()
 # Create your views here.
 
 def busqueda_paciente(request):
@@ -818,6 +823,7 @@ class ExamenesExternosCreateView(PermissionRequiredMixin,TemplateView):
     template_name = "expediente/examenes_externos/almacenar_examenes_externos.html"
     permission_required = ('modulo_expediente.view_expediente')
     form_class = DocumentoExpedienteForm
+    ##Cargar
     def get(self, request, *args, **kwargs):
         id_consulta=self.kwargs['id_consulta']
         expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).values('expediente','expediente__id_paciente__nombre_paciente').first()
@@ -828,7 +834,7 @@ class ExamenesExternosCreateView(PermissionRequiredMixin,TemplateView):
             return render(request, self.template_name, {'form': form, 'consulta': id_consulta, 'archivos':archivos, 'paciente':expediente['expediente__id_paciente__nombre_paciente']})
         else:
             raise Http404("Consulta no encontrada")
-
+    ##Guardar Datos
     def post(self, request, *args, **kwargs):
         id_consulta=self.kwargs['id_consulta']
         expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).first().expediente
@@ -849,17 +855,56 @@ class ExamenesExternosCreateView(PermissionRequiredMixin,TemplateView):
                     'propietario':f'{expediente.id_paciente.nombre_paciente} {expediente.id_paciente.apellido_paciente}'
                 }
         return JsonResponse(response)
-        #return HttpResponseServerError('PARA Errores')
+        #return HttpResponseServerError('PARA Errores')     
 
-###Funcion de Prueba para recueperación de archivos s3
 ##Esto genera una url para accdeder al archivo surante 60 segundos
+##Para acceder aquí es necesario estar logeado con el permiso para ver los expedientes
+class DocumentosExternosURLview(PermissionRequiredMixin, View):
+    permission_required = ('modulo_expediente.view_expediente')
+    ##Genera una url con el token de acceso
+    def get(self, request, *args, **kwargs):
+        id_documento=self.kwargs['id_documento']
+        try:
+            documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
+            client = boto3.client('s3')
+            response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
+                                                                    'Key': f'static/{documentos.documento}'},
+                                                HttpMethod="GET", ExpiresIn=1800) #tiempo en segundos
+            return redirect(response)
+        except ObjectDoesNotExist:
+            raise Http404('Archivo no encontrado')
+    ##Metodo para eliminar archivos
+    def delete(self, request, *args, **kwargs):
+        id_documento=self.kwargs['id_documento']
+        try:
+            documento=DocumentoExpediente.objects.get(id_documento=id_documento)
+            client = boto3.resource('s3')
+            client.Object(env('AWS_STORAGE_BUCKET_NAME'), f'static/{documento.documento}').delete()
+            
+            documento.delete()
+            ##Recuperando elementos para actualizar lista
+            archivos=DocumentoExpediente.objects.filter(expediente=documento.expediente).order_by('-fecha')
+            archivos=DocumentoExternoSerializer(archivos, many=True)
+
+            response={
+                        'type':'success',
+                        'data':'Archivo Eliminado',
+                        'archivos':archivos.data,
+                    }
+        except ObjectDoesNotExist:
+            response={
+                'type':'warning',
+                'data':'Archivo no encontrado.'
+            }
+            
+        return JsonResponse(response)
+
 def storageurl(request, id_documento):
     documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
     client = boto3.client('s3')
     response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
                                                               'Key': f'static/{documentos.documento}'},
                                          HttpMethod="GET", ExpiresIn=1800) #tiempo en segundos
-
     return redirect(response)
 
 ##class AntecedentesUpdate(View):
