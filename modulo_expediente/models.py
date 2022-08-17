@@ -257,7 +257,8 @@ class DocumentoExpediente(models.Model):
     titulo=models.CharField(max_length=80, null=False, blank=False)
     documento=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
                             bucket_name='code-geek-medic',
-                            default_acl=None
+                            default_acl=None,
+                            location='static'
                             ),upload_to='exams')
     fecha=models.DateTimeField(default=datetime.now, blank=False, null=False)
     expediente=models.ForeignKey('Expediente', models.DO_NOTHING,null=False, blank=False)
