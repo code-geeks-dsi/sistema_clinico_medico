@@ -5,7 +5,7 @@ from modulo_expediente.views.Expediente import (antecedentesUpdate, busqueda_pac
     autocompletado_apellidos, eliminar_cola, sala_consulta,get_cola,get_paciente,agregar_cola, 
     modificar_signosVitales, crear_expediente, editar_consulta, 
     CreateControlSubsecuente, buscar_expediente, 
-    AgendaView, ConsultaView, ExamenesExternosCreateView, DocumentosExternosURLview)
+    AgendaView, ConsultaView)
     
 from modulo_expediente.views.EvolucionConsulta import (DeleteNotaEvolucion,ListaHojaEvolucion,CreateHojaEvolucion)
 from modulo_expediente.views.ConstanciaMedica import (ConstanciaMedicaPDFView,ConstanciaMedicaCreate, ConstanciaMedicaView, ConstanciaMedicaUpdate)
@@ -14,6 +14,8 @@ agregar_medicamento, busqueda_medicamento, autocompletado_medicamento)
 from modulo_expediente.views.ReferenciaMedica import (ReferenciaMedicaView,
 ReferenciaMedicaUpdate, ReferenciaMedicaPdfView)
 from modulo_expediente.views.RecetaMedica import RecetaMedicaPdfView
+from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateView, DocumentosExternosURLview
+
 urlpatterns = [
     path('paciente/',busqueda_paciente, name='busqueda_paciente'),
 
