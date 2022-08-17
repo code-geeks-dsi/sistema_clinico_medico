@@ -878,7 +878,9 @@ def antecedentesUpdate(request, id_expediente):
             form.save()
             response={
                 'type':'success',
-                'data':'Guardado!'
+                'data':'Guardado!',
+                'antecedentes_personales':form.cleaned_data['antecedentes_personales'],
+                'antecedentes_familiares':form.cleaned_data['antecedentes_familiares']
             }
 
         else:

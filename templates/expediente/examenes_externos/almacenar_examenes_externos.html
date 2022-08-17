@@ -113,8 +113,9 @@
         else { done(); }
         },
         success: function(file, response){
+            file.previewElement.classList.add("dz-success");
             $("#lista-archivos-externos").prepend(`
-            <tr>
+            <tr class="alert alert-success">
                 <td>${file.name}</td>
                 <td>${response.propietario}</td>
                 <td>${response.fecha}</td>
