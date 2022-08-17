@@ -1,10 +1,10 @@
 from django.shortcuts import redirect, render
-from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer, DocumentoExternoSerializer
+from modulo_expediente.serializers import PacienteSerializer, ContieneConsultaSerializer
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Paciente, ContieneConsulta, Expediente, 
-    RecetaMedica, SignosVitales,ReferenciaMedica,DocumentoExpediente)
+    RecetaMedica, SignosVitales,ReferenciaMedica)
 from modulo_control.models import Rol
 from ..forms import ( ConsultaFormulario, ControlSubsecuenteform, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, DocumentoExpedienteForm, antecedentesForm)
 from django.http import JsonResponse
@@ -19,12 +19,6 @@ from django.views import View
 from django.views.generic import View, TemplateView
 from django.views.generic import TemplateView
 from django.http import Http404
-from django.core.exceptions import ObjectDoesNotExist
-import boto3
-import environ
-##Para cargar las variables de entorno
-env = environ.Env()
-environ.Env.read_env()
 
 def busqueda_paciente(request):
 
@@ -400,95 +394,6 @@ class CreateControlSubsecuente(View):
                 return JsonResponse(response)
 
 
-#Clase para almacenamiento de archivos
-##Para esta vista es necesario tener permiso de ver expedientes
-class ExamenesExternosCreateView(PermissionRequiredMixin,TemplateView):
-    template_name = "expediente/examenes_externos/almacenar_examenes_externos.html"
-    permission_required = ('modulo_expediente.view_expediente')
-    form_class = DocumentoExpedienteForm
-    ##Cargar
-    def get(self, request, *args, **kwargs):
-        id_consulta=self.kwargs['id_consulta']
-        expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).values('expediente','expediente__id_paciente__nombre_paciente').first()
-        form = self.form_class()
-        #Consultando Archivos
-        if expediente!= None:
-            archivos=DocumentoExpediente.objects.filter(expediente__id_expediente=expediente['expediente']).order_by('-fecha')
-            return render(request, self.template_name, {'form': form, 'consulta': id_consulta, 'archivos':archivos, 'paciente':expediente['expediente__id_paciente__nombre_paciente']})
-        else:
-            raise Http404("Consulta no encontrada")
-    ##Guardar Datos
-    def post(self, request, *args, **kwargs):
-        id_consulta=self.kwargs['id_consulta']
-        expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).first().expediente
-        #Recueperando Archivo
-        archivo=request.FILES['file']
-        cantidad=DocumentoExpediente.objects.filter(titulo__startswith=archivo.name).count()
-        #archivo.name=f'{archivo.name} ({cantidad})'
-        #Almacenando archivo
-        documento=DocumentoExpediente.objects.create(
-            titulo= archivo.name,
-            documento=archivo,
-            expediente=expediente,
-            empleado=request.user
-        )
-        response={
-                    'id':documento.id_documento,
-                    'fecha':documento.fecha.strftime('%d de %b de %Y a las %I:%M '),
-                    'propietario':f'{expediente.id_paciente.nombre_paciente} {expediente.id_paciente.apellido_paciente}'
-                }
-        return JsonResponse(response)
-        #return HttpResponseServerError('PARA Errores')     
-
-##Esto genera una url para accdeder al archivo surante 60 segundos
-##Para acceder aquí es necesario estar logeado con el permiso para ver los expedientes
-class DocumentosExternosURLview(PermissionRequiredMixin, View):
-    permission_required = ('modulo_expediente.view_expediente')
-    ##Genera una url con el token de acceso
-    def get(self, request, *args, **kwargs):
-        id_documento=self.kwargs['id_documento']
-        try:
-            documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
-            client = boto3.client('s3')
-            response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
-                                                                    'Key': f'static/{documentos.documento}'},
-                                                HttpMethod="GET", ExpiresIn=1800) #tiempo en segundos
-            return redirect(response)
-        except ObjectDoesNotExist:
-            raise Http404('Archivo no encontrado')
-    ##Metodo para eliminar archivos
-    def delete(self, request, *args, **kwargs):
-        id_documento=self.kwargs['id_documento']
-        try:
-            documento=DocumentoExpediente.objects.get(id_documento=id_documento)
-            client = boto3.resource('s3')
-            client.Object(env('AWS_STORAGE_BUCKET_NAME'), f'static/{documento.documento}').delete()
-            
-            documento.delete()
-            ##Recuperando elementos para actualizar lista
-            archivos=DocumentoExpediente.objects.filter(expediente=documento.expediente).order_by('-fecha')
-            archivos=DocumentoExternoSerializer(archivos, many=True)
-
-            response={
-                        'type':'success',
-                        'data':'Archivo Eliminado',
-                        'archivos':archivos.data,
-                    }
-        except ObjectDoesNotExist:
-            response={
-                'type':'warning',
-                'data':'Archivo no encontrado.'
-            }
-            
-        return JsonResponse(response)
-
-def storageurl(request, id_documento):
-    documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
-    client = boto3.client('s3')
-    response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
-                                                              'Key': f'static/{documentos.documento}'},
-                                         HttpMethod="GET", ExpiresIn=1800) #tiempo en segundos
-    return redirect(response)
 
 ##class AntecedentesUpdate(View):
   ##  form_class = antecedentesForm
