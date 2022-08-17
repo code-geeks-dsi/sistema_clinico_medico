@@ -113,13 +113,16 @@ class NotaEvolucionManager(models.Manager):
         # Este metodo valida si no han pasado mas de 5 min desde que se creo
         # la nota para que pueda ser editada o eliminada
         is_valid=False
+        minutos_validos=15
         current_datetime = datetime.now()
-        if(nota.fecha.month-current_datetime.month==0 
-            and nota.fecha.year-current_datetime.year==0 
-            and nota.fecha.day-current_datetime.day==0 
-            and nota.fecha.hour-current_datetime.hour==0 
-            and nota.fecha.minute-current_datetime.minute <=5 ):
-            is_valid=True
+        if( current_datetime.year-nota.fecha.year==0 
+            and current_datetime.month-nota.fecha.month==0
+            and current_datetime.day-nota.fecha.day==0 ):
+            if(current_datetime.hour-nota.fecha.hour==0 
+            and current_datetime.minute-nota.fecha.minute <=minutos_validos
+            or (current_datetime.hour-nota.fecha.hour==1 
+            and current_datetime.minute+60-nota.fecha.minute <= minutos_validos)):
+                is_valid=True
         return is_valid
     
 class EvolucionConsulta(models.Model):

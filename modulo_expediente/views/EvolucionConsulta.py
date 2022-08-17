@@ -44,7 +44,6 @@ class DeleteNotaEvolucion(View):
         id_nota_evolucion=int(self.kwargs['id_nota_evolucion'])
         try:
             nota=EvolucionConsulta.objects.get(id_evolucion=id_nota_evolucion)
-            current_datetime = datetime.now()
             if(EvolucionConsulta.objects.validar_caducidad(nota)):
                 nota.delete()
                 response={
@@ -69,13 +68,12 @@ class DeleteNotaEvolucion(View):
 class UpdateNotaEvolucion(View):
     form_class = HojaEvolucionForm
     def post(self, request, *args, **kwargs):
-        id_nota_evolucion=int(self.kwargs['id_nota_evolucion'])
+        id_nota_evolucion=int(request.POST.get('id_evolucion'))
         try:
             nota=EvolucionConsulta.objects.get(id_evolucion=id_nota_evolucion)
             new_nota= self.form_class(request.POST,instance=nota)        
-            current_datetime = datetime.now()
-            if(EvolucionConsulta.objects.validar_caducidad(nota)
-               and new_nota.is_valid()):
+            if(EvolucionConsulta.objects.validar_caducidad(nota) and new_nota.is_valid()):
+                new_nota.save()
                 response={
                 'type':'success',
                 'data':'Guardado!'

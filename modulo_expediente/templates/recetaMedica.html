@@ -23,29 +23,23 @@
             <p>
                 <b>Rp</b>
             </p>
-            <table>
-                    {% for medicamento in dosis %}
-                            <tr>
-                                    
-                                <td>{{ medicamento.medicamento }}</td>
-                                <td>{{ medicamento.cantidad_dosis }}</td>
-                                <td>{{ medicamento.unidad_de_medida_dosis }}</td>
-                                <td>{{ medicamento.frecuencia_dosis }} {{ medicamento.get_unidad_frecuencia_dosis_display }}</td>
-                                <td>{{ medicamento.periodo_dosis }} {{ medicamento.get_unidad_periodo_dosis_display }}</td>
-                                                                 
-                            </tr>    
-                    {% endfor %}
-            </table>
+            
+            {% for medicamento in dosis %}   
+                    <p>-{{ medicamento.medicamento }}&nbsp; {{medicamento.medicamento.cantidad_medicamento}} {{medicamento.medicamento.unidad_medicamento}}</p> 
+                    <p>&nbsp;&nbsp;&nbsp;{{ medicamento.cantidad_dosis }} {{ medicamento.unidad_de_medida_dosis }} &nbspcada {{ medicamento.frecuencia_dosis }} {{ medicamento.get_unidad_frecuencia_dosis_display }}&nbsp                            
+                   por {{ medicamento.periodo_dosis }} {{ medicamento.get_unidad_periodo_dosis_display }}</p>        
+            {% endfor %}   
         </div>
-        <div class="dates">
-            <b>
-                <a>Próxima Cita:</a>
-                <a>Fecha:</a>
-            </b>
-        </div>
-  </body>
-  <footer>
         
+  </body>
+  <div class="container">
+    <div class="dates">
+        <b>
+            <a>Próxima Cita:</a>
+            <a>Fecha:</a>
+        </b>
+    </div>
+    <footer>
         <div class="row align-items-center">
             <div class="col-1">
                 <img src="{% static 'img/piedepagina.png' %}"  alt=""/>
@@ -53,12 +47,14 @@
             <div class="col">
             <p>
                 <b>
-                    HE AQUÍ QUE YO LES TRAERÉ SANIDAD Y MEDICINA: Y LOS CURARÉ Y LES<br> REVELARÉ ABUNDANCIA Y VERDAD. JEREMÍAS:33.:6
+                    HE AQUÍ QUE YO LES TRAERÉ SANIDAD Y MEDICINA: Y LOS CURARÉ <br>Y LES REVELARÉ ABUNDANCIA Y VERDAD. JEREMÍAS:33.:6
                 </b>      
             </p>
             </div>
         </div> 
-  </footer>
+    </footer>
+  </div>
+  
 </html>
 <style>
     @page {
@@ -70,6 +66,7 @@
     .medicamentos{
       margin-left:50px;
       margin-top: 10px;
+      font-size: 15px;
     }
     body{
       font-size: 15px;
@@ -94,7 +91,7 @@
         margin-left: 60px;
         padding-top: 20px;
     }
-    footer{
+    .container footer{
         border-top:#02257D 3px solid ;
         margin-top: 15px;
     }
@@ -109,10 +106,14 @@
         font-size: 12px;
         margin-left: -200px;
     }
-    .dates{
-        display: flex;
+    .container dates{
+        display: fixed;
         margin-left:50px;
-        margin-top: 10px;
+        margin-bottom: 10px;
+        position: absolute;
     }
-    
+    .container{
+        position: fixed;
+        bottom: 0;
+    }
   </style>
