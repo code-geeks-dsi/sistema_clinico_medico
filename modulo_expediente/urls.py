@@ -14,7 +14,7 @@ agregar_medicamento, busqueda_medicamento, autocompletado_medicamento)
 from modulo_expediente.views.ReferenciaMedica import (ReferenciaMedicaView,
 ReferenciaMedicaUpdate, ReferenciaMedicaPdfView)
 from modulo_expediente.views.RecetaMedica import RecetaMedicaPdfView
-from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateView, DocumentosExternosURLview
+from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateView, DocumentosExternosURLview, DocumentosExternosURLDownload
 
 urlpatterns = [
     # Expediente
@@ -61,7 +61,8 @@ urlpatterns = [
     ###URL de Pruebas para visualización de archivos en S3
    # path('documento/<int:id_documento>/', storageurl, name="storage-url")
     path('consulta/<int:id_consulta>/agregar-documento-externo/', ExamenesExternosCreateView.as_view(), name="create_examenes_externos"),
-    path('documento/<int:id_documento>/', DocumentosExternosURLview.as_view(), name="storage-url")
+    path('documento/<int:id_documento>/', DocumentosExternosURLview.as_view(), name="storage-url"),
+    path('documento/download/<int:id_documento>/', DocumentosExternosURLDownload.as_view(), name="download-url")
     
 ]
 

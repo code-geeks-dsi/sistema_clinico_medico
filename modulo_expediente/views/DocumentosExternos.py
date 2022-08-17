@@ -1,6 +1,8 @@
 #Python
 import boto3
 import environ
+import pathlib 
+import uuid
 #Django
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
@@ -39,11 +41,13 @@ class ExamenesExternosCreateView(PermissionRequiredMixin,TemplateView):
         expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).first().expediente
         #Recueperando Archivo
         archivo=request.FILES['file']
-        cantidad=DocumentoExpediente.objects.filter(titulo__startswith=archivo.name).count()
-        #archivo.name=f'{archivo.name} ({cantidad})'
+        nombre=archivo.name
+        ##Generando nombre aleatorio
+        file_extension = pathlib.Path(nombre).suffix 
+        archivo.name=f'{str(uuid.uuid4())}{file_extension}'
         #Almacenando archivo
         documento=DocumentoExpediente.objects.create(
-            titulo= archivo.name,
+            titulo= nombre,
             documento=archivo,
             expediente=expediente,
             empleado=request.user
@@ -67,11 +71,13 @@ class DocumentosExternosURLview(PermissionRequiredMixin, View):
             documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
             client = boto3.client('s3')
             response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
-                                                                    'Key': f'static/{documentos.documento}'},
-                                                HttpMethod="GET", ExpiresIn=1800) #tiempo en segundos
+                                                                    'Key': f'static/{documentos.documento}'
+                                                                    },
+                                                ExpiresIn=1800) #tiempo en segundos
             return redirect(response)
         except ObjectDoesNotExist:
             raise Http404('Archivo no encontrado')
+
     ##Metodo para eliminar archivos
     def delete(self, request, *args, **kwargs):
         id_documento=self.kwargs['id_documento']
@@ -98,10 +104,21 @@ class DocumentosExternosURLview(PermissionRequiredMixin, View):
             
         return JsonResponse(response)
 
-def storageurl(request, id_documento):
-    documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
-    client = boto3.client('s3')
-    response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
-                                                              'Key': f'static/{documentos.documento}'},
-                                         HttpMethod="GET", ExpiresIn=1800) #tiempo en segundos
-    return redirect(response)
+##Generador de urls de descargas
+class DocumentosExternosURLDownload(PermissionRequiredMixin, View):
+    permission_required = ('modulo_expediente.view_expediente')
+    ##Genera una url con el token de acceso
+    def get(self, request, *args, **kwargs):
+        id_documento=self.kwargs['id_documento']
+        try:
+            documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
+            client = boto3.client('s3')
+            response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
+                                                                    'Key': f'static/{documentos.documento}',
+                                                                    'ResponseContentEncoding':'binary',
+                                                                    'ResponseContentDisposition':f'attachment; filename= {documentos.titulo}',
+                                                                    },
+                                                ExpiresIn=600) #10 minutos para descargar
+            return redirect(response)
+        except ObjectDoesNotExist:
+            raise Http404('Archivo no encontrado')
