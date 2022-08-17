@@ -653,7 +653,7 @@
                             
                         </div>
                         <div class="card-body">
-                            <p class="card-text">${nota.observacion}</p>
+                            <p class="card-text" id="observacion_evolucion_${nota.id_evolucion}">${nota.observacion}</p>
                         </div>
                     </div>
                 </div>`);
@@ -667,8 +667,10 @@
         nota_evolucion_a_eliminar=url;
     }
     function update_nota(id) {
+        antigua_observacion=$('#observacion_evolucion_'+id).text();
         $('#modal-editar-nota-evolucion').modal('show');
-        document.getElementById("id_nota_evolucion_update").value=id;
+        $("#id_nota_evolucion_update").val(id);
+        $("#modal-editar-nota-evolucion #id_observacion").val(antigua_observacion);
     }
     $('#eliminar-nota-evolucion-btn').click(()=>{
         $.ajax({
