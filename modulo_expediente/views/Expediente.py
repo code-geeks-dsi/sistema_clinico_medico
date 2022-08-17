@@ -4,7 +4,7 @@ from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
 from modulo_expediente.models import (
     Consulta, Dosis, Paciente, ContieneConsulta, Expediente, 
-    RecetaMedica, SignosVitales,ReferenciaMedica,DocumentoExpediente)
+    RecetaMedica, SignosVitales,ReferenciaMedica)
 from modulo_control.models import Rol
 from ..forms import ( ConsultaFormulario, ControlSubsecuenteform, DatosDelPaciente, DosisFormulario, HojaEvolucionForm, DocumentoExpedienteForm, antecedentesForm)
 from django.http import JsonResponse
@@ -19,7 +19,6 @@ from django.views import View
 from django.views.generic import View, TemplateView
 from django.views.generic import TemplateView
 from django.http import Http404
-import boto3
 
 def busqueda_paciente(request):
 
@@ -395,55 +394,6 @@ class CreateControlSubsecuente(View):
                 return JsonResponse(response)
 
 
-#Clase para almacenamiento de archivos
-##Para esta vista es necesario tener permiso de ver expedientes
-class ExamenesExternosCreateView(PermissionRequiredMixin,TemplateView):
-    template_name = "expediente/examenes_externos/almacenar_examenes_externos.html"
-    permission_required = ('modulo_expediente.view_expediente')
-    form_class = DocumentoExpedienteForm
-    def get(self, request, *args, **kwargs):
-        id_consulta=self.kwargs['id_consulta']
-        expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).values('expediente','expediente__id_paciente__nombre_paciente').first()
-        form = self.form_class()
-        #Consultando Archivos
-        if expediente!= None:
-            archivos=DocumentoExpediente.objects.filter(expediente__id_expediente=expediente['expediente']).order_by('-fecha')
-            return render(request, self.template_name, {'form': form, 'consulta': id_consulta, 'archivos':archivos, 'paciente':expediente['expediente__id_paciente__nombre_paciente']})
-        else:
-            raise Http404("Consulta no encontrada")
-
-    def post(self, request, *args, **kwargs):
-        id_consulta=self.kwargs['id_consulta']
-        expediente=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).first().expediente
-        #Recueperando Archivo
-        archivo=request.FILES['file']
-        cantidad=DocumentoExpediente.objects.filter(titulo__startswith=archivo.name).count()
-        #archivo.name=f'{archivo.name} ({cantidad})'
-        #Almacenando archivo
-        documento=DocumentoExpediente.objects.create(
-            titulo= archivo.name,
-            documento=archivo,
-            expediente=expediente,
-            empleado=request.user
-        )
-        response={
-                    'id':documento.id_documento,
-                    'fecha':documento.fecha.strftime('%d de %b de %Y a las %I:%M '),
-                    'propietario':f'{expediente.id_paciente.nombre_paciente} {expediente.id_paciente.apellido_paciente}'
-                }
-        return JsonResponse(response)
-        #return HttpResponseServerError('PARA Errores')
-
-###Funcion de Prueba para recueperación de archivos s3
-##Esto genera una url para accdeder al archivo surante 60 segundos
-def storageurl(request, id_documento):
-    documentos=DocumentoExpediente.objects.get(id_documento=id_documento)
-    client = boto3.client('s3')
-    response = client.generate_presigned_url('get_object',Params={'Bucket': 'code-geek-medic',
-                                                              'Key': f'static/{documentos.documento}'},
-                                         HttpMethod="GET", ExpiresIn=1800) #tiempo en segundos
-
-    return redirect(response)
 
 ##class AntecedentesUpdate(View):
   ##  form_class = antecedentesForm

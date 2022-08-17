@@ -5,7 +5,7 @@ from modulo_expediente.views.Expediente import (antecedentesUpdate, busqueda_pac
     autocompletado_apellidos, eliminar_cola, sala_consulta,get_cola,get_paciente,agregar_cola, 
     modificar_signosVitales, crear_expediente, editar_consulta, 
     CreateControlSubsecuente, buscar_expediente, 
-    AgendaView, ConsultaView, ExamenesExternosCreateView, storageurl)
+    AgendaView, ConsultaView)
     
 from modulo_expediente.views.EvolucionConsulta import (DeleteNotaEvolucion,ListaHojaEvolucion,CreateHojaEvolucion,UpdateNotaEvolucion)
 from modulo_expediente.views.ConstanciaMedica import (ConstanciaMedicaPDFView,ConstanciaMedicaCreate, ConstanciaMedicaView, ConstanciaMedicaUpdate)
@@ -14,6 +14,8 @@ agregar_medicamento, busqueda_medicamento, autocompletado_medicamento)
 from modulo_expediente.views.ReferenciaMedica import (ReferenciaMedicaView,
 ReferenciaMedicaUpdate, ReferenciaMedicaPdfView)
 from modulo_expediente.views.RecetaMedica import RecetaMedicaPdfView
+from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateView, DocumentosExternosURLview, DocumentosExternosURLDownload
+
 urlpatterns = [
     # Expediente
     path('paciente/',busqueda_paciente, name='busqueda_paciente'),
@@ -59,7 +61,8 @@ urlpatterns = [
     ###URL de Pruebas para visualización de archivos en S3
    # path('documento/<int:id_documento>/', storageurl, name="storage-url")
     path('consulta/<int:id_consulta>/agregar-documento-externo/', ExamenesExternosCreateView.as_view(), name="create_examenes_externos"),
-    path('documento/<int:id_documento>/', storageurl, name="storage-url")
+    path('documento/<int:id_documento>/', DocumentosExternosURLview.as_view(), name="storage-url"),
+    path('documento/download/<int:id_documento>/', DocumentosExternosURLDownload.as_view(), name="download-url")
     
 ]
 

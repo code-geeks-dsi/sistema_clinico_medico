@@ -78,8 +78,8 @@
                                     <td>{{ archivo.fecha }}</td>
                                     <td>
                                         <a class="material-symbols-outlined btn btn-sm" href="{% url 'storage-url' id_documento=archivo.id_documento %}"  target="_blank">open_in_new</a>
-                                        <a class="material-symbols-outlined btn btn-sm" href="{% url 'storage-url' id_documento=archivo.id_documento %}" target="_blank" download>file_download</a>
-                                        <a class="material-symbols-outlined btn btn-sm" href="#"  >delete</a>
+                                        <a class="material-symbols-outlined btn btn-sm" href="{% url 'download-url' id_documento=archivo.id_documento %}" target="_blank" download="{{archivo.titulo}}">file_download</a>
+                                        <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo({{archivo.id_documento}});" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo">delete</a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -87,6 +87,28 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal para confirmar eliminar -->
+    <div class="modal fade" id="modal-eliminar-archivo" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center">Eliminar Archivos</h5>
+                    <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>¿Desea eliminar este archivo?</p>
+                    <!--Spinner de caraga-->
+                    <div class="spinner-border text-primary" role="status" id="load">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-secondary" id="eliminar-nota-evolucion-btn" onclick="eliminarArchivo();" >Si</button>
                 </div>
             </div>
         </div>
@@ -99,21 +121,24 @@
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 
 <script>
+    let urlEliminarArchivo='';
+    $('#load').hide();
     $( "#side_expediente" ).addClass( "active" );
     //DropZone
     Dropzone.options.myGreatDropzone = { // camelized version of the `id`
         paramName: "file", // The name that will be used to transfer the file
         maxFilesize: 40, // MB
-        acceptedFiles: '.jpg, application/pdf, .png',
+        acceptedFiles: '.jpg, application/pdf, .png', 
         dictRemoveFile:'Remover',
         accept: function(file, done) {
-        if (file.name == "justinbieber.jpg") {
+        if (file.name == "") {
             done("Naha, you don't.");
         }
         else { done(); }
         },
         success: function(file, response){
             file.previewElement.classList.add("dz-success");
+            //Actualizando lista de archivos
             $("#lista-archivos-externos").prepend(`
             <tr class="alert alert-success">
                 <td>${file.name}</td>
@@ -121,13 +146,55 @@
                 <td>${response.fecha}</td>
                 <td>
                     <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${response.id}/"  target="_blank">open_in_new</a>
-                    <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${response.id}/"  download>file_download</a>
-                    <a class="material-symbols-outlined btn btn-sm" href="#"  >delete</a>
+                    <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/download/${response.id}/"  download>file_download</a>
+                    <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo(${response.id});" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo" >delete</a>
                 </td>
             </tr>
             `);
         }
     };
+
+    function setUrlEliminarArchivo(id_archivo){
+        urlEliminarArchivo=`/expediente/documento/${id_archivo}/`;
+    }
+
+    function eliminarArchivo(){
+        $('#load').show();
+        $.ajax({
+		type: 'DELETE',
+		url: urlEliminarArchivo,
+		data: {},  
+        headers: {
+            "X-CSRFToken": '{{ csrf_token }}',
+        },
+        success: function(response){
+            $('#load').hide();
+            $('#modal-eliminar-archivo').modal('hide');
+			toastr[response.type](response.data);
+            if(response.type=='success'){
+                //Actualizando lista de archivos
+                let htmlDatos;
+                response.archivos.forEach(archivo => {
+                    htmlDatos=htmlDatos+`
+                    <tr>
+                        <td>${archivo.titulo}</td>
+                        <td>${archivo.propietario}</td>
+                        <td>${archivo.fecha}</td>
+                        <td>
+                            <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${archivo.id_documento}/"  target="_blank">open_in_new</a>
+                            <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${archivo.id_documento}/"  download>file_download</a>
+                            <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo(${archivo.id_documento});" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo" >delete</a>
+                        </td>
+                    </tr>
+                    `;
+                });
+                $('#lista-archivos-externos').empty().append(htmlDatos);
+                //limpiando barra de carga
+                $('.dz-image-preview').remove();
+                $('#my-great-dropzone').removeClass('dz-started')
+            } 
+        }});
+    }
 </script>
 
 {% endblock %}
