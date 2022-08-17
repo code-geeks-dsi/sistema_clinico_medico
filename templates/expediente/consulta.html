@@ -516,7 +516,7 @@
     </div>
 
     
-    <!-- Modal para confirmar eliminar -->
+    <!-- Modal para confirmar eliminar nota de evolucion -->
     <div class="modal fade" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
         <div class=" modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -531,6 +531,29 @@
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
                     <button type="button" class="btn btn-secondary" id="eliminar-nota-evolucion-btn" >Si</button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal para editar nota de evolucion -->
+    <div class="modal fade" id="modal-editar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar</h5>
+                    <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
+                </div>
+
+                <form id="hoja-evolucion-form-update" action="{% url 'hoja-evolucion-update' id_consulta=id_consulta %}" method="post">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {{hoja_evolucion_form}}
+                        <input hidden type="text" name="id_evolucion" id="id_nota_evolucion_update">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-secondary" >Guardar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -626,11 +649,11 @@
                 `<div class="col mb-4">
                     <div class="card">
                         <div class="card-header">
-                            <p class="text-muted d-flex justify-content-between">${nota.fecha_hora}<span class="material-symbols-outlined" type="button" onclick ="delete_nota('${nota.delete_url}')" >delete</span></p>
+                            <p class="text-muted d-flex justify-content-between">${nota.fecha_hora}<span class="material-symbols-outlined" type="button" onclick ="delete_nota('${nota.delete_url}')" >delete</span><span class="material-symbols-outlined" type="button" onclick ="update_nota(${nota.id_evolucion})" >edit</span></p>
                             
                         </div>
                         <div class="card-body">
-                            <p class="card-text">${nota.observacion}</p>
+                            <p class="card-text" id="observacion_evolucion_${nota.id_evolucion}">${nota.observacion}</p>
                         </div>
                     </div>
                 </div>`);
@@ -642,6 +665,12 @@
     function delete_nota(url) {
         $('#modal-eliminar-nota-evolucion').modal('show');
         nota_evolucion_a_eliminar=url;
+    }
+    function update_nota(id) {
+        antigua_observacion=$('#observacion_evolucion_'+id).text();
+        $('#modal-editar-nota-evolucion').modal('show');
+        $("#id_nota_evolucion_update").val(id);
+        $("#modal-editar-nota-evolucion #id_observacion").val(antigua_observacion);
     }
     $('#eliminar-nota-evolucion-btn').click(()=>{
         $.ajax({
@@ -658,6 +687,21 @@
         }});
     });
 
+    $('#hoja-evolucion-form-update').submit(function (event) {
+		event.preventDefault();
+		$.ajax({
+            type: 'POST',
+            url: $("#hoja-evolucion-form-update").attr("action"),
+            data: $("#hoja-evolucion-form-update").serialize(), 
+            headers: {
+                "X-CSRFToken": '{{ csrf_token }}',
+            },
+            success: function(response){
+                $('#modal-editar-nota-evolucion').modal('hide');
+                get_lista_notas_evolucion();
+                toastr[response.type](response.data); 
+            }});
+	});
     $('#antecedentes_form').submit(function (event) {
 		event.preventDefault();
 		$.ajax({
@@ -676,6 +720,7 @@
             `); 
 		}});
 	});
+
 </script>
 {% endblock %}
 

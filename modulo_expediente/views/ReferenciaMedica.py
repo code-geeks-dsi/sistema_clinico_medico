@@ -4,7 +4,6 @@ from modulo_expediente.models import (
         Consulta, ContieneConsulta,SignosVitales,ReferenciaMedica) 
 from modulo_expediente.forms import ReferenciaMedicaForm 
 from django.http import JsonResponse
-from datetime import date
 from django.urls import reverse
 from dateutil.relativedelta import relativedelta
 from django.views.generic import View
