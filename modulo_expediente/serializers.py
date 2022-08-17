@@ -40,3 +40,12 @@ class DosisListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dosis
         fields = ['id','medicamentos','cantidad', 'presentacion','frecuencia', 'periodo']
+
+class DocumentoExternoSerializer(serializers.ModelSerializer):
+    id_documento=serializers.IntegerField()
+    titulo=serializers.CharField()
+    fecha=serializers.DateTimeField(format="%d de %b de %Y a las %I:%M ")
+    propietario=serializers.CharField(source='expediente.id_paciente.nombre_paciente')
+    class Meta:
+        model = Dosis
+        fields = ['id_documento','titulo','fecha', 'propietario']
