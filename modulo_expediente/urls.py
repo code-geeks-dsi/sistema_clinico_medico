@@ -1,20 +1,19 @@
 from django import views
 from django.contrib import admin
 from django.urls import path
-from modulo_expediente.views import (
-
-    AgendaView, DeleteNotaEvolucion, ReferenciaMedicaUpdate, agregar_medicamento, antecedentesUpdate, busqueda_paciente, 
-    autocompletado_apellidos, eliminar_cola, eliminar_dosis,sala_consulta,get_cola,get_paciente,agregar_cola, 
-    modificar_signosVitales, crear_expediente, editar_consulta, CreateHojaEvolucion, ListaHojaEvolucion, 
-    CreateControlSubsecuente, busqueda_medicamento, autocompletado_medicamento,dosis_medicamento, 
-    ConstanciaMedica, buscar_expediente, ConstanciaMedicaView, ConstanciaMedicaCreate, 
-    ReferenciaMedicaView, ConstanciaMedicaUpdate, ConstanciaMedicaPDFView,
-    AgendaView, ConsultaView, RecetaMedicaPdfView, ReferenciaMedicaPdfView, ExamenesExternosCreateView, storageurl, antecedentesUpdate
-    )
-
-
-
-
+from modulo_expediente.views.Expediente import (antecedentesUpdate, busqueda_paciente, 
+    autocompletado_apellidos, eliminar_cola, sala_consulta,get_cola,get_paciente,agregar_cola, 
+    modificar_signosVitales, crear_expediente, editar_consulta, 
+    CreateControlSubsecuente, buscar_expediente, 
+    AgendaView, ConsultaView, ExamenesExternosCreateView, DocumentosExternosURLview)
+    
+from modulo_expediente.views.EvolucionConsulta import (DeleteNotaEvolucion,ListaHojaEvolucion,CreateHojaEvolucion)
+from modulo_expediente.views.ConstanciaMedica import (ConstanciaMedicaPDFView,ConstanciaMedicaCreate, ConstanciaMedicaView, ConstanciaMedicaUpdate)
+from modulo_expediente.views.Medicamento import (dosis_medicamento, eliminar_dosis,
+agregar_medicamento, busqueda_medicamento, autocompletado_medicamento)
+from modulo_expediente.views.ReferenciaMedica import (ReferenciaMedicaView,
+ReferenciaMedicaUpdate, ReferenciaMedicaPdfView)
+from modulo_expediente.views.RecetaMedica import RecetaMedicaPdfView
 urlpatterns = [
     path('paciente/',busqueda_paciente, name='busqueda_paciente'),
 
@@ -65,7 +64,7 @@ urlpatterns = [
    # path('documento/<int:id_documento>/', storageurl, name="storage-url")
 
     path('consulta/<int:id_consulta>/agregar-documento-externo/', ExamenesExternosCreateView.as_view(), name="create_examenes_externos"),
-    path('documento/<int:id_documento>/', storageurl, name="storage-url")
+    path('documento/<int:id_documento>/', DocumentosExternosURLview.as_view(), name="storage-url")
     
 ]
 

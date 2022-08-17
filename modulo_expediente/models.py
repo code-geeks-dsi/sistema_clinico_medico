@@ -107,12 +107,27 @@ class Consulta(models.Model):
     examen_fisico=models.TextField(max_length=200, blank=True, null=False)
     diagnostico=models.TextField(max_length=200, blank=True, null=False)
     fecha=models.DateTimeField(auto_now_add=True)
-
+    
+class NotaEvolucionManager(models.Manager):
+    def validar_caducidad(self,nota):
+        # Este metodo valida si no han pasado mas de 5 min desde que se creo
+        # la nota para que pueda ser editada o eliminada
+        is_valid=False
+        current_datetime = datetime.now()
+        if(nota.fecha.month-current_datetime.month==0 
+            and nota.fecha.year-current_datetime.year==0 
+            and nota.fecha.day-current_datetime.day==0 
+            and nota.fecha.hour-current_datetime.hour==0 
+            and nota.fecha.minute-current_datetime.minute <=5 ):
+            is_valid=True
+        return is_valid
+    
 class EvolucionConsulta(models.Model):
     id_evolucion= models.AutoField(primary_key=True)
     consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
     observacion=models.TextField(max_length=200, blank=True, null=False)
     fecha=models.DateTimeField(auto_now_add=True)
+    objects=NotaEvolucionManager()
 
 class ControlSubsecuente(models.Model):
     id_control_subsecuente= models.AutoField(primary_key=True)
