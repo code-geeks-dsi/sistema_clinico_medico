@@ -36,7 +36,7 @@ class Paciente(models.Model):
     responsable=models.CharField(max_length=40,blank=True,null=False,default="")
     dui=models.CharField(max_length=10,blank=True,null=True)
     pasaporte=models.CharField(max_length=15,blank=True,null=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
-    numero_telefono=models.CharField(max_length=8, null=True, blank=True)
+    numero_telefono=models.CharField(max_length=8, null=True, blank=True,default="")
 
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)
@@ -67,8 +67,8 @@ class ContieneConsulta(models.Model):
     consumo_medico=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False,default=0)
     estado_cola_medica=models.CharField(max_length=20,choices=OPCIONES_ESTADO_DE_PAGO, blank=False,null=False,default=1)
     fase_cola_medica=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False,default=2)
-    # class Meta:
-    #     unique_together = (('expediente', 'fecha_de_cola'),)
+    class Meta:
+        unique_together = (('expediente', 'fecha_de_cola'),)
     def __str__(self):
         return str(self.expediente.id_expediente)+" - "+str(self.consulta)
 
