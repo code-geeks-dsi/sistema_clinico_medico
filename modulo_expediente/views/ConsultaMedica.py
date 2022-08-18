@@ -24,7 +24,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
         id_consulta=self.kwargs['id_consulta'] 
         try:
             #Consultando Instancias
-            contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+            contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).order_by('-fecha_de_cola').first()
             paciente=contiene_consulta.expediente.id_paciente
             expediente=contiene_consulta.expediente.id_expediente
             consulta=contiene_consulta.consulta
