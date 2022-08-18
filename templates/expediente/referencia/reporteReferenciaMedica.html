@@ -42,9 +42,14 @@
         </li>
       </ul>
     {% endfor %}
-    <p>CX: <b>{{referencia_medica.consulta_por}}.</b></p>
+    <p>Motivo de consulta: <b>{{referencia_medica.consulta_por}}.</b></p>
     <p>Referencia: <b>{{referencia_medica.hospital.nombre_hospital}}.</b></p>
-    <p>Especialidad: <b>{{referencia_medica.especialidad}}.</b></p>
+    <p>Especialidad: <b>{{referencia_medica.especialidad}}.</b></p><br><br><br>
+    <center>
+      <p>F:________________________</p>
+      <p>{{nombre}}</p>
+      <p>J.V.P.M   N.{{jvmp}} </p>
+    </center>
   </body>
 </html>
 <style>
