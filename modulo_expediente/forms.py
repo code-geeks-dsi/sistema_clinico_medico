@@ -1,16 +1,20 @@
 
 from dataclasses import fields
+from pyexpat import model
 from django import forms
 from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
 from .models import (
   Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
-  ConstanciaMedica, DocumentoExpediente, Expediente
+  ConstanciaMedica, DocumentoExpediente, Expediente, CitaConsulta
 
 )
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
+
+class DataTimeInput(forms.DateTimeInput):
+  input_type = 'datetime-local'
 
 class DatosDelPaciente(ModelForm):
     class Meta:
@@ -249,4 +253,29 @@ class antecedentesForm(ModelForm):
                                         "cols":20
                                         }
         )}
+
+class CitaConsultaForm(ModelForm):
+  class Meta:
+    model=CitaConsulta
+    fields='__all__'
+    exclude=['empleado']
+    widgets={
+      'expediente': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+      'prioridad_paciente': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+      'observacion': TextInput(
+                attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese una observación.',
+              }
+        ),
+        'fecha_cita': DataTimeInput(
+                attrs={'class': 'form-control', 
+               'placeholder': 'Seleccione la Fecha',
+              }),
+        }
 

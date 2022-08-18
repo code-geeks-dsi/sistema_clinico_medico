@@ -10,9 +10,70 @@
 <!--Titulo-->
 {% block titulo %} Agenda {% endblock %}
 {% block content %}
-<div class="container-fluid">
+<div class="container pt-2">
   <div class="row">
     <div id='calendar'></div>
+  </div>
+  <div class="text-center pt-3">
+    <a class="btn btnCustom1 w-0 my-1" data-bs-toggle="modal" data-bs-target="#modal_agregar_cita">Ageragr Cita</a>
+  </div>
+</div>
+
+<!--Modal Agregar Cita-->
+<div class="modal fade" id="modal_agregar_cita" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Agregar Cita</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Formulario para agregar Cita -->
+        <form action="" id="form_cita">
+          <div class="row">
+            <!--Cliente-->
+            <div class="col-md-12 col-lg-6">
+              <div class="mb-3 mt-3">
+                <label for="cliente" class="form-label">Cliente</label>
+
+                <div id="emailHelp" class="form-text"></div>
+              </div>
+            </div>
+            <!--Proceso-->
+            <div class="col-md-12 col-lg-6">
+              <div class="mb-3 mt-3">
+                <label for="proceso" class="form-label">Proceso</label>
+
+                <div id="emailHelp" class="form-text"></div>
+              </div>
+            </div>
+            <!--Fecha-->
+            <div class="col-md-12 col-lg-6">
+              <div class="mb-3 mt-3">
+                <label for="fecha_inicio" class="form-label">Fecha</label>
+
+                <div id="emailHelp" class="form-text"></div>
+              </div>
+            </div>  
+            <!--Hora-->
+            <div class="col-md-12 col-lg-6">
+              <div class="mb-3 mt-3">
+                <label for="hora_inicio" class="form-label">Hora</label>
+
+                <div id="emailHelp" class="form-text"></div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="spinner-border text-primary" role="status" id="load">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btnCustom2" id="btn_agregar_cita">Agregar Cita</button>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
@@ -37,8 +98,17 @@
   
       var calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'es',
+        //Colocando boton personalizado
+        customButtons: {
+          agregar_cita: {
+            text: 'Agregar cita',
+            click: function() {
+              $("#modal_agregar_cita").modal("show");
+            }
+          }
+        },
         headerToolbar: {
-          left: 'prev,next today',
+          left: 'prev,next agregar_cita',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,listDay,listWeek'
         },

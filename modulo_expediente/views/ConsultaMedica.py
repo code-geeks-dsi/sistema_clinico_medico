@@ -3,7 +3,8 @@ from datetime import datetime
 from modulo_expediente.models import (
     ConstanciaMedica, Consulta, Dosis,ContieneConsulta, Expediente, 
     RecetaMedica, SignosVitales,ReferenciaMedica)
-from ..forms import ( ConsultaFormulario, ControlSubsecuenteform,  DosisFormulario, HojaEvolucionForm,antecedentesForm)
+from ..forms import ( ConsultaFormulario, ControlSubsecuenteform,  DosisFormulario, 
+                        HojaEvolucionForm,antecedentesForm, CitaConsultaForm)
 from django.http import JsonResponse
 from django.urls import reverse
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -35,6 +36,9 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
             referencias_medicas= ReferenciaMedica.objects.filter(consulta=consulta)
             constancias_medicas=ConstanciaMedica.objects.filter(consulta=consulta)
+            cita_form=CitaConsultaForm()
+            cita_form.fields['expediente'].initial=expediente
+            
             datos={
                 'paciente':paciente,
                 'signos_vitales':signos_vitales,
@@ -49,7 +53,8 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
                 'dosis_form':DosisFormulario(),
                 'dosis':dosis,
                 'referencias':referencias_medicas,
-                'constancias_medicas':constancias_medicas
+                'constancias_medicas':constancias_medicas,
+                'cita_form':cita_form
             }
         except ContieneConsulta.DoesNotExist:
             raise Http404("Consulta no encontrada")
