@@ -286,6 +286,17 @@ class DocumentoExpediente(models.Model):
     def __str__(self):
         return f'{self.titulo} - {self.expediente.id_paciente.nombre_paciente}'
 
+class CitaConsulta(models.Model):
+    OPCIONES_PRIORIDAD=(
+        ('1','Alta'),
+        ('2','Media'),
+        ('3','Baja'),
+    )
+    id_cita_consulta=models.AutoField(primary_key=True)
+    fecha_cita=models.DateTimeField()
+    prioridad_paciente=models.CharField(max_length=1, choices=OPCIONES_PRIORIDAD, blank=False, null=False)
+    observacion=models.CharField(max_length=80, blank=True, null=True)
+    expediente=models.ForeignKey('Expediente', models.DO_NOTHING, null=False, blank=False)
 
 ###Modelo de prueba para amazon s3 
 class Archivo(models.Model):
