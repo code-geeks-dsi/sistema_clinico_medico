@@ -15,8 +15,8 @@ class Expediente(models.Model):
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
     codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
     contiene_consulta=models.ManyToManyField('Consulta',through='ContieneConsulta')
-    antecedentes_familiares=models.TextField(null=True,blank=True)
-    antecedentes_personales=models.TextField(null=True,blank=True)
+    antecedentes_familiares=models.TextField(null=True,blank=True,default="")
+    antecedentes_personales=models.TextField(null=True,blank=True,default="")
     def __str__(self):
         return str(self.id_expediente)+" - "+str(self.id_paciente.nombre_paciente)
 
@@ -60,15 +60,15 @@ class ContieneConsulta(models.Model):
     #consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True)
     id=models.AutoField(primary_key=True)
     expediente = models.ForeignKey('Expediente', models.DO_NOTHING, blank=False, null=True)
-    consulta = models.OneToOneField('Consulta', models.DO_NOTHING, blank=True, null=True)
+    consulta = models.ForeignKey('Consulta', models.DO_NOTHING, blank=True, null=True)
     numero_cola=models.IntegerField(blank=False, null=False) #No lleva max_length
     fecha_de_cola=models.DateField(default=datetime.now, blank=False, null=False)
     # hora_de_ingreso=models.TimeField(default=datetime.now,blank=False,null=False)
     consumo_medico=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False,default=0)
     estado_cola_medica=models.CharField(max_length=20,choices=OPCIONES_ESTADO_DE_PAGO, blank=False,null=False,default=1)
     fase_cola_medica=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False,default=2)
-    class Meta:
-        unique_together = (('expediente', 'fecha_de_cola'),)
+    # class Meta:
+    #     unique_together = (('expediente', 'fecha_de_cola'),)
     def __str__(self):
         return str(self.expediente.id_expediente)+" - "+str(self.consulta)
 
@@ -106,7 +106,9 @@ class Consulta(models.Model):
     presente_enfermedad=models.TextField(max_length=200, blank=True, null=False)
     examen_fisico=models.TextField(max_length=200, blank=True, null=False)
     diagnostico=models.TextField(max_length=200, blank=True, null=False)
+    plan_tratamiento=models.TextField(max_length=200, blank=True, null=False)
     fecha=models.DateTimeField(auto_now_add=True)
+    dar_seguimiento=models.BooleanField(default=False)
     
 class NotaEvolucionManager(models.Manager):
     def validar_caducidad(self,nota):
