@@ -62,10 +62,15 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             ContieneConsulta.objects.filter(consulta=consulta).update(fase_cola_medica='6')
             messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
             return redirect(reverse('editar_consulta', kwargs={'id_consulta':consulta.id_consulta}))
-    
-def antecedentesUpdate(request, id_expediente):
-    expediente = Expediente.objects.get(id_expediente=id_expediente)
-    if request.method == 'POST':
+
+##Se sustituyo la funcion de ancedentes por una clase
+class antecedentesUpdateView(PermissionRequiredMixin, View):
+    permission_required = ('modulo_expediente.change_consulta')
+    login_url='/login/'
+
+    def post(self, request, *args, **kwargs):
+        id_expediente=self.kwargs['id_expediente'] 
+        expediente = Expediente.objects.get(id_expediente=id_expediente)
         form = antecedentesForm(request.POST, instance=expediente)
         if form.is_valid():
             form.save()
@@ -82,6 +87,5 @@ def antecedentesUpdate(request, id_expediente):
                 'data':'No se pudo guardar. Intente de nuevo.'
             }
         return JsonResponse(response)
-    
 
     
