@@ -113,11 +113,7 @@ def crear_expediente(request):
             messages.add_message(request=request, level=messages.SUCCESS, message="El Paciente se ha modificado con exito")
         
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
-
-#View Para imprimir Agenda
-class AgendaView(TemplateView):
-    template_name = "expediente/agenda.html"   
-
+ 
 class CreateControlSubsecuente(View):
         form_class = ControlSubsecuenteform
 
