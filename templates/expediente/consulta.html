@@ -321,8 +321,35 @@
                       <div id="documento-constancia" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
                         <div class="accordion-body">
                             <div class="card-body">
-                                <a href="constancia-medica/" class="btn btn-outline-primary w-0 my-1">Crear o actualizar Constancia Médica</a>
-                                <a href="constancia-medica/pdf" class="btn btn-outline-primary w-0 my-1">Descargar Constancia Médica</a>
+                                <h5 class="card-title">Lista de Constancias Medicas</h5>
+                                <!--Tabla de Referencias-->
+                                <div class="table-responsive" id="tabla_referencias_agregadas">
+                                    <table class="table table-bordered text-center">
+                                        <thead class="table-secondary">
+                                            <tr>
+                                                <th>Paciente</th>
+                                                <th>Duración (dias)</th>
+                                                <th>Fecha</td>
+                                                <th>Opciones</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="lista-constancias-consulta">
+                                        <!--Datos del server -- dosis -- -->
+                                            {% for constancia in constancias_medicas %}
+                                            <tr>
+                                                <td>{{ paciente.nombre_paciente }} {{ paciente.apellido_paciente }}</td>
+                                                <td>{{ constancia.dias_reposo }}</td>
+                                                <td>{{ constancia.fecha_de_emision }}</td>
+                                                <td>
+                                                    <a class="material-symbols-outlined btn btn-sm" href="constancia-medica/{{constancia.id_constancia_medica}}"  target="_blank">open_in_new</a>
+                                                    <a class="material-symbols-outlined btn btn-sm" href="constancia-medica/pdf/{{constancia.id_constancia_medica}}"  target="_blank">file_download</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                     <a href="constancia-medica/" class="btn btn-outline-primary w-0 my-1">Crear Constancia Médica</a>
+                                </div>
                             </div>
                         </div>
                       </div>
