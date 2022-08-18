@@ -34,9 +34,10 @@ urlpatterns = [
     path('consulta/<int:id_expediente>/antecedentes-personales/',antecedentesUpdate,name='antecedentes-update'),
     path('consulta/<int:id_consulta>/receta-medica/pdf',RecetaMedicaPdfView.as_view(),name='receta-medica-pdf' ),
     # Constancias Medicas
+    path('consulta/<int:id_consulta>/constancia-medica/',ConstanciaMedicaView.as_view(),name='constancia-medica'),
     path('consulta/<int:id_consulta>/constancia-medica/pdf', ConstanciaMedicaPDFView.as_view(),name='constancia-medica'),
     path('consulta/<int:id_consulta>/constancia-medica/<int:id_constancia>/',ConstanciaMedicaUpdate.as_view(),name='constancia-medica-update'),
-    path('constancia-medica/<str:id>',ConstanciaMedicaView.as_view(),name='constancia-medica'),
+    #path('constancia-medica/<str:id>',ConstanciaMedicaView.as_view(),name='constancia-medica'),
     path('constancia-medica/',ConstanciaMedicaCreate.as_view(),name='crear-constancia-medica'),
     # Referencias Medicas
     path('consulta/<int:id_consulta>/referencia-medica/',ReferenciaMedicaView.as_view(),name='referencia-medica'),

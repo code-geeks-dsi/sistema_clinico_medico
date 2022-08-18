@@ -79,7 +79,7 @@ class ConstanciaMedicaView(View):
             edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
             ##Formulario
             form = self.form_class()
-            form.fields['diagnostico_constancia'].initial=contiene_consulta.consulta.consulta_por
+            form.fields['diagnostico_constancia'].initial=contiene_consulta.consulta.diagnostico
             return render(request, self.template_name, {'form': form, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
 
     def post(self, request, *args, **kwargs):
