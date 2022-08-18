@@ -1,12 +1,8 @@
-from django import views
-from django.contrib import admin
 from django.urls import path
-from modulo_expediente.views.Expediente import (antecedentesUpdate, busqueda_paciente, 
-    autocompletado_apellidos, eliminar_cola, sala_consulta,get_cola,get_paciente,agregar_cola, 
-    modificar_signosVitales, crear_expediente, editar_consulta, 
-    CreateControlSubsecuente, buscar_expediente, 
-    AgendaView, ConsultaView)
-    
+from modulo_expediente.views.Expediente import (busqueda_paciente, 
+    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, CreateControlSubsecuente, buscar_expediente, AgendaView)
+from modulo_expediente.views.ConsultaMedica import (ConsultaView,antecedentesUpdate)    
+from modulo_expediente.views.SignosVitales import (modificar_signosVitales)    
 from modulo_expediente.views.EvolucionConsulta import (DeleteNotaEvolucion,ListaHojaEvolucion,CreateHojaEvolucion,UpdateNotaEvolucion)
 from modulo_expediente.views.ConstanciaMedica import (ConstanciaMedicaPDFView,ConstanciaMedicaCreate, ConstanciaMedicaView, ConstanciaMedicaUpdate)
 from modulo_expediente.views.Medicamento import (dosis_medicamento, eliminar_dosis,
@@ -15,7 +11,7 @@ from modulo_expediente.views.ReferenciaMedica import (ReferenciaMedicaView,
 ReferenciaMedicaUpdate, ReferenciaMedicaPdfView)
 from modulo_expediente.views.RecetaMedica import RecetaMedicaPdfView
 from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateView, DocumentosExternosURLview, DocumentosExternosURLDownload
-
+from modulo_expediente.views.ContieneConsulta import (agregar_cola,get_cola ,eliminar_cola )
 urlpatterns = [
     # Expediente
     path('paciente/',busqueda_paciente, name='busqueda_paciente'),
@@ -46,9 +42,12 @@ urlpatterns = [
     path('receta_medica/agregar-medicamento', agregar_medicamento, name='agregar_nuevo_medicamento'),
     path('receta/dosis',dosis_medicamento,name='agregar_dosis'),
     path('receta/dosis/eliminar_dosis/<int:id_dosis>',eliminar_dosis,name='eliminar_dosis'),
-    path('consulta/<int:id_consulta>/',ConsultaView.as_view(),name='editar_consulta'),
     path('medicamento/',busqueda_medicamento, name='agregar_medicamento'),
     path('medicamento/autocompletado/',autocompletado_medicamento, name='agregar_medicamento_2'),
+    # Consulta Medica
+    path('consulta/<int:id_consulta>/',ConsultaView.as_view(),name='editar_consulta'),
+    path('consulta/seguimiento/<int:id_contiene_consulta>/',ConsultaView.as_view(),name='seguimiento_consulta'),
+    path('consulta/nueva/<int:id_contiene_consulta>/',ConsultaView.as_view(),name='nueva_consulta'),
     # Evolucion Consulta
     path('consulta/<int:id_consulta>/hoja-evolucion/',CreateHojaEvolucion.as_view(),name='hoja-evolucion-create'),
     path('consulta/<int:id_consulta>/hoja-evolucion/<int:id_nota_evolucion>',DeleteNotaEvolucion.as_view(),name='hoja-evolucion-delete'),

@@ -83,7 +83,7 @@ class ConsultaFormulario(ModelForm):
   
   class Meta:
     model=Consulta
-    fields=['consulta_por','presente_enfermedad','examen_fisico','diagnostico']
+    fields=['consulta_por','presente_enfermedad','examen_fisico','diagnostico','plan_tratamiento','dar_seguimiento']
     widgets = {
             'consulta_por': forms.Textarea(attrs={
                                                   'class': 'form-control', 
@@ -101,6 +101,11 @@ class ConsultaFormulario(ModelForm):
                                                   "cols":20
                                                   }),
             'diagnostico': forms.Textarea(attrs={
+                                                  'class': 'form-control',  
+                                                  "rows":5,
+                                                  "cols":20
+                                                  }),
+            'plan_tratamiento': forms.Textarea(attrs={
                                                   'class': 'form-control',  
                                                   "rows":5,
                                                   "cols":20

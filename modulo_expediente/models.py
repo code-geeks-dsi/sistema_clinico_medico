@@ -60,7 +60,7 @@ class ContieneConsulta(models.Model):
     #consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True)
     id=models.AutoField(primary_key=True)
     expediente = models.ForeignKey('Expediente', models.DO_NOTHING, blank=False, null=True)
-    consulta = models.OneToOneField('Consulta', models.DO_NOTHING, blank=True, null=True)
+    consulta = models.ForeignKey('Consulta', models.DO_NOTHING, blank=True, null=True)
     numero_cola=models.IntegerField(blank=False, null=False) #No lleva max_length
     fecha_de_cola=models.DateField(default=datetime.now, blank=False, null=False)
     # hora_de_ingreso=models.TimeField(default=datetime.now,blank=False,null=False)
@@ -108,6 +108,7 @@ class Consulta(models.Model):
     diagnostico=models.TextField(max_length=200, blank=True, null=False)
     plan_tratamiento=models.TextField(max_length=200, blank=True, null=False)
     fecha=models.DateTimeField(auto_now_add=True)
+    dar_seguimiento=models.BooleanField(default=False)
     
 class NotaEvolucionManager(models.Manager):
     def validar_caducidad(self,nota):
