@@ -658,6 +658,14 @@
     let tablaData=document.getElementById(tablaResultado);
     let id_receta_medica={{id_receta}};
     let nota_evolucion_a_eliminar="";
+
+    //Socket Para Calendario
+    let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
+    let socket_url=`${ws_scheme}://${window.location.host}/ws/calendario/update/`;
+    const calendarioUpdateSocket=new WebSocket(socket_url);
+    calendarioUpdateSocket.onmessage=(message)=>{
+        
+    }
     
     $('.spinner-border').hide();
 
@@ -792,6 +800,11 @@
                 $('#load-cita').hide()
                 $('#modal_agregar_cita').modal('hide');
                 toastr[response.type](response.data); 
+                if (response.type=='success'){
+                    calendarioUpdateSocket.send(JSON.stringify({
+                    'message':'sync'
+                  }));
+                }
             }});
 	});
 </script>

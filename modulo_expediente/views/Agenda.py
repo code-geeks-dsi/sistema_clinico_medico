@@ -1,12 +1,27 @@
 #Django
 from django.http import JsonResponse
-from django.views.generic import View
+from django.views.generic import View, TemplateView
+from django.utils import timezone
+
 #Librerias Propias
+from modulo_expediente.models import CitaConsulta
 from ..forms import CitaConsultaForm
+from ..serializers import CitaConsultaSerializer
 
-class CrearCitaConsultaView(View):
+#View Para imprimir Agenda
+class AgendaView(TemplateView):
+    template_name = "expediente/agenda.html"  
+
+class CitaConsultaView(View):
     response={'type':'','data':''}
+    #Regresa con json con las citas del mes
+    def get(self, request, *args, **kwargs):
+        fecha=timezone.now()
+        citas=CitaConsulta.objects.filter(fecha_cita__year=fecha.year, fecha_cita__month=fecha.month)
+        serializer=CitaConsultaSerializer(citas, many= True)
+        return JsonResponse(serializer.data, safe=False)
 
+    #Crear citas
     def post(self, request, *args, **kwargs):
         id_expediente=self.kwargs['id_expediente'] 
         form = CitaConsultaForm(request.POST)

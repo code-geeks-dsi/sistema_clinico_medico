@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from modulo_expediente.models import Dosis, Medicamento, Paciente, ContieneConsulta
+from modulo_expediente.models import Dosis, Medicamento, Paciente, ContieneConsulta, CitaConsulta
 # class PacienteSerializer(serializers.Serializer):
 #     id_paciente=serializers.IntegerField()
 #     nombre_paciente = serializers.CharField(max_length=200)
@@ -49,3 +49,24 @@ class DocumentoExternoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dosis
         fields = ['id_documento','titulo','fecha', 'propietario']
+
+class CitaConsultaSerializer(serializers.ModelSerializer):
+    title=serializers.SerializerMethodField()
+    start=serializers.SerializerMethodField()
+    color=serializers.SerializerMethodField()
+    def get_title(self, obj):
+        return '{} - {}'.format(obj.expediente.id_paciente.nombre_paciente, obj.get_prioridad_paciente_display()) 
+    def get_start(self, obj):
+        return obj.fecha_cita.strftime("%Y-%m-%dT%H:%M")
+    def get_color(self, obj):
+        if obj.prioridad_paciente == "1":#alta
+            color='#ff3100'
+        elif obj.prioridad_paciente == "2":#media
+            color='#fafd4c'
+        elif obj.prioridad_paciente == "3":#baja
+            color='#0efff9'
+        return color
+
+    class Meta:
+        model= CitaConsulta
+        fields = ['title','start', 'color']
