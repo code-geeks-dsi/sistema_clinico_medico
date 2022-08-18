@@ -15,8 +15,8 @@ class Expediente(models.Model):
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
     codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
     contiene_consulta=models.ManyToManyField('Consulta',through='ContieneConsulta')
-    antecedentes_familiares=models.TextField(null=True,blank=True)
-    antecedentes_personales=models.TextField(null=True,blank=True)
+    antecedentes_familiares=models.TextField(null=True,blank=True,default="")
+    antecedentes_personales=models.TextField(null=True,blank=True,default="")
     def __str__(self):
         return str(self.id_expediente)+" - "+str(self.id_paciente.nombre_paciente)
 
@@ -67,8 +67,8 @@ class ContieneConsulta(models.Model):
     consumo_medico=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False,default=0)
     estado_cola_medica=models.CharField(max_length=20,choices=OPCIONES_ESTADO_DE_PAGO, blank=False,null=False,default=1)
     fase_cola_medica=models.CharField(max_length=20,choices=OPCIONES_FASE, blank=False,null=False,default=2)
-    class Meta:
-        unique_together = (('expediente', 'fecha_de_cola'),)
+    # class Meta:
+    #     unique_together = (('expediente', 'fecha_de_cola'),)
     def __str__(self):
         return str(self.expediente.id_expediente)+" - "+str(self.consulta)
 
