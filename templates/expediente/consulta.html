@@ -194,6 +194,7 @@
                                             <input type="submit" class="btn btn-outline-success "  value="Guardar">
                                         </div>
                                         <div class="col-md-12 col-lg-8 text-end">
+                                            <button type="button"class="btn btn-outline-primary " data-bs-toggle="modal" data-bs-target="#modal_agregar_cita">Programar Cita</button>
                                         </div>
                                     </div>
                                 </form>
@@ -549,7 +550,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Eliminar</h5>
-                    <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
+                    <button type="button" class="btn-close" aria-label="Cerrar" data-bs-dismiss="modal" id="cerar_modal_busqueda_medicamento"></button>
                 </div>
                 <div class="modal-body">
                     <p>Desea eliminar esta nota de Evolución?</p>
@@ -567,7 +568,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Editar</h5>
-                    <button type="button" class="btn-close" aria-label="Cerrar" id="cerar_modal_busqueda_medicamento"></button>
+                    <button type="button" class="btn-close" aria-label="Cerrar" data-bs-dismiss="modal" id="cerar_modal_busqueda_medicamento"></button>
                 </div>
 
                 <form id="hoja-evolucion-form-update" action="{% url 'hoja-evolucion-update' id_consulta=id_consulta %}" method="post">
@@ -590,8 +591,8 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header ">
-                <h5 class="modal-title" id="staticBackdropLabel">Editar Antecedentes</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="staticBackdropLabel">Editar Antecedentes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{% url 'antecedentes-update' id_expediente=id_expediente %}" method="post" id="antecedentes_form">
                     <div class="modal-body w-0">
@@ -612,6 +613,35 @@
             </div>
         </div>
     </div>
+
+    <!--Modal para Programar Citas-->
+    <div class="modal fade" id="modal_agregar_cita" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar Cita</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'crear-cita-consulta' id_consulta=id_consulta id_expediente=id_expediente %}" id="form_crear_cita">
+                    <div class="modal-body">
+                        <!-- Formulario para agregar Cita -->
+                    {% for field in cita_form %}
+                        <label class="form-label fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+                        {{ field }}
+                        <p></p>
+                    {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <div class="spinner-border text-primary" role="status" id="load-cita">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <input type="submit" value="Agregar Cita" class="btn btn-outline-primary" id="btn_agregar_cita"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
                 
 </div>    
 {% endblock %}
@@ -629,7 +659,7 @@
     let id_receta_medica={{id_receta}};
     let nota_evolucion_a_eliminar="";
     
-    $('#load').hide();
+    $('.spinner-border').hide();
 
     //Cerrar modal de medicamentos
     $('#cerar_modal_busqueda_medicamento').click(function() {
@@ -748,6 +778,22 @@
 		}});
 	});
 
+    $('#form_crear_cita').submit(function (event) {
+		event.preventDefault();
+        $('#load-cita').show()
+		$.ajax({
+            type: 'POST',
+            url: $("#form_crear_cita").attr("action"),
+            data: $("#form_crear_cita").serialize(), 
+            headers: {
+                "X-CSRFToken": '{{ csrf_token }}',
+            },
+            success: function(response){
+                $('#load-cita').hide()
+                $('#modal_agregar_cita').modal('hide');
+                toastr[response.type](response.data); 
+            }});
+	});
 </script>
 {% endblock %}
 

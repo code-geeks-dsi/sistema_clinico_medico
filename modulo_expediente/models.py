@@ -293,10 +293,11 @@ class CitaConsulta(models.Model):
         ('3','Baja'),
     )
     id_cita_consulta=models.AutoField(primary_key=True)
-    fecha_cita=models.DateTimeField()
+    expediente=models.ForeignKey('Expediente', models.DO_NOTHING, null=False, blank=False)
     prioridad_paciente=models.CharField(max_length=1, choices=OPCIONES_PRIORIDAD, blank=False, null=False)
     observacion=models.CharField(max_length=80, blank=True, null=True)
-    expediente=models.ForeignKey('Expediente', models.DO_NOTHING, null=False, blank=False)
+    fecha_cita=models.DateTimeField()
+    empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
 
 ###Modelo de prueba para amazon s3 
 class Archivo(models.Model):
