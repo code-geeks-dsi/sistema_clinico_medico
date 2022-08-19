@@ -1,6 +1,6 @@
 from django.urls import path
 from modulo_expediente.views.Expediente import (ControlSubsecuenteView, busqueda_paciente, 
-    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente,  buscar_expediente, AgendaView)
+    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, buscar_expediente, AgendaView)
 from modulo_expediente.views.ConsultaMedica import (ConsultaView,antecedentesUpdateView)    
 from modulo_expediente.views.SignosVitales import (modificar_signosVitales)    
 from modulo_expediente.views.EvolucionConsulta import (DeleteNotaEvolucion,ListaHojaEvolucion,CreateHojaEvolucion,UpdateNotaEvolucion)
@@ -12,6 +12,7 @@ ReferenciaMedicaUpdate, ReferenciaMedicaPdfView)
 from modulo_expediente.views.RecetaMedica import RecetaMedicaPdfView
 from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateView, DocumentosExternosURLview, DocumentosExternosURLDownload
 from modulo_expediente.views.ContieneConsulta import (agregar_cola,get_cola ,eliminar_cola )
+from modulo_expediente.views.Agenda import CitaConsultaView, AgendaView
 urlpatterns = [
     # Expediente
     path('paciente/',busqueda_paciente, name='busqueda_paciente'),
@@ -58,6 +59,8 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/control-subsecuente/',ControlSubsecuenteView.as_view(),name='control-subsecuente-view'),
     # Agenda
     path('agenda/', AgendaView.as_view(),name='ver_agenda'),
+    path('consulta/<int:id_consulta>/programar-cita/<int:id_expediente>', CitaConsultaView.as_view(), name='crear-cita-consulta'),
+    path('consulta/citas-consulta/', CitaConsultaView.as_view(), name='get-citas-consulta'),
     ###URL de Pruebas para visualización de archivos en S3
    # path('documento/<int:id_documento>/', storageurl, name="storage-url")
     path('consulta/<int:id_consulta>/agregar-documento-externo/', ExamenesExternosCreateView.as_view(), name="create_examenes_externos"),

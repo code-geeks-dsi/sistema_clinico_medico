@@ -1,5 +1,9 @@
 from rest_framework import serializers
+
 from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, SignosVitales
+
+from modulo_expediente.models import Dosis, Medicamento, Paciente, ContieneConsulta, CitaConsulta
+
 # class PacienteSerializer(serializers.Serializer):
 #     id_paciente=serializers.IntegerField()
 #     nombre_paciente = serializers.CharField(max_length=200)
@@ -49,8 +53,40 @@ class DocumentoExternoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dosis
         fields = ['id_documento','titulo','fecha', 'propietario']
+
 class ConsultaSerializers(serializers.ModelSerializer):
     class Meta:
         model = Consulta
         fields = '__all__'
+
+
+
+class CitaConsultaSerializer(serializers.ModelSerializer):
+    id=serializers.IntegerField(source='id_cita_consulta')
+    title=serializers.SerializerMethodField()
+    start=serializers.SerializerMethodField()
+    end=serializers.SerializerMethodField()
+    color=serializers.SerializerMethodField()
+    def get_title(self, obj):
+        return '{} - {}'.format(obj.expediente.id_paciente.nombre_paciente, obj.get_prioridad_paciente_display()) 
+    def get_start(self, obj):
+        fecha= obj.fecha_cita.strftime("%Y-%m-%d")
+        hora=obj.horario.hora_inicio.strftime("%H:%M")
+        return f'{fecha}T{hora}'
+    def get_end(self, obj):
+        fecha= obj.fecha_cita.strftime("%Y-%m-%d")
+        hora=obj.horario.hora_fin.strftime("%H:%M")
+        return f'{fecha}T{hora}'
+    def get_color(self, obj):
+        if obj.prioridad_paciente == "1":#alta
+            color='#e84b2c'
+        elif obj.prioridad_paciente == "2":#media
+            color='#e6d839'
+        elif obj.prioridad_paciente == "3":#baja
+            color='#7cd164'
+        return color
+
+    class Meta:
+        model= CitaConsulta
+        fields = ['id','title','start','end' ,'color']
 

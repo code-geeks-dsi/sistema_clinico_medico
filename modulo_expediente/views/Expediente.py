@@ -114,12 +114,19 @@ def crear_expediente(request):
         
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
 
+
 #View Para imprimir Agenda
 class AgendaView(TemplateView):
     template_name = "expediente/agenda.html"   
 
+
+
+ 
 class ControlSubsecuenteView(View):
+        form_class = ControlSubsecuenteform
+
         def get(self, request, *args, **kwargs):
+
             id_consulta=int(self.kwargs['id_consulta']) 
             consulta=Consulta.objects.filter(id_consulta=id_consulta)
             consulta_serializer=ConsultaSerializers(consulta, many=True)
