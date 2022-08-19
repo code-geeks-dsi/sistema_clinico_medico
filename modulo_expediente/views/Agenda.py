@@ -52,6 +52,7 @@ class CitaConsultaView(View):
             self.response['data']='Cita Programada'
         else:
             self.response['type']='warning'
-            self.response['data']='No se pudo guardar. Intente de nuevo.'
+            self.response['data']=form.errors.get_json_data()['__all__'][0]['message']
+
         return JsonResponse(self.response)
         

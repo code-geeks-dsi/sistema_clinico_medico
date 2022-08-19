@@ -54,11 +54,18 @@ class CitaConsultaSerializer(serializers.ModelSerializer):
     id=serializers.IntegerField(source='id_cita_consulta')
     title=serializers.SerializerMethodField()
     start=serializers.SerializerMethodField()
+    end=serializers.SerializerMethodField()
     color=serializers.SerializerMethodField()
     def get_title(self, obj):
         return '{} - {}'.format(obj.expediente.id_paciente.nombre_paciente, obj.get_prioridad_paciente_display()) 
     def get_start(self, obj):
-        return obj.fecha_cita.strftime("%Y-%m-%dT%H:%M")
+        fecha= obj.fecha_cita.strftime("%Y-%m-%d")
+        hora=obj.horario.hora_inicio.strftime("%H:%M")
+        return f'{fecha}T{hora}'
+    def get_end(self, obj):
+        fecha= obj.fecha_cita.strftime("%Y-%m-%d")
+        hora=obj.horario.hora_fin.strftime("%H:%M")
+        return f'{fecha}T{hora}'
     def get_color(self, obj):
         if obj.prioridad_paciente == "1":#alta
             color='#ff3100'
@@ -70,4 +77,4 @@ class CitaConsultaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model= CitaConsulta
-        fields = ['id','title','start', 'color']
+        fields = ['id','title','start','end' ,'color']

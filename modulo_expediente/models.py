@@ -296,8 +296,22 @@ class CitaConsulta(models.Model):
     expediente=models.ForeignKey('Expediente', models.DO_NOTHING, null=False, blank=False)
     prioridad_paciente=models.CharField(max_length=1, choices=OPCIONES_PRIORIDAD, blank=False, null=False)
     observacion=models.CharField(max_length=80, blank=True, null=True)
-    fecha_cita=models.DateTimeField()
+    fecha_cita=models.DateField()
+    horario=models.ForeignKey('modulo_expediente.HorarioConsulta', models.DO_NOTHING, null=False, blank=False)
     empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+    class Meta:
+         unique_together = (('fecha_cita', 'horario'),)
+    def __str__(self):
+        return f'{self.expediente.id_paciente.nombre_paciente} - {self.get_prioridad_paciente_display()}'
+
+class HorarioConsulta(models.Model):
+    id_horario=models.AutoField(primary_key=True)
+    hora_inicio=models.TimeField(null=False, blank=False)
+    hora_fin=models.TimeField(null=False, blank=False)
+    def __str__(self):
+        inicio =self.hora_inicio.strftime('%I:%M %p')
+        fin=self.hora_fin.strftime('%I:%M %p')
+        return f'{inicio} - {fin}'
 
 ###Modelo de prueba para amazon s3 
 class Archivo(models.Model):
