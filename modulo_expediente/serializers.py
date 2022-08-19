@@ -68,11 +68,11 @@ class CitaConsultaSerializer(serializers.ModelSerializer):
         return f'{fecha}T{hora}'
     def get_color(self, obj):
         if obj.prioridad_paciente == "1":#alta
-            color='#ff3100'
+            color='#e84b2c'
         elif obj.prioridad_paciente == "2":#media
-            color='#fafd4c'
+            color='#e6d839'
         elif obj.prioridad_paciente == "3":#baja
-            color='#0efff9'
+            color='#7cd164'
         return color
 
     class Meta:

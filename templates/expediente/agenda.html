@@ -21,34 +21,56 @@
 
 <!--Modal Agregar Cita-->
 <!--Modal para Programar Citas-->
-    <div class="modal fade" id="modal_agregar_cita" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Agregar Cita</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                <form action="{% url 'ver_agenda' %}" id="form_crear_cita">
-                    <div class="modal-body">
-                        <!-- Formulario para agregar Cita -->
-                    {% for field in form %}
-                        <label class="form-label fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
-                        {{ field }}
-                        <p></p>
-                    {% endfor %}
-                    </div>
-                    <div class="modal-footer">
-                        <div class="spinner-border text-primary" role="status" id="load-cita">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <input type="submit" value="Agregar Cita" class="btn btn-outline-primary" id="btn_agregar_cita"></button>
-                    </div>
-                </form>
+<div class="modal fade" id="modal_agregar_cita" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Cita</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            
+            <form action="{% url 'ver_agenda' %}" id="form_crear_cita">
+                <div class="modal-body">
+                    <!-- Formulario para agregar Cita -->
+                {% for field in form %}
+                    <label class="form-label fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+                    {{ field }}
+                    <p></p>
+                {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <div class="spinner-border text-primary" role="status" id="load-cita">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <input type="submit" value="Agregar Cita" class="btn btn-outline-primary" id="btn_agregar_cita"></button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
+<!--Modal De cada Reservación-->
+<div class="modal fade" id="cita-modal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header" id="modal-cita-header">
+              <h5 class="modal-title" id="modal-cita-title"></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <div class="spinner-border text-primary" role="status" id="load-cita-view">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <input type="submit" value="Agregar Cita" class="btn btn-outline-primary" id="btn_agregar_cita"></button>
+          </div>
+      </div>
+  </div>
+</div>
 
 {% endblock %}
 <!--Js de la vista-->
@@ -61,7 +83,7 @@
 </script>
 <script>
     
-    $('#load-cita').hide()
+    $('.spinner-border').hide()
     //Recueprndo Fecha Actual
     const hoy = new Date();
     function formatoFecha(fecha, formato) {
@@ -107,6 +129,13 @@
         listWeek: { buttonText: 'Citas de la semana' },
         listMonth: { buttonText: 'list month' }
         },
+        eventClick: function(info) {
+          $('#cita-modal').modal('show');
+          $("#modal-cita-title").html(info.event.title);
+          $('#modal-cita-header').css({"backgroundColor":info.event.backgroundColor});
+          console.log(info.event.title)
+          console.log(info.event.backgroundColor)
+        },
 
         eventSources: [
           // your event source
@@ -125,7 +154,6 @@
           }
 
           // any other sources...
-
         ]
       });
       
