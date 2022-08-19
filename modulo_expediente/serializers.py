@@ -1,5 +1,9 @@
 from rest_framework import serializers
+
+from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, SignosVitales
+
 from modulo_expediente.models import Dosis, Medicamento, Paciente, ContieneConsulta, CitaConsulta
+
 # class PacienteSerializer(serializers.Serializer):
 #     id_paciente=serializers.IntegerField()
 #     nombre_paciente = serializers.CharField(max_length=200)
@@ -50,6 +54,13 @@ class DocumentoExternoSerializer(serializers.ModelSerializer):
         model = Dosis
         fields = ['id_documento','titulo','fecha', 'propietario']
 
+class ConsultaSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Consulta
+        fields = '__all__'
+
+
+
 class CitaConsultaSerializer(serializers.ModelSerializer):
     id=serializers.IntegerField(source='id_cita_consulta')
     title=serializers.SerializerMethodField()
@@ -78,3 +89,4 @@ class CitaConsultaSerializer(serializers.ModelSerializer):
     class Meta:
         model= CitaConsulta
         fields = ['id','title','start','end' ,'color']
+

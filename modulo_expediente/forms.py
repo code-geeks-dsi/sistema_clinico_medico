@@ -222,10 +222,17 @@ class ControlSubsecuenteform(ModelForm):
     widgets={
         'observacion': forms.Textarea(attrs={
                                         'class': 'form-control',  
-                                        "rows":3,
-                                        "cols":20
+                                        "rows":1,
+                                        "cols":80
                                         }
-        )}
+        ),
+        'fecha': forms.DateInput(
+                format=('%Y-%m-%d'),
+                attrs={'class': 'form-control', 
+               'placeholder': 'Select a date',
+               'type': 'date'
+              }),
+        }
 
 
 class DocumentoExpedienteForm(ModelForm):
