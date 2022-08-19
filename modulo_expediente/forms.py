@@ -279,3 +279,31 @@ class CitaConsultaForm(ModelForm):
               }),
         }
 
+class CitaConsultaSecretariaForm(ModelForm):
+  class Meta:
+    model=CitaConsulta
+    fields='__all__'
+    widgets={
+      'empleado': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+      'expediente': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+      'prioridad_paciente': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+      'observacion': TextInput(
+                attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese una observación.',
+              }
+        ),
+        'fecha_cita': DataTimeInput(
+                attrs={'class': 'form-control', 
+               'placeholder': 'Seleccione la Fecha',
+              }),
+        }
+
