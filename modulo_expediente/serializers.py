@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from modulo_expediente.models import Dosis, Medicamento, Paciente, ContieneConsulta
+from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, SignosVitales
 # class PacienteSerializer(serializers.Serializer):
 #     id_paciente=serializers.IntegerField()
 #     nombre_paciente = serializers.CharField(max_length=200)
@@ -49,3 +49,8 @@ class DocumentoExternoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dosis
         fields = ['id_documento','titulo','fecha', 'propietario']
+class ConsultaSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Consulta
+        fields = '__all__'
+

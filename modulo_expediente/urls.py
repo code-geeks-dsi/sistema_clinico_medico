@@ -1,6 +1,6 @@
 from django.urls import path
-from modulo_expediente.views.Expediente import (busqueda_paciente, 
-    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, CreateControlSubsecuente, buscar_expediente, AgendaView)
+from modulo_expediente.views.Expediente import (ControlSubsecuenteView, busqueda_paciente, 
+    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente,  buscar_expediente, AgendaView)
 from modulo_expediente.views.ConsultaMedica import (ConsultaView,antecedentesUpdateView)    
 from modulo_expediente.views.SignosVitales import (modificar_signosVitales)    
 from modulo_expediente.views.EvolucionConsulta import (DeleteNotaEvolucion,ListaHojaEvolucion,CreateHojaEvolucion,UpdateNotaEvolucion)
@@ -55,7 +55,7 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/hoja-evolucion/update',UpdateNotaEvolucion.as_view(),name='hoja-evolucion-update'),
     path('consulta/<int:id_consulta>/hoja-evolucion/lista',ListaHojaEvolucion.as_view(),name='hoja-evolucion-lista'),
     # Control Subsecuente
-    path('consulta/<int:id_consulta>/control-subsecuente/',CreateControlSubsecuente.as_view(),name='control-subsecuente-create'),
+    path('consulta/<int:id_consulta>/control-subsecuente/',ControlSubsecuenteView.as_view(),name='control-subsecuente-view'),
     # Agenda
     path('agenda/', AgendaView.as_view(),name='ver_agenda'),
     ###URL de Pruebas para visualización de archivos en S3
