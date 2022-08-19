@@ -28,6 +28,7 @@
                     <h5 class="modal-title">Agregar Cita</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                
                 <form action="{% url 'ver_agenda' %}" id="form_crear_cita">
                     <div class="modal-body">
                         <!-- Formulario para agregar Cita -->
@@ -92,7 +93,7 @@
         headerToolbar: {
           left: 'prev,next agregar_cita actualizar',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,listDay,listWeek'
+          right: 'dayGridMonth,listDay,listWeek'
         },
         initialDate: hoy,
         initialView: 'dayGridMonth',

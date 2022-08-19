@@ -9,12 +9,11 @@ from .models import (
   ConstanciaMedica, DocumentoExpediente, Expediente, CitaConsulta
 
 )
+from django.utils.translation import gettext as _
+from django.core.exceptions import NON_FIELD_ERRORS
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
-
-class DataTimeInput(forms.DateTimeInput):
-  input_type = 'datetime-local'
 
 class DatosDelPaciente(ModelForm):
     class Meta:
@@ -273,10 +272,21 @@ class CitaConsultaForm(ModelForm):
                'placeholder': 'Ingrese una observación.',
               }
         ),
-        'fecha_cita': DataTimeInput(
+      'fecha_cita': forms.DateInput(
+        format=('%Y-%m-%d'),
                 attrs={'class': 'form-control', 
-               'placeholder': 'Seleccione la Fecha',
+               'placeholder': 'Select a date',
+               'type': 'date'
               }),
+      'horario': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+    }
+    error_messages = {
+            NON_FIELD_ERRORS: {
+                'unique_together': _("Ya existe una cita programada para la fecha y hora seleccionadas."),
+            }
         }
 
 class CitaConsultaSecretariaForm(ModelForm):
@@ -301,9 +311,20 @@ class CitaConsultaSecretariaForm(ModelForm):
                'placeholder': 'Ingrese una observación.',
               }
         ),
-        'fecha_cita': DataTimeInput(
+      'fecha_cita': forms.DateInput(
+        format=('%Y-%m-%d'),
                 attrs={'class': 'form-control', 
-               'placeholder': 'Seleccione la Fecha',
+               'placeholder': 'Select a date',
+               'type': 'date'
               }),
+      'horario': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+        }
+    error_messages = {
+            NON_FIELD_ERRORS: {
+                'unique_together': _("Ya existe una cita programada para la fecha y hora seleccionadas."),
+            }
         }
 
