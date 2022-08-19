@@ -5,7 +5,7 @@ from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
 from .models import (
   Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
-  ConstanciaMedica, DocumentoExpediente, Expediente
+  ConstanciaMedica, DocumentoExpediente, Expediente, SignosVitales
 
 )
 
@@ -250,3 +250,39 @@ class antecedentesForm(ModelForm):
                                         }
         )}
 
+class SignosVitalesForm(ModelForm):
+  def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+          self.fields[field].widget.attrs.update({'class': 'form-control col'})
+        
+        self.fields['valor_presion_arterial_diastolica'].widget.attrs.update({'regex':'\d{0,3}'})
+        self.fields['valor_presion_arterial_sistolica'].widget.attrs.update({'regex':'\d{0,3}'})
+        self.fields['unidad_presion_arterial_diastolica'].widget.attrs.update({'readonly':'readonly'})
+        self.fields['unidad_presion_arterial_sistolica'].widget.attrs.update({'readonly':'readonly'})
+        self.fields['unidad_frecuencia_cardiaca'].widget.attrs.update({'readonly':'readonly'})
+        self.fields['unidad_saturacion_oxigeno'].widget.attrs.update({'readonly':'readonly'})
+  class Meta:
+    model=SignosVitales
+    fields=('valor_temperatura',
+            'unidad_temperatura',
+            'valor_peso',
+            'unidad_peso',
+            'valor_presion_arterial_diastolica',
+            'unidad_presion_arterial_diastolica',
+            'valor_presion_arterial_sistolica',
+            'unidad_presion_arterial_sistolica',
+            'valor_frecuencia_cardiaca',
+            'unidad_frecuencia_cardiaca',
+            'valor_saturacion_oxigeno',
+            'unidad_saturacion_oxigeno',
+            )
+    labels = {
+            'valor_temperatura': 'Temperatura',
+            'valor_presion_arterial_diastolica':'Presión Arterial Diastólica',
+            'valor_presion_arterial_sistolica':'Presión Arterial Sistólica',
+            'valor_frecuencia_cardiaca':'Frecuencia Cardíaca',
+            'valor_saturacion_oxigeno':'Saturación de Oxígeno',
+            'valor_peso':'Peso'
+        }
+    

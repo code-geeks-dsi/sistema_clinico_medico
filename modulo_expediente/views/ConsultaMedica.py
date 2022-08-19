@@ -3,7 +3,7 @@ from datetime import datetime
 from modulo_expediente.models import (
     Consulta, Dosis,ContieneConsulta, Expediente, 
     RecetaMedica, SignosVitales,ReferenciaMedica)
-from ..forms import ( ConsultaFormulario, ControlSubsecuenteform,  DosisFormulario, HojaEvolucionForm,antecedentesForm)
+from ..forms import ( ConsultaFormulario, ControlSubsecuenteform,  DosisFormulario, HojaEvolucionForm, SignosVitalesForm,antecedentesForm)
 from django.http import JsonResponse
 from django.urls import reverse
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -41,6 +41,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
                 'id_expediente':expediente,
                 'id_receta':receta.id_receta_medica,
                 'consulta_form':consulta_form,
+                'signos_vitales_form':SignosVitalesForm(),
                 'hoja_evolucion_form':HojaEvolucionForm(),
                 'control_subsecuente_form':ControlSubsecuenteform(),
                 'antecedentes_form':antecedentesForm(instance=contiene_consulta.expediente),
