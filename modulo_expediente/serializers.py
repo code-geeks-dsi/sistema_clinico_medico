@@ -51,6 +51,7 @@ class DocumentoExternoSerializer(serializers.ModelSerializer):
         fields = ['id_documento','titulo','fecha', 'propietario']
 
 class CitaConsultaSerializer(serializers.ModelSerializer):
+    id=serializers.IntegerField(source='id_cita_consulta')
     title=serializers.SerializerMethodField()
     start=serializers.SerializerMethodField()
     color=serializers.SerializerMethodField()
@@ -69,4 +70,4 @@ class CitaConsultaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model= CitaConsulta
-        fields = ['title','start', 'color']
+        fields = ['id','title','start', 'color']
