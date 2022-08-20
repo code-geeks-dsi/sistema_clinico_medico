@@ -1,5 +1,4 @@
 #Django
-from urllib import response
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import View, TemplateView
@@ -8,7 +7,7 @@ from django.db.models import Q
 from django.db.utils import IntegrityError
 
 #Librerias Propias
-from modulo_expediente.models import CitaConsulta
+from modulo_expediente.models import CitaConsulta, HorarioConsulta
 from modulo_control.models import Empleado
 from ..forms import CitaConsultaForm, CitaConsultaSecretariaForm
 from ..serializers import CitaConsultaSerializer
@@ -22,8 +21,12 @@ class AgendaView(TemplateView):
     template_name = "expediente/agenda.html"  
     def get(self, request, *args, **kwargs):
         form=CitaConsultaSecretariaForm()
-        form.fields['empleado'].queryset = Empleado.objects.filter(roles__codigo_rol='ROL_DOCTOR')
-        return render(request, self.template_name, {'form':form})
+        #Lista de Doctores
+        doctores=Empleado.objects.filter(roles__codigo_rol='ROL_DOCTOR')
+        horarios=HorarioConsulta.objects.all()
+        form.fields['empleado'].queryset = doctores
+        form.fields['empleado'].label="Médico"
+        return render(request, self.template_name, {'form':form, 'doctores': doctores, 'horarios':horarios})
 
     #Crear citas Secretaria
     def post(self, request, *args, **kwargs):
@@ -76,15 +79,36 @@ class CitaConsultaUpdate(View):
             cita=CitaConsulta.objects.get(id_cita_consulta=id_cita)
             datos_cita={
                 'paciente':f'{cita.expediente.id_paciente.nombre_paciente} {cita.expediente.id_paciente.apellido_paciente}',
-                'medico':f'{cita.empleado.nombres} {cita.empleado.apellidos}',
+                'doctor':f'{cita.empleado.nombres} {cita.empleado.apellidos}',
+                'id_doctor':f'{cita.empleado.codigo_empleado}',
                 'observacion':cita.observacion,
+                'fecha':cita.fecha_cita.strftime("%Y-%m-%d"),
+                'horario':cita.horario.id_horario,
+                'hora':cita.horario.hora_inicio.strftime("%I:%M %p")
             }
             response={
-                'id':id_cita,
+                'type':'success',
                 'cita':datos_cita,
             }
         except CitaConsulta.DoesNotExist:
             response={
                 'type':'Error'
             }
+        return JsonResponse(response)
+    def post(self, request, *args, **kwargs):
+        response={'type':'warning','data':''}
+        try:
+            #Recuperando Datos
+            id_cita=self.kwargs['id_cita_consulta']
+            id_doctor=request.POST['update_medico']
+            id_horario=request.POST['update_cita_horario']
+            fecha=datetime.strptime(request.POST['update_cita_fecha'], '%Y-%m-%d')
+            CitaConsulta.objects.filter(id_cita_consulta=id_cita).update(empleado=id_doctor, horario=id_horario, fecha_cita=fecha)
+
+            response['type']='success'
+            response['data']='Cita actualizada.'
+        except CitaConsulta.DoesNotExist:
+            response['data']='No fue posible actualizar'
+        except IntegrityError:
+                response['data']='El medico seleccionado tiene una cita programada.'
         return JsonResponse(response)
