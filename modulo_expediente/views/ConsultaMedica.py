@@ -18,7 +18,7 @@ from django.http import Http404
 ##Para acceder a esto es necesario que el usuario tenga el permiso para editar consulta
 class ConsultaView(PermissionRequiredMixin, TemplateView):
     permission_required = ('modulo_expediente.change_consulta')
-    template_name = "expediente/consulta.html"
+    template_name = "expediente/consulta/consulta.html"
     login_url='/login/'  
 
     def get(self, request, *args, **kwargs):
