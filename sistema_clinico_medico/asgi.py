@@ -13,7 +13,7 @@ from django.urls import re_path
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter,URLRouter
 from channels.auth import AuthMiddlewareStack
-from modulo_expediente.consumers import ColaExpedienteConsumer
+from modulo_expediente.consumers import ColaExpedienteConsumer, CalendarioConsumer
 from modulo_laboratorio.consumers import ColaLaboratorioConsumer
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sistema_clinico_medico.settings')
@@ -24,7 +24,8 @@ application = ProtocolTypeRouter({
         'websocket':AuthMiddlewareStack(
                 URLRouter([
                         re_path(r'ws/laboratorio/cola/',ColaLaboratorioConsumer.as_asgi()),
-                        re_path(r'ws/expediente/cola/',ColaExpedienteConsumer.as_asgi())
+                        re_path(r'ws/expediente/cola/',ColaExpedienteConsumer.as_asgi()),
+                        re_path(r'ws/calendario/update/',CalendarioConsumer.as_asgi()),
                 ])
         )
 })

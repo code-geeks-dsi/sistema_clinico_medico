@@ -1,8 +1,9 @@
 from django.urls import path
 from modulo_expediente.views.Expediente import (busqueda_paciente, 
-    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, CreateControlSubsecuente, buscar_expediente, AgendaView)
-from modulo_expediente.views.ConsultaMedica import (ConsultaView,antecedentesUpdate)    
+    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, ControlSubsecuenteView, buscar_expediente, AgendaView)
+from modulo_expediente.views.ConsultaMedica import (ConsultaView,antecedentesUpdateView)    
 from modulo_expediente.views.SignosVitales import (crear_signos_vitales, modificar_signosVitales)    
+
 from modulo_expediente.views.EvolucionConsulta import (DeleteNotaEvolucion,ListaHojaEvolucion,CreateHojaEvolucion,UpdateNotaEvolucion)
 from modulo_expediente.views.ConstanciaMedica import (ConstanciaMedicaPDFView,ConstanciaMedicaCreate, ConstanciaMedicaView, ConstanciaMedicaUpdate)
 from modulo_expediente.views.Medicamento import (dosis_medicamento, eliminar_dosis,
@@ -12,6 +13,7 @@ ReferenciaMedicaUpdate, ReferenciaMedicaPdfView)
 from modulo_expediente.views.RecetaMedica import RecetaMedicaPdfView
 from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateView, DocumentosExternosURLview, DocumentosExternosURLDownload
 from modulo_expediente.views.ContieneConsulta import (agregar_cola,get_cola ,eliminar_cola )
+from modulo_expediente.views.Agenda import CitaConsultaView, AgendaView
 urlpatterns = [
     # Expediente
     path('paciente/',busqueda_paciente, name='busqueda_paciente'),
@@ -28,12 +30,13 @@ urlpatterns = [
     path('modificar-signosVitales/<int:id_consulta>',modificar_signosVitales, name='modificar_signosVitales'),
     path('signos-vitales/<int:id_consulta>',crear_signos_vitales, name='crear_signos_vitales'),
     # Antecedentes
-    path('consulta/<int:id_expediente>/antecedentes-personales/',antecedentesUpdate,name='antecedentes-update'),
+    path('consulta/<int:id_expediente>/antecedentes-personales/',antecedentesUpdateView.as_view(),name='antecedentes-update'),
     path('consulta/<int:id_consulta>/receta-medica/pdf',RecetaMedicaPdfView.as_view(),name='receta-medica-pdf' ),
     # Constancias Medicas
-    path('consulta/<int:id_consulta>/constancia-medica/pdf', ConstanciaMedicaPDFView.as_view(),name='constancia-medica'),
+    path('consulta/<int:id_consulta>/constancia-medica/',ConstanciaMedicaView.as_view(),name='constancia-medica'),
+    path('consulta/<int:id_consulta>/constancia-medica/pdf/<int:id_constancia>/', ConstanciaMedicaPDFView.as_view(),name='constancia-medica'),
     path('consulta/<int:id_consulta>/constancia-medica/<int:id_constancia>/',ConstanciaMedicaUpdate.as_view(),name='constancia-medica-update'),
-    path('constancia-medica/<str:id>',ConstanciaMedicaView.as_view(),name='constancia-medica'),
+    #path('constancia-medica/<str:id>',ConstanciaMedicaView.as_view(),name='constancia-medica'),
     path('constancia-medica/',ConstanciaMedicaCreate.as_view(),name='crear-constancia-medica'),
     # Referencias Medicas
     path('consulta/<int:id_consulta>/referencia-medica/',ReferenciaMedicaView.as_view(),name='referencia-medica'),
@@ -55,9 +58,11 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/hoja-evolucion/update',UpdateNotaEvolucion.as_view(),name='hoja-evolucion-update'),
     path('consulta/<int:id_consulta>/hoja-evolucion/lista',ListaHojaEvolucion.as_view(),name='hoja-evolucion-lista'),
     # Control Subsecuente
-    path('consulta/<int:id_consulta>/control-subsecuente/',CreateControlSubsecuente.as_view(),name='control-subsecuente-create'),
+    path('consulta/<int:id_consulta>/control-subsecuente/',ControlSubsecuenteView.as_view(),name='control-subsecuente-view'),
     # Agenda
     path('agenda/', AgendaView.as_view(),name='ver_agenda'),
+    path('consulta/<int:id_consulta>/programar-cita/<int:id_expediente>', CitaConsultaView.as_view(), name='crear-cita-consulta'),
+    path('consulta/citas-consulta/', CitaConsultaView.as_view(), name='get-citas-consulta'),
     ###URL de Pruebas para visualización de archivos en S3
    # path('documento/<int:id_documento>/', storageurl, name="storage-url")
     path('consulta/<int:id_consulta>/agregar-documento-externo/', ExamenesExternosCreateView.as_view(), name="create_examenes_externos"),

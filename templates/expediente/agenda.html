@@ -10,11 +10,68 @@
 <!--Titulo-->
 {% block titulo %} Agenda {% endblock %}
 {% block content %}
-<div class="container-fluid">
+<div class="container pt-2">
   <div class="row">
     <div id='calendar'></div>
   </div>
+  <div class="text-center pt-3">
+    <a class="btn btnCustom1 w-0 my-1" data-bs-toggle="modal" data-bs-target="#modal_agregar_cita">Ageragr Cita</a>
+  </div>
 </div>
+
+<!--Modal Agregar Cita-->
+<!--Modal para Programar Citas-->
+<div class="modal fade" id="modal_agregar_cita" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Cita</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form action="{% url 'ver_agenda' %}" id="form_crear_cita">
+                <div class="modal-body">
+                    <!-- Formulario para agregar Cita -->
+                {% for field in form %}
+                    <label class="form-label fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+                    {{ field }}
+                    <p></p>
+                {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <div class="spinner-border text-primary" role="status" id="load-cita">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <input type="submit" value="Agregar Cita" class="btn btn-outline-primary" id="btn_agregar_cita"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Modal De cada Reservación-->
+<div class="modal fade" id="cita-modal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header" id="modal-cita-header">
+              <h5 class="modal-title" id="modal-cita-title"></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <div class="spinner-border text-primary" role="status" id="load-cita-view">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <input type="submit" value="Agregar Cita" class="btn btn-outline-primary" id="btn_agregar_cita"></button>
+          </div>
+      </div>
+  </div>
+</div>
+
 {% endblock %}
 <!--Js de la vista-->
 {% block js %}
@@ -26,6 +83,7 @@
 </script>
 <script>
     
+    $('.spinner-border').hide()
     //Recueprndo Fecha Actual
     const hoy = new Date();
     function formatoFecha(fecha, formato) {
@@ -37,10 +95,27 @@
   
       var calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'es',
+        //Colocando boton personalizado
+        customButtons: {
+          agregar_cita: {
+            text: 'Agregar cita',
+            click: function() {
+              $("#modal_agregar_cita").modal("show");
+            }
+          },
+          //Boton para actualizar calendario
+          actualizar:{
+            text: 'Actualizar',
+            click:function(){
+              calendar.refetchEvents()
+            }
+
+          }
+        },
         headerToolbar: {
-          left: 'prev,next today',
+          left: 'prev,next agregar_cita actualizar',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,listDay,listWeek'
+          right: 'dayGridMonth,listDay,listWeek'
         },
         initialDate: hoy,
         initialView: 'dayGridMonth',
@@ -54,58 +129,31 @@
         listWeek: { buttonText: 'Citas de la semana' },
         listMonth: { buttonText: 'list month' }
         },
+        eventClick: function(info) {
+          $('#cita-modal').modal('show');
+          $("#modal-cita-title").html(info.event.title);
+          $('#modal-cita-header').css({"backgroundColor":info.event.backgroundColor});
+          console.log(info.event.title)
+          console.log(info.event.backgroundColor)
+        },
 
-        events:[
+        eventSources: [
+          // your event source
           {
-            title: 'Business Lunch',
-            start: '2022-07-03T13:00:00',
-            constraint: 'businessHours'
-          },
-          {
-            title: 'Meeting',
-            start: '2022-07-13T11:00:00',
-            constraint: 'availableForMeeting', // defined below
-            color: '#257e4a'
-          },
-          {
-            title: 'Conference',
-            start: '2022-07-18',
-            end: '2022-07-20'
-          },
-          {
-            title: 'Party',
-            start: '2022-07-29T20:00:00'
-          },
-  
-          // areas where "Meeting" must be dropped
-          {
-            groupId: 'availableForMeeting',
-            start: '2022-07-11T10:00:00',
-            end: '2022-07-11T16:00:00',
-            display: 'background'
-          },
-          {
-            groupId: 'availableForMeeting',
-            start: '2022-07-13T10:00:00',
-            end: '2022-07-13T16:00:00',
-            display: 'background'
-          },
-  
-          // red areas where no events can be dropped
-          {
-            start: '2022-07-24',
-            end: '2022-07-28',
-            overlap: false,
-            display: 'background',
-            color: '#ff9f89'
-          },
-          {
-            start: '2022-07-06',
-            end: '2022-07-08',
-            overlap: false,
-            display: 'background',
-            color: '#ff9f89'
+            url: "{% url 'get-citas-consulta' %}",
+            method: 'GET',
+            extraParams: {
+              custom_param1: 'something',
+              custom_param2: 'somethingelse'
+            },
+            failure: function() {
+              alert('there was an error while fetching events!');
+            },
+            color: 'yellow',   // a non-ajax option
+            textColor: 'black' // a non-ajax option
           }
+
+          // any other sources...
         ]
       });
       
@@ -115,7 +163,40 @@
             constraint: 'businessHours'
           })
       calendar.render();
-    });
-  
+
+      //socket
+      let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
+      let socket_url=`${ws_scheme}://${window.location.host}/ws/calendario/update/`;
+      const calendarioUpdateSocket=new WebSocket(socket_url);
+      calendarioUpdateSocket.onmessage=(message)=>{
+        //Actualizando Calendario
+        calendar.refetchEvents()
+      }
+
+      //Ajax Para Guardar Citas
+      $('#form_crear_cita').submit(function (event) {
+		    event.preventDefault();
+        $('#load-cita').show()
+		    $.ajax({
+            type: 'POST',
+            url: $("#form_crear_cita").attr("action"),
+            data: $("#form_crear_cita").serialize(), 
+            headers: {
+                "X-CSRFToken": '{{ csrf_token }}',
+            },
+            success: function(response){
+                $('#load-cita').hide()
+                $('#modal_agregar_cita').modal('hide');
+                toastr[response.type](response.data); 
+                if (response.type=='success'){
+                    calendarioUpdateSocket.send(JSON.stringify({
+                    'message':'sync'
+                  }));
+                }
+            }});
+	        });
+
+      });
+
 </script>
 {% endblock %}

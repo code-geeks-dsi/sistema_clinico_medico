@@ -21,7 +21,7 @@ def modificar_signosVitales(request, id_consulta):
         "valor_saturacion_oxigeno":request.POST['valor_saturacion_oxigeno'],
     }
     response=SignosVitales.objects.modificar_signos_vitales(datos)
-    contieneConsulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+    contieneConsulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).latest('fecha_de_cola')
     contieneConsulta.fase_cola_medica="3"
     contieneConsulta.save()
 

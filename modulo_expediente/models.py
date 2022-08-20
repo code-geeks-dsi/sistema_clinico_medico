@@ -170,6 +170,7 @@ class ReferenciaMedica(models.Model):
 class RecetaMedica(models.Model):
     id_receta_medica= models.AutoField(primary_key=True)
     consulta = models.ForeignKey('Consulta', on_delete=models.CASCADE,null=False, blank=False)
+    fecha=models.DateField(auto_now_add=True,null=False, blank=False)
     def __str__(self):
         return str(self.id_receta_medica)+" - Consultata: "+str(self.Consulta.id_consulta)
 
@@ -287,6 +288,32 @@ class DocumentoExpediente(models.Model):
     def __str__(self):
         return f'{self.titulo} - {self.expediente.id_paciente.nombre_paciente}'
 
+class CitaConsulta(models.Model):
+    OPCIONES_PRIORIDAD=(
+        ('1','Alta'),
+        ('2','Media'),
+        ('3','Baja'),
+    )
+    id_cita_consulta=models.AutoField(primary_key=True)
+    expediente=models.ForeignKey('Expediente', models.DO_NOTHING, null=False, blank=False)
+    prioridad_paciente=models.CharField(max_length=1, choices=OPCIONES_PRIORIDAD, blank=False, null=False)
+    observacion=models.CharField(max_length=80, blank=True, null=True)
+    fecha_cita=models.DateField()
+    horario=models.ForeignKey('modulo_expediente.HorarioConsulta', models.DO_NOTHING, null=False, blank=False)
+    empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+    class Meta:
+         unique_together = (('fecha_cita', 'horario'),)
+    def __str__(self):
+        return f'{self.expediente.id_paciente.nombre_paciente} - {self.get_prioridad_paciente_display()}'
+
+class HorarioConsulta(models.Model):
+    id_horario=models.AutoField(primary_key=True)
+    hora_inicio=models.TimeField(null=False, blank=False)
+    hora_fin=models.TimeField(null=False, blank=False)
+    def __str__(self):
+        inicio =self.hora_inicio.strftime('%I:%M %p')
+        fin=self.hora_fin.strftime('%I:%M %p')
+        return f'{inicio} - {fin}'
 
 ###Modelo de prueba para amazon s3 
 class Archivo(models.Model):
