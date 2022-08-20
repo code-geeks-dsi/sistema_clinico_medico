@@ -114,51 +114,17 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="pt-2">
-                                       {% comment %} {% for signo_vital in signos_vitales %}
-                                            <div class="row">
-                                                <div class="col fw-bold">
-                                                    <p>Temperatura: </p>
-                                                </div>
-                                                <div class="col">
-                                                    <p>{{ signo_vital.valor_temperatura }} {{ signo_vital.unidad_temperatura }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col fw-bold">
-                                                    <p>Frecuencia Cardiaca: </p>
-                                                </div>
-                                                <div class="col">
-                                                    <p>{{ signo_vital.valor_frecuencia_cardiaca }} {{ signo_vital.unidad_frecuencia_cardiaca }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col fw-bold">
-                                                    <p>Peso: </p>
-                                                </div>
-                                                <div class="col">
-                                                    <p>{{ signo_vital.valor_peso }} {{ signo_vital.unidad_peso }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col fw-bold">
-                                                    <p>Presión Arterial: </p>
-                                                </div>
-                                                <div class="col">
-                                                    <p>{{ signo_vital.valor_presion_arterial_sistolica }}/{{ signo_vital.valor_presion_arterial_diastolica }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col fw-bold">
-                                                    <p>Saturación Oxigeno: </p>
-                                                </div>
-                                                <div class="col">
-                                                    <p>{{ signo_vital.valor_saturacion_oxigeno }} %</p>
-                                                </div>
-                                            </div>
-                                        {% endfor %}  {% endcomment %}
                                         {% include './signos_vitales.html' with signos_vitales=signos_vitales %}
                                         </div>
                                     </div>
+                                </div>
+                                {% comment %} Agregar Nueva toma de signos vitales {% endcomment %}
+                                <div class="text-end">
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_agregar_signos_vitales">
+                                            <span style="position: relative;bottom: 5px;">Tomar Signos Vitales</span>
+                                            <i class="material-symbols-outlined">heart_plus</i>
+                                        </button>                            
+                                </div>
                                 </div>
                             </div>
                         </div>  
@@ -537,6 +503,55 @@
     </div>
 
     
+    <!-- Modal para agregar nuevos signos vitales -->
+    <div class="modal fade" id="modal_agregar_signos_vitales" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Toma de Signos Vitales</h5>
+                </div>
+                <form method='POST' action="{% url 'crear_signos_vitales' id_consulta=id_consulta %}">
+                    <div class="modal-body form-group">
+                        {% csrf_token %}
+                        <div class='row'>
+                            {{signos_vitales_form.valor_temperatura.label_tag}}
+                            {{signos_vitales_form.valor_temperatura}}
+                            {{signos_vitales_form.unidad_temperatura}}
+                        </div>
+                        <div class='row'>
+                            {{signos_vitales_form.valor_peso.label_tag}}
+                            {{signos_vitales_form.valor_peso}}
+                            {{signos_vitales_form.unidad_peso}}
+                        </div>
+                        <div class='row'>
+                            {{signos_vitales_form.valor_presion_arterial_diastolica.label_tag}}
+                            {{signos_vitales_form.valor_presion_arterial_diastolica}}
+                            {{signos_vitales_form.unidad_presion_arterial_diastolica}}
+                        </div>
+                        <div class='row'>
+                            {{signos_vitales_form.valor_presion_arterial_sistolica.label_tag}}
+                            {{signos_vitales_form.valor_presion_arterial_sistolica}}
+                            {{signos_vitales_form.unidad_presion_arterial_sistolica}}
+                        </div>
+                        <div class='row'>
+                            {{signos_vitales_form.valor_saturacion_oxigeno.label_tag}}
+                            {{signos_vitales_form.valor_saturacion_oxigeno}}
+                            {{signos_vitales_form.unidad_saturacion_oxigeno}}
+                        </div>
+                        <div class='row'>
+                            {{signos_vitales_form.valor_frecuencia_cardiaca.label_tag}}
+                            {{signos_vitales_form.valor_frecuencia_cardiaca}}
+                            {{signos_vitales_form.unidad_frecuencia_cardiaca}}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- Modal para confirmar eliminar nota de evolucion -->
     <div class="modal fade" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
         <div class=" modal-dialog modal-dialog-centered">

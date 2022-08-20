@@ -1,4 +1,5 @@
 from datetime import datetime
+from faulthandler import disable
 from django.db import models
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
@@ -169,6 +170,7 @@ class ReferenciaMedica(models.Model):
 class RecetaMedica(models.Model):
     id_receta_medica= models.AutoField(primary_key=True)
     consulta = models.ForeignKey('Consulta', on_delete=models.CASCADE,null=False, blank=False)
+    fecha=models.DateField(auto_now_add=True,null=False, blank=False)
     def __str__(self):
         return str(self.id_receta_medica)+" - Consultata: "+str(self.Consulta.id_consulta)
 

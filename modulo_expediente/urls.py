@@ -1,8 +1,9 @@
 from django.urls import path
-from modulo_expediente.views.Expediente import (ControlSubsecuenteView, busqueda_paciente, 
-    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, buscar_expediente, AgendaView)
+from modulo_expediente.views.Expediente import (busqueda_paciente, 
+    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, ControlSubsecuenteView, buscar_expediente, AgendaView)
 from modulo_expediente.views.ConsultaMedica import (ConsultaView,antecedentesUpdateView)    
-from modulo_expediente.views.SignosVitales import (modificar_signosVitales)    
+from modulo_expediente.views.SignosVitales import (crear_signos_vitales, modificar_signosVitales)    
+
 from modulo_expediente.views.EvolucionConsulta import (DeleteNotaEvolucion,ListaHojaEvolucion,CreateHojaEvolucion,UpdateNotaEvolucion)
 from modulo_expediente.views.ConstanciaMedica import (ConstanciaMedicaPDFView,ConstanciaMedicaCreate, ConstanciaMedicaView, ConstanciaMedicaUpdate)
 from modulo_expediente.views.Medicamento import (dosis_medicamento, eliminar_dosis,
@@ -27,6 +28,7 @@ urlpatterns = [
     path('cola/eliminar-paciente/<int:id_paciente>', eliminar_cola, name='eliminar_cola'),
     # Signos Vitales
     path('modificar-signosVitales/<int:id_consulta>',modificar_signosVitales, name='modificar_signosVitales'),
+    path('signos-vitales/<int:id_consulta>',crear_signos_vitales, name='crear_signos_vitales'),
     # Antecedentes
     path('consulta/<int:id_expediente>/antecedentes-personales/',antecedentesUpdateView.as_view(),name='antecedentes-update'),
     path('consulta/<int:id_consulta>/receta-medica/pdf',RecetaMedicaPdfView.as_view(),name='receta-medica-pdf' ),
