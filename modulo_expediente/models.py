@@ -297,7 +297,7 @@ class CitaConsulta(models.Model):
     id_cita_consulta=models.AutoField(primary_key=True)
     expediente=models.ForeignKey('Expediente', models.DO_NOTHING, null=False, blank=False)
     prioridad_paciente=models.CharField(max_length=1, choices=OPCIONES_PRIORIDAD, blank=False, null=False)
-    observacion=models.CharField(max_length=80, blank=True, null=True)
+    observacion=models.CharField(default="", max_length=80, blank=True, null=True)
     fecha_cita=models.DateField()
     horario=models.ForeignKey('modulo_expediente.HorarioConsulta', models.DO_NOTHING, null=False, blank=False)
     empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
