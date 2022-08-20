@@ -10,7 +10,7 @@ class RecetaMedicaPdfView(View):
     def get(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta'])
         #consultando datos del paciente
-        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta).latest('fecha_de_cola')
+        contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).last()
         paciente=contiene_consulta.expediente.id_paciente 
         fecha=date.today()
         #consultando datos de  la dosis  medicamento
