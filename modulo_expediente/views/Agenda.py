@@ -24,7 +24,7 @@ class AgendaView(TemplateView):
         form.fields['empleado'].queryset = Empleado.objects.filter(roles__codigo_rol='ROL_DOCTOR')
         return render(request, self.template_name, {'form':form})
 
-    #Crear citas
+    #Crear citas Secretaria
     def post(self, request, *args, **kwargs):
         form = CitaConsultaSecretariaForm(request.POST)
         if form.is_valid():
@@ -42,12 +42,13 @@ class CitaConsultaView(View):
     def get(self, request, *args, **kwargs):
         start=request.GET['start']
         fecha_inicio=datetime.strptime(start, "%Y-%m-%dT%H:%M:%S%z")
-        fecha_inicio=fecha_inicio+timedelta(days=1)
+        fecha_inicio=fecha_inicio+timedelta(weeks=3)
+        print(fecha_inicio)
         citas=CitaConsulta.objects.filter(fecha_cita__year=fecha_inicio.year, fecha_cita__month=fecha_inicio.month)
         serializer=CitaConsultaSerializer(citas, many= True)
         return JsonResponse(serializer.data, safe=False)
 
-    #Crear citas
+    #Crear citas Doctor
     def post(self, request, *args, **kwargs):
         id_expediente=self.kwargs['id_expediente'] 
         form = CitaConsultaForm(request.POST)
