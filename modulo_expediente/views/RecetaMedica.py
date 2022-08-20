@@ -10,11 +10,12 @@ class RecetaMedicaPdfView(View):
     def get(self, request, *args, **kwargs):
         id_consulta=int(self.kwargs['id_consulta'])
         #consultando datos del paciente
-        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta).latest('fecha_de_cola')
         paciente=contiene_consulta.expediente.id_paciente 
         fecha=date.today()
         #consultando datos de  la dosis  medicamento
-        receta=RecetaMedica.objects.get(consulta_id=id_consulta)
+        # receta=RecetaMedica.objects.filter(consulta_id=id_consulta).latest('fecha')
+        receta=RecetaMedica.objects.filter(consulta_id=id_consulta).first()
         dosis=Dosis.objects.filter(receta_medica=receta.id_receta_medica)
         data={'paciente':paciente,'fecha':fecha,'dosis':dosis} 
         #generando pdf

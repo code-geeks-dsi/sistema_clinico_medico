@@ -1,6 +1,5 @@
 {% extends "baseControl.html" %}
 {% load static %}
-{% load static %}
 <!--Css del template-->
 {% block css %}
 <style>
@@ -33,14 +32,7 @@
     </div>
 
     <!--Navegación Pestañas-->
-    <nav class="pt-2">
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <button class="nav-link active" id="nav-historial-tab" data-bs-toggle="tab" data-bs-target="#nav-historial" type="button" role="tab" aria-controls="nav-historial" aria-selected="true">Historial Clinico</button>
-          <button class="nav-link" id="nav-contol-tab" data-bs-toggle="tab" data-bs-target="#nav-control" type="button" role="tab" aria-controls="nav-control" aria-selected="false">Control Subsecuente</button>
-          <button class="nav-link" id="nav-evolucion-tab" data-bs-toggle="tab" data-bs-target="#nav-evolucion" type="button" role="tab" aria-controls="nav-evolucion" aria-selected="false">Hoja de Evolución</button>
-          <button class="nav-link" id="nav-documentos-tab" data-bs-toggle="tab" data-bs-target="#nav-documentos" type="button" role="tab" aria-controls="nav-documentos" aria-selected="false">Documentos de la Consulta</button>
-        </div>
-      </nav>
+    {% include './nav.html' %}
       <div class="tab-content " id="nav-tabContent">
         <!--Historial Clinico-->
         <div class="tab-pane fade show active" id="nav-historial" role="tabpanel" aria-labelledby="nav-historial-tab">
@@ -122,50 +114,17 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="pt-2">
-                                        {% for signo_vital in signos_vitales %}
-                                            <div class="row">
-                                                <div class="col fw-bold">
-                                                    <p>Temperatura: </p>
-                                                </div>
-                                                <div class="col">
-                                                    <p>{{ signo_vital.valor_temperatura }} {{ signo_vital.unidad_temperatura }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col fw-bold">
-                                                    <p>Frecuencia Cardiaca: </p>
-                                                </div>
-                                                <div class="col">
-                                                    <p>{{ signo_vital.valor_frecuencia_cardiaca }} {{ signo_vital.unidad_frecuencia_cardiaca }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col fw-bold">
-                                                    <p>Peso: </p>
-                                                </div>
-                                                <div class="col">
-                                                    <p>{{ signo_vital.valor_peso }} {{ signo_vital.unidad_peso }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col fw-bold">
-                                                    <p>Presión Arterial: </p>
-                                                </div>
-                                                <div class="col">
-                                                    <p>{{ signo_vital.valor_presion_arterial_sistolica }}/{{ signo_vital.valor_presion_arterial_diastolica }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col fw-bold">
-                                                    <p>Saturación Oxigeno: </p>
-                                                </div>
-                                                <div class="col">
-                                                    <p>{{ signo_vital.valor_saturacion_oxigeno }} %</p>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
+                                        {% include './signos_vitales.html' with signos_vitales=signos_vitales %}
                                         </div>
                                     </div>
+                                </div>
+                                {% comment %} Agregar Nueva toma de signos vitales {% endcomment %}
+                                <div class="text-end">
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_agregar_signos_vitales">
+                                            <span style="position: relative;bottom: 5px;">Tomar Signos Vitales</span>
+                                            <i class="material-symbols-outlined">heart_plus</i>
+                                        </button>                            
+                                </div>
                                 </div>
                             </div>
                         </div>  
@@ -213,11 +172,11 @@
                     </div>
                     <div class="card-body">
                         <div class="mv-3">
-                            <form id="control_subsecuente_form" action="{% url 'control-subsecuente-create' id_consulta=id_consulta %}" method="post">
+                            {% comment %} <form id="control_subsecuente_form" action="{% url 'control-subsecuente-create' id_consulta=id_consulta %}" method="post">
                                 {% csrf_token %}
                                 {{control_subsecuente_form}}
                                 <button type="submit" class="btn btn-outline-primary mt-1">Agregar</button>
-                            </form>
+                            </form> {% endcomment %}
                             
                         </div>
                         <div id="lista-control-subsecuente" class="row row-cols-1 row-cols-md-2 mt-3"></div>
@@ -544,6 +503,55 @@
     </div>
 
     
+    <!-- Modal para agregar nuevos signos vitales -->
+    <div class="modal fade" id="modal_agregar_signos_vitales" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Toma de Signos Vitales</h5>
+                </div>
+                <form method='POST' action="{% url 'crear_signos_vitales' id_consulta=id_consulta %}">
+                    <div class="modal-body form-group">
+                        {% csrf_token %}
+                        <div class='row'>
+                            {{signos_vitales_form.valor_temperatura.label_tag}}
+                            {{signos_vitales_form.valor_temperatura}}
+                            {{signos_vitales_form.unidad_temperatura}}
+                        </div>
+                        <div class='row'>
+                            {{signos_vitales_form.valor_peso.label_tag}}
+                            {{signos_vitales_form.valor_peso}}
+                            {{signos_vitales_form.unidad_peso}}
+                        </div>
+                        <div class='row'>
+                            {{signos_vitales_form.valor_presion_arterial_diastolica.label_tag}}
+                            {{signos_vitales_form.valor_presion_arterial_diastolica}}
+                            {{signos_vitales_form.unidad_presion_arterial_diastolica}}
+                        </div>
+                        <div class='row'>
+                            {{signos_vitales_form.valor_presion_arterial_sistolica.label_tag}}
+                            {{signos_vitales_form.valor_presion_arterial_sistolica}}
+                            {{signos_vitales_form.unidad_presion_arterial_sistolica}}
+                        </div>
+                        <div class='row'>
+                            {{signos_vitales_form.valor_saturacion_oxigeno.label_tag}}
+                            {{signos_vitales_form.valor_saturacion_oxigeno}}
+                            {{signos_vitales_form.unidad_saturacion_oxigeno}}
+                        </div>
+                        <div class='row'>
+                            {{signos_vitales_form.valor_frecuencia_cardiaca.label_tag}}
+                            {{signos_vitales_form.valor_frecuencia_cardiaca}}
+                            {{signos_vitales_form.unidad_frecuencia_cardiaca}}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- Modal para confirmar eliminar nota de evolucion -->
     <div class="modal fade" id="modal-eliminar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
         <div class=" modal-dialog modal-dialog-centered">
@@ -657,156 +665,22 @@
     let url_agregar_a_receta="{% url 'agregar_dosis' %}"; 
     let tablaData=document.getElementById(tablaResultado);
     let id_receta_medica={{id_receta}};
-    let nota_evolucion_a_eliminar="";
-
-    //Socket Para Calendario
-    let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
-    let socket_url=`${ws_scheme}://${window.location.host}/ws/calendario/update/`;
-    const calendarioUpdateSocket=new WebSocket(socket_url);
-    calendarioUpdateSocket.onmessage=(message)=>{
-        
-    }
+    let nota_evolucion_a_eliminar="";  
     
-    $('.spinner-border').hide();
-
-    //Cerrar modal de medicamentos
-    $('#cerar_modal_busqueda_medicamento').click(function() {
-        $('#busquedaMedicamentoModal').modal('show');
-    });
-
-    document.getElementById("btn_agregar_a_receta").addEventListener("click",function(){
-        agregarMedicamentoReceta(id_receta_medica, url_agregar_a_receta)
-    });
-
-    getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
-
     '{% for message in messages %}'
         '{% if message.tags %}'
         toastr[ '{{ message.tags }}' ]( '{{ message }}' );
         '{% endif %}'
     '{% endfor %}'
-
-
-    $('#hoja-evolucion-form').submit(function (event) {
-		event.preventDefault();
-		$.ajax({
-		type: 'POST',
-		url: $("#hoja-evolucion-form").attr("action"),
-		data: $("#hoja-evolucion-form").serialize(), 
-		success: function(response) { 
-            get_lista_notas_evolucion();
-			toastr[response.type](response.data); 
-		},
-		});
-	});
-
-    function get_lista_notas_evolucion() {
-        $.ajax({
-		type: 'GET',
-		url: "{% url 'hoja-evolucion-lista' id_consulta=id_consulta %}",
-		data: [], 
-		success: function(response) { 
-            document.getElementById("lista-hoja-evolucion").innerHTML="";
-            data=response.data
-            data.forEach(nota => {
-                
-                document.getElementById("lista-hoja-evolucion").insertAdjacentHTML("beforeend",
-                `<div class="col mb-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <p class="text-muted d-flex justify-content-between">${nota.fecha_hora}<span class="material-symbols-outlined" type="button" onclick ="delete_nota('${nota.delete_url}')" >delete</span><span class="material-symbols-outlined" type="button" onclick ="update_nota(${nota.id_evolucion})" >edit</span></p>
-                            
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text" id="observacion_evolucion_${nota.id_evolucion}">${nota.observacion}</p>
-                        </div>
-                    </div>
-                </div>`);
-            });
-		},
-		});
-    }
-    get_lista_notas_evolucion();
-    function delete_nota(url) {
-        $('#modal-eliminar-nota-evolucion').modal('show');
-        nota_evolucion_a_eliminar=url;
-    }
-    function update_nota(id) {
-        antigua_observacion=$('#observacion_evolucion_'+id).text();
-        $('#modal-editar-nota-evolucion').modal('show');
-        $("#id_nota_evolucion_update").val(id);
-        $("#modal-editar-nota-evolucion #id_observacion").val(antigua_observacion);
-    }
-    $('#eliminar-nota-evolucion-btn').click(()=>{
-        $.ajax({
-		type: 'POST',
-		url: nota_evolucion_a_eliminar,
-		data: {},  
-        headers: {
-            "X-CSRFToken": '{{ csrf_token }}',
-        },
-        success: function(response){
-            $('#modal-eliminar-nota-evolucion').modal('hide');
-            get_lista_notas_evolucion();
-			toastr[response.type](response.data); 
-        }});
-    });
-
-    $('#hoja-evolucion-form-update').submit(function (event) {
-		event.preventDefault();
-		$.ajax({
-            type: 'POST',
-            url: $("#hoja-evolucion-form-update").attr("action"),
-            data: $("#hoja-evolucion-form-update").serialize(), 
-            headers: {
-                "X-CSRFToken": '{{ csrf_token }}',
-            },
-            success: function(response){
-                $('#modal-editar-nota-evolucion').modal('hide');
-                get_lista_notas_evolucion();
-                toastr[response.type](response.data); 
-            }});
-	});
-    $('#antecedentes_form').submit(function (event) {
-		event.preventDefault();
-		$.ajax({
-		type: 'POST',
-		url: $("#antecedentes_form").attr("action"),
-		data: $("#antecedentes_form").serialize(), 
-        headers: {
-            "X-CSRFToken": '{{ csrf_token }}',
-        },success: function(response) { 
-			toastr[response.type](response.data);
-            $('#antecedentes-data').empty().append(`
-                <p class="fw-bold">Antecedentes Personales</p>
-                <p>${response.antecedentes_personales}</p>
-                <p class="fw-bold">Antecedentes Familiares</p>
-                <p>${response.antecedentes_familiares}</p>
-            `); 
-		}});
-	});
-
-    $('#form_crear_cita').submit(function (event) {
-		event.preventDefault();
-        $('#load-cita').show()
-		$.ajax({
-            type: 'POST',
-            url: $("#form_crear_cita").attr("action"),
-            data: $("#form_crear_cita").serialize(), 
-            headers: {
-                "X-CSRFToken": '{{ csrf_token }}',
-            },
-            success: function(response){
-                $('#load-cita').hide()
-                $('#modal_agregar_cita').modal('hide');
-                toastr[response.type](response.data); 
-                if (response.type=='success'){
-                    calendarioUpdateSocket.send(JSON.stringify({
-                    'message':'sync'
-                  }));
-                }
-            }});
-	});
+    {% include './js/antecedentes.js' %}
+    {% include './js/cita_medica.js' %}
+    {% include './js/hoja_evolucion.js' %}
+    {% include './js/receta_medica.js' %}
+    window.onload = (event) => {
+        get_lista_notas_evolucion();
+        $('.spinner-border').hide();
+        getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
+      };
 </script>
 {% endblock %}
 

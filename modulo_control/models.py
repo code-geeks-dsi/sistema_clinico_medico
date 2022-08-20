@@ -120,7 +120,7 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['nombres', 'apellidos']
 
     def __str__(self):
-        return f'{self.email}'
+        return self.nombres+" "+self.apellidos
 
     @property
     def is_staff(self):

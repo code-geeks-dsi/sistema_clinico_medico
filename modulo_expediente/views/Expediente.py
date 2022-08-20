@@ -1,10 +1,10 @@
 from django.shortcuts import redirect, render
-from modulo_expediente.serializers import PacienteSerializer
+from modulo_expediente.serializers import ConsultaSerializers, PacienteSerializer
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
-from modulo_expediente.models import (Consulta,  Paciente, Expediente)
+from modulo_expediente.models import (Consulta, ContieneConsulta, ControlSubsecuente,  Paciente, Expediente, SignosVitales)
 from modulo_control.models import Rol
-from ..forms import ( ControlSubsecuenteform, DatosDelPaciente)
+from ..forms import ( ConsultaFormulario, ControlSubsecuenteform, DatosDelPaciente)
 from django.http import JsonResponse
 from django.urls import reverse
 from urllib.parse import urlencode
@@ -113,22 +113,47 @@ def crear_expediente(request):
             messages.add_message(request=request, level=messages.SUCCESS, message="El Paciente se ha modificado con exito")
         
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
+
+
+#View Para imprimir Agenda
+class AgendaView(TemplateView):
+    template_name = "expediente/agenda.html"   
+
+
+
  
-class CreateControlSubsecuente(View):
+class ControlSubsecuenteView(View):
         form_class = ControlSubsecuenteform
 
-        def post(self, request, *args, **kwargs):
+        def get(self, request, *args, **kwargs):
+
             id_consulta=int(self.kwargs['id_consulta']) 
-            form = self.form_class(request.POST)
-            if form.is_valid():
-                observacion=form.save(commit=False)
-                observacion.fecha=datetime.now()
-                observacion.consulta=Consulta.objects.get(id_consulta=id_consulta)
-                observacion.save()
-                response={
-                    'type':'success',
-                    'data':'Guardado!'
-                }
-                return JsonResponse(response)
+            consulta=Consulta.objects.filter(id_consulta=id_consulta)
+            consulta_serializer=ConsultaSerializers(consulta, many=True)
+            signos_vitales=SignosVitales.objects.filter(consulta_id=id_consulta).order_by('-fecha').first()
+            print(signos_vitales)
+        
+            diccionario={
+                    "id_signos_vitales":signos_vitales.id_signos_vitales,
+                    "unidad_temperatura":signos_vitales.unidad_temperatura,
+                    "unidad_peso":signos_vitales.unidad_peso,
+                    "valor_temperatura":signos_vitales.valor_temperatura,
+                    "valor_peso":signos_vitales.valor_peso,
+                    "valor_arterial_diasolica":signos_vitales.valor_presion_arterial_diastolica,
+                    "valor_arterial_sistolica":signos_vitales.valor_presion_arterial_sistolica,
+                    "valor_frecuencia_cardiaca":signos_vitales.valor_frecuencia_cardiaca,
+                    "valor_saturacion_oxigeno":signos_vitales.valor_saturacion_oxigeno
+            }
+            datos={
+                'consulta':consulta_serializer.data,
+                'signos_vitales':diccionario
+            }
+            
+            return JsonResponse(datos, safe=False)
+
+           
+
+
+        
 
 

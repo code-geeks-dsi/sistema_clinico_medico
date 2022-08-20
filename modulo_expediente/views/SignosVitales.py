@@ -1,9 +1,10 @@
-from modulo_expediente.models import ( ContieneConsulta,  SignosVitales)
+from modulo_expediente.forms import SignosVitalesForm
+from modulo_expediente.models import ( Consulta, ContieneConsulta,  SignosVitales)
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
-
+from django.http import HttpResponseForbidden
 @csrf_exempt
 @login_required
 def modificar_signosVitales(request, id_consulta):
@@ -20,25 +21,29 @@ def modificar_signosVitales(request, id_consulta):
         "valor_saturacion_oxigeno":request.POST['valor_saturacion_oxigeno'],
     }
     response=SignosVitales.objects.modificar_signos_vitales(datos)
-    contieneConsulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+    contieneConsulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).latest('fecha_de_cola')
     contieneConsulta.fase_cola_medica="3"
     contieneConsulta.save()
 
     return JsonResponse(response, safe=False)
-def crear_signos_vitales(request,id_contiene_consulta):
-    contiene_consulta=ContieneConsulta.object.get(id=id_contiene_consulta).select_related('consulta')
-    consulta=contiene_consulta.consulta
-    print(consulta)
-    # contiene_consulta.fase_cola_medica="3"
-    # contiene_consulta.save()
-    # signos_vitales=SignosVitales(consulta=consulta,
-    # enfermera=request.user,
-    # unidad_temperatura=request.POST["unidad_temperatura"],
-    # unidad_peso=request.POST["unidad_peso"],
-    # valor_temperatura=request.POST["valor_temperatura"],
-    # valor_peso=request.POST["valor_peso"],
-    # valor_presion_arterial_diastolica=request.POST["valor_arterial_diasolica"],
-    # valor_presion_arterial_sistolica=request.POST["valor_arterial_sistolica"],
-    # valor_frecuencia_cardiaca=int(request.POST["valor_frecuencia_cardiaca"]),
-    # valor_saturacion_oxigeno=request.POST["valor_saturacion_oxigeno"])
-    
+def crear_signos_vitales(request,id_consulta):
+    if request.method=='POST':
+        consulta=Consulta.objects.get(id_consulta=id_consulta)
+        form_signos_vitales=SignosVitalesForm(request.POST)
+        if form_signos_vitales.is_valid():
+            signos_vitales=form_signos_vitales.save(commit=False)
+            signos_vitales.consulta=consulta
+            signos_vitales.enfermera=request.user
+            signos_vitales.save()
+            response={
+                'type':'success',
+                'data':'Guardado!'
+            }
+        else:
+            response={
+                'type':'warning',
+                'data':'No se pudo guardar. Intente de nuevo.'
+            }
+        return JsonResponse(response)
+    # return HttpResponseForbidden()
+        

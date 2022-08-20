@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
 from datetime import datetime
+from modulo_control.models import Doctor
 from modulo_expediente.models import (
         Consulta, ContieneConsulta,SignosVitales,ReferenciaMedica) 
 from modulo_expediente.forms import ReferenciaMedicaForm 
@@ -73,6 +74,8 @@ class ReferenciaMedicaPdfView(View):
         def get(self, request, *args, **kwargs):
             id_consulta=int(self.kwargs['id_consulta'])
             id_referencia_medica=int(self.kwargs['id_referencia_medica'])
+            doctora=Doctor.objects.get(empleado=request.user)
+            jvmp=doctora.jvmp
             #Colsultando datos ddel paciente
             contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
             paciente=contiene_consulta.expediente.id_paciente
@@ -82,7 +85,7 @@ class ReferenciaMedicaPdfView(View):
             #Consultando datos de referencia
             referencia_medica=ReferenciaMedica.objects.get(id_referencia_medica=id_referencia_medica)
 
-            data={'paciente':paciente,'edad':edad,'signos_vitales':signos_vitales,'referencia_medica':referencia_medica}
+            data={'paciente':paciente,'edad':edad,'signos_vitales':signos_vitales,'referencia_medica':referencia_medica,'nombre':doctora,'jvmp':jvmp}
             #generando pdf
             #puede recibir la info como diccionario
             html_string = render_to_string('expediente/referencia/reporteReferenciaMedica.html',data)

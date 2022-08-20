@@ -4,7 +4,7 @@ from modulo_expediente.models import (
     ConstanciaMedica, Consulta, Dosis,ContieneConsulta, Expediente, 
     RecetaMedica, SignosVitales,ReferenciaMedica)
 from ..forms import ( ConsultaFormulario, ControlSubsecuenteform,  DosisFormulario, 
-                        HojaEvolucionForm,antecedentesForm, CitaConsultaForm)
+                        HojaEvolucionForm, SignosVitalesForm,antecedentesForm, CitaConsultaForm)
 from django.http import JsonResponse
 from django.urls import reverse
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -18,7 +18,7 @@ from django.http import Http404
 ##Para acceder a esto es necesario que el usuario tenga el permiso para editar consulta
 class ConsultaView(PermissionRequiredMixin, TemplateView):
     permission_required = ('modulo_expediente.change_consulta')
-    template_name = "expediente/consulta.html"
+    template_name = "expediente/consulta/consulta.html"
     login_url='/login/'  
 
     def get(self, request, *args, **kwargs):
@@ -30,7 +30,8 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             expediente=contiene_consulta.expediente.id_expediente
             consulta=contiene_consulta.consulta
             signos_vitales=SignosVitales.objects.filter(consulta=contiene_consulta.consulta)        
-            receta=RecetaMedica.objects.get(consulta=consulta)
+            receta=RecetaMedica.objects.filter(consulta=consulta).first()
+            # receta=RecetaMedica.objects.filter(consulta=consulta).latest('fecha')
             dosis=Dosis.objects.filter(receta_medica=receta)
             consulta_form=ConsultaFormulario(instance=consulta)
             edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
@@ -46,6 +47,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
                 'id_expediente':expediente,
                 'id_receta':receta.id_receta_medica,
                 'consulta_form':consulta_form,
+                'signos_vitales_form':SignosVitalesForm(),
                 'hoja_evolucion_form':HojaEvolucionForm(),
                 'control_subsecuente_form':ControlSubsecuenteform(),
                 'antecedentes_form':antecedentesForm(instance=contiene_consulta.expediente),
