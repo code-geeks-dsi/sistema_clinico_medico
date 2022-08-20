@@ -3,12 +3,16 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import View, TemplateView
 from django.utils import timezone
+from django.db.models import Q
 
 #Librerias Propias
 from modulo_expediente.models import CitaConsulta
 from modulo_control.models import Empleado
 from ..forms import CitaConsultaForm, CitaConsultaSecretariaForm
 from ..serializers import CitaConsultaSerializer
+
+#python
+from datetime import datetime, timedelta
 
 #View Para imprimir Agenda
 class AgendaView(TemplateView):
@@ -35,8 +39,10 @@ class CitaConsultaView(View):
     response={'type':'','data':''}
     #Regresa con json con las citas del mes
     def get(self, request, *args, **kwargs):
-        fecha=timezone.now()
-        citas=CitaConsulta.objects.filter(fecha_cita__year=fecha.year, fecha_cita__month=fecha.month)
+        start=request.GET['start']
+        fecha_inicio=datetime.strptime(start, "%Y-%m-%dT%H:%M:%S%z")
+        fecha_inicio=fecha_inicio+timedelta(days=1)
+        citas=CitaConsulta.objects.filter(fecha_cita__year=fecha_inicio.year, fecha_cita__month=fecha_inicio.month)
         serializer=CitaConsultaSerializer(citas, many= True)
         return JsonResponse(serializer.data, safe=False)
 
