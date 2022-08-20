@@ -58,16 +58,80 @@
               <h5 class="modal-title" id="modal-cita-title"></h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          
           <div class="modal-body">
-          </div>
-          <div class="modal-footer">
-            <div class="spinner-border text-primary" role="status" id="load-cita-view">
-                <span class="visually-hidden">Loading...</span>
+            <!-- Datos de cita -->
+            <label class="form-label fw-bold text-secondary" for="view_consulta_paciente">Paciente:</label>
+            <input type="text" name="observacion" class="form-control" id="view_cita_paciente" disabled>
+            <p></p>
+          
+            <label class="form-label fw-bold text-secondary" for="id_observacion">Observacion:</label>
+            <input type="text" name="observacion" class="form-control" id="view_cita_observacion" disabled>
+            <p></p>
+          
+            <label class="form-label fw-bold text-secondary" for="id_empleado">Médico:</label>
+            <input type="text" name="fecha_cita" class="form-control" placeholder="" required="" id="view_cita_medico" disabled>
+            <p></p>
+
+            <label class="form-label fw-bold text-secondary" for="id_fecha_cita">Fecha cita:</label>
+            <input type="date" name="fecha_cita" class="form-control" value="" placeholder="Select a date" required="" id="view_cita_fecha">
+            <p></p>
+          
+            <label class="form-label fw-bold text-secondary" for="id_horario">Hora:</label>
+            <input type="text" name="fecha_cita" class="form-control" placeholder="" required="" id="view_cita_hora" disabled>
+            <p></p>
+            
+            <div class="text-center pt-2">
+              <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#posponer-cita-modal" data-bs-dismiss="modal">Posponer cita</button>
             </div>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <input type="submit" value="Agregar Cita" class="btn btn-outline-primary" id="btn_agregar_cita"></button>
+          
           </div>
+      </div>
+  </div>
+</div>
+
+<!--Modal para posponer cita-->
+<div class="modal fade" id="posponer-cita-modal" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header" id="modal-cita-header">
+              <h5 class="modal-title" id="modal-cita-title"> Posponer Cita </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-bs-toggle="modal" data-bs-target="#cita-modal"></button>
+          </div>
+          <form action="" id="form_update_cita">
+            <div class="modal-body">
+              <!-- Datos de cita -->
+              <label class="form-label fw-bold text-secondary" for="view_consulta_paciente">Paciente:</label>
+              <input type="text" name="observacion" class="form-control" id="update_cita_paciente" disabled>
+              <p></p>
+            
+              <label class="form-label fw-bold text-secondary" for="id_empleado">Médico:</label>
+              <select type="text" name="update_medico" class="form-select" placeholder="" required="" id="update_medico">
+                {% for doctor in doctores %}
+                <option value="{{doctor.codigo_empleado}}" selected="">{{doctor}}</option>
+                {% endfor %}
+              </select>
+              <p></p>
+
+              <label class="form-label fw-bold text-secondary" for="update_cita_fecha">Fecha cita:</label>
+              <input type="date" name="update_cita_fecha" class="form-control" value="" placeholder="Select a date" required="" id="update_cita_fecha">
+              <p></p>
+            
+              <label class="form-label fw-bold text-secondary" for="update_cita_horario">Horario:</label>
+              <select type="text" name="update_cita_horario" class="form-select" placeholder="" required="" id="update_cita_horario">
+                {% for horario in horarios %}
+                <option value="{{horario.id_horario}}" selected="">{{horario}}</option>
+                {% endfor %}
+              </select>
+              <p></p>
+            </div>
+            <div class="modal-footer">
+              <div class="spinner-border text-primary" role="status" id="load-cita-update">
+                  <span class="visually-hidden">Loading...</span>
+              </div>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <input type="submit" value="Posponer Cita" class="btn btn-outline-primary" id="btn_update_cita"></button>
+          </div>
+          </form>
       </div>
   </div>
 </div>
@@ -138,9 +202,25 @@
           $('#cita-modal').modal('show');
           $("#modal-cita-title").html(info.event.title);
           $('#modal-cita-header').css({"backgroundColor":info.event.backgroundColor});
-
-          console.log(info.event.title)
-          console.log(info.event.backgroundColor)
+          $.ajax({
+            type: 'GET',
+            url: `{% url 'get-citas-consulta' %}${info.event.id}`,
+            data: {
+            },
+            success: function(response){
+              $('#view_cita_paciente').val(response['cita']['paciente'])
+              $('#view_cita_observacion').val(response['cita']['observacion'])
+              $('#view_cita_fecha').val(response['cita']['fecha'])
+              $('#view_cita_medico').val(response['cita']['doctor'])
+              $('#view_cita_hora').val(response['cita']['hora'])
+              //Set url para editar consulta
+              $('#form_update_cita').attr('action', `/expediente/citas-consulta/${info.event.id}`)
+              $('#update_cita_paciente').val(response['cita']['paciente'])
+              $('#update_cita_fecha').val(response['cita']['fecha'])
+              $('#update_medico').val(response['cita']['id_doctor'])
+              $('#update_cita_horario').val(response['cita']['horario'])
+            }
+          });
         },
 
         eventSources: [
@@ -162,11 +242,6 @@
         ]
       });
       
-      calendar.addEvent({
-            title: 'Business Lunch II',
-            start: '2022-07-05T13:00:00',
-            constraint: 'businessHours'
-          })
       calendar.render();
 
       calendarioUpdateSocket.onmessage=(message)=>{
@@ -190,6 +265,32 @@
                 $('#modal_agregar_cita').modal('hide');
                 toastr[response.type](response.data); 
                 if (response.type=='success'){
+                  calendarioUpdateSocket.send(JSON.stringify({
+                  'message':'sync'
+                  }));
+                }
+            }});
+	    });
+
+      //Ajax Para Posponer Citas
+      $('#form_update_cita').submit(function (event) {
+		    event.preventDefault();
+        $('#load-cita-update').show()
+        console.log($('#update_medico').val())
+        console.log($('#update_cita_hora').val())
+		    $.ajax({
+            type: 'POST',
+            url: $("#form_update_cita").attr("action"),
+            data: $("#form_update_cita").serialize(), 
+            headers: {
+                "X-CSRFToken": '{{ csrf_token }}',
+            },
+            success: function(response){
+                $('#load-cita-update').hide()
+                $('#posponer-cita-modal').modal('hide');
+                toastr[response.type](response.data); 
+                if (response.type=='success'){
+
                   calendarioUpdateSocket.send(JSON.stringify({
                   'message':'sync'
                   }));
