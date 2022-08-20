@@ -122,21 +122,37 @@ class AgendaView(TemplateView):
 
 
  
-class ControlSubsecuenteView(View):
-        permission_required = ('modulo_expediente.change_consulta')
-        template_name = "expediente/consulta/consulta.html"
-        login_url='/login/'  
+class ControlSubsecuenteView(TemplateView): 
+        template_name = "expediente/consulta/control_subsecuente.html"
 
         def get(self, request, *args, **kwargs):
 
             id_consulta=int(self.kwargs['id_consulta']) 
             contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).order_by('-fecha_de_cola').first()
             expediente=contiene_consulta.expediente_id
-            contiene_consulta=ContieneConsulta.objects.filter(expediente_id=expediente)
+            contiene_consulta=list(ContieneConsulta.objects.filter(expediente_id=expediente))
             print(contiene_consulta)
             contiene_serializer=ContieneConsultaSerializer(contiene_consulta, many= True)
             signos_vitales=SignosVitales.objects.filter(consulta_id=id_consulta).order_by('-fecha').first()
             print(signos_vitales)
+            lista=[]
+            for i in range(len(contiene_consulta)):
+                c={
+                    'id_consulta':"",
+                    'consulta_por':"",
+                    'presente_enfermedad':"",
+                    'examen_fisico':"",
+                    'diagnostico':"",
+                    'plan_tratamiento':""
+                }
+                c['id_consulta']=contiene_consulta[i].consulta.id_consulta
+                c['consulta_por']=contiene_consulta[i].consulta.consulta_por
+                c['presente_enfermedad']=contiene_consulta[i].consulta.presente_enfermedad
+                c['examen_fisico']=contiene_consulta[i].consulta.examen_fisico
+                c['diagnostico']=contiene_consulta[i].consulta.diagnostico
+                c['plan_tratamiento']=contiene_consulta[i].consulta.plan_tratamiento
+                lista.append(c)
+
         
             diccionario={
                     "id_signos_vitales":signos_vitales.id_signos_vitales,
@@ -150,12 +166,11 @@ class ControlSubsecuenteView(View):
                     "valor_saturacion_oxigeno":signos_vitales.valor_saturacion_oxigeno
             }
             datos={
-                'consulta':contiene_serializer.data,
-                'signos_vitales':diccionario
+                'consultas':lista,
+                'signo_vital':diccionario
             }
             
-            return JsonResponse(datos, safe=False)
-
+            return render(request, self.template_name, datos)
            
 
 
