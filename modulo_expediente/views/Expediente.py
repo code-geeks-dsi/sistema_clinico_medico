@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from modulo_expediente.serializers import ConsultaSerializers, PacienteSerializer
+from modulo_expediente.serializers import ConsultaSerializers, ContieneConsultaSerializer, PacienteSerializer
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
 from modulo_expediente.models import (Consulta, ContieneConsulta, ControlSubsecuente,  Paciente, Expediente, SignosVitales)
@@ -123,13 +123,18 @@ class AgendaView(TemplateView):
 
  
 class ControlSubsecuenteView(View):
-        form_class = ControlSubsecuenteform
+        permission_required = ('modulo_expediente.change_consulta')
+        template_name = "expediente/consulta/consulta.html"
+        login_url='/login/'  
 
         def get(self, request, *args, **kwargs):
 
             id_consulta=int(self.kwargs['id_consulta']) 
-            consulta=Consulta.objects.filter(id_consulta=id_consulta)
-            consulta_serializer=ConsultaSerializers(consulta, many=True)
+            contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).order_by('-fecha_de_cola').first()
+            expediente=contiene_consulta.expediente_id
+            contiene_consulta=ContieneConsulta.objects.filter(expediente_id=expediente)
+            print(contiene_consulta)
+            contiene_serializer=ContieneConsultaSerializer(contiene_consulta, many= True)
             signos_vitales=SignosVitales.objects.filter(consulta_id=id_consulta).order_by('-fecha').first()
             print(signos_vitales)
         
@@ -145,7 +150,7 @@ class ControlSubsecuenteView(View):
                     "valor_saturacion_oxigeno":signos_vitales.valor_saturacion_oxigeno
             }
             datos={
-                'consulta':consulta_serializer.data,
+                'consulta':contiene_serializer.data,
                 'signos_vitales':diccionario
             }
             
