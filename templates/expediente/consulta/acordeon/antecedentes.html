@@ -1,0 +1,23 @@
+<div class="accordion-item">
+        <button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#antecedentes-acordion" aria-expanded="true" aria-controls="collapseThree">
+            Antecedentes
+        </button>
+        <div id="antecedentes-acordion" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+            <div class="accordion-body">
+                <div id="antecedentes-data">
+                    <p class="fw-bold">Antecedentes Personales</p>
+                    <p>{{ antecedentes_form.antecedentes_personales.value }}</p>
+                    <p class="fw-bold">Antecedentes Familiares</p>
+                    <p>{{ antecedentes_form.antecedentes_familiares.value }}</p>
+                </div>
+                <div class="text-end">
+                    <button type="button" 
+                    class="btn btn-outline-primary material-symbols-outlined" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#antecedentes_expediente">
+                        edit
+                    </button>
+                </div>
+            </div>
+        </div>
+</div>

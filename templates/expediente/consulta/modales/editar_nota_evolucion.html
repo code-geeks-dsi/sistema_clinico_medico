@@ -1,0 +1,23 @@
+<!-- Modal para editar nota de evolucion -->
+<div class="modal fade" id="modal-editar-nota-evolucion" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                        <div class="modal-header">
+                                <h5 class="modal-title">Editar</h5>
+                                <button type="button" class="btn-close" aria-label="Cerrar" data-bs-dismiss="modal" id="cerar_modal_busqueda_medicamento"></button>
+                        </div>
+
+                        <form id="hoja-evolucion-form-update" action="{% url 'hoja-evolucion-update' id_consulta=id_consulta %}" method="post">
+                                <div class="modal-body">
+                                {% csrf_token %}
+                                {{hoja_evolucion_form}}
+                                <input hidden type="text" name="id_evolucion" id="id_nota_evolucion_update">
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-secondary" >Guardar</button>
+                                </div>
+                        </form>
+                </div>
+        </div>
+</div>
