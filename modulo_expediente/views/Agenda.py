@@ -25,14 +25,14 @@ class AgendaView(TemplateView):
 
     #Crear citas
     def post(self, request, *args, **kwargs):
-        form = CitaConsultaForm(request.POST)
+        form = CitaConsultaSecretariaForm(request.POST)
         if form.is_valid():
             form.save()
             self.response['type']='success'
             self.response['data']='Cita Programada'
         else:
             self.response['type']='warning'
-            self.response['data']='No se pudo guardar. Intente de nuevo.'
+            self.response['data']=form.errors.get_json_data()['__all__'][0]['message']
         return JsonResponse(self.response)
 
 class CitaConsultaView(View):
