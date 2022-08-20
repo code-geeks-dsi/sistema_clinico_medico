@@ -5,6 +5,7 @@ from django.views.generic import View, TemplateView
 from django.utils import timezone
 from django.db.models import Q
 from django.db.utils import IntegrityError
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 #Librerias Propias
 from modulo_expediente.models import CitaConsulta, HorarioConsulta
@@ -16,8 +17,9 @@ from ..serializers import CitaConsultaSerializer
 from datetime import datetime, timedelta
 
 #View Para imprimir Agenda
-class AgendaView(TemplateView):
+class AgendaView(PermissionRequiredMixin, TemplateView):
     response={'type':'','data':''}
+    permission_required = ('modulo_expediente.view_consulta')
     template_name = "expediente/agenda.html"  
     def get(self, request, *args, **kwargs):
         form=CitaConsultaSecretariaForm()
@@ -40,7 +42,8 @@ class AgendaView(TemplateView):
             self.response['data']=form.errors.get_json_data()['__all__'][0]['message']
         return JsonResponse(self.response)
 
-class CitaConsultaView(View):
+class CitaConsultaView(PermissionRequiredMixin, View):
+    permission_required = ('modulo_expediente.view_consulta')
     response={'type':'','data':''}
     #Regresa con json con las citas del mes
     def get(self, request, *args, **kwargs):
@@ -71,7 +74,8 @@ class CitaConsultaView(View):
 
         return JsonResponse(self.response)
 
-class CitaConsultaUpdate(View):
+class CitaConsultaUpdate(PermissionRequiredMixin, View):
+    permission_required = ('modulo_expediente.view_consulta')
     #Regresa con json con las citas del mes
     def get(self, request, *args, **kwargs):
         try:
