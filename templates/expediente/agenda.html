@@ -91,6 +91,10 @@
     formatoFecha(hoy, 'yy/mm/dd');
 
     document.addEventListener('DOMContentLoaded', function() {
+      //socket
+      let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
+      let socket_url=`${ws_scheme}://${window.location.host}/ws/calendario/update/`;
+      const calendarioUpdateSocket=new WebSocket(socket_url);
       var calendarEl = document.getElementById('calendar');
   
       var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -143,8 +147,7 @@
             url: "{% url 'get-citas-consulta' %}",
             method: 'GET',
             extraParams: {
-              custom_param1: 'something',
-              custom_param2: 'somethingelse'
+
             },
             failure: function() {
               alert('there was an error while fetching events!');
@@ -164,10 +167,6 @@
           })
       calendar.render();
 
-      //socket
-      let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
-      let socket_url=`${ws_scheme}://${window.location.host}/ws/calendario/update/`;
-      const calendarioUpdateSocket=new WebSocket(socket_url);
       calendarioUpdateSocket.onmessage=(message)=>{
         //Actualizando Calendario
         calendar.refetchEvents()

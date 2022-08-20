@@ -368,7 +368,7 @@ class CitaConsultaSecretariaForm(ModelForm):
         }
     error_messages = {
             NON_FIELD_ERRORS: {
-                'unique_together': _("Ya existe una cita programada para la fecha y hora seleccionadas."),
+                'unique_together': _("El medico seleccionado tiene una cita programada."),
             }
         }
 
