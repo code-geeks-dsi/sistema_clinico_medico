@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('modulo_expediente', '0014_alter_contieneconsulta_unique_together'),
-        ('modulo_expediente', '0017_alter_citaconsulta_unique_together'),
+        ('modulo_expediente', '0018_alter_citaconsulta_unique_together'),
     ]
 
     operations = [

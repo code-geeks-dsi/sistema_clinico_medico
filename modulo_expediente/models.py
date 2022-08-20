@@ -301,6 +301,7 @@ class CitaConsulta(models.Model):
     fecha_cita=models.DateField()
     horario=models.ForeignKey('modulo_expediente.HorarioConsulta', models.DO_NOTHING, null=False, blank=False)
     empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+    recordar=models.BooleanField(default=False, null=False, blank=False)
     class Meta:
          unique_together = (('fecha_cita', 'horario', 'empleado'),)
     def __str__(self):

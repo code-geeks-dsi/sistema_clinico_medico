@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.views.generic import View, TemplateView
 from django.utils import timezone
 from django.db.models import Q
+from django.db.utils import IntegrityError
 
 #Librerias Propias
 from modulo_expediente.models import CitaConsulta
@@ -25,14 +26,14 @@ class AgendaView(TemplateView):
 
     #Crear citas
     def post(self, request, *args, **kwargs):
-        form = CitaConsultaForm(request.POST)
+        form = CitaConsultaSecretariaForm(request.POST)
         if form.is_valid():
             form.save()
             self.response['type']='success'
             self.response['data']='Cita Programada'
         else:
             self.response['type']='warning'
-            self.response['data']='No se pudo guardar. Intente de nuevo.'
+            self.response['data']=form.errors.get_json_data()['__all__'][0]['message']
         return JsonResponse(self.response)
 
 class CitaConsultaView(View):
@@ -52,13 +53,17 @@ class CitaConsultaView(View):
         form = CitaConsultaForm(request.POST)
         if form.is_valid():
             cita=form.save(commit=False)
-            cita.empleado=request.user
-            cita.save()
-            self.response['type']='success'
-            self.response['data']='Cita Programada'
+            try:
+                cita.empleado=request.user
+                cita.save()
+                self.response['type']='success'
+                self.response['data']='Cita Programada'
+            except IntegrityError:
+                self.response['type']='warning'
+                self.response['data']='Ya tiene una cita programada en el horario seleccionado.'
         else:
             self.response['type']='warning'
-            self.response['data']=form.errors.get_json_data()['__all__'][0]['message']
+            self.response['data']='Ya tiene una cita programada en el horario seleccionado.'
 
         return JsonResponse(self.response)
         
