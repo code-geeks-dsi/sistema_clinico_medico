@@ -133,10 +133,12 @@
         listWeek: { buttonText: 'Citas de la semana' },
         listMonth: { buttonText: 'list month' }
         },
+        //Acciones al dar click en una cita
         eventClick: function(info) {
           $('#cita-modal').modal('show');
           $("#modal-cita-title").html(info.event.title);
           $('#modal-cita-header').css({"backgroundColor":info.event.backgroundColor});
+
           console.log(info.event.title)
           console.log(info.event.backgroundColor)
         },
@@ -188,12 +190,12 @@
                 $('#modal_agregar_cita').modal('hide');
                 toastr[response.type](response.data); 
                 if (response.type=='success'){
-                    calendarioUpdateSocket.send(JSON.stringify({
-                    'message':'sync'
+                  calendarioUpdateSocket.send(JSON.stringify({
+                  'message':'sync'
                   }));
                 }
             }});
-	        });
+	    });
 
       });
 

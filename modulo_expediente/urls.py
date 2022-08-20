@@ -13,7 +13,7 @@ ReferenciaMedicaUpdate, ReferenciaMedicaPdfView)
 from modulo_expediente.views.RecetaMedica import RecetaMedicaPdfView
 from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateView, DocumentosExternosURLview, DocumentosExternosURLDownload
 from modulo_expediente.views.ContieneConsulta import (agregar_cola,get_cola ,eliminar_cola )
-from modulo_expediente.views.Agenda import CitaConsultaView, AgendaView
+from modulo_expediente.views.Agenda import CitaConsultaView, AgendaView, CitaConsultaUpdate
 urlpatterns = [
     # Expediente
     path('paciente/',busqueda_paciente, name='busqueda_paciente'),
@@ -62,7 +62,9 @@ urlpatterns = [
     # Agenda
     path('agenda/', AgendaView.as_view(),name='ver_agenda'),
     path('consulta/<int:id_consulta>/programar-cita/<int:id_expediente>', CitaConsultaView.as_view(), name='crear-cita-consulta'),
-    path('consulta/citas-consulta/', CitaConsultaView.as_view(), name='get-citas-consulta'),
+    path('citas-consulta/', CitaConsultaView.as_view(), name='get-citas-consulta'),
+    path('citas-consulta/<int:id_cita_consulta>', CitaConsultaUpdate.as_view(), name='view-cita-consulta'),
+
     ###URL de Pruebas para visualización de archivos en S3
    # path('documento/<int:id_documento>/', storageurl, name="storage-url")
     path('consulta/<int:id_consulta>/agregar-documento-externo/', ExamenesExternosCreateView.as_view(), name="create_examenes_externos"),

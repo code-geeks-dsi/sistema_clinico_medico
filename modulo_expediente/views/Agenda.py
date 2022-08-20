@@ -1,4 +1,5 @@
 #Django
+from urllib import response
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import View, TemplateView
@@ -43,7 +44,6 @@ class CitaConsultaView(View):
         start=request.GET['start']
         fecha_inicio=datetime.strptime(start, "%Y-%m-%dT%H:%M:%S%z")
         fecha_inicio=fecha_inicio+timedelta(weeks=3)
-        print(fecha_inicio)
         citas=CitaConsulta.objects.filter(fecha_cita__year=fecha_inicio.year, fecha_cita__month=fecha_inicio.month)
         serializer=CitaConsultaSerializer(citas, many= True)
         return JsonResponse(serializer.data, safe=False)
@@ -67,4 +67,24 @@ class CitaConsultaView(View):
             self.response['data']='Ya tiene una cita programada en el horario seleccionado.'
 
         return JsonResponse(self.response)
-        
+
+class CitaConsultaUpdate(View):
+    #Regresa con json con las citas del mes
+    def get(self, request, *args, **kwargs):
+        try:
+            id_cita=self.kwargs['id_cita_consulta'] 
+            cita=CitaConsulta.objects.get(id_cita_consulta=id_cita)
+            datos_cita={
+                'paciente':f'{cita.expediente.id_paciente.nombre_paciente} {cita.expediente.id_paciente.apellido_paciente}',
+                'medico':f'{cita.empleado.nombres} {cita.empleado.apellidos}',
+                'observacion':cita.observacion,
+            }
+            response={
+                'id':id_cita,
+                'cita':datos_cita,
+            }
+        except CitaConsulta.DoesNotExist:
+            response={
+                'type':'Error'
+            }
+        return JsonResponse(response)
