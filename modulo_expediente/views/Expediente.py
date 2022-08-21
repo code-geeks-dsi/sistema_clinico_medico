@@ -132,15 +132,13 @@ class ControlSubsecuenteView(View):
             expediente=contiene_consulta.expediente_id
             contiene_consulta=list(ContieneConsulta.objects.filter(expediente_id=expediente))
             print(contiene_consulta)
-            contiene_serializer=ContieneConsultaSerializer(contiene_consulta, many= True)
-            
-
             lista=[]
             for i in range(len(contiene_consulta)):
                 signos_vitales=SignosVitales.objects.filter(consulta_id=contiene_consulta[i].consulta.id_consulta).order_by('-fecha').first()
                 print(signos_vitales)
                 c={
                     'id_consulta':"",
+                    'fecha':"",
                     'consulta_por':"",
                     'presente_enfermedad':"",
                     'examen_fisico':"",
@@ -157,6 +155,7 @@ class ControlSubsecuenteView(View):
                     'valor_saturacion_oxigeno':""
                 }
                 c['id_consulta']=contiene_consulta[i].consulta.id_consulta
+                c['fecha']=contiene_consulta[i].consulta.fecha
                 c['consulta_por']=contiene_consulta[i].consulta.consulta_por
                 c['presente_enfermedad']=contiene_consulta[i].consulta.presente_enfermedad
                 c['examen_fisico']=contiene_consulta[i].consulta.examen_fisico
@@ -173,12 +172,8 @@ class ControlSubsecuenteView(View):
                 c['valor_saturacion_oxigeno']=signos_vitales.valor_saturacion_oxigeno
 
                 lista.append(c)
-
-            datos={
-                'consultas':lista,
-            }
             
-            return JsonResponse(datos, safe=False)
+            return render(request, self.template_name, {'consultas':lista})
            
 
 
