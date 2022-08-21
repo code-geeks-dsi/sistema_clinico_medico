@@ -139,38 +139,14 @@ class ControlSubsecuenteView(View):
                 c={
                     'id_consulta':"",
                     'fecha':"",
-                    'consulta_por':"",
-                    'presente_enfermedad':"",
-                    'examen_fisico':"",
+                    
                     'diagnostico':"",
-                    'plan_tratamiento':"",
-                    'id_signos_vitales':"",
-                    'unidad_temperatura':"",
-                    'unidad_peso':"",
-                    'valor_temperatura':"",
-                    'valor_peso':"",
-                    'valor_arterial_diasolica':"",
-                    'valor_arterial_sistolica':"",
-                    'valor_frecuencia_cardiaca':"",
-                    'valor_saturacion_oxigeno':""
+                    
                 }
                 c['id_consulta']=contiene_consulta[i].consulta.id_consulta
                 c['fecha']=contiene_consulta[i].consulta.fecha
-                c['consulta_por']=contiene_consulta[i].consulta.consulta_por
-                c['presente_enfermedad']=contiene_consulta[i].consulta.presente_enfermedad
-                c['examen_fisico']=contiene_consulta[i].consulta.examen_fisico
+               
                 c['diagnostico']=contiene_consulta[i].consulta.diagnostico
-                c['plan_tratamiento']=contiene_consulta[i].consulta.plan_tratamiento
-                c['id_signos_vitales']=signos_vitales.id_signos_vitales
-                c['unidad_temperatura']=signos_vitales.unidad_temperatura
-                c['unidad_peso']=signos_vitales.unidad_peso
-                c['valor_temperatura']=signos_vitales.valor_temperatura
-                c['valor_peso']=signos_vitales.valor_peso
-                c['valor_arterial_diasolica']=signos_vitales.valor_presion_arterial_diastolica
-                c['valor_arterial_sistolica']=signos_vitales.valor_presion_arterial_sistolica
-                c['valor_frecuencia_cardiaca']=signos_vitales.valor_frecuencia_cardiaca                    
-                c['valor_saturacion_oxigeno']=signos_vitales.valor_saturacion_oxigeno
-
                 lista.append(c)
             
             return render(request, self.template_name, {'consultas':lista})
