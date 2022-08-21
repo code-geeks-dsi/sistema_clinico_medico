@@ -130,17 +130,20 @@ class RegistroMasivoExpedientesView(TemplateView):
         async_to_sync(layer.group_send)('archivos',{
         "type": "archivos",
         "room_id": 'archivos',
+        "data":"Recibi el archivo"
         })
 
         ##Archivo leido
         async_to_sync(layer.group_send)('archivos',{
         "type": "archivos",
         "room_id": 'archivos',
+        "data":"Leí el archivo"
         })
         ##Archivo expediente agregado
         async_to_sync(layer.group_send)('archivos',{
         "type": "archivos",
         "room_id": 'archivos',
+        "data":"Registre un expediente",
         })
 
         print(request.FILES)

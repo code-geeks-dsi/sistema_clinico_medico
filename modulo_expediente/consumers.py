@@ -127,12 +127,11 @@ class CalendarioConsumer(WebsocketConsumer):
                 raise StopConsumer()
 
 class RegistroMasivoConsumer(WebsocketConsumer):
-        def actualizar(self):
-                print('recibi algo')
-                return self.send(text_data='Actualizar')
 
         def archivos(self,event):
-                self.actualizar()
+                
+                print(event)
+                return self.send(text_data='Actualizar')
 
         def connect(self):
                 self.room_group_name='archivos'
