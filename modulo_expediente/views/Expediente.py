@@ -122,7 +122,7 @@ class AgendaView(TemplateView):
 
 
  
-class ControlSubsecuenteView(TemplateView): 
+class ControlSubsecuenteView(View): 
         template_name = "expediente/consulta/control_subsecuente.html"
 
         def get(self, request, *args, **kwargs):
@@ -133,17 +133,28 @@ class ControlSubsecuenteView(TemplateView):
             contiene_consulta=list(ContieneConsulta.objects.filter(expediente_id=expediente))
             print(contiene_consulta)
             contiene_serializer=ContieneConsultaSerializer(contiene_consulta, many= True)
-            signos_vitales=SignosVitales.objects.filter(consulta_id=id_consulta).order_by('-fecha').first()
-            print(signos_vitales)
+            
+
             lista=[]
             for i in range(len(contiene_consulta)):
+                signos_vitales=SignosVitales.objects.filter(consulta_id=contiene_consulta[i].consulta.id_consulta).order_by('-fecha').first()
+                print(signos_vitales)
                 c={
                     'id_consulta':"",
                     'consulta_por':"",
                     'presente_enfermedad':"",
                     'examen_fisico':"",
                     'diagnostico':"",
-                    'plan_tratamiento':""
+                    'plan_tratamiento':"",
+                    'id_signos_vitales':"",
+                    'unidad_temperatura':"",
+                    'unidad_peso':"",
+                    'valor_temperatura':"",
+                    'valor_peso':"",
+                    'valor_arterial_diasolica':"",
+                    'valor_arterial_sistolica':"",
+                    'valor_frecuencia_cardiaca':"",
+                    'valor_saturacion_oxigeno':""
                 }
                 c['id_consulta']=contiene_consulta[i].consulta.id_consulta
                 c['consulta_por']=contiene_consulta[i].consulta.consulta_por
@@ -151,26 +162,23 @@ class ControlSubsecuenteView(TemplateView):
                 c['examen_fisico']=contiene_consulta[i].consulta.examen_fisico
                 c['diagnostico']=contiene_consulta[i].consulta.diagnostico
                 c['plan_tratamiento']=contiene_consulta[i].consulta.plan_tratamiento
+                c['id_signos_vitales']=signos_vitales.id_signos_vitales
+                c['unidad_temperatura']=signos_vitales.unidad_temperatura
+                c['unidad_peso']=signos_vitales.unidad_peso
+                c['valor_temperatura']=signos_vitales.valor_temperatura
+                c['valor_peso']=signos_vitales.valor_peso
+                c['valor_arterial_diasolica']=signos_vitales.valor_presion_arterial_diastolica
+                c['valor_arterial_sistolica']=signos_vitales.valor_presion_arterial_sistolica
+                c['valor_frecuencia_cardiaca']=signos_vitales.valor_frecuencia_cardiaca                    
+                c['valor_saturacion_oxigeno']=signos_vitales.valor_saturacion_oxigeno
+
                 lista.append(c)
 
-        
-            diccionario={
-                    "id_signos_vitales":signos_vitales.id_signos_vitales,
-                    "unidad_temperatura":signos_vitales.unidad_temperatura,
-                    "unidad_peso":signos_vitales.unidad_peso,
-                    "valor_temperatura":signos_vitales.valor_temperatura,
-                    "valor_peso":signos_vitales.valor_peso,
-                    "valor_arterial_diasolica":signos_vitales.valor_presion_arterial_diastolica,
-                    "valor_arterial_sistolica":signos_vitales.valor_presion_arterial_sistolica,
-                    "valor_frecuencia_cardiaca":signos_vitales.valor_frecuencia_cardiaca,
-                    "valor_saturacion_oxigeno":signos_vitales.valor_saturacion_oxigeno
-            }
             datos={
                 'consultas':lista,
-                'signo_vital':diccionario
             }
             
-            return render(request, self.template_name, datos)
+            return JsonResponse(datos, safe=False)
            
 
 
