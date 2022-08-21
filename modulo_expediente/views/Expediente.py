@@ -14,6 +14,10 @@ from django.views import View
 from django.views.generic import View, TemplateView
 from django.views.generic import TemplateView
 
+###Para los examenes masivos
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 def busqueda_paciente(request):
 
     result= PacienteFilter(request.GET, queryset=Paciente.objects.all())
@@ -114,12 +118,33 @@ def crear_expediente(request):
         
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
 
+#Registro masivo de expedientes
+class RegistroMasivoExpedientesView(TemplateView):
+    template_name = "expediente/registro_masivo/registro_masivo.html"
 
-#View Para imprimir Agenda
-class AgendaView(TemplateView):
-    template_name = "expediente/agenda.html"   
+    def post(self, request, *args, **kwargs):
+        archivo=request.FILES
 
+        #Archivo Recibido
+        layer = get_channel_layer()
+        async_to_sync(layer.group_send)('archivos',{
+        "type": "archivos",
+        "room_id": 'archivos',
+        })
 
+        ##Archivo leido
+        async_to_sync(layer.group_send)('archivos',{
+        "type": "archivos",
+        "room_id": 'archivos',
+        })
+        ##Archivo expediente agregado
+        async_to_sync(layer.group_send)('archivos',{
+        "type": "archivos",
+        "room_id": 'archivos',
+        })
+
+        print(request.FILES)
+        return JsonResponse({"data":'Sudido'})
 
  
 class ControlSubsecuenteView(TemplateView): 
