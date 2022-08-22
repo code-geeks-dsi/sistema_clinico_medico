@@ -68,6 +68,7 @@
                 </div>
               </a>
             </li>
+            
             {% endif %}
             {% if request.user.roles.codigo_rol == "ROL_DOCTOR" %}
             <!--DOCTOR-->
@@ -99,6 +100,16 @@
                   <span class="material-symbols-outlined">biotech</span>
                   <div class="px-2 txt_link" id="txt_link">
                     Laboratorio
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li>             
+              <a href="{% url 'registro_masivo_expedientes' %}" class="nav-link text-white" id="side_expedientes">
+                <div class="d-flex align-items-start">
+                  <span class="material-symbols-outlined">group</span>
+                  <div class="px-2 txt_link" id="txt_link">
+                    Expedientes
                   </div>
                 </div>
               </a>

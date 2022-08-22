@@ -1,0 +1,95 @@
+<div class="accordion" id="accordion_control_subsecuente">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                data-bs-target="#panelsStayOpen-collapse-{{c.consulta.id_consulta}}" aria-expanded="false" 
+                aria-controls="panelsStayOpen-collapse-{{c.consulta.id_consulta}}">
+                    <div class="col">
+                        <div class="row" style="text-align: right;margin-top: 10px;">
+                            <div class="col fw-bold">
+                                <a>Fecha: </a>
+                            </div>
+                            <div class="col">
+                                <a>{{ consultas.fecha }}</a>
+                            </div>
+                            <div class="col fw-bold">
+                                <a>Hora: </a>
+                            </div>
+                            
+                            <div class="col">
+                                <a>{{ c.consulta.fecha.time }}</a>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 15px;">
+                            <div class="col fw-bold">
+                                <p>Diagnostico:</p>
+                                <a><textarea rows="2" cols="90" readonly>{{ c.consulta.diagnostico}}</textarea></a>
+                            </div>
+                        </div>
+                    </div>
+            </button>
+        </h2>
+        <div id="panelsStayOpen-collapse-{{signo_vital.id_signos_vitales}}" class="accordion-collapse collapse " aria-labelledby="panelsStayOpen-heading-{{signo_vital.id_signos_vitales}}">
+            <div class="accordion-body">
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col fw-bold">
+                        <p>Consulta por: </p>
+                    </div>
+                    <div class="col">
+                        <a><textarea rows="2" cols="80" readonly>{{ c.consulta.diagnostico}}</textarea></a>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col fw-bold">
+                            <p>Presente Enfermedad </p>
+                    </div>
+                    <div class="col">
+                        <a><textarea rows="2" cols="80" readonly>{{ c.consulta.diagnostico}}</textarea></a>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col fw-bold">
+                            <a>Temperatura: </a>
+                    </div>
+                    <div class="col">
+                            <a>{{ signo_vital.valor_temperatura }} {{ signo_vital.unidad_temperatura }}</a>
+                    </div>
+                    <div class="col fw-bold">
+                        <a>Pulso: </a>
+                    </div>
+                    <div class="col">
+                            <a>{{ signo_vital.valor_frecuencia_cardiaca }} {{ signo_vital.unidad_frecuencia_cardiaca }}</a>
+                    </div>
+                    <div class="col fw-bold">
+                        <a>Respiraciòn: </a>
+                    </div>
+                    <div class="col">
+                            <a>{{ signo_vital.valor_saturacion_oxigeno }} %</a>
+                    </div>
+                    <div class="col fw-bold">
+                        <a>Presion Arterial: </a>
+                    </div>
+                    <div class="col">
+                            <a>{{ signo_vital.valor_presion_arterial_sistolica }}/{{ signo_vital.valor_presion_arterial_diastolica }}</a>
+                    </div>
+                </div>
+                    <div class="row" style="margin-top: 10px;">
+                            <div class="col fw-bold">
+                                    <a>Examen Fisico: </a>
+                            </div>
+                            <div class="col">
+                                <a><textarea rows="2" cols="80" readonly>{{ c.consulta.diagnostico}}</textarea></a>
+                            </div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;">
+                            <div class="col fw-bold">
+                                    <a>Plan Diagnostico: </a>
+                            </div>
+                            <div class="col">
+                                <a><textarea rows="2" cols="80" readonly>{{ c.consulta.diagnostico}}</textarea></a>
+                            </div>
+                    </div>                       
+            </div>
+        </div>   
+    </div>
+</div>

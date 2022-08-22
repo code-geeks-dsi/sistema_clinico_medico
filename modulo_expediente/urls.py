@@ -1,6 +1,6 @@
 from django.urls import path
 from modulo_expediente.views.Expediente import (busqueda_paciente, 
-    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, ControlSubsecuenteView, buscar_expediente, AgendaView)
+    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, ControlSubsecuenteView, buscar_expediente, RegistroMasivoExpedientesView)
 from modulo_expediente.views.ConsultaMedica import (ConsultaView,antecedentesUpdateView)    
 from modulo_expediente.views.SignosVitales import (crear_signos_vitales, modificar_signosVitales,get_signos_vitales)    
 
@@ -13,7 +13,7 @@ ReferenciaMedicaUpdate, ReferenciaMedicaPdfView)
 from modulo_expediente.views.RecetaMedica import RecetaMedicaPdfView
 from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateView, DocumentosExternosURLview, DocumentosExternosURLDownload
 from modulo_expediente.views.ContieneConsulta import (agregar_cola,get_cola ,eliminar_cola )
-from modulo_expediente.views.Agenda import CitaConsultaView, AgendaView
+from modulo_expediente.views.Agenda import CitaConsultaView, AgendaView, CitaConsultaUpdate
 urlpatterns = [
     # Expediente
     path('paciente/',busqueda_paciente, name='busqueda_paciente'),
@@ -63,12 +63,16 @@ urlpatterns = [
     # Agenda
     path('agenda/', AgendaView.as_view(),name='ver_agenda'),
     path('consulta/<int:id_consulta>/programar-cita/<int:id_expediente>', CitaConsultaView.as_view(), name='crear-cita-consulta'),
-    path('consulta/citas-consulta/', CitaConsultaView.as_view(), name='get-citas-consulta'),
+    path('citas-consulta/', CitaConsultaView.as_view(), name='get-citas-consulta'),
+    path('citas-consulta/<int:id_cita_consulta>', CitaConsultaUpdate.as_view(), name='view-cita-consulta'),
+
     ###URL de Pruebas para visualización de archivos en S3
    # path('documento/<int:id_documento>/', storageurl, name="storage-url")
     path('consulta/<int:id_consulta>/agregar-documento-externo/', ExamenesExternosCreateView.as_view(), name="create_examenes_externos"),
     path('documento/<int:id_documento>/', DocumentosExternosURLview.as_view(), name="storage-url"),
-    path('documento/download/<int:id_documento>/', DocumentosExternosURLDownload.as_view(), name="download-url")
+    path('documento/download/<int:id_documento>/', DocumentosExternosURLDownload.as_view(), name="download-url"),
     
+    #Registro masivo de expedientes
+    path('registro-masivo/', RegistroMasivoExpedientesView.as_view(), name="registro_masivo_expedientes"),
 ]
 

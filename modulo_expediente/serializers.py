@@ -71,7 +71,7 @@ class CitaConsultaSerializer(serializers.ModelSerializer):
     end=serializers.SerializerMethodField()
     color=serializers.SerializerMethodField()
     def get_title(self, obj):
-        return '{} - {}'.format(obj.expediente.id_paciente.nombre_paciente, obj.get_prioridad_paciente_display()) 
+        return '{} - Prioridad: {}'.format(obj.expediente.id_paciente.nombre_paciente, obj.get_prioridad_paciente_display()) 
     def get_start(self, obj):
         fecha= obj.fecha_cita.strftime("%Y-%m-%d")
         hora=obj.horario.hora_inicio.strftime("%H:%M")

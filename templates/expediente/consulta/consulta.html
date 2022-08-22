@@ -45,6 +45,7 @@
                     <div class="py-4">
                         <div class="accordion" id="accordionDocumentos">
                             <!--Datos del Paciente-->
+
                             {% include './datos_paciente/datos_paciente.html' with paciente=paciente edad=edad %}
                             <!--Antecedentes-->
                             {% include './datos_paciente/antecedentes.html' with antecedentes_form=antecedentes_form %}
@@ -52,8 +53,6 @@
                             {% include './datos_paciente/signos_vitales.html' with signos_vitales=signos_vitales %}        
                         </div>
                     </div> 
-                    <!--Signos Vitales old-->    
-                    
                 </div>
                 <!--Consulta-->
                 <div class="col-md-12 col-lg-8">
@@ -90,7 +89,7 @@
         </div>
         <!--Control Subsecuente-->
         {% include './tabs/control_subsecuente.html' %}
-
+        
         <!--Hoja de Evoluación-->
         {% include './tabs/hoja_evolucion.html' with hoja_evolucion_form=hoja_evolucion_form %}
         
