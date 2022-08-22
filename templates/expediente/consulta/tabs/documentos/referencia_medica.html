@@ -1,0 +1,38 @@
+<div id="documento-referencia" class="accordion-collapse collapse show" aria-labelledby="headingTwo" >
+        <div class="accordion-body">
+            <div class="card-body">
+                <h5 class="card-title">Lista de Referencias</h5>
+                <!--Tabla de Referencias-->
+                <div class="table-responsive" id="tabla_referencias_agregadas">
+                    <table class="table table-bordered text-center">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Hospital</th>
+                                <th>Especialidad</th>
+                                <th>Fecha</td>
+                                <th>Opciones</td>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-referencias-consulta">
+                        <!--Datos del server -- dosis -- -->
+                            {% for referencia in referencias %}
+                            <tr>
+                                <td>{{ referencia.hospital.nombre_hospital }}</td>
+                                <td>{{ referencia.especialidad }}</td>
+                                <td>{{ referencia.fecha_referencia }}</td>
+                                <td>
+                                    <a class="material-symbols-outlined btn btn-sm" 
+                                    href="referencia-medica/{{referencia.id_referencia_medica}}/"  
+                                    target="_blank">open_in_new</a>
+                                    <a class="material-symbols-outlined btn btn-sm" 
+                                    href="referencia-medica/pdf/{{referencia.id_referencia_medica}}/"  target="_blank">file_download</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <a href="referencia-medica/" class="btn btn-outline-primary w-0 my-1">Agregar Referencia Medica</a>
+                </div><!-- fin Tabla de Referencias-->
+            </div>
+        </div>
+  </div>

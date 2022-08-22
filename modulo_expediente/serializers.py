@@ -58,8 +58,11 @@ class ConsultaSerializers(serializers.ModelSerializer):
     class Meta:
         model = Consulta
         fields = '__all__'
-
-
+        
+class SignosVitalesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SignosVitales
+        fields = '__all__'
 
 class CitaConsultaSerializer(serializers.ModelSerializer):
     id=serializers.IntegerField(source='id_cita_consulta')

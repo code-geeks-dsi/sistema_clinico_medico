@@ -1,0 +1,19 @@
+<div class="tab-pane fade" id="nav-evolucion" role="tabpanel" aria-labelledby="nav-evolucion-tab">
+        <div class="pt-4">
+            <div class="card"> 
+                <div class="card-header alert alert-primary text-primary">
+                    Hoja de Evolución
+                </div>
+                <div class="card-body">
+                    <div class="mv-3">
+                        <form id="hoja-evolucion-form" action="{% url 'hoja-evolucion-create' id_consulta=id_consulta %}" method="post">
+                            {% csrf_token %}
+                            {{hoja_evolucion_form}}
+                            <button type="submit" class="btn btn-outline-primary mt-1">Agregar</button>
+                        </form>  
+                    </div>
+                    <div id="lista-hoja-evolucion" class="row row-cols-1 row-cols-md-2 mt-3"></div>
+                </div>
+            </div>
+        </div>
+</div>
