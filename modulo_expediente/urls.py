@@ -1,6 +1,6 @@
 from django.urls import path
 from modulo_expediente.views.Expediente import (busqueda_paciente, 
-    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, ControlSubsecuenteView, buscar_expediente, AgendaView)
+    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, ControlSubsecuenteView, buscar_expediente, RegistroMasivoExpedientesView)
 from modulo_expediente.views.ConsultaMedica import (ConsultaView,antecedentesUpdateView)    
 from modulo_expediente.views.SignosVitales import (crear_signos_vitales, modificar_signosVitales)    
 
@@ -69,7 +69,9 @@ urlpatterns = [
    # path('documento/<int:id_documento>/', storageurl, name="storage-url")
     path('consulta/<int:id_consulta>/agregar-documento-externo/', ExamenesExternosCreateView.as_view(), name="create_examenes_externos"),
     path('documento/<int:id_documento>/', DocumentosExternosURLview.as_view(), name="storage-url"),
-    path('documento/download/<int:id_documento>/', DocumentosExternosURLDownload.as_view(), name="download-url")
+    path('documento/download/<int:id_documento>/', DocumentosExternosURLDownload.as_view(), name="download-url"),
     
+    #Registro masivo de expedientes
+    path('registro-masivo/', RegistroMasivoExpedientesView.as_view(), name="registro_masivo_expedientes"),
 ]
 
