@@ -45,10 +45,11 @@
                     <div class="py-4">
                         <div class="accordion" id="accordionDocumentos">
                             <!--Datos del Paciente-->
-                            
+                            {% include './datos_paciente/datos_paciente.html' with paciente=paciente edad=edad %}
                             <!--Antecedentes-->
-
-                            <!--Signos Vitales-->                 
+                            {% include './datos_paciente/antecedentes.html' with antecedentes_form=antecedentes_form %}
+                            <!--Signos Vitales-->         
+                            {% include './datos_paciente/signos_vitales.html' with signos_vitales=signos_vitales %}        
                         </div>
                     </div> 
                     <!--Signos Vitales old-->    
@@ -88,12 +89,22 @@
             </div>
         </div>
         <!--Control Subsecuente-->
-        
+        {% include './tabs/control_subsecuente.html' %}
+
         <!--Hoja de Evoluación-->
+        {% include './tabs/hoja_evolucion.html' with hoja_evolucion_form=hoja_evolucion_form %}
         
-        <!--Documentos-->     
+        <!--Documentos-->    
+        {% include './tabs/documentos/documentos.html' with constancias_medicas=constancias_medicas referencias=referencias %} 
     </div>
     <!--Modales-->
+    {% include './modales/agregar_medicamento.html' %}
+    {% include './modales/agregar_signos_vitales.html' %}
+    {% include './modales/confirmar_eliminar_nota_evolucion.html' %}
+    {% include './modales/editar_antecedentes.html' %}
+    {% include './modales/editar_nota_evolucion.html' %}
+    {% include './modales/programar_cita.html' %}
+    {% include './modales/resultados_medicamentos.html' %}
 </div>  
 {% endblock %}
 {% block js %}
@@ -119,7 +130,9 @@
     {% include './js/cita_medica.js' %}
     {% include './js/hoja_evolucion.js' %}
     {% include './js/receta_medica.js' %}
+    {% include './js/signos_vitales.js' with id_consulta=id_consulta %}
     window.onload = (event) => {
+        cargar_signos_vitales({{ id_consulta }});
         get_lista_notas_evolucion();
         $('.spinner-border').hide();
         getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);

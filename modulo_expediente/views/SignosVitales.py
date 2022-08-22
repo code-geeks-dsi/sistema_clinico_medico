@@ -45,5 +45,18 @@ def crear_signos_vitales(request,id_consulta):
                 'data':'No se pudo guardar. Intente de nuevo.'
             }
         return JsonResponse(response)
-    # return HttpResponseForbidden()
+    return HttpResponseForbidden()
+def get_signos_vitales(request,id_consulta):
+    if request.method=='GET':
+        try:
+            signos_vitales=SignosVitales.objects.filter(consulta__id_consulta=id_consulta).values()
+            
+            response={
+                'signos_vitales':list(signos_vitales)
+            }
+        except:
+            response={
+                'signos_vitales':[]
+            }
+        return JsonResponse(response)
         

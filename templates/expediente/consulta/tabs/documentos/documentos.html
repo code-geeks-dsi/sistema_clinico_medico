@@ -38,7 +38,7 @@
                             </button>
                     </h2>
                   <!--Referencia Body-->
-                  
+                  {% include './referencia_medica.html' with referencias=referencias%}
                 </div>
                 <!--Constancia Medica-->
                 <div class="accordion-item">
@@ -48,6 +48,7 @@
                     </button>
                   </h2>
                   <!--Constancia Body-->
+                  {% include './constancia.html' with constancias_medicas=constancias_medicas%}
 
                 </div>
             </div>
