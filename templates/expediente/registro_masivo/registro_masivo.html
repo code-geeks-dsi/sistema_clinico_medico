@@ -36,7 +36,10 @@
             <div id="zona-para-almacenar" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
                 <div class="accordion-body">
                     <!--Formulario de Registro-->
-                    <p>Arrastre un archivo xls, xlsx o cvs en la zona marcada.</p>
+                    <p class="fw-bold">Pasos: </p>
+                    <p>1: Descargue la Plantilla: <a href="/static/files/Formato de reporte de actividades final.xlsx"> Registro de Expedientes </a></p>
+                    <p>2: Llenar los datos.</p>
+                    <p>3: Arrastrar el archivo a la zona marcada.</p>
                     <form action="{% url 'registro_masivo_expedientes' %}" class="dropzone" id="my-great-dropzone">
                         {% csrf_token %}
                         <div class="dz-default dz-message">
@@ -129,8 +132,9 @@
     let socket_url=`${ws_scheme}://${window.location.host}/ws/expediente/registro-masivo/`;
     const registroMasivoSocket=new WebSocket(socket_url);
     registroMasivoSocket.onmessage=(message)=>{
-        //Actualizando Calendario
-        console.log(message)
+        let data=JSON.parse(message.data)
+        toastr[data.toast](data.data); 
+
       }
     //DropZone
     Dropzone.options.myGreatDropzone = { // camelized version of the `id`
@@ -138,7 +142,7 @@
         maxFilesize: 40, // MB
         addRemoveLinks: true,
         maxFiles: 1,
-        acceptedFiles: '.jpg, application/pdf, .png', 
+        acceptedFiles: '.xls, .xlsx', 
         dictRemoveFile:'Remover',
         accept: function(file, done) {
             if (file.name == "") {
