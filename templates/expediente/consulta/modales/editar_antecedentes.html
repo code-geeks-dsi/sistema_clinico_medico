@@ -1,0 +1,27 @@
+<!-- Modal Para antecedentes-->
+<div class="modal fade" id="antecedentes_expediente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+                <div class="modal-content">
+                        <div class="modal-header ">
+                                <h5 class="modal-title" id="staticBackdropLabel">Editar Antecedentes</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'antecedentes-update' id_expediente=id_expediente %}" method="post" id="antecedentes_form">
+                                <div class="modal-body w-0">
+                                        <!-- aqui va formulario para antecedentes -->
+                                        {% csrf_token %}
+                                        {% for field in antecedentes_form %}
+                                        <label class="form-label fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+                                        {{ field }}
+                                        <p></p>
+                                        {% endfor %}
+                                </div>
+                                <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                                </div>
+                        </form>
+
+                </div>
+        </div>
+</div>
