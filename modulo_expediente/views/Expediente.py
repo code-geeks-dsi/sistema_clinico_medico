@@ -17,6 +17,8 @@ from django.views.generic import TemplateView
 ###Para los examenes masivos
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+import pandas as pd
+import pathlib 
 
 def busqueda_paciente(request):
 
@@ -123,31 +125,39 @@ class RegistroMasivoExpedientesView(TemplateView):
     template_name = "expediente/registro_masivo/registro_masivo.html"
 
     def post(self, request, *args, **kwargs):
-        archivo=request.FILES
+        archivo=request.FILES['file']
+        file_extension = pathlib.Path(archivo.name).suffix 
+        if file_extension in ('.xls', '.xlsx'):
 
-        #Archivo Recibido
+            xlsx = pd.read_excel(archivo)
+            expedientes=xlsx.to_dict(orient='records')
+            cantidad=len(expedientes)
+
+            self.notificar_avance("Archivo leído con éxito.")
+            self.notificar_avance(f'El archivo cuenta con: {cantidad} registros')
+            procesados=0
+            for expediente in expedientes:
+                procesados +=1
+                self.notificar_avance(f' se han procesado {procesados} de {cantidad} registros.')
+
+            respuesta={
+                'data':'Enviado'
+            }
+
+        else:
+            respuesta={
+                'data':'error'
+            }
+        return JsonResponse(respuesta)
+    
+    def notificar_avance(self, data):
         layer = get_channel_layer()
         async_to_sync(layer.group_send)('archivos',{
         "type": "archivos",
         "room_id": 'archivos',
-        "data":"Recibi el archivo"
+        "toast":"info",
+        "data":data
         })
-
-        ##Archivo leido
-        async_to_sync(layer.group_send)('archivos',{
-        "type": "archivos",
-        "room_id": 'archivos',
-        "data":"Leí el archivo"
-        })
-        ##Archivo expediente agregado
-        async_to_sync(layer.group_send)('archivos',{
-        "type": "archivos",
-        "room_id": 'archivos',
-        "data":"Registre un expediente",
-        })
-
-        print(request.FILES)
-        return JsonResponse({"data":'Sudido'})
 
  
 class ControlSubsecuenteView(TemplateView): 
