@@ -1,9 +1,16 @@
 
 from dataclasses import fields
+from pyexpat import model
 from django import forms
 from django.forms import ModelForm, NumberInput, TextInput, Select
 from django import forms
-from .models import Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica, ConstanciaMedica
+from .models import (
+  Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
+  ConstanciaMedica, DocumentoExpediente, Expediente, SignosVitales, CitaConsulta
+
+)
+from django.utils.translation import gettext as _
+from django.core.exceptions import NON_FIELD_ERRORS
 
 class DateInput(forms.DateInput):
     input_type = 'datetime-local'
@@ -76,22 +83,36 @@ class IngresoMedicamentos(ModelForm):
             ),
         }
 class ConsultaFormulario(ModelForm):
-  # diagnostico=forms.CharField(widget=forms.Textarea(attrs={"rows":5, "cols":20}))
-  # sintoma=forms.CharField(widget=forms.Textarea(attrs={"resize": "vertical",
-  #   'min-width': '-webkit-fill-available'}))
+  
   class Meta:
     model=Consulta
-    fields=['diagnostico','sintoma']
+    fields=['consulta_por','presente_enfermedad','examen_fisico','diagnostico','plan_tratamiento','dar_seguimiento']
     widgets = {
-            'diagnostico': forms.Textarea(attrs={
+            'consulta_por': forms.Textarea(attrs={
+                                                  'class': 'form-control', 
                                                   "rows":5,
                                                   "cols":20
                                                   }),
-            'sintoma': forms.Textarea(attrs={
+            'presente_enfermedad': forms.Textarea(attrs={
+                                                  'class': 'form-control',               
                                                   "rows":5,
                                                   "cols":20
-                                                  })
-
+                                                  }),
+            'examen_fisico': forms.Textarea(attrs={
+                                                  'class': 'form-control',  
+                                                  "rows":5,
+                                                  "cols":20
+                                                  }),
+            'diagnostico': forms.Textarea(attrs={
+                                                  'class': 'form-control',  
+                                                  "rows":5,
+                                                  "cols":20
+                                                  }),
+            'plan_tratamiento': forms.Textarea(attrs={
+                                                  'class': 'form-control',  
+                                                  "rows":5,
+                                                  "cols":20
+                                                  }),
               }
 class DosisFormulario(ModelForm):
   medicamento= forms.ModelChoiceField(queryset=Medicamento.objects.all())
@@ -114,6 +135,12 @@ class ReferenciaMedicaForm(ModelForm):
       fields='__all__'
       exclude=['consulta']
       widgets={
+        'consulta_por': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        ),
         'hospital': Select(
             attrs={'class': 'form-select'
           } 
@@ -143,4 +170,206 @@ class ConstanciaMedicaForm(ModelForm):
       model=ConstanciaMedica
       fields='__all__'
       exclude=['consulta']
+      widgets={
+        'diagnostico_constancia': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20,
+                                        'placeholder':'Ingrese el diagnostico de la consulta.'
+                                        }
+        ),
+        'dias_reposo': NumberInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese los días de reposo.',
+               'min':0
+              }
+        ),
+        'acompanante': TextInput(
+                attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese el nombre del acompañante.',
+              }
+        ),
+        'fecha_de_emision': forms.DateInput(
+                format=('%Y-%m-%d'),
+                attrs={'class': 'form-control', 
+               'placeholder': 'Select a date',
+               'type': 'date'
+              }),
+      }
+    def __init__(self, *args, **kwargs):
+      super().__init__(*args, **kwargs)
+      self.fields['acompanante'].label="Acompañante"
+      self.fields['dias_reposo'].label="Días de reposo"
+      self.fields['diagnostico_constancia'].label="Diagnóstico"
       
+class HojaEvolucionForm(ModelForm):
+    class Meta:
+      model=EvolucionConsulta
+      fields=['observacion']
+      widgets={
+        'observacion': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        )}
+
+
+class ControlSubsecuenteform(ModelForm):
+  class Meta:
+    model=ControlSubsecuente
+    fields=['observacion']
+    widgets={
+        'observacion': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":1,
+                                        "cols":80
+                                        }
+        ),
+        'fecha': forms.DateInput(
+                format=('%Y-%m-%d'),
+                attrs={'class': 'form-control', 
+               'placeholder': 'Select a date',
+               'type': 'date'
+              }),
+        }
+
+
+class DocumentoExpedienteForm(ModelForm):
+  class Meta:
+    model=DocumentoExpediente
+    fields='__all__'
+    exclude=['empleado']
+
+    
+class antecedentesForm(ModelForm):
+  class Meta:
+    model=Expediente
+    fields=['antecedentes_personales', 'antecedentes_familiares']
+    widgets={
+        'antecedentes_familiares': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        ),
+        'antecedentes_personales': forms.Textarea(attrs={
+                                        'class': 'form-control',  
+                                        "rows":3,
+                                        "cols":20
+                                        }
+        )}
+
+
+class SignosVitalesForm(ModelForm):
+  def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+          self.fields[field].widget.attrs.update({'class': 'form-control col'})
+        
+        self.fields['valor_presion_arterial_diastolica'].widget.attrs.update({'regex':'\d{0,3}'})
+        self.fields['valor_presion_arterial_sistolica'].widget.attrs.update({'regex':'\d{0,3}'})
+        self.fields['unidad_presion_arterial_diastolica'].widget.attrs.update({'readonly':'readonly'})
+        self.fields['unidad_presion_arterial_sistolica'].widget.attrs.update({'readonly':'readonly'})
+        self.fields['unidad_frecuencia_cardiaca'].widget.attrs.update({'readonly':'readonly'})
+        self.fields['unidad_saturacion_oxigeno'].widget.attrs.update({'readonly':'readonly'})
+  class Meta:
+    model=SignosVitales
+    fields=('valor_temperatura',
+            'unidad_temperatura',
+            'valor_peso',
+            'unidad_peso',
+            'valor_presion_arterial_diastolica',
+            'unidad_presion_arterial_diastolica',
+            'valor_presion_arterial_sistolica',
+            'unidad_presion_arterial_sistolica',
+            'valor_frecuencia_cardiaca',
+            'unidad_frecuencia_cardiaca',
+            'valor_saturacion_oxigeno',
+            'unidad_saturacion_oxigeno',
+            )
+    labels = {
+            'valor_temperatura': 'Temperatura',
+            'valor_presion_arterial_diastolica':'Presión Arterial Diastólica',
+            'valor_presion_arterial_sistolica':'Presión Arterial Sistólica',
+            'valor_frecuencia_cardiaca':'Frecuencia Cardíaca',
+            'valor_saturacion_oxigeno':'Saturación de Oxígeno',
+            'valor_peso':'Peso'
+        }
+    
+class CitaConsultaForm(ModelForm):
+  class Meta:
+    model=CitaConsulta
+    fields='__all__'
+    exclude=['empleado']
+    widgets={
+      'expediente': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+      'prioridad_paciente': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+      'observacion': TextInput(
+                attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese una observación.',
+              }
+        ),
+      'fecha_cita': forms.DateInput(
+        format=('%Y-%m-%d'),
+                attrs={'class': 'form-control', 
+               'placeholder': 'Select a date',
+               'type': 'date'
+              }),
+      'horario': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+    }
+    error_messages = {
+            NON_FIELD_ERRORS: {
+                'unique_together': _("Ya existe una cita programada para la fecha y hora seleccionadas."),
+            }
+        }
+
+class CitaConsultaSecretariaForm(ModelForm):
+  class Meta:
+    model=CitaConsulta
+    fields='__all__'
+    widgets={
+      'empleado': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+      'expediente': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+      'prioridad_paciente': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+      'observacion': TextInput(
+                attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese una observación.',
+              }
+        ),
+      'fecha_cita': forms.DateInput(
+        format=('%Y-%m-%d'),
+                attrs={'class': 'form-control', 
+               'placeholder': 'Select a date',
+               'type': 'date'
+              }),
+      'horario': Select(
+            attrs={'class': 'form-select'
+          } 
+        ),
+        }
+    error_messages = {
+            NON_FIELD_ERRORS: {
+                'unique_together': _("El medico seleccionado tiene una cita programada."),
+            }
+        }
+
+

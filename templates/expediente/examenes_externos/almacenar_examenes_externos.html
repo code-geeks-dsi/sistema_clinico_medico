@@ -1,0 +1,200 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+<link href="{% static 'css/dropzone.css' %}" rel="stylesheet" />
+<link href="{% static 'css/custom-dropzone.css' %}" rel="stylesheet" />
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Exámenes Externos {% endblock %}
+{% block content %}
+<div class="container py-4">
+    <!--Navegación-->
+    <div class="row">
+        <div class="col-6">
+            <h3 class="fw-bold text-secondary pb-4">Exámenes de Laboratorio Externos</h3>
+        </div>
+        <div class="col-6">
+            <div class="d-flex justify-content-end">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-3">
+                        <li class="breadcrumb-item"><a href="{% url 'buscar_expediente' %}">Expediente</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'editar_consulta' id_consulta=consulta %}">{{paciente}}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Exámenes Externos</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!--Formulario de almacenamiento-->
+    <div class="accordion" id="accordionDocumentos">
+        <!-- zona para subir archivos -->
+        <div class="accordion-item">
+            <button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#zona-para-almacenar" aria-expanded="true" aria-controls="collapseThree">
+                Registro de exámenes de laboratorio Externos
+            </button>
+            <!--zona para subir archivos Body-->
+            <div id="zona-para-almacenar" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+                <div class="accordion-body">
+                    <!--Formulario de Registro-->
+                    <p>Arrastre los archivos a la zona marcada para almacenar los documentos.</p>
+                    <form action="{% url 'create_examenes_externos' id_consulta=consulta %}" class="dropzone" id="my-great-dropzone">
+                        {% csrf_token %}
+                        <div class="dz-default dz-message">
+                            <button class="dz-button" type="button">
+                                <span class="material-symbols-outlined">cloud_upload</span>
+                                <p>Arrastrar Archivos Aquí</p>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--Lista de archivos-->
+        <div class="accordion-item">
+            <button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#lista-de-archivos" aria-expanded="true" aria-controls="collapseThree">
+                Lista de Archivos Registrados
+            </button>
+            <!--Lista de Archivos Body-->
+            <div id="lista-de-archivos" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+                <div class="accordion-body">
+                    <!--Tabla de Archivos-->
+                    <div class="table-responsive" id="tabla_archivos_agregadas">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Propietario</th>
+                                    <th>Fecha</td>
+                                    <th>Opciones</td>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-archivos-externos">
+                            <!--Datos del server -- dosis -- -->
+                                {% for archivo in archivos %}
+                                <tr>
+                                    <td>{{ archivo.titulo }}</td>
+                                    <td>{{ archivo.expediente.id_paciente.nombre_paciente }} {{ archivo.expediente.id_paciente.apellido_paciente }}</td>
+                                    <td>{{ archivo.fecha }}</td>
+                                    <td>
+                                        <a class="material-symbols-outlined btn btn-sm" href="{% url 'storage-url' id_documento=archivo.id_documento %}"  target="_blank">open_in_new</a>
+                                        <a class="material-symbols-outlined btn btn-sm" href="{% url 'download-url' id_documento=archivo.id_documento %}" target="_blank" download="{{archivo.titulo}}">file_download</a>
+                                        <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo({{archivo.id_documento}});" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo">delete</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal para confirmar eliminar -->
+    <div class="modal fade" id="modal-eliminar-archivo" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center">Eliminar Archivos</h5>
+                    <button type="button" class="btn-close" aria-label="Cerrar" data-bs-dismiss="modal" id="cerar_modal_busqueda_medicamento"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>¿Desea eliminar este archivo?</p>
+                    <!--Spinner de caraga-->
+                    <div class="spinner-border text-primary" role="status" id="load">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-secondary" id="eliminar-nota-evolucion-btn" onclick="eliminarArchivo();" >Si</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!--Js de la vista-->
+{% block js %}
+<script src="{% static 'js/sistemaClinico.js' %}"></script>
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+
+<script>
+    let urlEliminarArchivo='';
+    $('#load').hide();
+    $( "#side_expediente" ).addClass( "active" );
+    //DropZone
+    Dropzone.options.myGreatDropzone = { // camelized version of the `id`
+        paramName: "file", // The name that will be used to transfer the file
+        maxFilesize: 40, // MB
+        acceptedFiles: '.jpg, application/pdf, .png', 
+        dictRemoveFile:'Remover',
+        accept: function(file, done) {
+        if (file.name == "") {
+            done("Naha, you don't.");
+        }
+        else { done(); }
+        },
+        success: function(file, response){
+            file.previewElement.classList.add("dz-success");
+            //Actualizando lista de archivos
+            $("#lista-archivos-externos").prepend(`
+            <tr class="alert alert-success">
+                <td>${file.name}</td>
+                <td>${response.propietario}</td>
+                <td>${response.fecha}</td>
+                <td>
+                    <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${response.id}/"  target="_blank">open_in_new</a>
+                    <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/download/${response.id}/"  download>file_download</a>
+                    <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo(${response.id});" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo" >delete</a>
+                </td>
+            </tr>
+            `);
+        }
+    };
+
+    function setUrlEliminarArchivo(id_archivo){
+        urlEliminarArchivo=`/expediente/documento/${id_archivo}/`;
+    }
+
+    function eliminarArchivo(){
+        $('#load').show();
+        $.ajax({
+		type: 'DELETE',
+		url: urlEliminarArchivo,
+		data: {},  
+        headers: {
+            "X-CSRFToken": '{{ csrf_token }}',
+        },
+        success: function(response){
+            $('#load').hide();
+            $('#modal-eliminar-archivo').modal('hide');
+			toastr[response.type](response.data);
+            if(response.type=='success'){
+                //Actualizando lista de archivos
+                let htmlDatos;
+                response.archivos.forEach(archivo => {
+                    htmlDatos=htmlDatos+`
+                    <tr>
+                        <td>${archivo.titulo}</td>
+                        <td>${archivo.propietario}</td>
+                        <td>${archivo.fecha}</td>
+                        <td>
+                            <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${archivo.id_documento}/"  target="_blank">open_in_new</a>
+                            <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${archivo.id_documento}/"  download>file_download</a>
+                            <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo(${archivo.id_documento});" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo" >delete</a>
+                        </td>
+                    </tr>
+                    `;
+                });
+                $('#lista-archivos-externos').empty().append(htmlDatos);
+                //limpiando barra de carga
+                $('.dz-image-preview').remove();
+                $('#my-great-dropzone').removeClass('dz-started')
+            } 
+        }});
+    }
+</script>
+
+{% endblock %}

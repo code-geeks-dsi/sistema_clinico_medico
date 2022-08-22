@@ -1,0 +1,141 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+<style>
+    .ui-autocomplete { z-index:2147483647; }
+    .bg-card-custom{
+        color: #0c63e4;
+        background-color: #E7F1FF;
+    }
+</style>
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Consulta {% endblock %}
+{% block content %}
+
+<div class="container py-3">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="fw-bold text-secondary">Consulta</h2>
+        </div>
+        <div class="col-6">
+            <div class="d-flex justify-content-end">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-3">
+                        <li class="breadcrumb-item"><a href="{% url 'sala_consulta' %}">Expediente</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Consulta {{paciente.nombre_paciente}}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!--Navegación Pestañas-->
+    {% include './nav.html' %}
+    <div class="tab-content " id="nav-tabContent">
+        <!--Historial Clinico-->
+        <div class="tab-pane fade show active" 
+        id="nav-historial" role="tabpanel" 
+        aria-labelledby="nav-historial-tab">
+            <div class="row">
+                <!--Datos del paciente-->
+                <div class="col-md-12 col-lg-4">
+                    <!--Datos Basicos-->
+                    <div class="py-4">
+                        <div class="accordion" id="accordionDocumentos">
+                            <!--Datos del Paciente-->
+
+                            {% include './datos_paciente/datos_paciente.html' with paciente=paciente edad=edad %}
+                            <!--Antecedentes-->
+                            {% include './datos_paciente/antecedentes.html' with antecedentes_form=antecedentes_form %}
+                            <!--Signos Vitales-->         
+                            {% include './datos_paciente/signos_vitales.html' with signos_vitales=signos_vitales %}        
+                        </div>
+                    </div> 
+                </div>
+                <!--Consulta-->
+                <div class="col-md-12 col-lg-8">
+                    <!--Datos Consulta-->
+                    <div class="col-12 py-4">
+                        <div class="card">
+                            <div class="card-header bg-card-custom accordion-header py-3">
+                                Formulario de Consulta
+                            </div>
+                            <div class="card-body">
+                                <form  method="post">
+                                    {% csrf_token %}
+                                    {{ form.non_field_errors }}
+                                    {% for field in consulta_form %}
+                                        <label class="form-label py-2 fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+                                        {{ field }}
+                                    {% endfor %}
+                                    
+                                    <!--Botones-->
+                                    <div class="row pt-3">
+                                        <div class="col-md-12 col-lg-4">
+                                            <input type="submit" class="btn btn-outline-success "  value="Guardar">
+                                        </div>
+                                        <div class="col-md-12 col-lg-8 text-end">
+                                            <button type="button"class="btn btn-outline-primary " data-bs-toggle="modal" data-bs-target="#modal_agregar_cita">Programar Cita</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>                        
+                    </div>                   
+                </div>
+            </div>
+        </div>
+        <!--Control Subsecuente-->
+        {% include './tabs/control_subsecuente.html' %}
+        
+        <!--Hoja de Evoluación-->
+        {% include './tabs/hoja_evolucion.html' with hoja_evolucion_form=hoja_evolucion_form %}
+        
+        <!--Documentos-->    
+        {% include './tabs/documentos/documentos.html' with constancias_medicas=constancias_medicas referencias=referencias %} 
+    </div>
+    <!--Modales-->
+    {% include './modales/agregar_medicamento.html' %}
+    {% include './modales/agregar_signos_vitales.html' %}
+    {% include './modales/confirmar_eliminar_nota_evolucion.html' %}
+    {% include './modales/editar_antecedentes.html' %}
+    {% include './modales/editar_nota_evolucion.html' %}
+    {% include './modales/programar_cita.html' %}
+    {% include './modales/resultados_medicamentos.html' %}
+</div>  
+{% endblock %}
+{% block js %}
+<script src="{% static 'js/medicamentoBusqueda2.js' %}"></script>
+<script>
+    const url = "{% url 'agregar_medicamento_2' %}";
+    const urlFiltro = "{% url 'agregar_medicamento' %}";
+    const complementoConsulta = "?nombre_generico=";
+    const id_component="id_nombre_medicamento";
+    const id_modal="busquedaMedicamentoModal";
+    const tablaResultado = "datos_pacientes";
+    let url_agregar_a_receta="{% url 'agregar_dosis' %}"; 
+    let tablaData=document.getElementById(tablaResultado);
+    let id_receta_medica={{id_receta}};
+    let nota_evolucion_a_eliminar="";  
+    
+    '{% for message in messages %}'
+        '{% if message.tags %}'
+        toastr[ '{{ message.tags }}' ]( '{{ message }}' );
+        '{% endif %}'
+    '{% endfor %}'
+    {% include './js/antecedentes.js' %}
+    {% include './js/cita_medica.js' %}
+    {% include './js/hoja_evolucion.js' %}
+    {% include './js/receta_medica.js' %}
+    {% include './js/signos_vitales.js' with id_consulta=id_consulta %}
+    window.onload = (event) => {
+        cargar_signos_vitales({{ id_consulta }});
+        get_lista_notas_evolucion();
+        $('.spinner-border').hide();
+        getAutocompletado(url, id_component, tablaResultado, urlFiltro, complementoConsulta, tablaData, id_modal);
+      };
+</script>
+{% endblock %}
+

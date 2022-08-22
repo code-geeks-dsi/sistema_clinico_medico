@@ -1,14 +1,12 @@
 from datetime import datetime
-from pyexpat import model
-from secrets import choice
-from unittest.mock import DEFAULT
-from xmlrpc.client import TRANSPORT_ERROR
+from faulthandler import disable
 from django.db import models
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from .managers import (
     SignosVitalesManager
 )
+from storages.backends.s3boto3 import S3Boto3Storage
 
 # Create your models here.
 class Expediente(models.Model):
@@ -17,7 +15,9 @@ class Expediente(models.Model):
     id_paciente=models.OneToOneField('Paciente', models.CASCADE, blank=False, null=False)
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
     codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
-    contiene_consulta=models.ManyToManyField('Consulta',through='contieneConsulta')#blank=False,null=False, no se utilizan en ManyToMany fields.W122
+    contiene_consulta=models.ManyToManyField('Consulta',through='ContieneConsulta')
+    antecedentes_familiares=models.TextField(null=True,blank=True,default="")
+    antecedentes_personales=models.TextField(null=True,blank=True,default="")
     def __str__(self):
         return str(self.id_expediente)+" - "+str(self.id_paciente.nombre_paciente)
 
@@ -37,7 +37,8 @@ class Paciente(models.Model):
     responsable=models.CharField(max_length=40,blank=True,null=False,default="")
     dui=models.CharField(max_length=10,blank=True,null=True)
     pasaporte=models.CharField(max_length=15,blank=True,null=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
-    
+    numero_telefono=models.CharField(max_length=8, null=True, blank=True,default="")
+
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)
 
@@ -60,7 +61,7 @@ class ContieneConsulta(models.Model):
     #consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True)
     id=models.AutoField(primary_key=True)
     expediente = models.ForeignKey('Expediente', models.DO_NOTHING, blank=False, null=True)
-    consulta = models.OneToOneField('Consulta', models.DO_NOTHING, blank=True, null=True)
+    consulta = models.ForeignKey('Consulta', models.DO_NOTHING, blank=True, null=True)
     numero_cola=models.IntegerField(blank=False, null=False) #No lleva max_length
     fecha_de_cola=models.DateField(default=datetime.now, blank=False, null=False)
     # hora_de_ingreso=models.TimeField(default=datetime.now,blank=False,null=False)
@@ -70,22 +71,22 @@ class ContieneConsulta(models.Model):
     class Meta:
         unique_together = (('expediente', 'fecha_de_cola'),)
     def __str__(self):
-        return str(self.id_expediente)+" - "+str(self.consulta)
+        return str(self.expediente.id_expediente)+" - "+str(self.consulta)
 
 class SignosVitales(models.Model):
     UNIDADES_TEMPERATURA=(
-        ('F','Fahrenheit'),
-        ('C','Celsius'),
+        ('°F','Fahrenheit'),
+        ('°C','Celsius'),
     )
     UNIDADES_PESO=(
         ('Lbs','Libras'),
         ('Kgs','Kilogramos'),
     )
     id_signos_vitales= models.AutoField(primary_key=True)
-    #consulta=models.ForeignKey(Consulta,on_delete=models.DO_NOTHING,null=False, blank=False)
+    consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
     enfermera=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
-    unidad_temperatura=models.CharField(max_length=1,choices=UNIDADES_TEMPERATURA,null=False, blank=True,default=2)
-    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,null=False, blank=True,default=1)
+    unidad_temperatura=models.CharField(max_length=2,choices=UNIDADES_TEMPERATURA,default=UNIDADES_TEMPERATURA[1][0],null=False, blank=True)
+    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,default=UNIDADES_PESO[0][0],null=False, blank=True)
     unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
     unidad_presion_arterial_sistolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
     unidad_frecuencia_cardiaca=models.CharField(max_length=3,null=False, blank=True,default='PPM')
@@ -96,14 +97,49 @@ class SignosVitales(models.Model):
     valor_presion_arterial_sistolica=models.IntegerField(validators=[MaxValueValidator(350),MinValueValidator(0)],null=True, blank=True)
     valor_frecuencia_cardiaca=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=True, blank=True)
     valor_saturacion_oxigeno=models.IntegerField(validators=[MaxValueValidator(101),MinValueValidator(0)],null=True, blank=True)
+    fecha=models.DateTimeField(auto_now_add=True)
     objects= SignosVitalesManager()
-    #Cuando se utiliza integerField, Django ignora el max_length, fields.w122
+    
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
-    signos_vitales= models.OneToOneField('SignosVitales',on_delete=models.DO_NOTHING,null=False, blank=False)
+    consulta_por=models.TextField(max_length=200, blank=True, null=False)
+    presente_enfermedad=models.TextField(max_length=200, blank=True, null=False)
+    examen_fisico=models.TextField(max_length=200, blank=True, null=False)
     diagnostico=models.TextField(max_length=200, blank=True, null=False)
-    sintoma=models.TextField(max_length=200, blank=True, null=False)
+    plan_tratamiento=models.TextField(max_length=200, blank=True, null=False)
+    fecha=models.DateTimeField(auto_now_add=True)
+    dar_seguimiento=models.BooleanField(default=False)
+    
+class NotaEvolucionManager(models.Manager):
+    def validar_caducidad(self,nota):
+        # Este metodo valida si no han pasado mas de 5 min desde que se creo
+        # la nota para que pueda ser editada o eliminada
+        is_valid=False
+        minutos_validos=15
+        current_datetime = datetime.now()
+        if( current_datetime.year-nota.fecha.year==0 
+            and current_datetime.month-nota.fecha.month==0
+            and current_datetime.day-nota.fecha.day==0 ):
+            if(current_datetime.hour-nota.fecha.hour==0 
+            and current_datetime.minute-nota.fecha.minute <=minutos_validos
+            or (current_datetime.hour-nota.fecha.hour==1 
+            and current_datetime.minute+60-nota.fecha.minute <= minutos_validos)):
+                is_valid=True
+        return is_valid
+    
+class EvolucionConsulta(models.Model):
+    id_evolucion= models.AutoField(primary_key=True)
+    consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
+    observacion=models.TextField(max_length=200, blank=True, null=False)
+    fecha=models.DateTimeField(auto_now_add=True)
+    objects=NotaEvolucionManager()
+
+class ControlSubsecuente(models.Model):
+    id_control_subsecuente= models.AutoField(primary_key=True)
+    consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
+    observacion=models.TextField(max_length=200, blank=True, null=False)
+    fecha=models.DateTimeField(auto_now_add=True)
 
 class OrdenExamenLaboratorio(models.Model):
     id_orden_examen_laboratorio= models.AutoField(primary_key=True)
@@ -124,7 +160,8 @@ class Hospital(models.Model):
 class ReferenciaMedica(models.Model):
     id_referencia_medica= models.AutoField(primary_key=True)
     consulta=models.ForeignKey('Consulta',models.DO_NOTHING,null=False, blank=False)
-    hospital=models.ForeignKey(Hospital,models.DO_NOTHING,null=False, blank=False)
+    consulta_por=models.TextField(max_length=200, blank=True, null=False)
+    hospital=models.ForeignKey('Hospital',models.DO_NOTHING,null=False, blank=False)
     especialidad=models.CharField(max_length=30,null=False, blank=False)
     fecha_referencia=models.DateField(default=datetime.now,null=False, blank=False)
 
@@ -132,7 +169,8 @@ class ReferenciaMedica(models.Model):
 
 class RecetaMedica(models.Model):
     id_receta_medica= models.AutoField(primary_key=True)
-    Consulta = models.ForeignKey(Consulta, on_delete=models.CASCADE,null=False, blank=False)
+    consulta = models.ForeignKey('Consulta', on_delete=models.CASCADE,null=False, blank=False)
+    fecha=models.DateField(auto_now_add=True,null=False, blank=False)
     def __str__(self):
         return str(self.id_receta_medica)+" - Consultata: "+str(self.Consulta.id_consulta)
 
@@ -210,8 +248,8 @@ class Dosis(models.Model):
     unidad_frecuencia_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False,default=OPCIONES_TIEMPO[0][0])
     cantidad_dosis=models.DecimalField(decimal_places=2,max_digits=5,null=False,blank=False,default=1,validators=[MinValueValidator(1)])
     unidad_de_medida_dosis=models.CharField(choices=UNIDADES_DE_MEDIDA_DOSIS,max_length=17,null=False,blank=False,default=UNIDADES_DE_MEDIDA_DOSIS[14][0])
-    medicamento=models.ForeignKey(Medicamento,on_delete=models.DO_NOTHING,null=False, blank=False)
-    receta_medica=models.ForeignKey(RecetaMedica,on_delete=models.DO_NOTHING,null=False, blank=False)
+    medicamento=models.ForeignKey('Medicamento',on_delete=models.DO_NOTHING,null=False, blank=False)
+    receta_medica=models.ForeignKey('RecetaMedica',on_delete=models.DO_NOTHING,null=False, blank=False)
     class Meta:
         unique_together = (('medicamento', 'receta_medica'),)
     def __str__(self):
@@ -234,3 +272,58 @@ class ConstanciaMedica(models.Model):
     fecha_de_emision=models.DateField(default=datetime.now, blank=False, null=False)
     dias_reposo=models.IntegerField(blank=False, null=False)#Los integer no llevan max_length
     diagnostico_constancia=models.TextField(blank=True, null=True)
+    acompanante=models.CharField(blank=True,null=False,max_length=50)
+
+class DocumentoExpediente(models.Model):
+    id_documento=models.AutoField(primary_key=True)
+    titulo=models.CharField(max_length=80, null=False, blank=False)
+    documento=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
+                            bucket_name='code-geek-medic',
+                            default_acl=None,
+                            location='static'
+                            ),upload_to='exams')
+    fecha=models.DateTimeField(default=datetime.now, blank=False, null=False)
+    expediente=models.ForeignKey('Expediente', models.DO_NOTHING,null=False, blank=False)
+    empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+    def __str__(self):
+        return f'{self.titulo} - {self.expediente.id_paciente.nombre_paciente}'
+
+class CitaConsulta(models.Model):
+    OPCIONES_PRIORIDAD=(
+        ('1','Alta'),
+        ('2','Media'),
+        ('3','Baja'),
+    )
+    id_cita_consulta=models.AutoField(primary_key=True)
+    expediente=models.ForeignKey('Expediente', models.DO_NOTHING, null=False, blank=False)
+    prioridad_paciente=models.CharField(max_length=1, choices=OPCIONES_PRIORIDAD, blank=False, null=False)
+    observacion=models.CharField(default="", max_length=80, blank=True, null=True)
+    fecha_cita=models.DateField()
+    horario=models.ForeignKey('modulo_expediente.HorarioConsulta', models.DO_NOTHING, null=False, blank=False)
+    empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+    recordar=models.BooleanField(default=False, null=False, blank=False)
+    class Meta:
+         unique_together = (('fecha_cita', 'horario', 'empleado'),)
+    def __str__(self):
+        return f'{self.expediente.id_paciente.nombre_paciente} - {self.get_prioridad_paciente_display()}'
+
+class HorarioConsulta(models.Model):
+    id_horario=models.AutoField(primary_key=True)
+    hora_inicio=models.TimeField(null=False, blank=False)
+    hora_fin=models.TimeField(null=False, blank=False)
+    def __str__(self):
+        inicio =self.hora_inicio.strftime('%I:%M %p')
+        fin=self.hora_fin.strftime('%I:%M %p')
+        return f'{inicio} - {fin}'
+
+###Modelo de prueba para amazon s3 
+class Archivo(models.Model):
+    id_archivo=models.AutoField(primary_key=True)
+    archivo=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
+                            bucket_name='isai-medico-test',
+                            default_acl=None
+                            ),upload_to='exams')
+    archivo_publico=models.FileField(null=True, blank=True, storage=S3Boto3Storage(
+                            bucket_name='code-geek-medic',
+                            default_acl='public-read'
+                            ),upload_to='exams')

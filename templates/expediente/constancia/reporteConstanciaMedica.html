@@ -12,16 +12,15 @@
     </div>
   </header>
   <body>
-    <center><h2>A quien corresponda</h2></center><br>
+    <center><br><h3>A quien corresponda</h3></center>
     
-    <p>
-      Por este medio hago constar que este día consultó en esta clínica el (la)<br>
-      Paciente: <b>{{paciente.nombre_paciente}} {{paciente.apellido_paciente}}</b> de <b>{{edad.years}}</b> años y se le diagnosticó:
-      <b>{{constanciamedica.diagnostico_constancia}}</b>
-      Por lo que se incapacita por <b>{{constanciamedica.dias_reposo}}</b> dia(s).<br>
-      Se presentó en compañía de:<b>{{constanciamedica.acompanante}}</b>
+    <p class="texto-justificado" style="line-height:250%">
+      Por este medio hago constar que este día consultó en esta clínica el (la) Paciente: <b>{{paciente.nombre_paciente}} {{paciente.apellido_paciente}}</b> de <b>{{edad.years}}</b> años y se le diagnosticó:
+      <b>{{constanciamedica.diagnostico_constancia}}.</b>
+      Por lo que se incapacita por <b>{{constanciamedica.dias_reposo}}</b> dia(s).
+      Se presentó en compañía de: <b>{{constanciamedica.acompanante}}</b>
     </p>
-    <p>Y para los usos que el portador(a) estime conveniente se extiende la presente constancia el dia <b>{{constanciamedica.fecha_de_emision}}</b></p><br><br><br>
+    <p class="texto-justificado" style="line-height:250%">Y para los usos que el portador(a) estime conveniente se extiende la presente constancia el dia <b>{{constanciamedica.fecha_de_emision}}</b></p><br><br><br>
     <center>
       <p>F:________________________</p>
       <p>{{nombre}}</p>
@@ -33,7 +32,7 @@
 
 <style>
   @page {
-    margin: 2.50cm;
+    margin: 1.00cm;
     margin-left: 2.25cm;
     margin-right: 2.25cm;
   }
@@ -43,13 +42,16 @@
     color:#171E31;
   }
   img{
-    width:30%;
+    width:80%;
     height:200px;
-    margin-left: 60px;
+    margin-left: 5px;
     padding-top: 20px;
     border: #171E31 3px solid;
   }
   .box{
     text-align: center;
+  }
+  .texto-justificado{
+    text-align: justify;
   }
 </style>    

@@ -1,0 +1,23 @@
+.dropzone {
+  border:2px dashed #b0cffd;
+}
+
+.button {
+  text-align:center;
+}
+
+#send {
+  background-color:#b0cffd;
+  color:#fff;
+  border:1px solid;
+  padding:10px;
+  transition:.3s;
+  border-radius:5px;
+  cursor:pointer;
+}
+/*  */
+#send:active {
+  background-color:#fff;
+  color:#b0cffd;
+}
+
