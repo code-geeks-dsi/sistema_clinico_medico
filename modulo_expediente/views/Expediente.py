@@ -137,16 +137,28 @@ class RegistroMasivoExpedientesView(TemplateView):
             self.notificar_avance(f'El archivo cuenta con: {cantidad} registros')
             procesados=0
             for expediente in expedientes:
-                """paciente = Paciente.objects.create(
-                    nombre_paciente=expediente["Nombre"],
-                    apellido_paciente=expediente["Apellido"]
-                    fecha_nacimiento_paciente=datetime.strptime(expediente["Fecha de nacimiento (dd-mm-yyyy)"], "%d-%m-%Y"),
-                    sexo_paciente=expediente["Sexo (M/F)"],
-                    direccion_paciente=expediente["Dirección"],
-                    email_paciente=expediente["Email"],
-                    
-                ) """
-                print(expediente)
+                #Validando si se ingresado un codigo de paciente nulo
+                if str(expediente["Codigo"]) != "nan":
+                    print(expediente["Codigo"])
+                    paciente = Paciente.objects.create(
+                        nombre_paciente=expediente["Nombres"],
+                        apellido_paciente=expediente["Apellidos"],
+                        fecha_nacimiento_paciente=expediente["Fecha de nacimiento (dd/mm/yyyy)"],
+                        sexo_paciente=expediente["Sexo (M/F)"],
+                        direccion_paciente=expediente["Dirección"],
+                        email_paciente=expediente["Email"],
+                        responsable=expediente["Responsable"],
+                        dui=expediente["Dui"],
+                        pasaporte=expediente["Pasaporte"],
+                        numero_telefono=str(expediente["Número de Telefono"])[:8]
+                    )
+                    Expediente.objects.create(
+                        id_paciente=paciente,
+                        codigo_expediente=expediente["Codigo"],
+                    )
+                else:
+                    print("no se pudo")
+
                 procesados +=1
                 self.notificar_avance(f' se han procesado {procesados} de {cantidad} registros.')
 
