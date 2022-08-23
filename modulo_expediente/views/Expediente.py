@@ -137,6 +137,16 @@ class RegistroMasivoExpedientesView(TemplateView):
             self.notificar_avance(f'El archivo cuenta con: {cantidad} registros')
             procesados=0
             for expediente in expedientes:
+                """paciente = Paciente.objects.create(
+                    nombre_paciente=expediente["Nombre"],
+                    apellido_paciente=expediente["Apellido"]
+                    fecha_nacimiento_paciente=datetime.strptime(expediente["Fecha de nacimiento (dd-mm-yyyy)"], "%d-%m-%Y"),
+                    sexo_paciente=expediente["Sexo (M/F)"],
+                    direccion_paciente=expediente["Dirección"],
+                    email_paciente=expediente["Email"],
+                    
+                ) """
+                print(expediente)
                 procesados +=1
                 self.notificar_avance(f' se han procesado {procesados} de {cantidad} registros.')
 
