@@ -21,7 +21,6 @@ function cargar_signos_vitales(id_consulta){
                 "X-CSRFToken": '${ csrf_token }',
                 },
         success: function(response) { 
-                console.log(response);
                 signos=``;
                 response.signos_vitales.forEach((signo_vital)=>{
                         signos+=`<div class="accordion-item">
@@ -45,7 +44,7 @@ function cargar_signos_vitales(id_consulta){
                                                                 <p>Responsable: </p>
                                                                 </div>
                                                                 <div class="col">
-                                                                <p>{signo_vital.enfermera.nombre} {signo_vital.enfermera.apellidos}</p>
+                                                                <p>${signo_vital.responsable_nombre} ${signo_vital.responsable_apellidos}</p>
                                                                 </div>
                                                         </div>
                                                 </div>
