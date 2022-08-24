@@ -167,13 +167,10 @@ class ControlSubsecuenteView(View):
                 c={
                     'id_consulta':"",
                     'fecha':"",
-                    
                     'diagnostico':"",
-                    
                 }
                 c['id_consulta']=contiene_consulta[i].consulta.id_consulta
                 c['fecha']=contiene_consulta[i].consulta.fecha
-               
                 c['diagnostico']=contiene_consulta[i].consulta.diagnostico
                 lista.append(c)
             
