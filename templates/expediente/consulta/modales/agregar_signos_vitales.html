@@ -1,0 +1,49 @@
+ <!-- Modal para agregar nuevos signos vitales -->
+ <div class="modal fade" id="modal_agregar_signos_vitales" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Toma de Signos Vitales</h5>
+                </div>
+                <form id="toma_signos_vitales_form" method='POST' action="{% url 'crear_signos_vitales' id_consulta=id_consulta %}">
+                    <div class="modal-body form-group">
+                                {% csrf_token %}
+                                <div class='row'>
+                                        {{signos_vitales_form.valor_temperatura.label_tag}}
+                                        {{signos_vitales_form.valor_temperatura}}
+                                        {{signos_vitales_form.unidad_temperatura}}
+                                </div>
+                                <div class='row'>
+                                        {{signos_vitales_form.valor_peso.label_tag}}
+                                        {{signos_vitales_form.valor_peso}}
+                                        {{signos_vitales_form.unidad_peso}}
+                                </div>
+                                <div class='row'>
+                                        {{signos_vitales_form.valor_presion_arterial_diastolica.label_tag}}
+                                        {{signos_vitales_form.valor_presion_arterial_diastolica}}
+                                        {{signos_vitales_form.unidad_presion_arterial_diastolica}}
+                                </div>
+                                <div class='row'>
+                                        {{signos_vitales_form.valor_presion_arterial_sistolica.label_tag}}
+                                        {{signos_vitales_form.valor_presion_arterial_sistolica}}
+                                        {{signos_vitales_form.unidad_presion_arterial_sistolica}}
+                                </div>
+                                <div class='row'>
+                                        {{signos_vitales_form.valor_saturacion_oxigeno.label_tag}}
+                                        {{signos_vitales_form.valor_saturacion_oxigeno}}
+                                        {{signos_vitales_form.unidad_saturacion_oxigeno}}
+                                </div>
+                                <div class='row'>
+                                        {{signos_vitales_form.valor_frecuencia_cardiaca.label_tag}}
+                                        {{signos_vitales_form.valor_frecuencia_cardiaca}}
+                                        {{signos_vitales_form.unidad_frecuencia_cardiaca}}
+                                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+</div>

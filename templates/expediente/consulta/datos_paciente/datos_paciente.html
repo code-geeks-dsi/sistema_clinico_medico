@@ -1,0 +1,38 @@
+<div class="accordion-item">
+        <button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#datos-paciente-acordion" aria-expanded="true" aria-controls="collapseThree">
+            Datos del Paciente
+        </button>
+        <!--Datos del Paciente Body-->
+        <div id="datos-paciente-acordion" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+                <div class="accordion-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th>Nombre: </th>
+                                <td>{{ paciente.nombre_paciente }} </td>
+                            </tr>
+                            <tr>
+                                <th>Apellido: </th>
+                                <td>{{ paciente.apellido_paciente }} </td>
+                            </tr>
+                            <tr>
+                                <th>Edad:</th>
+                                <td>{{ edad.years }} años</td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td>{{ paciente.email_paciente }}</td>
+                            </tr>
+                            <tr>
+                                <th>Responsable:</th>
+                                <td>{{ paciente.responsable }}</td>
+                            </tr>                                       
+                        </tbody>
+                    </table>
+                    <!--Acceso a documentos externos-->
+                    <div class="text-end">   
+                        <a href="agregar-documento-externo/" class="btn btn-outline-primary" target="_blank">Ver Exámenes Externos</a>
+                    </div>
+                </div>
+        </div>
+</div>

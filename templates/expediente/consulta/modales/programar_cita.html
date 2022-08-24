@@ -1,0 +1,28 @@
+<!--Modal para Programar Citas-->
+<div class="modal fade" id="modal_agregar_cita" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar Cita</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'crear-cita-consulta' id_consulta=id_consulta id_expediente=id_expediente %}" id="form_crear_cita">
+                    <div class="modal-body">
+                        <!-- Formulario para agregar Cita -->
+                    {% for field in cita_form %}
+                        <label class="form-label fw-bold text-secondary" for="{{ field.auto_id }}">{{ field.label }}:</label>
+                        {{ field }}
+                        <p></p>
+                    {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <div class="spinner-border text-primary" role="status" id="load-cita">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-outline-primary" id="btn_agregar_cita">Agregar Cita</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+</div>
