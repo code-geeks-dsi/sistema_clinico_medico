@@ -60,6 +60,9 @@ class ConsultaSerializers(serializers.ModelSerializer):
         fields = '__all__'
         
 class SignosVitalesSerializer(serializers.ModelSerializer):
+    responsable_nombre = serializers.CharField(read_only=True, source="enfermera.nombres")
+    responsable_apellidos = serializers.CharField(read_only=True, source="enfermera.apellidos")
+    fecha=serializers.DateTimeField(format='%d/%m/%Y %I:%M %p')
     class Meta:
         model = SignosVitales
         fields = '__all__'
