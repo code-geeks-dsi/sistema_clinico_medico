@@ -14,6 +14,8 @@ from django.views import View
 from django.views.generic import View, TemplateView
 from django.views.generic import TemplateView
 
+from django.core import serializers
+
 ###Para los examenes masivos
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -130,37 +132,36 @@ class RegistroMasivoExpedientesView(TemplateView):
         if file_extension in ('.xls', '.xlsx'):
 
             xlsx = pd.read_excel(archivo)
+            xlsx.fillna(0, inplace=True)
             expedientes=xlsx.to_dict(orient='records')
             cantidad=len(expedientes)
 
-            self.notificar_avance("Archivo leído con éxito.")
-            self.notificar_avance(f'El archivo cuenta con: {cantidad} registros')
+            self.notificar_avance("Archivo leído con éxito.", "notificacion")
+            self.notificar_avance(f'{cantidad}', "header")
             procesados=0
             for expediente in expedientes:
-                #Validando si se ingresado un codigo de paciente nulo
-                if str(expediente["Codigo"]) != "nan":
-                    print(expediente["Codigo"])
-                    paciente = Paciente.objects.create(
-                        nombre_paciente=expediente["Nombres"],
-                        apellido_paciente=expediente["Apellidos"],
-                        fecha_nacimiento_paciente=expediente["Fecha de nacimiento (dd/mm/yyyy)"],
-                        sexo_paciente=expediente["Sexo (M/F)"],
-                        direccion_paciente=expediente["Dirección"],
-                        email_paciente=expediente["Email"],
-                        responsable=expediente["Responsable"],
-                        dui=expediente["Dui"],
-                        pasaporte=expediente["Pasaporte"],
-                        numero_telefono=str(expediente["Número de Telefono"])[:8]
-                    )
-                    Expediente.objects.create(
-                        id_paciente=paciente,
-                        codigo_expediente=expediente["Codigo"],
-                    )
-                else:
-                    print("no se pudo")
+                paciente = Paciente(
+                    nombre_paciente=expediente["Nombres"],
+                    apellido_paciente=expediente["Apellidos"],
+                    fecha_nacimiento_paciente=expediente["Fecha de nacimiento (dd/mm/yyyy)"],
+                    sexo_paciente=expediente["Sexo (M/F)"],
+                    direccion_paciente=expediente["Dirección"],
+                    email_paciente=expediente["Email"],
+                    responsable=expediente["Responsable"],
+                    dui=expediente["Dui"],
+                    pasaporte=expediente["Pasaporte"],
+                    numero_telefono=str(expediente["Número de Telefono"])[:8]
+                )
+                #paciente.save()
+                """ 
+                Expediente.objects.create(
+                    id_paciente=paciente,
+                ) """
 
+                json_paciente = serializers.serialize('json', [paciente ])
+                self.notificar_avance(json_paciente, "objeto")
                 procesados +=1
-                self.notificar_avance(f' se han procesado {procesados} de {cantidad} registros.')
+                self.notificar_avance(f'{procesados}', "dato")
 
             respuesta={
                 'data':'Enviado'
@@ -172,13 +173,14 @@ class RegistroMasivoExpedientesView(TemplateView):
             }
         return JsonResponse(respuesta)
     
-    def notificar_avance(self, data):
-        layer = get_channel_layer()
-        async_to_sync(layer.group_send)('archivos',{
+    def notificar_avance(self, data, tipo):
+        layer = get_channel_layer() 
+        async_to_sync(layer.group_send)('archivos',{# _archivos_ Este es el nombre del channel
         "type": "archivos",
         "room_id": 'archivos',
         "toast":"info",
-        "data":data
+        "data":data,
+        "tipo": tipo
         })
 
  
