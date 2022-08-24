@@ -129,7 +129,8 @@ class CalendarioConsumer(WebsocketConsumer):
 class RegistroMasivoConsumer(WebsocketConsumer):
 
         def archivos(self,event):
-                return self.send(text_data=json.dumps(event))
+                data=json.dumps(event)
+                return self.send(text_data=data)
 
         def connect(self):
                 self.room_group_name='archivos'
