@@ -37,74 +37,14 @@
                             </div>
                     </button>
                 </h2>
-                <div id="control-subsecuente-acordion-{{consulta.id_consulta}}" class="accordion-collapse collapse " aria-labelledby="panelsStayOpen-heading-{{signo_vital.id_signos_vitales}}">
-                    <div class="accordion-body">
-                        <div class="row" style="margin-top: 10px;">
-                            <div class="col fw-bold">
-                                <p>Consulta por: </p>
-                            </div>
-                            <div class="col">
-                                <a><textarea rows="2" cols="80" readonly></textarea></a>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top: 10px;">
-                            <div class="col fw-bold">
-                                    <p>Presente Enfermedad </p>
-                            </div>
-                            <div class="col">
-                                <a><textarea rows="2" cols="80" readonly></textarea></a>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top: 10px;">
-                            <div class="col fw-bold">
-                                    <a>Temperatura: </a>
-                            </div>
-                            <div class="col">
-                                    <a></a>
-                            </div>
-                            <div class="col fw-bold">
-                                <a>Pulso: </a>
-                            </div>
-                            <div class="col">
-                                    <a></a>
-                            </div>
-                            <div class="col fw-bold">
-                                <a>Respiraciòn: </a>
-                            </div>
-                            <div class="col">
-                                    <a> %</a>
-                            </div>
-                            <div class="col fw-bold">
-                                <a>Presion Arterial: </a>
-                            </div>
-                            <div class="col">
-                                    <a></a>
-                            </div>
-                        </div>
-                            <div class="row" style="margin-top: 10px;">
-                                    <div class="col fw-bold">
-                                            <a>Examen Fisico: </a>
-                                    </div>
-                                    <div class="col">
-                                        <a><textarea rows="2" cols="80" readonly></textarea></a>
-                                    </div>
-                            </div>
-                            <div class="row" style="margin-top: 10px;">
-                                    <div class="col fw-bold">
-                                            <a>Plan Diagnostico: </a>
-                                    </div>
-                                    <div class="col">
-                                        <a><textarea rows="2" cols="80" readonly></textarea></a>
-                                    </div>
-                            </div>                       
-                    </div>
-                </div>   
-            </div>
+                <div class="accordion" id="accordion_datos_consultas"></div>
         {% endfor %}
     </div>
 </div>
 
 {% endblock %}
 {% block js %}
-
+<script>
+    {% include './js/control_subsecuente.js' with id_consulta=id_consulta %}
+</script>
 {% endblock %}
