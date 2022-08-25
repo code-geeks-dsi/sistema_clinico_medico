@@ -1,6 +1,6 @@
 from django.urls import path
-from modulo_expediente.views.Expediente import (busqueda_paciente, 
-    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, ControlSubsecuenteView, buscar_expediente, RegistroMasivoExpedientesView)
+from modulo_expediente.views.Expediente import (ControlSubsecuenteConsultaView, busqueda_paciente, 
+    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, ControlSubsecuenteView,buscar_expediente, RegistroMasivoExpedientesView)
 from modulo_expediente.views.ConsultaMedica import (ConsultaView,antecedentesUpdateView)    
 from modulo_expediente.views.SignosVitales import (crear_signos_vitales, modificar_signosVitales,get_signos_vitales)    
 
@@ -60,6 +60,7 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/hoja-evolucion/lista',ListaHojaEvolucion.as_view(),name='hoja-evolucion-lista'),
     # Control Subsecuente
     path('consulta/<int:id_consulta>/control-subsecuente/',ControlSubsecuenteView.as_view(),name='control-subsecuente-view'),
+    path('consulta/<int:id_consulta>/control-subsecuente/detalle',ControlSubsecuenteConsultaView.as_view(),name='control-subsecuente-consulta-view'),
     # Agenda
     path('agenda/', AgendaView.as_view(),name='ver_agenda'),
     path('consulta/<int:id_consulta>/programar-cita/<int:id_expediente>', CitaConsultaView.as_view(), name='crear-cita-consulta'),
