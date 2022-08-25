@@ -9,8 +9,7 @@ function cargar_datos_consulta(url,id_acordeon){
     success: function(data) { 
             consulta=data.signos_vitales.consulta;
             signos_vitales=data.signos_vitales;
-            datos_consulta=`<div id="control-subsecuente-acordion-${consulta.id_consulta}" class="accordion-collapse collapse " aria-labelledby="panelsStayOpen-heading">
-            <div class="accordion-body">
+            datos_consulta=`
                 <div class="row" style="margin-top: 10px;">
                     <div class="col fw-bold">
                         <p>Consulta por: </p>
@@ -68,10 +67,9 @@ function cargar_datos_consulta(url,id_acordeon){
                             <div class="col">
                                 <a><textarea rows="2" cols="80" readonly>${consulta.plan_tratamiento}</textarea></a>
                             </div>
-                        </div>                       
-                    </div>
-                </div>   
-            </div>`;
+                    </div>                       
+                </div>
+`;
             $('#'+id_acordeon).html(datos_consulta);
            
     }});
