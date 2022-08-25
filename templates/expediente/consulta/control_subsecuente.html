@@ -10,34 +10,37 @@
     <div class="accordion" id="accordion_control_subsecuente">
         {% for consulta in consultas %}
             <div class="accordion-item">
-                <h2 class="accordion-header" id="control-subsecuente">
-                    <button button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#control-subsecuente-acordion-{{consulta.id_consulta}}" aria-expanded="false" aria-controls="collapseThree">
+                <h2 class="accordion-header" >
+                    <button onclick="cargar_datos_consulta('{% url 'control-subsecuente-consulta-view' id_consulta=consulta.id_consulta %}','control-subsecuente-acordion-{{consulta.id_consulta}}');" button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#control-subsecuente-acordion-{{consulta.id_consulta}}" aria-expanded="false" aria-controls="collapseThree">
                             <div class="col">
                                 <div class="row" style="text-align: right;margin-top: 10px;">
                                     <div class="col fw-bold">
-                                        <a>Fecha: </a>
+                                        <p>Fecha: </p>
                                     </div>
                                     <div class="col">
-                                        <a>{{ consulta.fecha.date }}</a>
+                                        <p>{{ consulta.fecha.date }}</p>
                                     </div>
+                                </div>
+                                <div class="row" style="text-align: right;margin-top: 10px;">
                                     <div class="col fw-bold">
-                                        <a>Hora: </a>
+                                        <p>Hora: </p>
                                     </div>
                                     
                                     <div class="col">
-                                        <a>{{ consulta.fecha.time }}</a>
+                                        <p>{{ consulta.fecha.time }}</p>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: 15px;">
                                     <div class="col fw-bold">
                                         <p>Diagnostico:</p>
-                                        <a><textarea rows="2" cols="90" readonly>{{ consulta.diagnostico}}</textarea></a>
+                                        <p>{{ consulta.diagnostico}}</p>
                                     </div>
                                 </div>
                             </div>
                     </button>
                 </h2>
-                <div class="accordion" id="accordion_datos_consultas"></div>
+                <div class="accordion" id="control-subsecuente-acordion-{{consulta.id_consulta}}"></div>
+            </div>
         {% endfor %}
     </div>
 </div>
@@ -45,6 +48,6 @@
 {% endblock %}
 {% block js %}
 <script>
-    {% include './js/control_subsecuente.js' with id_consulta=id_consulta %}
+    {% include './js/control_subsecuente.js'  %}
 </script>
 {% endblock %}

@@ -66,6 +66,12 @@ class SignosVitalesSerializer(serializers.ModelSerializer):
     class Meta:
         model = SignosVitales
         fields = '__all__'
+class ControlSubsecuenteConsultaSerializer(serializers.ModelSerializer):
+    fecha_consulta=serializers.DateTimeField(format='%d/%m/%Y %I:%M %p', source="consulta.fecha")
+    class Meta:
+        model = SignosVitales
+        exclude=['enfermera','fecha']
+        depth=1
 
 class CitaConsultaSerializer(serializers.ModelSerializer):
     id=serializers.IntegerField(source='id_cita_consulta')

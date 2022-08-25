@@ -1,6 +1,6 @@
 from http.client import HTTPResponse
 from django.shortcuts import redirect, render
-from modulo_expediente.serializers import ConsultaSerializers, ContieneConsultaSerializer, PacienteSerializer
+from modulo_expediente.serializers import ConsultaSerializers, ContieneConsultaSerializer, ControlSubsecuenteConsultaSerializer, PacienteSerializer, SignosVitalesSerializer
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
 from modulo_expediente.models import (Consulta, ContieneConsulta, ControlSubsecuente,  Paciente, Expediente, SignosVitales)
@@ -157,16 +157,12 @@ class ControlSubsecuenteView(View):
         def get(self, request, *args, **kwargs):
 
             id_consulta=int(self.kwargs['id_consulta']) 
-            contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).order_by('-fecha_de_cola').first()
-            #print(contiene_consulta)
+            contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).first()
             expediente=contiene_consulta.expediente_id
             contiene_consulta=ContieneConsulta.objects.filter(expediente_id=expediente).exclude(consulta__id_consulta=id_consulta).select_related('consulta')
-            print(contiene_consulta)
             lista=[]
             for i in range(len(contiene_consulta)):
-                print(contiene_consulta[i])
-                signos_vitales=SignosVitales.objects.filter(consulta_id=contiene_consulta[i].consulta.id_consulta).order_by('-fecha').first()
-                print(signos_vitales)
+                
                 c={
                      'id_consulta':"",
                      'fecha':"",
@@ -178,10 +174,17 @@ class ControlSubsecuenteView(View):
             
                 lista.append(c)
             
-            return JsonResponse({'consultas':lista})
+            return render(request,self.template_name,{'consultas':lista})
            
-
-
+class ControlSubsecuenteConsultaView(View): 
+    def get(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta']) 
+        signos_vitales_data=SignosVitales.objects.filter(consulta_id=id_consulta).order_by('-fecha').first()
+        # consulta_data=Consulta.objects.get(id_consulta=id_consulta)
+        signos_vitales=ControlSubsecuenteConsultaSerializer(signos_vitales_data,many=False)
+        print(signos_vitales.data)
+        # consulta=ConsultaSerializers(consulta)
+        return JsonResponse({'signos_vitales':signos_vitales.data})
         
 
 
