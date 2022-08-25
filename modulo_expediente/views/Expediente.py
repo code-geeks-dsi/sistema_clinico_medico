@@ -174,7 +174,7 @@ class ControlSubsecuenteView(View):
             
                 lista.append(c)
             
-            return render(request,self.template_name,{'consultas':lista})
+            return render(request,self.template_name,{'consultas':lista, 'id_consulta':id_consulta})
            
 class ControlSubsecuenteConsultaView(View): 
     def get(self, request, *args, **kwargs):

@@ -7,7 +7,23 @@
 {% block content %}
 
 <div class="container pt-4">
-    <div class="accordion" id="accordion_control_subsecuente">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="fw-bold text-secondary">Control Subsecuente</h2>
+        </div>
+        <div class="col-6">
+            <div class="d-flex justify-content-end">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-3">
+                        <li class="breadcrumb-item"><a href="{% url 'sala_consulta' %}">Expediente</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'editar_consulta' id_consulta=id_consulta %}">Consulta</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Control Subsecuente</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="accordion pt-4" id="accordion_control_subsecuente">
         {% for consulta in consultas %}
             <div class="accordion-item">
                 <h2 class="accordion-header">
@@ -45,7 +61,13 @@
                     </button>
                 </h2>
                 <div class="accordion-collapse ">
-                    <div class="accordion-body collapse" id="control-subsecuente-acordion-{{consulta.id_consulta}}"></div>
+                    <div class="accordion-body collapse" id="control-subsecuente-acordion-{{consulta.id_consulta}}">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status" id="load">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         {% endfor %}
