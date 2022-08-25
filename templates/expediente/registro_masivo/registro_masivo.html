@@ -68,15 +68,7 @@
                         <table class="table table-bordered text-center">
                             <thead class="table-primary">
                                 <tr>
-                                    <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>Fecha de nacimiento</th>
-                                    <th>Sexo</th>
-                                    <th>Responsable</th>
-                                    <th>Email</th>
-                                    <th>Dui</th>
-                                    <th>Pasaporte</th>
-                                    <th>Numero de Telefono</th>    
+                                    <th>Datos Personales</th>  
                                 </tr>
                             </thead>
                             <tbody id="lista-expedientes">
@@ -159,19 +151,84 @@
             case "objeto":
                 paciente=JSON.parse(data.data)
                 $("#lista-expedientes").append(`
-                     <tr>
-                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["nombre_paciente"]}"></td>
-                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["apellido_paciente"]}"></td>
-                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["fecha_nacimiento_paciente"]}"></td>
-                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["sexo_paciente"]}"></td>
-                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["responsable"]}"></td>
-                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["email_paciente"]}"></td>
-                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["dui"]}"></td>
-                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["pasaporte"]}"></td>
-                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["numero_telefono"]}"></td>
+                     <tr class="text-start">
+                        <td>
+                            <div class="row">
+                                <div class="col-md-6 col-lg-4">
+                                    <p><span class="fw-bold">Nombre: </span>${paciente[0]["fields"]["nombre_paciente"]} ${paciente[0]["fields"]["apellido_paciente"]}</p>
+                                    <p><span class="fw-bold">Responsable: </span>${paciente[0]["fields"]["responsable"]}</p>
+                                    <p><span class="fw-bold">Dui: </span>${paciente[0]["fields"]["dui"]}</p>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <p><span class="fw-bold">Fecha de nacimiento: </span>${paciente[0]["fields"]["fecha_nacimiento_paciente"]}</p>
+                                    <p><span class="fw-bold">Email: </span>${paciente[0]["fields"]["email_paciente"]}</p>
+                                    <p><span class="fw-bold">Pasaporte: </span>${paciente[0]["fields"]["pasaporte"]}</p>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <p><span class="fw-bold">Sexo: </span>${paciente[0]["fields"]["sexo_paciente"]}</p>
+                                    <p><span class="fw-bold">Telefono: </span>${paciente[0]["fields"]["numero_telefono"]}</p>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 `);
-                console.log(paciente[0]["fields"]);
+                console.log(data)
+                break;
+            case "objetoError":
+                paciente=JSON.parse(data.data)
+                $("#lista-expedientes").append(`
+                     <tr class="text-start">
+                        <td>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="" class="form-label">Nombre: </label>
+                                        <input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["nombre_paciente"]}">            
+                                    </div>
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="" class="form-label">Apellido:</label>
+                                        <input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["apellido_paciente"]}">
+                                    </div>
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="" class="form-label">Fecha de nacimiento:</label>
+                                        <input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["fecha_nacimiento_paciente"].slice(0,-9)}">
+                                    </div>
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="" class="form-label">Sexo: (F/M)</label>
+                                        <input type="text" maxlength="1" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["sexo_paciente"]}">
+                                    </div>
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="" class="form-label">Responsable:</label>
+                                        <input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["responsable"]}">
+                                    </div>
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="" class="form-label">Email: </label>
+                                        <input type="email" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["email_paciente"]}">
+                                    </div>
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="" class="form-label">Pasaporte: </label>
+                                        <input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["pasaporte"]}">
+                                    </div>
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="" class="form-label">Dui: </label>
+                                        <input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["dui"]}">
+                                    </div>
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="" class="form-label">Telefono: </label>
+                                        <input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["numero_telefono"]}"> 
+                                    </div>
+                                    <p></p>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                `);
+
+                break;
+            case "terminado":
+                $("#barra-progreso").css( "width", "100%" );
+                toastr[data.toast](data.data); 
+                console.log(data)
                 break;
         }
 
@@ -212,43 +269,7 @@
         urlEliminarArchivo=`/expediente/documento/${id_archivo}/`;
     }
 
-    function eliminarArchivo(){
-        $('#load').show();
-        $.ajax({
-		type: 'DELETE',
-		url: urlEliminarArchivo,
-		data: {},  
-        headers: {
-            "X-CSRFToken": '{{ csrf_token }}',
-        },
-        success: function(response){
-            $('#load').hide();
-            $('#modal-eliminar-archivo').modal('hide');
-			toastr[response.type](response.data);
-            if(response.type=='success'){
-                //Actualizando lista de archivos
-                let htmlDatos;
-                response.archivos.forEach(archivo => {
-                    htmlDatos=htmlDatos+`
-                    <tr>
-                        <td>${archivo.titulo}</td>
-                        <td>${archivo.propietario}</td>
-                        <td>${archivo.fecha}</td>
-                        <td>
-                            <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${archivo.id_documento}/"  target="_blank">open_in_new</a>
-                            <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${archivo.id_documento}/"  download>file_download</a>
-                            <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo(${archivo.id_documento});" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo" >delete</a>
-                        </td>
-                    </tr>
-                    `;
-                });
-                $('#lista-archivos-externos').empty().append(htmlDatos);
-                //limpiando barra de carga
-                $('.dz-image-preview').remove();
-                $('#my-great-dropzone').removeClass('dz-started')
-            } 
-        }});
-    }
+    
 </script>
 
 {% endblock %}

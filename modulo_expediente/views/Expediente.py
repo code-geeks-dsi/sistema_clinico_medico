@@ -137,8 +137,8 @@ class RegistroMasivoExpedientesView(TemplateView):
             expedientes=xlsx.to_dict(orient='records')
             cantidad=len(expedientes)
 
-            self.notificar_avance("Archivo leído con éxito.", "notificacion")
-            self.notificar_avance(f'{cantidad}', "header")
+            self.notificar_avance("Archivo leído con éxito.", "notificacion","")
+            self.notificar_avance(f'{cantidad}', "header","")
             procesados=0
             for expediente in expedientes:
                 paciente = Paciente(
@@ -153,16 +153,21 @@ class RegistroMasivoExpedientesView(TemplateView):
                     pasaporte=expediente["Pasaporte"],
                     numero_telefono=str(expediente["Número de Telefono"])[:8]
                 )
-                #paciente.save()
-                """ 
-                Expediente.objects.create(
-                    id_paciente=paciente,
-                ) """
-
-                json_paciente = serializers.serialize('json', [paciente ])
-                self.notificar_avance(json_paciente, "objeto")
                 procesados +=1
-                self.notificar_avance(f'{procesados}', "dato")
+                try:
+                    paciente.save()
+                    """ 
+                    Expediente.objects.create(
+                        id_paciente=paciente,
+                    ) """
+                    self.notificar_avance(f'{procesados}', "dato", "")
+                except:
+                    json_paciente = serializers.serialize('json', [paciente ])
+                    self.notificar_avance(json_paciente, "objetoError",expediente["#"])
+
+            
+
+            self.notificar_avance(f'{"100%"}', "notificacion", "")
 
             respuesta={
                 'data':'Enviado'
@@ -174,14 +179,15 @@ class RegistroMasivoExpedientesView(TemplateView):
             }
         return JsonResponse(respuesta)
     
-    def notificar_avance(self, data, tipo):
+    def notificar_avance(self, data, tipo, numero):
         layer = get_channel_layer() 
         async_to_sync(layer.group_send)('archivos',{# _archivos_ Este es el nombre del channel
         "type": "archivos",
         "room_id": 'archivos',
         "toast":"info",
         "data":data,
-        "tipo": tipo
+        "tipo": tipo,
+        "numero":numero
         })
 
  
