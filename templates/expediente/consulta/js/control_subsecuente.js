@@ -43,7 +43,7 @@ function cargar_datos_consulta(url,id_acordeon){
                         <a>Respiraciòn: </a>
                     </div>
                     <div class="col">
-                            <a>${ signos_vitales.valor_saturacion_oxigeno } ${ signos_vitales.unidad_saturacion_oxigeno } %</a>
+                            <a>${ signos_vitales.valor_saturacion_oxigeno } ${ signos_vitales.unidad_saturacion_oxigeno } </a>
                     </div>
                     <div class="col fw-bold">
                         <a>Presion Arterial: </a>

@@ -10,42 +10,42 @@
     <div class="accordion" id="accordion_control_subsecuente">
         {% for consulta in consultas %}
             <div class="accordion-item">
-<!--                 <h2 class="accordion-header">
-                    <button onclick="cargar_datos_consulta('{% url 'control-subsecuente-consulta-view' id_consulta=consulta.id_consulta %}','control-subsecuente-acordion-{{consulta.id_consulta}}');" class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse"  data-bs-target="#control-subsecuente-acordion-{{consulta.id_consulta}}" aria-expanded="true" aria-controls="collapseThree">
-                        Antecedentes
-                    </button>
-                </h2> -->
                 <h2 class="accordion-header">
-                    <button onclick="cargar_datos_consulta('{% url 'control-subsecuente-consulta-view' id_consulta=consulta.id_consulta %}','control-subsecuente-acordion-{{consulta.id_consulta}}');" class="card-header accordion-button collapsed py-3" type="button" data-bs-toggle="collapse" data-bs-target="#control-subsecuente-acordion-{{consulta.id_consulta}}" aria-expanded="false" aria-controls="collapseThree">
-                            <div class="col">
-                                <div class="row" style="text-align: right;margin-top: 10px;">
-                                    <div class="col fw-bold">
-                                        <p>Fecha: </p>
-                                    </div>
-                                    <div class="col">
-                                        <p>{{ consulta.fecha.date }}</p>
+                    <button onclick="cargar_datos_consulta('{% url 'control-subsecuente-consulta-view' id_consulta=consulta.id_consulta %}','control-subsecuente-acordion-{{consulta.id_consulta}}');" class="accordion-button collapsed py-3" type="button" data-bs-toggle="collapse" data-bs-target="#control-subsecuente-acordion-{{consulta.id_consulta}}" aria-expanded="false" aria-controls="control-subsecuente-acordion-{{consulta.id_consulta}}">
+
+                                <div class="container">
+                                    <div class="row justify-content-evenly">
+                                        <div class="col-4">
+                                            <div class=" fw-bold">
+                                                <p>Diagnostico:</p>
+                                                <p>{{ consulta.diagnostico}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class=" fw-bold">
+                                                <p>Fecha: </p>
+                                            </div>
+                                            <div class="">
+                                                <p>{{ consulta.fecha.date }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class=" fw-bold">
+                                                <p>Hora: </p>
+                                            </div>
+                                            
+                                            <div class="col">
+                                                <p>{{ consulta.fecha.time }}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row" style="text-align: right;margin-top: 10px;">
-                                    <div class="col fw-bold">
-                                        <p>Hora: </p>
-                                    </div>
-                                    
-                                    <div class="col">
-                                        <p>{{ consulta.fecha.time }}</p>
-                                    </div>
-                                </div>
-                                <div class="row" style="margin-top: 15px;">
-                                    <div class="col fw-bold">
-                                        <p>Diagnostico:</p>
-                                        <p>{{ consulta.diagnostico}}</p>
-                                    </div>
-                                </div>
-                            </div> 
+                               
+
                     </button>
                 </h2>
-                <div class="accordion-collapse collapse show">
-                    <div class="accordion-body" id="control-subsecuente-acordion-{{consulta.id_consulta}}"></div>
+                <div class="accordion-collapse ">
+                    <div class="accordion-body collapse" id="control-subsecuente-acordion-{{consulta.id_consulta}}"></div>
                 </div>
             </div>
         {% endfor %}
