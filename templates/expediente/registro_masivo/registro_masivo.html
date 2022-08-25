@@ -160,15 +160,15 @@
                 paciente=JSON.parse(data.data)
                 $("#lista-expedientes").append(`
                      <tr>
-                        <td>${paciente[0]["fields"]["nombre_paciente"]}</td>
-                        <td>${paciente[0]["fields"]["apellido_paciente"]}</td>
-                        <td>${paciente[0]["fields"]["fecha_nacimiento_paciente"]}</td>
-                        <td>${paciente[0]["fields"]["sexo_paciente"]}</td>
-                        <td>${paciente[0]["fields"]["responsable"]}</td>
-                        <td>${paciente[0]["fields"]["email_paciente"]}</td>
-                        <td>${paciente[0]["fields"]["dui"]}</td>
-                        <td>${paciente[0]["fields"]["pasaporte"]}</td>
-                        <td>${paciente[0]["fields"]["numero_telefono"]}</td>
+                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["nombre_paciente"]}"></td>
+                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["apellido_paciente"]}"></td>
+                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["fecha_nacimiento_paciente"]}"></td>
+                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["sexo_paciente"]}"></td>
+                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["responsable"]}"></td>
+                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["email_paciente"]}"></td>
+                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["dui"]}"></td>
+                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["pasaporte"]}"></td>
+                        <td><input type="text" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["numero_telefono"]}"></td>
                     </tr>
                 `);
                 console.log(paciente[0]["fields"]);
