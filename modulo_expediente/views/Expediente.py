@@ -1,3 +1,4 @@
+from http.client import HTTPResponse
 from django.shortcuts import redirect, render
 from modulo_expediente.serializers import ConsultaSerializers, ContieneConsultaSerializer, PacienteSerializer
 from datetime import datetime
@@ -157,24 +158,27 @@ class ControlSubsecuenteView(View):
 
             id_consulta=int(self.kwargs['id_consulta']) 
             contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).order_by('-fecha_de_cola').first()
+            #print(contiene_consulta)
             expediente=contiene_consulta.expediente_id
-            contiene_consulta=list(ContieneConsulta.objects.filter(expediente_id=expediente))
+            contiene_consulta=ContieneConsulta.objects.filter(expediente_id=expediente).exclude(consulta__id_consulta=id_consulta).select_related('consulta')
             print(contiene_consulta)
             lista=[]
             for i in range(len(contiene_consulta)):
+                print(contiene_consulta[i])
                 signos_vitales=SignosVitales.objects.filter(consulta_id=contiene_consulta[i].consulta.id_consulta).order_by('-fecha').first()
                 print(signos_vitales)
                 c={
-                    'id_consulta':"",
-                    'fecha':"",
-                    'diagnostico':"",
+                     'id_consulta':"",
+                     'fecha':"",
+                     'diagnostico':"",
                 }
                 c['id_consulta']=contiene_consulta[i].consulta.id_consulta
                 c['fecha']=contiene_consulta[i].consulta.fecha
                 c['diagnostico']=contiene_consulta[i].consulta.diagnostico
+            
                 lista.append(c)
             
-            return render(request, self.template_name, {'consultas':lista})
+            return JsonResponse({'consultas':lista})
            
 
 
