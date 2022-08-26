@@ -16,10 +16,12 @@ from django.views.generic import View, TemplateView
 from django.views.generic import TemplateView
 
 from django.core import serializers
+from django.db.utils import IntegrityError
 
-###Para los examenes masivos
+###Para los expedientes masivos
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.http import QueryDict
 import pandas as pd
 import pathlib 
 
@@ -140,6 +142,8 @@ class RegistroMasivoExpedientesView(TemplateView):
             self.notificar_avance("Archivo leído con éxito.", "notificacion","")
             self.notificar_avance(f'{cantidad}', "header","")
             procesados=0
+            exitos=0
+            fracasos=0
             for expediente in expedientes:
                 paciente = Paciente(
                     nombre_paciente=expediente["Nombres"],
@@ -160,14 +164,16 @@ class RegistroMasivoExpedientesView(TemplateView):
                     Expediente.objects.create(
                         id_paciente=paciente,
                     ) """
+                    exitos +=1
                     self.notificar_avance(f'{procesados}', "dato", "")
-                except:
+                except IntegrityError:
+                    fracasos +=1
                     json_paciente = serializers.serialize('json', [paciente ])
                     self.notificar_avance(json_paciente, "objetoError",expediente["#"])
 
             
 
-            self.notificar_avance(f'{"100%"}', "notificacion", "")
+            self.notificar_avance(f'Expedientes registrados: {exitos}, \nExpedientes pendientes de revisión: {fracasos}', "notificacion", expediente["#"])
 
             respuesta={
                 'data':'Enviado'
@@ -179,6 +185,15 @@ class RegistroMasivoExpedientesView(TemplateView):
             }
         return JsonResponse(respuesta)
     
+    def put(self, request, *args, **kwargs):
+        data = QueryDict(request.body)
+        paciente_form= DatosDelPaciente(data)
+        if paciente_form.is_valid():
+            print(paciente_form.is_valid())
+            print(paciente_form["email_paciente"].value())
+
+        return JsonResponse({'data':'success'})
+        
     def notificar_avance(self, data, tipo, numero):
         layer = get_channel_layer() 
         async_to_sync(layer.group_send)('archivos',{# _archivos_ Este es el nombre del channel
