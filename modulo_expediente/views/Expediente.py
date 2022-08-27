@@ -1,5 +1,6 @@
+from http.client import HTTPResponse
 from django.shortcuts import redirect, render
-from modulo_expediente.serializers import ConsultaSerializers, ContieneConsultaSerializer, PacienteSerializer
+from modulo_expediente.serializers import ConsultaSerializers, ContieneConsultaSerializer, ControlSubsecuenteConsultaSerializer, PacienteSerializer, SignosVitalesSerializer
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
 from modulo_expediente.models import (Consulta, ContieneConsulta, ControlSubsecuente,  Paciente, Expediente, SignosVitales)
@@ -14,9 +15,15 @@ from django.views import View
 from django.views.generic import View, TemplateView
 from django.views.generic import TemplateView
 
-###Para los examenes masivos
+from django.core import serializers
+from django.db.utils import IntegrityError
+
+###Para los expedientes masivos
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.http import QueryDict
+import pandas as pd
+import pathlib 
 
 def busqueda_paciente(request):
 
@@ -121,87 +128,123 @@ def crear_expediente(request):
 #Registro masivo de expedientes
 class RegistroMasivoExpedientesView(TemplateView):
     template_name = "expediente/registro_masivo/registro_masivo.html"
+    response={'type':'','data':''}
 
     def post(self, request, *args, **kwargs):
-        archivo=request.FILES
+        archivo=request.FILES['file']
+        file_extension = pathlib.Path(archivo.name).suffix 
+        if file_extension in ('.xls', '.xlsx'):
 
-        #Archivo Recibido
-        layer = get_channel_layer()
-        async_to_sync(layer.group_send)('archivos',{
+            xlsx = pd.read_excel(archivo)
+            xlsx.fillna("", inplace=True)
+            expedientes=xlsx.to_dict(orient='records')
+            cantidad=len(expedientes)
+
+            self.notificar_avance("Archivo leído con éxito.", "notificacion","")
+            self.notificar_avance(f'{cantidad}', "header","")
+            procesados=0
+            exitos=0
+            fracasos=0
+            for expediente in expedientes:
+                paciente = Paciente(
+                    nombre_paciente=expediente["Nombres"],
+                    apellido_paciente=expediente["Apellidos"],
+                    fecha_nacimiento_paciente=expediente["Fecha de nacimiento (dd/mm/yyyy)"],
+                    sexo_paciente=expediente["Sexo (M/F)"],
+                    direccion_paciente=expediente["Dirección"],
+                    email_paciente=expediente["Email"],
+                    responsable=expediente["Responsable"],
+                    dui=expediente["Dui"],
+                    pasaporte=expediente["Pasaporte"],
+                    numero_telefono=str(expediente["Número de Telefono"])[:8]
+                )
+                procesados +=1
+                try:
+                    paciente.save()
+                    
+                    Expediente.objects.create(
+                        id_paciente=paciente,
+                    )
+                    exitos +=1
+                    self.notificar_avance(f'{procesados}', "dato", "")
+                except IntegrityError:
+                    fracasos +=1
+                    json_paciente = serializers.serialize('json', [paciente ])
+                    self.notificar_avance(json_paciente, "objetoError",expediente["#"])
+            self.notificar_avance(f'Expedientes registrados: {exitos}, \nExpedientes pendientes de revisión: {fracasos}', "notificacion", expediente["#"])
+            self.notificar_avance(f'{procesados}', "dato", "")
+            respuesta={
+                'data':'Enviado'
+            }
+
+        else:
+            respuesta={
+                'data':'error'
+            }
+        return JsonResponse(respuesta)
+    ##Voy a acupar este metodo para alamacenar de forma individual
+    def put(self, request, *args, **kwargs):
+        data = QueryDict(request.body)
+        paciente_form= DatosDelPaciente(data)
+        if paciente_form.is_valid():
+            paciente=paciente_form.save()
+            Expediente.objects.create(
+                id_paciente=paciente,
+            )
+            self.response['type']='success'
+            self.response['data']='Expediente Registrado'
+        else:
+            self.response['type']='warning'
+            self.response['data']=paciente_form.errors.get_json_data()
+
+        return JsonResponse(self.response)
+        
+    def notificar_avance(self, data, tipo, numero):
+        layer = get_channel_layer() 
+        async_to_sync(layer.group_send)('archivos',{# _archivos_ Este es el nombre del channel
         "type": "archivos",
         "room_id": 'archivos',
-        "data":"Recibi el archivo"
+        "toast":"info",
+        "data":data,
+        "tipo": tipo,
+        "numero":numero
         })
-
-        ##Archivo leido
-        async_to_sync(layer.group_send)('archivos',{
-        "type": "archivos",
-        "room_id": 'archivos',
-        "data":"Leí el archivo"
-        })
-        ##Archivo expediente agregado
-        async_to_sync(layer.group_send)('archivos',{
-        "type": "archivos",
-        "room_id": 'archivos',
-        "data":"Registre un expediente",
-        })
-
-        print(request.FILES)
-        return JsonResponse({"data":'Sudido'})
 
  
-class ControlSubsecuenteView(TemplateView): 
+class ControlSubsecuenteView(View): 
         template_name = "expediente/consulta/control_subsecuente.html"
 
         def get(self, request, *args, **kwargs):
 
             id_consulta=int(self.kwargs['id_consulta']) 
-            contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).order_by('-fecha_de_cola').first()
+            contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).first()
             expediente=contiene_consulta.expediente_id
-            contiene_consulta=list(ContieneConsulta.objects.filter(expediente_id=expediente))
-            print(contiene_consulta)
-            contiene_serializer=ContieneConsultaSerializer(contiene_consulta, many= True)
-            signos_vitales=SignosVitales.objects.filter(consulta_id=id_consulta).order_by('-fecha').first()
-            print(signos_vitales)
+            contiene_consulta=ContieneConsulta.objects.filter(expediente_id=expediente).exclude(consulta__id_consulta=id_consulta).select_related('consulta')
             lista=[]
             for i in range(len(contiene_consulta)):
+                
                 c={
-                    'id_consulta':"",
-                    'consulta_por':"",
-                    'presente_enfermedad':"",
-                    'examen_fisico':"",
-                    'diagnostico':"",
-                    'plan_tratamiento':""
+                     'id_consulta':"",
+                     'fecha':"",
+                     'diagnostico':"",
                 }
                 c['id_consulta']=contiene_consulta[i].consulta.id_consulta
-                c['consulta_por']=contiene_consulta[i].consulta.consulta_por
-                c['presente_enfermedad']=contiene_consulta[i].consulta.presente_enfermedad
-                c['examen_fisico']=contiene_consulta[i].consulta.examen_fisico
+                c['fecha']=contiene_consulta[i].consulta.fecha
                 c['diagnostico']=contiene_consulta[i].consulta.diagnostico
-                c['plan_tratamiento']=contiene_consulta[i].consulta.plan_tratamiento
-                lista.append(c)
-
-        
-            diccionario={
-                    "id_signos_vitales":signos_vitales.id_signos_vitales,
-                    "unidad_temperatura":signos_vitales.unidad_temperatura,
-                    "unidad_peso":signos_vitales.unidad_peso,
-                    "valor_temperatura":signos_vitales.valor_temperatura,
-                    "valor_peso":signos_vitales.valor_peso,
-                    "valor_arterial_diasolica":signos_vitales.valor_presion_arterial_diastolica,
-                    "valor_arterial_sistolica":signos_vitales.valor_presion_arterial_sistolica,
-                    "valor_frecuencia_cardiaca":signos_vitales.valor_frecuencia_cardiaca,
-                    "valor_saturacion_oxigeno":signos_vitales.valor_saturacion_oxigeno
-            }
-            datos={
-                'consultas':lista,
-                'signo_vital':diccionario
-            }
             
-            return render(request, self.template_name, datos)
+                lista.append(c)
+            
+            return render(request,self.template_name,{'consultas':lista, 'id_consulta':id_consulta})
            
-
-
+class ControlSubsecuenteConsultaView(View): 
+    def get(self, request, *args, **kwargs):
+        id_consulta=int(self.kwargs['id_consulta']) 
+        signos_vitales_data=SignosVitales.objects.filter(consulta_id=id_consulta).order_by('-fecha').first()
+        # consulta_data=Consulta.objects.get(id_consulta=id_consulta)
+        signos_vitales=ControlSubsecuenteConsultaSerializer(signos_vitales_data,many=False)
+        print(signos_vitales.data)
+        # consulta=ConsultaSerializers(consulta)
+        return JsonResponse({'signos_vitales':signos_vitales.data})
         
 
 

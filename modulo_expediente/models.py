@@ -14,7 +14,7 @@ class Expediente(models.Model):
     id_expediente = models.AutoField(primary_key=True, unique=True)
     id_paciente=models.OneToOneField('Paciente', models.CASCADE, blank=False, null=False)
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
-    codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
+    codigo_expediente=models.CharField(max_length=10,blank=True,null=True)
     contiene_consulta=models.ManyToManyField('Consulta',through='ContieneConsulta')
     antecedentes_familiares=models.TextField(null=True,blank=True,default="")
     antecedentes_personales=models.TextField(null=True,blank=True,default="")
@@ -38,6 +38,8 @@ class Paciente(models.Model):
     dui=models.CharField(max_length=10,blank=True,null=True)
     pasaporte=models.CharField(max_length=15,blank=True,null=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
     numero_telefono=models.CharField(max_length=8, null=True, blank=True,default="")
+    class Meta:
+        unique_together = (('dui'),)
 
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)
