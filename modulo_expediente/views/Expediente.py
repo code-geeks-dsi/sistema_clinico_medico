@@ -128,6 +128,7 @@ def crear_expediente(request):
 #Registro masivo de expedientes
 class RegistroMasivoExpedientesView(TemplateView):
     template_name = "expediente/registro_masivo/registro_masivo.html"
+    response={'type':'','data':''}
 
     def post(self, request, *args, **kwargs):
         archivo=request.FILES['file']
@@ -135,7 +136,7 @@ class RegistroMasivoExpedientesView(TemplateView):
         if file_extension in ('.xls', '.xlsx'):
 
             xlsx = pd.read_excel(archivo)
-            xlsx.fillna(0, inplace=True)
+            xlsx.fillna("", inplace=True)
             expedientes=xlsx.to_dict(orient='records')
             cantidad=len(expedientes)
 
@@ -160,21 +161,18 @@ class RegistroMasivoExpedientesView(TemplateView):
                 procesados +=1
                 try:
                     paciente.save()
-                    """ 
+                    
                     Expediente.objects.create(
                         id_paciente=paciente,
-                    ) """
+                    )
                     exitos +=1
                     self.notificar_avance(f'{procesados}', "dato", "")
                 except IntegrityError:
                     fracasos +=1
                     json_paciente = serializers.serialize('json', [paciente ])
                     self.notificar_avance(json_paciente, "objetoError",expediente["#"])
-
-            
-
             self.notificar_avance(f'Expedientes registrados: {exitos}, \nExpedientes pendientes de revisión: {fracasos}', "notificacion", expediente["#"])
-
+            self.notificar_avance(f'{procesados}', "dato", "")
             respuesta={
                 'data':'Enviado'
             }
@@ -184,15 +182,22 @@ class RegistroMasivoExpedientesView(TemplateView):
                 'data':'error'
             }
         return JsonResponse(respuesta)
-    
+    ##Voy a acupar este metodo para alamacenar de forma individual
     def put(self, request, *args, **kwargs):
         data = QueryDict(request.body)
         paciente_form= DatosDelPaciente(data)
         if paciente_form.is_valid():
-            print(paciente_form.is_valid())
-            print(paciente_form["email_paciente"].value())
+            paciente=paciente_form.save()
+            Expediente.objects.create(
+                id_paciente=paciente,
+            )
+            self.response['type']='success'
+            self.response['data']='Expediente Registrado'
+        else:
+            self.response['type']='warning'
+            self.response['data']=paciente_form.errors.get_json_data()
 
-        return JsonResponse({'data':'success'})
+        return JsonResponse(self.response)
         
     def notificar_avance(self, data, tipo, numero):
         layer = get_channel_layer() 
