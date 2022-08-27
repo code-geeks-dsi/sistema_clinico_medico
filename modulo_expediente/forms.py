@@ -18,7 +18,7 @@ class DateInput(forms.DateInput):
 class DatosDelPaciente(ModelForm):
     class Meta:
         model = Paciente
-        fields = ('nombre_paciente', 'apellido_paciente','sexo_paciente','direccion_paciente','email_paciente','responsable','fecha_nacimiento_paciente')
+        fields = "__all__"
         widgets = {
             'fecha_nacimiento_paciente': forms.DateInput(
                 format=('%Y-%m-%d'),
@@ -53,6 +53,22 @@ class DatosDelPaciente(ModelForm):
             'responsable': TextInput(
                attrs={'class': 'form-control', 
                'placeholder': 'Nombres Apellidos',
+              } 
+            ),
+            'dui': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese el DUI',
+              } 
+            ),
+            'pasaporte': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese el numero de pasaporte',
+              } 
+            ),
+            'numero_telefono': TextInput(
+               attrs={'class': 'form-control', 
+               'placeholder': 'Ingrese el numero de teléfono',
+               'type':'number'
               } 
             ),
 

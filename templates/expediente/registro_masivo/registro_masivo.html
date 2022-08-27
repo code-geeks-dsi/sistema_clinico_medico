@@ -49,34 +49,28 @@
                             </button>
                         </div>
                     </form>
-                </div>
-                <div class="progress">
-                    <div class="progress-bar" id="barra-progreso" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" valor="0"></div>
+                    <div class="pt-4">   
+                        <div class="progress">
+                            <div class="progress-bar" id="barra-progreso" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" valor="0"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <!--Lista de archivos-->
         <div class="accordion-item">
             <button id="lista-archivos-header" class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#lista-de-archivos" aria-expanded="true" aria-controls="collapseThree">
-                Lista de Archivos Registrados
+                Lista de Expedientes Pendientes de Revisión
             </button>
             <!--Lista de Archivos Body-->
             <div id="lista-de-archivos" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
                 <div class="accordion-body">
                     <!--Tabla de Archivos-->
                     <div class="table-responsive" id="tabla_archivos_agregadas">
-                        <table class="table table-bordered text-center">
+                        <table class="table table-bordered text-center table-hover">
                             <thead class="table-primary">
                                 <tr>
-                                    <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>Fecha de nacimiento</th>
-                                    <th>Sexo</th>
-                                    <th>Responsable</th>
-                                    <th>Email</th>
-                                    <th>Dui</th>
-                                    <th>Pasaporte</th>
-                                    <th>Numero de Telefono</th>    
+                                    <th>Datos Personales</th>  
                                 </tr>
                             </thead>
                             <tbody id="lista-expedientes">
@@ -89,7 +83,7 @@
                                     <td>
                                         <a class="material-symbols-outlined btn btn-sm" href="{% url 'storage-url' id_documento=archivo.id_documento %}"  target="_blank">open_in_new</a>
                                         <a class="material-symbols-outlined btn btn-sm" href="{% url 'download-url' id_documento=archivo.id_documento %}" target="_blank" download="{{archivo.titulo}}">file_download</a>
-                                        <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo({{archivo.id_documento}});" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo">delete</a>
+                                        <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo('{{archivo.id_documento}}');" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo">delete</a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -156,22 +150,65 @@
                 porcentaje=`${porcentaje}%`;
                 $("#barra-progreso").css( "width", porcentaje );
                 break;
-            case "objeto":
+            
+            case "objetoError":
                 paciente=JSON.parse(data.data)
                 $("#lista-expedientes").append(`
-                     <tr>
-                        <td>${paciente[0]["fields"]["nombre_paciente"]}</td>
-                        <td>${paciente[0]["fields"]["apellido_paciente"]}</td>
-                        <td>${paciente[0]["fields"]["fecha_nacimiento_paciente"]}</td>
-                        <td>${paciente[0]["fields"]["sexo_paciente"]}</td>
-                        <td>${paciente[0]["fields"]["responsable"]}</td>
-                        <td>${paciente[0]["fields"]["email_paciente"]}</td>
-                        <td>${paciente[0]["fields"]["dui"]}</td>
-                        <td>${paciente[0]["fields"]["pasaporte"]}</td>
-                        <td>${paciente[0]["fields"]["numero_telefono"]}</td>
+                     <tr class="text-start">
+                        <td id="td-expediente-error-${data.numero}">
+                            <form id="expediente-error-${data.numero}" class="needs-validation">
+                                <fieldset> 
+                                    <div class="row">    
+                                        <p class="text-center fw-bold">Expediente número ${data.numero}</p>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Nombre: </label>
+                                            <input type="text" name="nombre_paciente" id="id_nombre_paciente" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["nombre_paciente"]}">            
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Apellido:</label>
+                                            <input type="text" name="apellido_paciente" id="id_apellido_paciente" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["apellido_paciente"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Fecha de nacimiento:</label>
+                                            <input type="date" name="fecha_nacimiento_paciente" id="id_fecha_nacimiento_paciente" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["fecha_nacimiento_paciente"].slice(0,-9)}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Sexo: (F/M)</label>
+                                            <input type="text" name="sexo_paciente" id="id_sexo_paciente" maxlength="1" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["sexo_paciente"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Responsable:</label>
+                                            <input type="text" name="responsable" id="id_responsable" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["responsable"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Email: </label>
+                                            <input type="email" name="email_paciente" id="id_email_paciente" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["email_paciente"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Pasaporte: </label>
+                                            <input type="text" name="pasaporte" id="id_pasaporte" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["pasaporte"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Dui: </label>
+                                            <input type="text" name="dui" id="id_dui" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["dui"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Telefono: </label>
+                                            <input type="text" name="numero_telefono" id="id_numero_telefono" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["numero_telefono"]}"> 
+                                        </div>
+                                    </fieldset> 
+                                    <p class="text-center pt-4"><button id="btn-expediente-error-${data.numero}" onclick="corregirExpediente('expediente-error-${data.numero}');" type="button" class="btn btn-outline-primary">Guardar</button></p>
+                                </div>
+                            </form>
+                        </td>
                     </tr>
                 `);
-                console.log(paciente[0]["fields"]);
+
+                break;
+            case "terminado":
+                $("#barra-progreso").css( "width", "100%" );
+                toastr[data.toast](data.data); 
+                console.log(data)
                 break;
         }
 
@@ -208,47 +245,41 @@
         }
     };
 
-    function setUrlEliminarArchivo(id_archivo){
-        urlEliminarArchivo=`/expediente/documento/${id_archivo}/`;
-    }
-
-    function eliminarArchivo(){
-        $('#load').show();
+    //Funcion para almacenar los expedientes con la información corregida
+    function corregirExpediente(id_form){
+        console.log($('#'+id_form).serialize())
         $.ajax({
-		type: 'DELETE',
-		url: urlEliminarArchivo,
-		data: {},  
+        type: 'put',
+        url: "{% url 'registro_masivo_expedientes' %}",
+        data: $('#'+id_form).serialize(), 
         headers: {
             "X-CSRFToken": '{{ csrf_token }}',
         },
-        success: function(response){
-            $('#load').hide();
-            $('#modal-eliminar-archivo').modal('hide');
-			toastr[response.type](response.data);
-            if(response.type=='success'){
-                //Actualizando lista de archivos
-                let htmlDatos;
-                response.archivos.forEach(archivo => {
-                    htmlDatos=htmlDatos+`
-                    <tr>
-                        <td>${archivo.titulo}</td>
-                        <td>${archivo.propietario}</td>
-                        <td>${archivo.fecha}</td>
-                        <td>
-                            <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${archivo.id_documento}/"  target="_blank">open_in_new</a>
-                            <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${archivo.id_documento}/"  download>file_download</a>
-                            <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo(${archivo.id_documento});" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo" >delete</a>
-                        </td>
-                    </tr>
-                    `;
-                });
-                $('#lista-archivos-externos').empty().append(htmlDatos);
-                //limpiando barra de carga
-                $('.dz-image-preview').remove();
-                $('#my-great-dropzone').removeClass('dz-started')
-            } 
-        }});
+        success: function(data) { 
+            if(data.type =="success"){
+                toastr[data.type](data.data); 
+                $('#'+id_form).addClass("was-validated")
+                $('#btn-'+id_form).remove();
+                $('#td-'+id_form).removeClass("border border-danger border-2")
+            }
+            else{
+                // Obteniendo todas las claves del JSON
+                for (let clave in data.data){
+                    // Controlando que json realmente tenga esa propiedad
+                    if (data.data.hasOwnProperty(clave)) {
+                        // Mostrando en pantalla la clave junto a su valor
+                        $('#td-'+id_form).addClass("border border-danger border-2")
+                        toastr[data.type](data.data[clave][0]["message"]); 
+                    }
+                }
+            }   
+            
+            }
+        });
     }
+
+
+    
 </script>
 
 {% endblock %}
