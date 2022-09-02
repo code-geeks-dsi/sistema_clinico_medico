@@ -1,6 +1,6 @@
 from django.urls import path
-from modulo_expediente.views.Expediente import (ControlSubsecuenteConsultaView, busqueda_paciente, 
-    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, ControlSubsecuenteView,buscar_expediente, RegistroMasivoExpedientesView)
+from modulo_expediente.views.Expediente import ( busqueda_paciente, 
+    autocompletado_apellidos, sala_consulta,get_paciente, crear_expediente, buscar_expediente, RegistroMasivoExpedientesView)
 from modulo_expediente.views.ConsultaMedica import (ConsultaView,antecedentesUpdateView)    
 from modulo_expediente.views.SignosVitales import (crear_signos_vitales, modificar_signosVitales,get_signos_vitales)    
 
@@ -13,7 +13,8 @@ ReferenciaMedicaUpdate, ReferenciaMedicaPdfView)
 from modulo_expediente.views.RecetaMedica import RecetaMedicaPdfView
 from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateView, DocumentosExternosURLview, DocumentosExternosURLDownload
 from modulo_expediente.views.ContieneConsulta import (agregar_cola,get_cola ,eliminar_cola )
-from modulo_expediente.views.Agenda import CitaConsultaView, AgendaView, CitaConsultaUpdate
+from modulo_expediente.views.Agenda import (CitaConsultaView, AgendaView, CitaConsultaUpdate)
+from modulo_expediente.views.ControlSubsecuente import (ControlSubsecuenteView,ControlSubsecuenteConsultaView)
 urlpatterns = [
     # Expediente
     path('paciente/',busqueda_paciente, name='busqueda_paciente'),

@@ -1,18 +1,16 @@
-from http.client import HTTPResponse
 from django.shortcuts import redirect, render
-from modulo_expediente.serializers import ConsultaSerializers, ContieneConsultaSerializer, ControlSubsecuenteConsultaSerializer, PacienteSerializer, SignosVitalesSerializer
+from modulo_expediente.serializers import PacienteSerializer
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
-from modulo_expediente.models import (Consulta, ContieneConsulta, ControlSubsecuente,  Paciente, Expediente, SignosVitales)
+from modulo_expediente.models import (Paciente, Expediente)
 from modulo_control.models import Rol
-from ..forms import ( ConsultaFormulario, ControlSubsecuenteform, DatosDelPaciente)
+from ..forms import ( DatosDelPaciente)
 from django.http import JsonResponse
 from django.urls import reverse
 from urllib.parse import urlencode
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views import View 
-from django.views.generic import View, TemplateView
+from django.views.generic import TemplateView
 from django.views.generic import TemplateView
 
 from django.core import serializers
@@ -211,40 +209,3 @@ class RegistroMasivoExpedientesView(TemplateView):
         })
 
  
-class ControlSubsecuenteView(View): 
-        template_name = "expediente/consulta/control_subsecuente.html"
-
-        def get(self, request, *args, **kwargs):
-
-            id_consulta=int(self.kwargs['id_consulta']) 
-            contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).first()
-            expediente=contiene_consulta.expediente_id
-            contiene_consulta=ContieneConsulta.objects.filter(expediente_id=expediente).exclude(consulta__id_consulta=id_consulta).select_related('consulta')
-            lista=[]
-            for i in range(len(contiene_consulta)):
-                
-                c={
-                     'id_consulta':"",
-                     'fecha':"",
-                     'diagnostico':"",
-                }
-                c['id_consulta']=contiene_consulta[i].consulta.id_consulta
-                c['fecha']=contiene_consulta[i].consulta.fecha
-                c['diagnostico']=contiene_consulta[i].consulta.diagnostico
-            
-                lista.append(c)
-            
-            return render(request,self.template_name,{'consultas':lista, 'id_consulta':id_consulta})
-           
-class ControlSubsecuenteConsultaView(View): 
-    def get(self, request, *args, **kwargs):
-        id_consulta=int(self.kwargs['id_consulta']) 
-        signos_vitales_data=SignosVitales.objects.filter(consulta_id=id_consulta).order_by('-fecha').first()
-        # consulta_data=Consulta.objects.get(id_consulta=id_consulta)
-        signos_vitales=ControlSubsecuenteConsultaSerializer(signos_vitales_data,many=False)
-        print(signos_vitales.data)
-        # consulta=ConsultaSerializers(consulta)
-        return JsonResponse({'signos_vitales':signos_vitales.data})
-        
-
-
