@@ -66,6 +66,17 @@ class Resultado(models.Model):
     def __str__(self):
         return self.examen_laboratorio.nombre_examen
 
+# Clases correspondientes a la receta de examenes de laboratorio
+class OrdenExamenLaboratorio(models.Model):
+    id_orden_examen_laboratorio= models.AutoField(primary_key=True)
+    fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
+    expediente=models.ForeignKey('modulo_expediente.Expediente',on_delete=models.CASCADE,null=False, blank=False)
+# este item podria incluir costo del examen y descuento para el modulo servicios
+class OrdenExamenLaboratorioItem(models.Model):
+    id_orden_examen_laboratorio_item=models.AutoField(primary_key=True)
+    orden_examen_laboratorio=models.ForeignKey('OrdenExamenLaboratorio',on_delete=models.CASCADE)
+    resultado=models.ForeignKey('Resultado',on_delete=models.CASCADE)
+
 class ContieneValor(models.Model):
     resultado = models.ForeignKey('Resultado', on_delete=models.CASCADE)
     parametro = models.ForeignKey('Parametro', on_delete=models.CASCADE)
