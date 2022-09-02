@@ -143,11 +143,15 @@ class ControlSubsecuente(models.Model):
     observacion=models.TextField(max_length=200, blank=True, null=False)
     fecha=models.DateTimeField(auto_now_add=True)
 
-class OrdenExamenLaboratorio(models.Model):
-    id_orden_examen_laboratorio= models.AutoField(primary_key=True)
+# Clases correspondientes a la receta de examenes de laboratorio
+class RecetaOrdenExamenLaboratorio(models.Model):
+    id_receta_orden_examen_laboratorio= models.AutoField(primary_key=True)
     fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
     consulta=models.ForeignKey('Consulta',on_delete=models.DO_NOTHING,null=False, blank=False)
-    examen_de_laboratorio=models.ForeignKey('modulo_laboratorio.ExamenLaboratorio',on_delete=models.DO_NOTHING,null=False, blank=False)
+
+class RecetaOrdenExamenLaboratorioItem(models.Model):
+    id_receta_orden_examen_laboratorio_item=models.AutoField(primary_key=True)
+    receta_orden_examen_laboratorio=models.ForeignKey('RecetaOrdenExamenLaboratorio',on_delete=models.CASCADE)
 
 class Hospital(models.Model):
     id_hospital= models.AutoField(primary_key=True)
