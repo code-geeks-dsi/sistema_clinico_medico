@@ -1,7 +1,7 @@
 <nav class="pt-2">
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
           <button class="nav-link active" id="nav-historial-tab" data-bs-toggle="tab" data-bs-target="#nav-historial" type="button" role="tab" aria-controls="nav-historial" aria-selected="true">Historial Clinico</button>
-          <button class="nav-link" id="nav-contol-tab" data-bs-toggle="tab" data-bs-target="#nav-control" type="button" role="tab" aria-controls="nav-control" aria-selected="false">Control Subsecuente</button>
+          <a href="{% url 'control-subsecuente-view' id_consulta=id_consulta %}" target="blank" class="nav-link" id="nav-contol-tab"  type="button" aria-selected="false">Control Subsecuente</a>
           <button class="nav-link" id="nav-evolucion-tab" data-bs-toggle="tab" data-bs-target="#nav-evolucion" type="button" role="tab" aria-controls="nav-evolucion" aria-selected="false">Hoja de Evolución</button>
           <button class="nav-link" id="nav-documentos-tab" data-bs-toggle="tab" data-bs-target="#nav-documentos" type="button" role="tab" aria-controls="nav-documentos" aria-selected="false">Documentos de la Consulta</button>
         </div>

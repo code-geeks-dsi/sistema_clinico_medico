@@ -1,0 +1,285 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+<link href="{% static 'css/dropzone.css' %}" rel="stylesheet" />
+<link href="{% static 'css/custom-dropzone.css' %}" rel="stylesheet" />
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Registro Masivo de Expedientes {% endblock %}
+{% block content %}
+<div class="container py-4">
+    <!--Navegación-->
+    <div class="row">
+        <div class="col-6">
+            <h3 class="fw-bold text-secondary pb-4">Exámenes de Laboratorio Externos</h3>
+        </div>
+        <div class="col-6">
+            <div class="d-flex justify-content-end">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-3">
+                        <li class="breadcrumb-item"><a href="{% url 'buscar_expediente' %}">Expediente</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Registro Masivo</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!--Formulario de almacenamiento-->
+    <div class="accordion" id="accordionDocumentos">
+        <!-- zona para subir archivos -->
+        <div class="accordion-item">
+            <button class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#zona-para-almacenar" aria-expanded="true" aria-controls="collapseThree">
+                Registro Masivo de Expedientes
+            </button>
+            <!--zona para subir archivos Body-->
+            <div id="zona-para-almacenar" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+                <div class="accordion-body">
+                    <!--Formulario de Registro-->
+                    <p class="fw-bold">Pasos: </p>
+                    <p>1: Descargue la Plantilla: <a href="{% static 'files/Plantilla - Registro de Expedientes.xlsx' %}" download> Registro de Expedientes </a></p>
+                    <p>2: Llenar los datos.</p>
+                    <p>3: Arrastrar el archivo a la zona marcada.</p>
+                    <form action="{% url 'registro_masivo_expedientes' %}" class="dropzone" id="my-great-dropzone">
+                        {% csrf_token %}
+                        <div class="dz-default dz-message">
+                            <button class="dz-button" type="button">
+                                <span class="material-symbols-outlined">cloud_upload</span>
+                                <p>Arrastrar Archivos Aquí</p>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="pt-4">   
+                        <div class="progress">
+                            <div class="progress-bar" id="barra-progreso" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" valor="0"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Lista de archivos-->
+        <div class="accordion-item">
+            <button id="lista-archivos-header" class="card-header accordion-button py-3" type="button" data-bs-toggle="collapse" data-bs-target="#lista-de-archivos" aria-expanded="true" aria-controls="collapseThree">
+                Lista de Expedientes Pendientes de Revisión
+            </button>
+            <!--Lista de Archivos Body-->
+            <div id="lista-de-archivos" class="accordion-collapse collapse show" aria-labelledby="headingThree" >
+                <div class="accordion-body">
+                    <!--Tabla de Archivos-->
+                    <div class="table-responsive" id="tabla_archivos_agregadas">
+                        <table class="table table-bordered text-center table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Datos Personales</th>  
+                                </tr>
+                            </thead>
+                            <tbody id="lista-expedientes">
+                            <!--Datos del server -- dosis -- -->
+                                {% for archivo in archivos %}
+                                <tr>
+                                    <td>{{ archivo.titulo }}</td>
+                                    <td>{{ archivo.expediente.id_paciente.nombre_paciente }} {{ archivo.expediente.id_paciente.apellido_paciente }}</td>
+                                    <td>{{ archivo.fecha }}</td>
+                                    <td>
+                                        <a class="material-symbols-outlined btn btn-sm" href="{% url 'storage-url' id_documento=archivo.id_documento %}"  target="_blank">open_in_new</a>
+                                        <a class="material-symbols-outlined btn btn-sm" href="{% url 'download-url' id_documento=archivo.id_documento %}" target="_blank" download="{{archivo.titulo}}">file_download</a>
+                                        <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo('{{archivo.id_documento}}');" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo">delete</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal para confirmar eliminar -->
+    <div class="modal fade" id="modal-eliminar-archivo" tabindex="-1" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center">Eliminar Archivos</h5>
+                    <button type="button" class="btn-close" aria-label="Cerrar" data-bs-dismiss="modal" id="cerar_modal_busqueda_medicamento"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>¿Desea eliminar este archivo?</p>
+                    <!--Spinner de caraga-->
+                    <div class="spinner-border text-primary" role="status" id="load">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-secondary" id="eliminar-nota-evolucion-btn" onclick="eliminarArchivo();" >Si</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!--Js de la vista-->
+{% block js %}
+<script src="{% static 'js/sistemaClinico.js' %}"></script>
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+
+<script>
+    let urlEliminarArchivo='';
+    $('#load').hide();
+    $( "#side_registro_expedientes" ).addClass( "active" );
+
+    //socket
+    let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
+    let socket_url=`${ws_scheme}://${window.location.host}/ws/expediente/registro-masivo/`;
+    const registroMasivoSocket=new WebSocket(socket_url);
+    registroMasivoSocket.onmessage=(message)=>{
+        let data=JSON.parse(message.data)
+        switch(data.tipo) {
+            case "notificacion":
+                toastr[data.toast](data.data); 
+                break;
+            case "header":
+                $('#lista-archivos-header').html(`El archivo cuenta con ${data.data} registros.`);
+                $("#barra-progreso").attr( "valor", data.data );
+
+                break;
+            case "dato":
+                let porcentaje=data.data/$("#barra-progreso").attr( "valor");
+                porcentaje=porcentaje*100;
+                porcentaje=`${porcentaje}%`;
+                $("#barra-progreso").css( "width", porcentaje );
+                break;
+            
+            case "objetoError":
+                paciente=JSON.parse(data.data)
+                $("#lista-expedientes").append(`
+                     <tr class="text-start">
+                        <td id="td-expediente-error-${data.numero}">
+                            <form id="expediente-error-${data.numero}" class="needs-validation">
+                                <fieldset> 
+                                    <div class="row">    
+                                        <p class="text-center fw-bold">Expediente número ${data.numero}</p>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Nombre: </label>
+                                            <input type="text" name="nombre_paciente" id="id_nombre_paciente" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["nombre_paciente"]}">            
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Apellido:</label>
+                                            <input type="text" name="apellido_paciente" id="id_apellido_paciente" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["apellido_paciente"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Fecha de nacimiento:</label>
+                                            <input type="date" name="fecha_nacimiento_paciente" id="id_fecha_nacimiento_paciente" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["fecha_nacimiento_paciente"].slice(0,-9)}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Sexo: (F/M)</label>
+                                            <input type="text" name="sexo_paciente" id="id_sexo_paciente" maxlength="1" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["sexo_paciente"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Responsable:</label>
+                                            <input type="text" name="responsable" id="id_responsable" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["responsable"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Email: </label>
+                                            <input type="email" name="email_paciente" id="id_email_paciente" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["email_paciente"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Pasaporte: </label>
+                                            <input type="text" name="pasaporte" id="id_pasaporte" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["pasaporte"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Dui: </label>
+                                            <input type="text" name="dui" id="id_dui" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["dui"]}">
+                                        </div>
+                                        <div class="col-md-6 col-lg-4">
+                                            <label for="" class="form-label">Telefono: </label>
+                                            <input type="text" name="numero_telefono" id="id_numero_telefono" aria-label="First name" class="form-control" value="${paciente[0]["fields"]["numero_telefono"]}"> 
+                                        </div>
+                                    </fieldset> 
+                                    <p class="text-center pt-4"><button id="btn-expediente-error-${data.numero}" onclick="corregirExpediente('expediente-error-${data.numero}');" type="button" class="btn btn-outline-primary">Guardar</button></p>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                `);
+
+                break;
+            case "terminado":
+                $("#barra-progreso").css( "width", "100%" );
+                toastr[data.toast](data.data); 
+                console.log(data)
+                break;
+        }
+
+      }
+    //DropZone
+    Dropzone.options.myGreatDropzone = { // camelized version of the `id`
+        paramName: "file", // The name that will be used to transfer the file
+        maxFilesize: 40, // MB
+        addRemoveLinks: true,
+        maxFiles: 1,
+        acceptedFiles: '.xls, .xlsx', 
+        dictRemoveFile:'Remover',
+        accept: function(file, done) {
+            if (file.name == "") {
+                done("Naha, you don't.");
+            }
+            else { done(); }
+        },
+        success: function(file, response){
+            file.previewElement.classList.add("dz-success");
+            //Actualizando lista de archivos
+            $("#lista-archivos-externos").prepend(`
+            <tr class="alert alert-success">
+                <td>${file.name}</td>
+                <td>${response.propietario}</td>
+                <td>${response.fecha}</td>
+                <td>
+                    <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/${response.id}/"  target="_blank">open_in_new</a>
+                    <a class="material-symbols-outlined btn btn-sm" href="/expediente/documento/download/${response.id}/"  download>file_download</a>
+                    <a class="material-symbols-outlined btn btn-sm" href="#" onclick="setUrlEliminarArchivo(${response.id});" data-bs-toggle="modal" data-bs-target="#modal-eliminar-archivo" >delete</a>
+                </td>
+            </tr>
+            `);
+        }
+    };
+
+    //Funcion para almacenar los expedientes con la información corregida
+    function corregirExpediente(id_form){
+        console.log($('#'+id_form).serialize())
+        $.ajax({
+        type: 'put',
+        url: "{% url 'registro_masivo_expedientes' %}",
+        data: $('#'+id_form).serialize(), 
+        headers: {
+            "X-CSRFToken": '{{ csrf_token }}',
+        },
+        success: function(data) { 
+            if(data.type =="success"){
+                toastr[data.type](data.data); 
+                $('#'+id_form).addClass("was-validated")
+                $('#btn-'+id_form).remove();
+                $('#td-'+id_form).removeClass("border border-danger border-2")
+            }
+            else{
+                // Obteniendo todas las claves del JSON
+                for (let clave in data.data){
+                    // Controlando que json realmente tenga esa propiedad
+                    if (data.data.hasOwnProperty(clave)) {
+                        // Mostrando en pantalla la clave junto a su valor
+                        $('#td-'+id_form).addClass("border border-danger border-2")
+                        toastr[data.type](data.data[clave][0]["message"]); 
+                    }
+                }
+            }   
+            
+            }
+        });
+    }
+
+
+    
+</script>
+
+{% endblock %}

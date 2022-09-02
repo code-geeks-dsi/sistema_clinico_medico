@@ -1,18 +1,27 @@
 from django.shortcuts import redirect, render
-from modulo_expediente.serializers import ConsultaSerializers, PacienteSerializer
+from modulo_expediente.serializers import PacienteSerializer
 from datetime import datetime
 from modulo_expediente.filters import PacienteFilter
-from modulo_expediente.models import (Consulta, ContieneConsulta, ControlSubsecuente,  Paciente, Expediente, SignosVitales)
+from modulo_expediente.models import (Paciente, Expediente)
 from modulo_control.models import Rol
-from ..forms import ( ConsultaFormulario, ControlSubsecuenteform, DatosDelPaciente)
+from ..forms import ( DatosDelPaciente)
 from django.http import JsonResponse
 from django.urls import reverse
 from urllib.parse import urlencode
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views import View 
-from django.views.generic import View, TemplateView
 from django.views.generic import TemplateView
+from django.views.generic import TemplateView
+
+from django.core import serializers
+from django.db.utils import IntegrityError
+
+###Para los expedientes masivos
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from django.http import QueryDict
+import pandas as pd
+import pathlib 
 
 def busqueda_paciente(request):
 
@@ -114,46 +123,89 @@ def crear_expediente(request):
         
     return render(request,"datosdelPaciente.html",{'formulario':formulario})
 
+#Registro masivo de expedientes
+class RegistroMasivoExpedientesView(TemplateView):
+    template_name = "expediente/registro_masivo/registro_masivo.html"
+    response={'type':'','data':''}
 
-#View Para imprimir Agenda
-class AgendaView(TemplateView):
-    template_name = "expediente/agenda.html"   
+    def post(self, request, *args, **kwargs):
+        archivo=request.FILES['file']
+        file_extension = pathlib.Path(archivo.name).suffix 
+        if file_extension in ('.xls', '.xlsx'):
 
+            xlsx = pd.read_excel(archivo)
+            xlsx.fillna("", inplace=True)
+            expedientes=xlsx.to_dict(orient='records')
+            cantidad=len(expedientes)
 
+            self.notificar_avance("Archivo leído con éxito.", "notificacion","")
+            self.notificar_avance(f'{cantidad}', "header","")
+            procesados=0
+            exitos=0
+            fracasos=0
+            for expediente in expedientes:
+                paciente = Paciente(
+                    nombre_paciente=expediente["Nombres"],
+                    apellido_paciente=expediente["Apellidos"],
+                    fecha_nacimiento_paciente=expediente["Fecha de nacimiento (dd/mm/yyyy)"],
+                    sexo_paciente=expediente["Sexo (M/F)"],
+                    direccion_paciente=expediente["Dirección"],
+                    email_paciente=expediente["Email"],
+                    responsable=expediente["Responsable"],
+                    dui=expediente["Dui"],
+                    pasaporte=expediente["Pasaporte"],
+                    numero_telefono=str(expediente["Número de Telefono"])[:8]
+                )
+                procesados +=1
+                try:
+                    paciente.save()
+                    
+                    Expediente.objects.create(
+                        id_paciente=paciente,
+                    )
+                    exitos +=1
+                    self.notificar_avance(f'{procesados}', "dato", "")
+                except IntegrityError:
+                    fracasos +=1
+                    json_paciente = serializers.serialize('json', [paciente ])
+                    self.notificar_avance(json_paciente, "objetoError",expediente["#"])
+            self.notificar_avance(f'Expedientes registrados: {exitos}, \nExpedientes pendientes de revisión: {fracasos}', "notificacion", expediente["#"])
+            self.notificar_avance(f'{procesados}', "dato", "")
+            respuesta={
+                'data':'Enviado'
+            }
+
+        else:
+            respuesta={
+                'data':'error'
+            }
+        return JsonResponse(respuesta)
+    ##Voy a acupar este metodo para alamacenar de forma individual
+    def put(self, request, *args, **kwargs):
+        data = QueryDict(request.body)
+        paciente_form= DatosDelPaciente(data)
+        if paciente_form.is_valid():
+            paciente=paciente_form.save()
+            Expediente.objects.create(
+                id_paciente=paciente,
+            )
+            self.response['type']='success'
+            self.response['data']='Expediente Registrado'
+        else:
+            self.response['type']='warning'
+            self.response['data']=paciente_form.errors.get_json_data()
+
+        return JsonResponse(self.response)
+        
+    def notificar_avance(self, data, tipo, numero):
+        layer = get_channel_layer() 
+        async_to_sync(layer.group_send)('archivos',{# _archivos_ Este es el nombre del channel
+        "type": "archivos",
+        "room_id": 'archivos',
+        "toast":"info",
+        "data":data,
+        "tipo": tipo,
+        "numero":numero
+        })
 
  
-class ControlSubsecuenteView(View):
-        form_class = ControlSubsecuenteform
-
-        def get(self, request, *args, **kwargs):
-
-            id_consulta=int(self.kwargs['id_consulta']) 
-            consulta=Consulta.objects.filter(id_consulta=id_consulta)
-            consulta_serializer=ConsultaSerializers(consulta, many=True)
-            signos_vitales=SignosVitales.objects.filter(consulta_id=id_consulta).order_by('-fecha').first()
-            print(signos_vitales)
-        
-            diccionario={
-                    "id_signos_vitales":signos_vitales.id_signos_vitales,
-                    "unidad_temperatura":signos_vitales.unidad_temperatura,
-                    "unidad_peso":signos_vitales.unidad_peso,
-                    "valor_temperatura":signos_vitales.valor_temperatura,
-                    "valor_peso":signos_vitales.valor_peso,
-                    "valor_arterial_diasolica":signos_vitales.valor_presion_arterial_diastolica,
-                    "valor_arterial_sistolica":signos_vitales.valor_presion_arterial_sistolica,
-                    "valor_frecuencia_cardiaca":signos_vitales.valor_frecuencia_cardiaca,
-                    "valor_saturacion_oxigeno":signos_vitales.valor_saturacion_oxigeno
-            }
-            datos={
-                'consulta':consulta_serializer.data,
-                'signos_vitales':diccionario
-            }
-            
-            return JsonResponse(datos, safe=False)
-
-           
-
-
-        
-
-

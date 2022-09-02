@@ -28,8 +28,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).order_by('-fecha_de_cola').first()
             paciente=contiene_consulta.expediente.id_paciente
             expediente=contiene_consulta.expediente.id_expediente
-            consulta=contiene_consulta.consulta
-            signos_vitales=SignosVitales.objects.filter(consulta=contiene_consulta.consulta)        
+            consulta=contiene_consulta.consulta   
             receta=RecetaMedica.objects.filter(consulta=consulta).first()
             # receta=RecetaMedica.objects.filter(consulta=consulta).latest('fecha')
             dosis=Dosis.objects.filter(receta_medica=receta)
@@ -42,7 +41,6 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             
             datos={
                 'paciente':paciente,
-                'signos_vitales':signos_vitales,
                 'id_consulta':id_consulta,
                 'id_expediente':expediente,
                 'id_receta':receta.id_receta_medica,

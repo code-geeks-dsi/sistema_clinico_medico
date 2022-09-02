@@ -14,7 +14,7 @@ class Expediente(models.Model):
     id_expediente = models.AutoField(primary_key=True, unique=True)
     id_paciente=models.OneToOneField('Paciente', models.CASCADE, blank=False, null=False)
     fecha_creacion_expediente = models.DateField(default=datetime.now,blank=False,null=False)
-    codigo_expediente=models.CharField(max_length=10,blank=False,null=False,unique=True)
+    codigo_expediente=models.CharField(max_length=10,blank=True,null=True)
     contiene_consulta=models.ManyToManyField('Consulta',through='ContieneConsulta')
     antecedentes_familiares=models.TextField(null=True,blank=True,default="")
     antecedentes_personales=models.TextField(null=True,blank=True,default="")
@@ -38,6 +38,8 @@ class Paciente(models.Model):
     dui=models.CharField(max_length=10,blank=True,null=True)
     pasaporte=models.CharField(max_length=15,blank=True,null=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
     numero_telefono=models.CharField(max_length=8, null=True, blank=True,default="")
+    class Meta:
+        unique_together = (('dui'),)
 
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)
@@ -141,11 +143,15 @@ class ControlSubsecuente(models.Model):
     observacion=models.TextField(max_length=200, blank=True, null=False)
     fecha=models.DateTimeField(auto_now_add=True)
 
-class OrdenExamenLaboratorio(models.Model):
-    id_orden_examen_laboratorio= models.AutoField(primary_key=True)
+# Clases correspondientes a la receta de examenes de laboratorio
+class RecetaOrdenExamenLaboratorio(models.Model):
+    id_receta_orden_examen_laboratorio= models.AutoField(primary_key=True)
     fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
     consulta=models.ForeignKey('Consulta',on_delete=models.DO_NOTHING,null=False, blank=False)
-    examen_de_laboratorio=models.ForeignKey('modulo_laboratorio.ExamenLaboratorio',on_delete=models.DO_NOTHING,null=False, blank=False)
+
+class RecetaOrdenExamenLaboratorioItem(models.Model):
+    id_receta_orden_examen_laboratorio_item=models.AutoField(primary_key=True)
+    receta_orden_examen_laboratorio=models.ForeignKey('RecetaOrdenExamenLaboratorio',on_delete=models.CASCADE)
 
 class Hospital(models.Model):
     id_hospital= models.AutoField(primary_key=True)
@@ -297,7 +303,7 @@ class CitaConsulta(models.Model):
     id_cita_consulta=models.AutoField(primary_key=True)
     expediente=models.ForeignKey('Expediente', models.DO_NOTHING, null=False, blank=False)
     prioridad_paciente=models.CharField(max_length=1, choices=OPCIONES_PRIORIDAD, blank=False, null=False)
-    observacion=models.CharField(max_length=80, blank=True, null=True)
+    observacion=models.CharField(default="", max_length=80, blank=True, null=True)
     fecha_cita=models.DateField()
     horario=models.ForeignKey('modulo_expediente.HorarioConsulta', models.DO_NOTHING, null=False, blank=False)
     empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)

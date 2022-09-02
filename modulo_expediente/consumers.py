@@ -125,3 +125,26 @@ class CalendarioConsumer(WebsocketConsumer):
         def disconnect(self, code):
                 # super().disconnect(code)
                 raise StopConsumer()
+
+class RegistroMasivoConsumer(WebsocketConsumer):
+
+        def archivos(self,event):
+                data=json.dumps(event)
+                return self.send(text_data=data)
+
+        def connect(self):
+                self.room_group_name='archivos'
+                async_to_sync(self.channel_layer.group_add)(
+                        self.room_group_name,
+                        self.channel_name
+                        )
+                self.accept()
+   
+        def receive(self,text_data):
+                async_to_sync(self.channel_layer.group_send)(
+                        self.room_group_name,
+                        {'type':'archivos'}# aqui se especifica el handler para enviar este mensaje, para el caso es el metodo cola_expediente
+                )
+        def disconnect(self, code):
+                # super().disconnect(code)
+                raise StopConsumer()

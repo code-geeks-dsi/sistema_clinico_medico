@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.http import HttpResponseForbidden
+
+from modulo_expediente.serializers import SignosVitalesSerializer
 @csrf_exempt
 @login_required
 def modificar_signosVitales(request, id_consulta):
@@ -49,14 +51,27 @@ def crear_signos_vitales(request,id_consulta):
 def get_signos_vitales(request,id_consulta):
     if request.method=='GET':
         try:
-            signos_vitales=SignosVitales.objects.filter(consulta__id_consulta=id_consulta).values()
+            signos_vitales=SignosVitales.objects.filter(consulta__id_consulta=id_consulta)
             
             response={
-                'signos_vitales':list(signos_vitales)
+                'signos_vitales':SignosVitalesSerializer(signos_vitales,many=True).data
             }
         except:
             response={
                 'signos_vitales':[]
             }
         return JsonResponse(response)
+# def get_signos_vitales(request,id_consulta):
+#     if request.method=='GET':
+#         try:
+#             signos_vitales=SignosVitales.objects.filter(consulta__id_consulta=id_consulta).values()
+            
+#             response={
+#                 'signos_vitales':list(signos_vitales)
+#             }
+#         except:
+#             response={
+#                 'signos_vitales':[]
+#             }
+#         return JsonResponse(response)
         

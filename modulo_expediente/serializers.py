@@ -60,9 +60,18 @@ class ConsultaSerializers(serializers.ModelSerializer):
         fields = '__all__'
         
 class SignosVitalesSerializer(serializers.ModelSerializer):
+    responsable_nombre = serializers.CharField(read_only=True, source="enfermera.nombres")
+    responsable_apellidos = serializers.CharField(read_only=True, source="enfermera.apellidos")
+    fecha=serializers.DateTimeField(format='%d/%m/%Y %I:%M %p')
     class Meta:
         model = SignosVitales
         fields = '__all__'
+class ControlSubsecuenteConsultaSerializer(serializers.ModelSerializer):
+    fecha_consulta=serializers.DateTimeField(format='%d/%m/%Y %I:%M %p', source="consulta.fecha")
+    class Meta:
+        model = SignosVitales
+        exclude=['enfermera','fecha']
+        depth=1
 
 class CitaConsultaSerializer(serializers.ModelSerializer):
     id=serializers.IntegerField(source='id_cita_consulta')
@@ -71,7 +80,7 @@ class CitaConsultaSerializer(serializers.ModelSerializer):
     end=serializers.SerializerMethodField()
     color=serializers.SerializerMethodField()
     def get_title(self, obj):
-        return '{} - {}'.format(obj.expediente.id_paciente.nombre_paciente, obj.get_prioridad_paciente_display()) 
+        return '{} - Prioridad: {}'.format(obj.expediente.id_paciente.nombre_paciente, obj.get_prioridad_paciente_display()) 
     def get_start(self, obj):
         fecha= obj.fecha_cita.strftime("%Y-%m-%d")
         hora=obj.horario.hora_inicio.strftime("%H:%M")

@@ -87,8 +87,10 @@ class EmpleadoManager(BaseUserManager):
     
     def set_permissions_secretaria(self, empleado):
         permission = Permission.objects.filter(
-            #Ver contiene consulta                                              #Gestionar expedientes               #Ver todo dentro de laboratorio                                                   
-            Q(content_type__model='contieneconsulta', codename__contains='view')|Q(content_type__model='expediente')|Q(content_type__app_label='modulo_laboratorio',codename__contains='view')
+            #Ver contiene consulta                                              #Gestionar expedientes               
+            Q(content_type__model='contieneconsulta', codename__contains='view')|Q(content_type__model='consulta', codename__contains='view')|
+            #Ver todo dentro de laboratorio                                                   
+            Q(content_type__model='expediente')|Q(content_type__app_label='modulo_laboratorio',codename__contains='view')
         )
         empleado.user_permissions.set(permission)
 
