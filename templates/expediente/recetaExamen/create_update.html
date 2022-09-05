@@ -1,0 +1,129 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Constancia Medica {% endblock %}
+{% block content %}
+<div class="container py-4">
+	<div class="row">
+		<div class="col-6">
+			<h3 class="fw-bold text-secondary pb-4">Orden de Examen de Laboratorio</h3>
+		</div>
+		<div class="col-6">
+			<div class="d-flex justify-content-end">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb pt-3">
+						<li class="breadcrumb-item"><a href="{% url 'buscar_expediente' %}">Expediente</a></li>
+						<li class="breadcrumb-item"><a href="{% url 'editar_consulta' id_consulta=id_consulta %}">{{paciente.nombre_paciente}}</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Orden de Examen de Laboratorio</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-header alert-primary text-primary" aria-expanded="true">
+			<div class="px-1 py-2">
+				Orden de Examen de Laboratorio
+			</div>
+		</div>
+		<div class="card-body">
+			<form method="post" id="constancia-medica">
+                <div class="row">
+                    <div class="col">
+                        <label class="form-label fw-bold text-secondary" for="nombre-paciente">Nombre del paciente:</label>
+                        <input type="text" class="form-control" value="{{ paciente.nombre_paciente }} {{paciente.apellido_paciente}}" disabled>
+                        <p></p>
+                    </div>
+                    <div class="col">
+                        <label class="form-label fw-bold text-secondary" for="edad-paciente">Edad del paciente:</label>
+                        <input type="text" class="form-control" value="{{ edad.years }} años" disabled>
+                        <p></p>
+                    </div>
+                </div>
+
+				{% csrf_token %}
+                
+                <!--Datos del Examen-->
+                <p class="fw-bold text-secondary pt-2">Examen a Realizar</p>
+                <hr class="dropdown-divider">
+                <div class="row">
+                    <div class="col-md-12 col-lg-6">
+                        <div class="mb-3">
+                        <label for="selectCategoria" class="form-label fw-bold text-secondary">Seleccione el Perfil</label>
+                        <select id="selectCategoria" class="form-select">
+                            {% for c in Categoria %}
+                            <option value="{{ c.id_categoria }}">{{ c.descripcion_categoria }}</option>
+                            {% endfor %}
+                        </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-6">
+                        <div class="mb-3">
+                        <label for="selectExamen" class="form-label fw-bold text-secondary">Seleccione el Examen</label>
+                        <select id="selectExamen" class="form-select">
+                            {% for e in Examen %}
+                            <option value="{{ e.examen_laboratorio.id_examen_laboratorio }}">{{ e.examen_laboratorio.nombre_examen }}</option>
+                            {% endfor %}
+                        </select>
+                        </div>
+                    </div>
+                </div>
+				<div class="text-end pt-2">
+					<input class="btn btn-outline-primary" type="submit" value="Agregar">
+				</div>
+
+                <!--Examenes Seleccionados-->
+                <p class="fw-bold text-secondary">Exámenes Seleccionados</p>
+                <hr class="dropdown-divider">
+
+                <!--Tabla de Examenes-->
+                <div class="table-responsive" id="tabla_referencias_agregadas">
+                    <table class="table table-bordered text-center">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Examen</th>
+                                <th>Perfil</th>
+                                <th>Tipo de Muestra</td>
+                                <th>Opciones</td>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-receta-examen">
+                        <!--Datos del server -- dosis -- -->
+                            
+                        </tbody>
+                    </table>
+                </div>
+                <!-- fin Tabla de Examenes-->
+
+			</form>
+		</div>
+	</div>
+</div>    
+
+<script>
+    
+    {% include './js/examenes.js'%}  
+
+    window.onload = (event) => {
+        listExamenes();
+    };
+
+    {% if update %}
+    $('#constancia-medica').submit(function (event) {
+            event.preventDefault();
+            $.ajax({
+            type: 'POST',
+            url: $("form").attr("action"),
+            data: $("form").serialize(), 
+            success: function(response) { 
+                    toastr[response.type](response.data); 
+            },
+            });
+    });
+    {% endif %}
+</script>
+{% endblock %}

@@ -15,6 +15,8 @@ from modulo_expediente.views.DocumentosExternos import ExamenesExternosCreateVie
 from modulo_expediente.views.ContieneConsulta import (agregar_cola,get_cola ,eliminar_cola )
 from modulo_expediente.views.Agenda import (CitaConsultaView, AgendaView, CitaConsultaUpdate)
 from modulo_expediente.views.ControlSubsecuente import (ControlSubsecuenteView,ControlSubsecuenteConsultaView)
+from modulo_expediente.views.RecetaExamen import(RecetaExamenView)
+
 urlpatterns = [
     # Expediente
     path('paciente/',busqueda_paciente, name='busqueda_paciente'),
@@ -44,6 +46,8 @@ urlpatterns = [
     path('consulta/<int:id_consulta>/referencia-medica/',ReferenciaMedicaView.as_view(),name='referencia-medica'),
     path('consulta/<int:id_consulta>/referencia-medica/pdf/<int:id_referencia_medica>/',ReferenciaMedicaPdfView.as_view(),name='referencia-medica-pdf' ),
     path('consulta/<int:id_consulta>/referencia-medica/<int:id_referencia>/',ReferenciaMedicaUpdate.as_view(),name='referencia-medica-update'),
+    #Receta Examen
+    path('consulta/<int:id_consulta>/receta-examen/',RecetaExamenView.as_view(),name='receta-examen'),
     # Medicamentos
     path('receta_medica/agregar-medicamento', agregar_medicamento, name='agregar_nuevo_medicamento'),
     path('receta/dosis',dosis_medicamento,name='agregar_dosis'),
