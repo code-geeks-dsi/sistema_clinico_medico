@@ -1,5 +1,5 @@
 #Django
-from django.http import JsonResponse, QueryDict,Http404
+from django.http import JsonResponse, QueryDict
 from django.urls import reverse
 from dateutil.relativedelta import relativedelta
 from django.views.generic import View, TemplateView
@@ -9,7 +9,7 @@ from django.db.utils import IntegrityError
 from datetime import datetime
 
 ##Libreria Propias
-from ..models import (Consulta,ContieneConsulta, RecetaOrdenExamenLaboratorio, RecetaOrdenExamenLaboratorioItem)
+from ..models import (ContieneConsulta, RecetaOrdenExamenLaboratorio, RecetaOrdenExamenLaboratorioItem)
 from ..serializers import RecetaOrdenExamenLaboratorioItemSerializer
 from modulo_laboratorio.models import (Categoria)
 from modulo_laboratorio.serializers import Examenserializer
@@ -27,7 +27,18 @@ class RecetaExamenView(TemplateView):
         return redirect(reverse('receta-examen-update',
                             kwargs={'id_consulta': id_consulta,'id_receta_examen':receta.id_receta_orden_examen_laboratorio},))
     def delete(self, request, *args, **kwargs):
-        pass
+        id_consulta=int(self.kwargs['id_consulta'])
+        data = QueryDict(request.body)
+        RecetaOrdenExamenLaboratorio.objects.filter(
+            id_receta_orden_examen_laboratorio=data['id_receta'],
+            consulta_id=id_consulta
+        ).delete()
+
+        print(data)
+        self.response['type']='success'
+        self.response['data']='Receta de examenes eliminada.'
+
+        return JsonResponse(self.response)
 
 class RecetaExamenUpdate(View):
     template_name = 'expediente/recetaExamen/create_update.html'

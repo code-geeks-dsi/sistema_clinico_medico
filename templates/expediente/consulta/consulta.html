@@ -104,6 +104,7 @@
     {% include './modales/editar_nota_evolucion.html' %}
     {% include './modales/programar_cita.html' %}
     {% include './modales/resultados_medicamentos.html' %}
+    {% include './modales/eliminar_orden_examen.html' %}
 </div>  
 {% endblock %}
 {% block js %}
@@ -130,6 +131,7 @@
     {% include './js/hoja_evolucion.js' %}
     {% include './js/receta_medica.js' %}
     {% include './js/signos_vitales.js' with id_consulta=id_consulta %}
+    {% include './js/receta_examen.js' %}
     window.onload = (event) => {
         cargar_signos_vitales({{ id_consulta }});
         get_lista_notas_evolucion();

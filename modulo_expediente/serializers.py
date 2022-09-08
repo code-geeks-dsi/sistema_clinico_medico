@@ -4,7 +4,7 @@ from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, Con
 
 from modulo_expediente.models import (
     Dosis, Medicamento, Paciente, ContieneConsulta, CitaConsulta, ReferenciaMedica, ConstanciaMedica,
-    RecetaOrdenExamenLaboratorioItem
+    RecetaOrdenExamenLaboratorioItem, RecetaOrdenExamenLaboratorio
     )
 
 # class PacienteSerializer(serializers.Serializer):
@@ -126,3 +126,5 @@ class RecetaOrdenExamenLaboratorioItemSerializer(serializers.ModelSerializer):
     class Meta:
         model=RecetaOrdenExamenLaboratorioItem
         fields=['id_receta_orden_examen_laboratorio_item','muestra', 'nombre_examen']
+
+
