@@ -31,7 +31,6 @@
 			</div>
 		</div>
 		<div class="card-body">
-			<form method="post" id="constancia-medica">
                 <div class="row">
                     <div class="col">
                         <label class="form-label fw-bold text-secondary" for="nombre-paciente">Nombre del paciente:</label>
@@ -48,63 +47,189 @@
 				{% csrf_token %}
                 
                 <!--Datos del Examen-->
-                <p class="fw-bold text-secondary pt-2">Examen a Realizar</p>
-                <hr class="dropdown-divider">
-                <div class="row">
-                    <div class="col-md-12 col-lg-6">
-                        <div class="mb-3">
-                        <label for="selectCategoria" class="form-label fw-bold text-secondary">Seleccione el Perfil</label>
-                        <select id="selectCategoria" class="form-select">
-                            {% for c in Categoria %}
-                            <option value="{{ c.id_categoria }}">{{ c.descripcion_categoria }}</option>
-                            {% endfor %}
-                        </select>
+                <div id="form-addExamItem" >
+                    <hr class="dropdown-divider">
+                    <p class="fw-bold text-secondary pt-2">Examen a Realizar</p>
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6">
+                            <div class="mb-3">
+                            <label for="selectCategoria" class="form-label fw-bold text-secondary">Seleccione el Perfil</label>
+                            <select id="selectCategoria" class="form-select">
+                                {% for c in Categoria %}
+                                <option value="{{ c.id_categoria }}">{{ c.descripcion_categoria }}</option>
+                                {% endfor %}
+                            </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-6">
+                            <div class="mb-3">
+                            <label for="selectExamen" class="form-label fw-bold text-secondary">Seleccione el Examen</label>
+                            <select id="selectExamen" class="form-select">
+                                {% for e in Examen %}
+                                <option value="{{ e.examen_laboratorio.id_examen_laboratorio }}">{{ e.examen_laboratorio.nombre_examen }}</option>
+                                {% endfor %}
+                            </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-12 col-lg-6">
-                        <div class="mb-3">
-                        <label for="selectExamen" class="form-label fw-bold text-secondary">Seleccione el Examen</label>
-                        <select id="selectExamen" class="form-select">
-                            {% for e in Examen %}
-                            <option value="{{ e.examen_laboratorio.id_examen_laboratorio }}">{{ e.examen_laboratorio.nombre_examen }}</option>
-                            {% endfor %}
-                        </select>
-                        </div>
+                    <div class="text-end pt-2">
+                        <button class="btn btn-outline-primary" id="btn-agregar-examen">Agregar</button>
                     </div>
+
+                    <!--Examenes Seleccionados-->
+                    <p class="fw-bold text-secondary">Exámenes Seleccionados</p>
+                    <hr class="dropdown-divider">
+
+                    <!--Tabla de Examenes-->
+                    <div class="table-responsive" id="tabla_referencias_agregadas">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Examen</th>
+                                    <th>Tipo de Muestra</td>
+                                    <th>Opciones</td>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-receta-examen">
+                            <!--Datos del server -- dosis -- -->
+                            {% for item_receta in item_recetas %}
+                                <tr id="item-{{item_receta.id_receta_orden_examen_laboratorio_item}}">
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ item_receta.examen.nombre_examen }}</td>
+                                    <td>{{ item_receta.examen.get_tipo_muestra_display }}</td>
+                                    <td>
+                                        <span 
+                                            class="material-symbols-outlined btn btn-sm" 
+                                            title="Eliminar Examen" 
+                                            onclick="set_id_item_examen('{{item_receta.id_receta_orden_examen_laboratorio_item}}');"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#modal-eliminar-item_receta"
+                                            >delete
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor%}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- fin Tabla de Examenes-->
+
                 </div>
-				<div class="text-end pt-2">
-					<input class="btn btn-outline-primary" type="submit" value="Agregar">
-				</div>
-
-                <!--Examenes Seleccionados-->
-                <p class="fw-bold text-secondary">Exámenes Seleccionados</p>
-                <hr class="dropdown-divider">
-
-                <!--Tabla de Examenes-->
-                <div class="table-responsive" id="tabla_referencias_agregadas">
-                    <table class="table table-bordered text-center">
-                        <thead class="table-secondary">
-                            <tr>
-                                <th>Examen</th>
-                                <th>Perfil</th>
-                                <th>Tipo de Muestra</td>
-                                <th>Opciones</td>
-                            </tr>
-                        </thead>
-                        <tbody id="lista-receta-examen">
-                        <!--Datos del server -- dosis -- -->
-                            
-                        </tbody>
-                    </table>
-                </div>
-                <!-- fin Tabla de Examenes-->
-
-			</form>
 		</div>
 	</div>
+
+    <div class="modal fade" 
+        id="modal-eliminar-item_receta" 
+        tabindex="-1" 
+        aria-hidden="true" 
+        aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Eliminar</h5>
+                    <button 
+                        type="button" 
+                        class="btn-close" 
+                        aria-label="Cerrar" 
+                        data-bs-dismiss="modal" 
+                        id="cerar_modal_eliminar">
+                    </button>
+                </div>
+                <div class="modal-body">
+                        <p>¿Desea eliminar este examen de la orden?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-secondary" id="eliminar-item-receta-examen-btn" data-bs-dismiss="modal">Si</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>    
 
 <script>
+
+    let id_item_receta_delete="";
+    function set_id_item_examen(id_item){
+        id_item_receta_delete=id_item;
+    }
+
+    //Boton para agregar examen a orden
+    $('#btn-agregar-examen').click(()=>{
+        $.ajax({
+            type: 'put',
+            url: "",
+            headers: {
+              "X-CSRFToken": '{{ csrf_token }}',
+              },
+            data: {
+                'id_examen':$('#selectExamen').val(),
+            }, 
+            success: function(response) { 
+                toastr[response.type](response.data);
+                $('#lista-receta-examen').append(
+                    `<tr id='item-${response.info.id_receta_examen}'>
+                        <td>${response.info.numero}</td>
+                        <td>${response.info.examen.nombre_examen}</td>
+                        <td>${response.info.examen.muestra}</td>
+                        <td>
+                            <span class="material-symbols-outlined btn btn-sm" 
+                                onclick="set_id_item_examen(${response.info.id_receta_examen});"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modal-eliminar-item_receta"
+                                title="Eliminar Examen" alt="eliminar">delete</span>
+                        </td>
+                    </tr>`
+                );
+            },
+            error: function(response){
+                response=response.responseJSON;
+                toastr[response.type](response.data);
+            }
+            });
+    })
+
+    //Boton para eliminar Receta
+    $('#eliminar-item-receta-examen-btn').click(()=>{
+        $.ajax({
+            type: 'delete',
+            url: "",
+            headers: {
+              "X-CSRFToken": '{{ csrf_token }}',
+              },
+            data: {
+                'id_item':id_item_receta_delete,
+            }, 
+            success: function(response) { 
+                toastr[response.type](response.data);
+                //Imprimiendo la lista de examenes
+                $('#lista-receta-examen').html("");
+                let numero=1;
+                let items="";
+                response.info.forEach(element => {
+                    items=items+`
+                    <tr>
+                        <td>${numero}</td>
+                        <td>${element.nombre_examen}</td>
+                        <td>${element.muestra}</td>
+                        <td>
+                            <span class="material-symbols-outlined btn btn-sm" 
+                                onclick="set_id_item_examen(${element.id_receta_orden_examen_laboratorio_item});"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modal-eliminar-item_receta"
+                                title="Eliminar Examen" alt="eliminar">delete</span>
+                        </td>
+                    </tr>`;
+                    numero++;
+                });
+                $('#lista-receta-examen').append(items);
+            },
+            error: function(response){
+                toastr['error']('F')
+            }
+            });
+    })
     
     {% include './js/examenes.js'%}  
 

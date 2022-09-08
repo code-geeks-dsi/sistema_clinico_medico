@@ -10,7 +10,7 @@ function listExamenes(){
             dataType: "json",
             data: {         
             },
-            success: function(data){ 
+            success: function(data){
               switch(data.accion){
                 case 2:
                   $('#selectExamen').fadeIn(1000).html(data);
