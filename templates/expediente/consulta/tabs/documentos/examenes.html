@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header bg-card-custom accordion-header py-3">
-        Lista Exámenes Requeridos
+        Lista Recetas de Exámenes
     </div>
     <div class="card-body">
         <!--Tabla de Referencias-->
@@ -8,14 +8,39 @@
             <table class="table table-bordered text-center">
                 <thead class="table-secondary">
                     <tr>
-                        <th>Numero</th>
-                        <th>Id</th>
+                        <th>Número</th>
+                        <th>Motivo</th>
                         <th>Fecha</td>
                         <th>Opciones</td>
                     </tr>
                 </thead>
                 <tbody id="lista-receta-examen">
                 <!--Datos del server -- dosis -- -->
+                {% for examen in recetas_examenes %}
+                    <tr id="receta-examen-{{examen.id_receta_orden_examen_laboratorio}}">
+                        <td>{{forloop.counter}}</td>
+                        <td>{{ consulta_form.consulta_por.value }}</td>
+                        <td>{{examen.fecha_programada}}</td>
+                        <td id="receta-examen-opciones-{{examen.id_receta_orden_examen_laboratorio}}">
+                            <a class="material-symbols-outlined btn btn-sm" 
+                                title="Editar Receta de Examen" 
+                                href="receta-examen/{{examen.id_receta_orden_examen_laboratorio}}"  
+                                target="_blank">open_in_new</a>
+                            <a class="material-symbols-outlined btn btn-sm"
+                                title="Descargar PDF"  
+                                href="receta-examen/pdf/{{examen.id_receta_orden_examen_laboratorio}}"  
+                                target="_blank">file_download</a>
+                            <span 
+                                class="material-symbols-outlined btn btn-sm" 
+                                title="Eliminar Receta de Examen" 
+                                onclick="set_id_receta_examen('{{examen.id_receta_orden_examen_laboratorio}}');"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modal_eliminar_receta_examen"
+                                >delete
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
                    
                 </tbody>
             </table>
