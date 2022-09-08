@@ -3,7 +3,9 @@ from rest_framework import serializers
 from modulo_expediente.models import Consulta, Dosis, Medicamento, Paciente, ContieneConsulta, SignosVitales
 
 from modulo_expediente.models import (
-    Dosis, Medicamento, Paciente, ContieneConsulta, CitaConsulta, ReferenciaMedica, ConstanciaMedica)
+    Dosis, Medicamento, Paciente, ContieneConsulta, CitaConsulta, ReferenciaMedica, ConstanciaMedica,
+    RecetaOrdenExamenLaboratorioItem
+    )
 
 # class PacienteSerializer(serializers.Serializer):
 #     id_paciente=serializers.IntegerField()
@@ -116,3 +118,11 @@ class ConstanciaSerializer(serializers.ModelSerializer):
         model = ConstanciaMedica
         fields = '__all__'
         depth=1
+
+##Serializer para recetaexamenItem
+class RecetaOrdenExamenLaboratorioItemSerializer(serializers.ModelSerializer):
+    nombre_examen=serializers.CharField(source='examen.nombre_examen')
+    muestra=serializers.CharField(source='examen.get_tipo_muestra_display')
+    class Meta:
+        model=RecetaOrdenExamenLaboratorioItem
+        fields=['id_receta_orden_examen_laboratorio_item','muestra', 'nombre_examen']

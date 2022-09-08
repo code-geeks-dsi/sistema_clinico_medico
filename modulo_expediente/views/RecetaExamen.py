@@ -1,72 +1,85 @@
-from django.shortcuts import redirect, render
-from datetime import datetime
-
-from modulo_control.models import Doctor
-from modulo_expediente.forms import ConstanciaMedicaForm
-from django.http import JsonResponse
+#Django
+from django.http import JsonResponse, QueryDict,Http404
 from django.urls import reverse
 from dateutil.relativedelta import relativedelta
 from django.views.generic import View, TemplateView
-from django.views.generic.edit import CreateView
-from django.urls import reverse_lazy
-from weasyprint import HTML
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-from django.http import Http404
+from django.shortcuts import redirect, render
+from django.db.utils import IntegrityError
+#Python 
+from datetime import datetime
 
 ##Libreria Propias
-from modulo_expediente.models import (Consulta,ContieneConsulta,ConstanciaMedica)
+from ..models import (Consulta,ContieneConsulta, RecetaOrdenExamenLaboratorio, RecetaOrdenExamenLaboratorioItem)
+from ..serializers import RecetaOrdenExamenLaboratorioItemSerializer
 from modulo_laboratorio.models import (Categoria)
+from modulo_laboratorio.serializers import Examenserializer
 
 class RecetaExamenView(TemplateView):
     template_name = 'expediente/recetaExamen/create_update.html'
+    response={'type':'','data':'', 'info':''}
+    #Imprimir en pantalla el formulario de creación de orden
+    def get(self, request, *args, **kwargs):
+        ##Creando Orden
+        id_consulta=int(self.kwargs['id_consulta'])
+        receta=RecetaOrdenExamenLaboratorio.objects.create(
+            consulta_id=id_consulta
+        )
+        return redirect(reverse('receta-examen-update',
+                            kwargs={'id_consulta': id_consulta,'id_receta_examen':receta.id_receta_orden_examen_laboratorio},))
+    def delete(self, request, *args, **kwargs):
+        pass
 
+class RecetaExamenUpdate(View):
+    template_name = 'expediente/recetaExamen/create_update.html'
+    response={'type':'','data':'', 'info':''}
+    #Imprimir en pantalla el formulario de creación de orden
     def get(self, request, *args, **kwargs):
         ##Datos de la consulta
         id_consulta=int(self.kwargs['id_consulta'])
+        id_receta_examen=int(self.kwargs['id_receta_examen'])
         contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
         categorias=Categoria.objects.all()
         paciente=contiene_consulta.expediente.id_paciente
         edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
-        return render(request, self.template_name, {'Categoria':categorias,'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
-
-"""  def post(self, request, *args, **kwargs):
-        id_consulta=int(self.kwargs['id_consulta']) 
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            referencia_medica=form.save(commit=False)
-            referencia_medica.consulta=Consulta.objects.get(id_consulta=id_consulta)
-            referencia_medica.save()
-            return redirect(reverse('referencia-medica-update',
-                            kwargs={'id_consulta': id_consulta,'id_referencia':referencia_medica.id_referencia_medica},))
-"""
-
-""" class ReferenciaMedicaUpdate(View):
-    form_class = ReferenciaMedicaForm
-    template_name = 'expediente/referencia/create_update_referencia_medica.html'
-
-    def get(self, request, *args, **kwargs):
-        ##Datos de la consulta
-        id_consulta=int(self.kwargs['id_consulta'])
-        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
-        consulta=contiene_consulta.consulta
-        paciente=contiene_consulta.expediente.id_paciente
-        edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
-
-        id_referencia=int(self.kwargs['id_referencia']) 
-        initial_data={'id_referencia_medica':int(id_referencia)}
-        form = self.form_class(instance=ReferenciaMedica.objects.get(**initial_data))
-        return render(request, self.template_name, {'form': form, 'update':True, 'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad})
-
-    def post(self, request, *args, **kwargs):
-        id_referencia=int(self.kwargs['id_referencia']) 
-        initial_data={'id_referencia_medica':int(id_referencia)}
-        form = self.form_class(request.POST, instance=ReferenciaMedica.objects.get(**initial_data))
-        if form.is_valid():
-            form.save()
-            response={
-                'type':'success',
-                'data':'Guardado!'
+        item_recetas=RecetaOrdenExamenLaboratorioItem.objects.filter(receta_orden_examen_laboratorio=id_receta_examen)
+        return render(request, self.template_name, {'Categoria':categorias,'id_consulta':id_consulta, 'paciente':paciente, 'edad': edad, 'item_recetas':item_recetas})
+    
+    #Actualizando/Se agregan items a la orden de examen
+    def put(self, request, *args, **kwargs):
+        id_receta_examen=int(self.kwargs['id_receta_examen'])
+        data = QueryDict(request.body)
+        try:
+            item=RecetaOrdenExamenLaboratorioItem.objects.create(
+                receta_orden_examen_laboratorio_id=id_receta_examen,
+                examen_id=data['id_examen']
+            )
+            examen=Examenserializer(item.examen)
+            numero=RecetaOrdenExamenLaboratorioItem.objects.filter(receta_orden_examen_laboratorio_id=id_receta_examen).count()
+            self.response['data']='Examen agregado'
+            self.response['type']='success'
+            self.response['info']={
+                'id_receta_examen':item.id_receta_orden_examen_laboratorio_item,
+                'numero': numero,
+                'examen': examen.data
             }
-            return JsonResponse(response)
- """
+        except IntegrityError:
+            self.response['type']='warning'
+            self.response['data']='El examen ya existe en la orden.'
+            return JsonResponse(self.response, status=500)
+        return JsonResponse(self.response)
+
+    ##Para eliminar
+    def delete(self, request, *args, **kwargs):
+        id_receta_examen=int(self.kwargs['id_receta_examen'])
+        data = QueryDict(request.body)
+        RecetaOrdenExamenLaboratorioItem.objects.filter(
+            id_receta_orden_examen_laboratorio_item=data['id_item'],
+            receta_orden_examen_laboratorio_id=id_receta_examen
+        ).delete()
+        recetasItems=RecetaOrdenExamenLaboratorioItem.objects.filter(receta_orden_examen_laboratorio_id=id_receta_examen)
+        recetasItems=RecetaOrdenExamenLaboratorioItemSerializer(recetasItems, many=True)
+
+        self.response['type']='success'
+        self.response['data']='Examen removido de la orden.'
+        self.response['info']=recetasItems.data
+        return JsonResponse(self.response)

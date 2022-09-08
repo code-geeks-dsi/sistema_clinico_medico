@@ -153,6 +153,8 @@ class RecetaOrdenExamenLaboratorioItem(models.Model):
     id_receta_orden_examen_laboratorio_item=models.AutoField(primary_key=True)
     receta_orden_examen_laboratorio=models.ForeignKey('RecetaOrdenExamenLaboratorio',on_delete=models.CASCADE)
     examen=models.ForeignKey('modulo_laboratorio.ExamenLaboratorio',on_delete=models.DO_NOTHING)
+    class Meta:
+        unique_together = (('receta_orden_examen_laboratorio', 'examen'),)
 
 class Hospital(models.Model):
     id_hospital= models.AutoField(primary_key=True)
