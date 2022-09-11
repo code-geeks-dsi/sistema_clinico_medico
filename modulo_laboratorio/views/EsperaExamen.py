@@ -33,23 +33,8 @@ def bitacora_templete(request):
 
 @login_required(login_url='/login/')  
 def sala_laboratorio(request):
-    if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO' or request.user.roles.codigo_rol=='ROL_SECRETARIA':
-        categorias= Categoria.objects.all()
-        data={}
-        try:
-
-            rutina=CategoriaExamen.objects.filter(categoria=categorias[0].id_categoria)
-            data["Categoria"]=categorias 
-            data["Examen"]=rutina
-        except IndexError:
-            data["Categoria"]=[]
-            data["Examen"]=[]
-
-        roles=Rol.objects.values_list('codigo_rol','id_rol').all()
-        data['rol']=request.user.roles.id_rol
-        for rol in roles:
-            data[rol[0]]=rol[1]
-        return render(request,"laboratorio/salaLaboratorio.html",data)
+    if request.user.roles.codigo_rol=='ROL_SECRETARIA':
+        return render(request,"laboratorio/ColaOrdenesDeExamenes.html")
     else:
         return render(request,"Control/error403.html")
 
