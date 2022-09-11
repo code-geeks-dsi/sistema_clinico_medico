@@ -1,56 +1,32 @@
 <div class="tab-pane fade" id="nav-documentos" role="tabpanel" aria-labelledby="nav-documentos-tab">
-        <div class="pt-4">
-            <div class="accordion" id="accordionDocumentos">
-                <!--Receta Medica-->
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" 
-                            type="button" 
-                            data-bs-toggle="collapse" 
-                            data-bs-target="#documento-receta" 
-                            aria-expanded="true" 
-                            aria-controls="collapseOne">
-                            Receta Medica
-                            </button>
-                    </h2>
-                    <!--Receta Body-->
-                    <div id="documento-receta" class="accordion-collapse collapse show" aria-labelledby="headingOne">
-                        <div class="accordion-body">
-                                <div class="card-body">
-                                    <a class="btn btn-outline-primary w-0 my-1"  
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#agregarReceta">Agregar Receta Medica</a>
-                                    <a href="receta-medica/pdf" 
-                                    class="btn btn-outline-primary w-0 my-1">Descargar Receta Medica</a>
-                                </div>
-                        </div>
-                    </div><!-- fin Receta Body-->
+    <div class="pt-4">
+        
+        <div class="d-flex align-items-start">
+            <div class="nav flex-column nav-pills me-3 bg-white card" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-receta" type="button" role="tab" aria-controls="v-pills-receta" aria-selected="true">Receta Médica</button>
+                <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-constancia" type="button" role="tab" aria-controls="v-pills-constancia" aria-selected="false">Constancia Médica</button>
+                <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-referencia" type="button" role="tab" aria-controls="v-pills-referencia" aria-selected="false">Referencia Médica</button>
+                <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-examen" type="button" role="tab" aria-controls="v-pills-examen" aria-selected="false">Exámenes de Laboratorio</button>
+            </div>
+            <div class="flex-fill tab-content" id="v-pills-tabContent">
+                <!--Receta Médica-->
+                <div class="tab-pane fade show active bg-white" id="v-pills-receta" role="tabpanel" aria-labelledby="v-pills-receta-tab">
+                    {% include './receta.html'%}  
                 </div>
-                <!--Referencia Medica-->
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button" 
-                            type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#documento-referencia" 
-                            aria-expanded="true" 
-                            aria-controls="documento-referencia">
-                            Referencia Médica
-                            </button>
-                    </h2>
-                  <!--Referencia Body-->
-                  {% include './referencia_medica.html' with referencias=referencias%}
+                <!--Constancia Médica-->
+                <div class="tab-pane fade" id="v-pills-constancia" role="tabpanel" aria-labelledby="v-pills-constancia-tab">
+                    {% include './constancia.html'%}  
                 </div>
-                <!--Constancia Medica-->
-                <div class="accordion-item">
-                  <h2 class="accordion-header" id="headingThree">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#documento-constancia" aria-expanded="true" aria-controls="collapseThree">
-                      Constancia Médica
-                    </button>
-                  </h2>
-                  <!--Constancia Body-->
-                  {% include './constancia.html' with constancias_medicas=constancias_medicas%}
-
+                <!--Referencia Médica-->
+                <div class="tab-pane fade" id="v-pills-referencia" role="tabpanel" aria-labelledby="v-pills-referencia-tab">
+                    {% include './referencia_medica.html'%}  
+                </div>
+                <!--Receta Exámen-->
+                <div class="tab-pane fade" id="v-pills-examen" role="tabpanel" aria-labelledby="v-pills-examen-tab">
+                    {% include './examenes.html'%}  
                 </div>
             </div>
         </div>
+
+    </div>
 </div>

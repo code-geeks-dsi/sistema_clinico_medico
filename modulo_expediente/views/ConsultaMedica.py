@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from datetime import datetime
 from modulo_expediente.models import (
     ConstanciaMedica, Consulta, Dosis,ContieneConsulta, Expediente, 
-    RecetaMedica, SignosVitales,ReferenciaMedica)
+    RecetaMedica, SignosVitales,ReferenciaMedica, RecetaOrdenExamenLaboratorio)
 from ..forms import ( ConsultaFormulario, ControlSubsecuenteform,  DosisFormulario, 
                         HojaEvolucionForm, SignosVitalesForm,antecedentesForm, CitaConsultaForm)
 from django.http import JsonResponse
@@ -36,6 +36,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
             referencias_medicas= ReferenciaMedica.objects.filter(consulta=consulta)
             constancias_medicas=ConstanciaMedica.objects.filter(consulta=consulta)
+            recetas_examen=RecetaOrdenExamenLaboratorio.objects.filter(consulta_id=id_consulta)
             cita_form=CitaConsultaForm()
             cita_form.fields['expediente'].initial=expediente
             
@@ -54,6 +55,7 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
                 'dosis':dosis,
                 'referencias':referencias_medicas,
                 'constancias_medicas':constancias_medicas,
+                'recetas_examenes':recetas_examen,
                 'cita_form':cita_form
             }
         except ContieneConsulta.DoesNotExist:
