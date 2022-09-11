@@ -10,7 +10,7 @@ from modulo_expediente.models import Expediente, Paciente
 
 
 # Create your models here.
-
+# ORDEN DE EXAMEN
 class EsperaExamen(models.Model):
     OPCIONES_ESTADO=(
         ('1', 'Cancelado'),
@@ -56,6 +56,7 @@ class Resultado(models.Model):
     id_resultado = models.AutoField(primary_key=True)
     lic_laboratorio = models.ForeignKey('modulo_control.LicLaboratorioClinico', on_delete=models.CASCADE,null=True)
     examen_laboratorio= models.ForeignKey('ExamenLaboratorio', on_delete=models.CASCADE,null=False)
+    orden_de_laboratorio=models.ForeignKey('EsperaExamen',on_delete=models.CASCADE,null=True)
     fase_examenes_lab=models.CharField(max_length=25,choices=OPCIONES_FASE, blank=False,null=False,default=OPCIONES_FASE[0][0])
     numero_cola_resultado=models.IntegerField(null=False,blank=False)
     observaciones=models.TextField(null=False,blank=True,default="")

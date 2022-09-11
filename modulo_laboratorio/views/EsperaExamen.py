@@ -1,4 +1,3 @@
-
 from django.urls import reverse
 import datetime
 from datetime import datetime
@@ -55,33 +54,28 @@ def sala_laboratorio(request):
         return render(request,"Control/error403.html")
 
 # REHACER
-# def agregar_examen_cola(request):
-#     id_paciente=request.POST.get('id_paciente',0)
-#     id_examen_laboratorio=request.POST.get('id_examen_laboratorio',0)
-#     fecha_hoy=datetime.now()
-#     examen_item=EsperaExamen.objects.filter(expediente__id_paciente__id_paciente=id_paciente,fecha__year=fecha_hoy.year, 
-#                         fecha__month=fecha_hoy.month, 
-#                         fecha__day=fecha_hoy.day).first()
-#     if examen_item is None:
-#         examen_item=EsperaExamen.create(id_paciente,id_examen_laboratorio)
-#         examen_item.save()
-#         response={
-#                 'type':'success',
-#                 'title':'Guardado!',
-#                 'data':'Examen agregado a la cola'
-#             }
-#     else:
-#         response={
-#                 'type':'warning',
-#                 'data':'El examen ya existe en la cola!'
-#             }
-#     return JsonResponse(response, safe=False)
-class agregar_orden_de_examenes(View):
+def agregar_examen_cola(request):
+    id_paciente=request.POST.get('id_paciente',0)
+    id_examen_laboratorio=request.POST.get('id_examen_laboratorio',0)
+    fecha_hoy=datetime.now()
+    examen_item=EsperaExamen.objects.filter(expediente__id_paciente__id_paciente=id_paciente,fecha__year=fecha_hoy.year, 
+                        fecha__month=fecha_hoy.month, 
+                        fecha__day=fecha_hoy.day).first()
+    if examen_item is None:
+        examen_item=EsperaExamen.create(id_paciente,id_examen_laboratorio)
+        examen_item.save()
+        response={
+                'type':'success',
+                'title':'Guardado!',
+                'data':'Examen agregado a la cola'
+            }
+    else:
+        response={
+                'type':'warning',
+                'data':'El examen ya existe en la cola!'
+            }
+    return JsonResponse(response, safe=False)
 
-    def post(self, request, *args, **kwargs): 
-        id_paciente=int(self.kwargs['id_paciente'])
-        print("paciente ".id_paciente)
-        pass
 # modificar
 #View que retorna lista de examenes en espera
 def get_cola_ordenes_de_examenes(request):
