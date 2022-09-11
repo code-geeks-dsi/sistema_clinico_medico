@@ -93,11 +93,10 @@ class ExamenLaboratorio(models.Model):
     )
     id_examen_laboratorio=models.AutoField(primary_key=True)
     categoria=models.ManyToManyField('Categoria', through='CategoriaExamen')
-    #codigo_examen=models.CharField(max_length=8, null=False, blank=False)
     nombre_examen=models.CharField(max_length=40, null=False,blank=False) #tipo_examen
     tipo_muestra=models.CharField(max_length=15,choices=OPCIONES_MUESTRA ,null=False,blank=True,default=OPCIONES_MUESTRA[0][0])
     nota=models.CharField(null=False,blank=True,default="",max_length=100)
-    #resultado_por_defecto=models.CharField(max_length=22,choices=OPCIONES_RESULTADO ,null=False,blank=True,default=OPCIONES_RESULTADO[0][0])
+    
     def __str__(self):
         return self.nombre_examen
 
