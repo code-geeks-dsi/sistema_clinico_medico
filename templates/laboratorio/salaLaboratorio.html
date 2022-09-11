@@ -158,69 +158,6 @@
           </div>
         </div>
       </div>
-
-
-      <!--Modal seleccionar Examen-->
-      <div class="modal" tabindex="-1" id="modalSelectExamen"  aria-hidden="true" aria-labelledby="modalTitle">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Seleccionar Examen</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <!--Datos del paciente-->
-                  <p class="fw-bold text-secondary">Datos del Paciente</p>
-                  <hr class="dropdown-divider">
-                  <div class="row">
-                    <div class="col-md-12 col-lg-6">
-                      <div class="mb-3">
-                        <label for="nombrePaciente" class="form-label">Nombre del paciente:</label>
-                        <input type="text" class="form-control" id="nombrePaciente" aria-describedby="emailHelp" disabled>
-                      </div>
-                    </div>
-                    <div class="col-md-12 col-lg-6">
-                      <div class="mb-3">
-                        <label for="edadPaciente" class="form-label">Edad del paciente:</label>
-                        <input type="text" class="form-control" id="edadPaciente" aria-describedby="emailHelp" disabled>
-                      </div>
-                    </div>
-                  </div>
-                  <input type="text" id="pacienteId" hidden>
-                  <!--Datos del Examen-->
-                  <p class="fw-bold text-secondary pt-2">Examen a Realizar</p>
-                  <hr class="dropdown-divider">
-                  <div class="row">
-                    <div class="col-md-12 col-lg-6">
-                      <div class="mb-3">
-                        <label for="selectCategoria" class="form-label">Seleccione el Perfil</label>
-                        <select id="selectCategoria" class="form-select">
-                          {% for c in Categoria %}
-                            <option value="{{ c.id_categoria }}">{{ c.descripcion_categoria }}</option>
-                          {% endfor %}
-                        </select>
-                      </div>
-                    </div>
-                    <div class="col-md-12 col-lg-6">
-                      <div class="mb-3">
-                        <label for="selectExamen" class="form-label">Seleccione el Examen</label>
-                        <select id="selectExamen" class="form-select">
-                          {% for e in Examen %}
-                            <option value="{{ e.examen_laboratorio.id_examen_laboratorio }}">{{ e.examen_laboratorio.nombre_examen }}</option>
-                          {% endfor %}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary"
-                    onclick="agregarExamen();">Save changes</button>
-                </div>
-            </div>
-        </div>
-      </div>
     </div>   
 </div>
 

@@ -1,6 +1,6 @@
 from pyexpat import model
 from rest_framework import serializers
-from .models import CategoriaExamen, ExamenLaboratorio
+from .models import CategoriaExamen, ExamenLaboratorio, Resultado
 
 class CategoriaExamenSerializer(serializers.ModelSerializer):
     nombre_examen = serializers.CharField(source='examen_laboratorio.nombre_examen')
@@ -14,3 +14,10 @@ class Examenserializer(serializers.ModelSerializer):
     class Meta:
         model=ExamenLaboratorio
         fields=['muestra', 'nombre_examen']
+
+class ResultadoSerializer(serializers.ModelSerializer):
+    nombre_examen=serializers.CharField(source='examen_laboratorio.nombre_examen')
+    numero_orden=serializers.CharField(source='orden_de_laboratorio.numero_cola_orden')
+    class Meta:
+        model=Resultado
+        fields=['id_resultado', 'nombre_examen','numero_orden','numero_cola_resultado']

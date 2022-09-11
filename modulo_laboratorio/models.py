@@ -29,19 +29,19 @@ class EsperaExamen(models.Model):
     fecha=models.DateTimeField( default=now, blank=True)
 
     @classmethod
-    def create(cls, id_paciente,id_examen_laboratorio):
+    def create(cls, id_paciente):
         expediente=Expediente.objects.get(id_paciente=id_paciente)
-        examen_laboratorio=ExamenLaboratorio.objects.get(id_examen_laboratorio=id_examen_laboratorio)
         hoy=datetime.now()
         try:
-            numero_cola_laboratorio=EsperaExamen.objects.filter(
+            numero_cola_orden=EsperaExamen.objects.filter(
                                 fecha__year=hoy.year, 
-                                fecha__month=hoy.month).last().numero_cola_laboratorio+1
+                                fecha__month=hoy.month,
+                                fecha__day=hoy.day).last().numero_cola_orden+1
         except:
-            numero_cola_laboratorio=1
+            numero_cola_orden=1
         cola_item = cls(
             expediente=expediente,
-            numero_cola_laboratorio=numero_cola_laboratorio)
+            numero_cola_orden=numero_cola_orden)
             
         return cola_item
     def __str__(self):
@@ -60,8 +60,26 @@ class Resultado(models.Model):
     fase_examenes_lab=models.CharField(max_length=25,choices=OPCIONES_FASE, blank=False,null=False,default=OPCIONES_FASE[0][0])
     numero_cola_resultado=models.IntegerField(null=False,blank=False)
     observaciones=models.TextField(null=False,blank=True,default="")
+    fecha_creacion=models.DateTimeField( default=now, blank=True)
     fecha_hora_toma_de_muestra=models.DateTimeField(null=True,blank=True)
     fecha_hora_elaboracion_de_reporte=models.DateTimeField(null=True,blank=True)
+
+    class Meta:
+        unique_together = (('examen_laboratorio', 'orden_de_laboratorio'),)
+    @classmethod
+    def create(cls, id_orden, id_examen):
+        hoy=datetime.now()
+        try:
+            numero_cola_resultado=Resultado.objects.filter(
+                                fecha_creacion__year=hoy.year, 
+                                fecha_creacion__month=hoy.month).last().numero_cola_resultado+1
+        except:
+            numero_cola_resultado=1
+        cola_item = cls(
+            examen_laboratorio_id=id_examen,
+            orden_de_laboratorio_id=id_orden,
+            numero_cola_resultado=numero_cola_resultado)
+        return cola_item
 
     def __str__(self):
         return self.examen_laboratorio.nombre_examen

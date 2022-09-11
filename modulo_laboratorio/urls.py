@@ -2,6 +2,7 @@ from django.urls import path
 from modulo_laboratorio.views.CategoriaExamen import *
 from modulo_laboratorio.views.EsperaExamen import *
 from modulo_laboratorio.views.Resultado import *
+from modulo_laboratorio.views.OrdenExamenes import *
 
 urlpatterns = [
     path('sala/', sala_laboratorio, name='sala_laboratorio'),
@@ -20,5 +21,7 @@ urlpatterns = [
     path('inicio/', inicio, name='inicio_lab'),
     # path('pendientes/', examenes_pendientes, name='pendientes_lab'),
     # path('bitacora/', bitacora_templete, name='bitacora_lab'),
+    path('orden/<int:id_paciente>', OrdenExamenCreate.as_view(),name="crear_orden_examenes"),
+    path('orden/<int:id_paciente>/<int:id_orden>', OrdenExamenUpdate.as_view(),name="update_orden_examenes")
 
 ]
