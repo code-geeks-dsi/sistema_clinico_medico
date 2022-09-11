@@ -6,7 +6,7 @@ from modulo_laboratorio.views.Resultado import *
 urlpatterns = [
     path('sala/', sala_laboratorio, name='sala_laboratorio'),
 
-    path('examen/', agregar_orden_de_examenes, name='agregar_examen_cola' ),
+    path('examen/', agregar_examen_cola, name='agregar_examen_cola' ),
 
     path('examen/<int:id_categoria>', get_categoria_examen, name='get_select_examen' ),
 
