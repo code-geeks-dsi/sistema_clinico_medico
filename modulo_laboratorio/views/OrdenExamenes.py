@@ -94,7 +94,7 @@ class OrdenExamenUpdate(View):
         recetasItems=Resultado.objects.filter(orden_de_laboratorio=id_orden)
         recetasItems=ResultadoSerializer(recetasItems, many=True)
 
-        self.response['type']='success'
-        self.response['data']='Examen removido de la orden.'
+        self.response['type']='sucess'
+        self.response['data']='Examen Eliminado!'
         self.response['info']=recetasItems.data
         return JsonResponse(self.response)

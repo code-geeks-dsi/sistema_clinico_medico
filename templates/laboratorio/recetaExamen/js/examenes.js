@@ -26,3 +26,26 @@ function listExamenes(){
             }
   });
 }
+/**
+ * Creacion: Andrea Monterrosa
+ * Descripcion: funcion para cambiar el resultado a fase en proceso,
+ * una ves se entrega la muestra ya no se puede eliminar
+ */
+function entregar_muestra_medica(id_resultado) {
+  $.ajax({
+    url: '/laboratorio/examen/fase/2',
+    type:"POST",
+    dataType: "json",
+    headers: {
+                  'X-CSRFToken': "{{csrf_token }}"
+      }, data: {
+        'id_resultado':id_resultado
+      },
+    success: function(data){ 
+      data.mensajes.forEach(mensaje => {
+        toastr[mensaje.type](`${mensaje.data}`);
+      });
+
+    }
+  });
+}

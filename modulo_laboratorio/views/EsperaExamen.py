@@ -4,11 +4,13 @@ from datetime import datetime
 from django.http import JsonResponse
 from django.shortcuts import render
 from modulo_control.models import Rol
-from modulo_laboratorio.models import Categoria, CategoriaExamen, EsperaExamen
+from modulo_laboratorio.models import Categoria, CategoriaExamen, EsperaExamen,Resultado
 from dateutil.relativedelta import relativedelta
 from django.utils.timezone import now
 from django.contrib.auth.decorators import login_required
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count, Q
 
 @login_required(login_url='/login/')   
 def inicio(request):
@@ -169,20 +171,58 @@ def get_cola_examenes_a_elaborar(request):
         response={'data':lista}
     return JsonResponse( response , safe=False)
 
-# cambiar fase orden de examen
-def cambiar_fase_secretaria(request):
+'''
+Modificacion: Andrea Monterrosa
+Descripcion: Cambiar fase orden de examen
+''' 
+@csrf_exempt
+def cambiar_fase_a_en_proceso(request):
     id_resultado=request.POST.get('id_resultado',0)
-    id_expediente=request.POST.get('id_expediente',0)
-    item=EsperaExamen.objects.get(resultado__id_resultado=id_resultado,expediente__id_expediente=id_expediente)
-    item.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]
-    item.resultado.fecha_hora_toma_de_muestra=now
-   
-    item.save()
     response={
+        'mensajes':[]
+    }
+    try:
+        item=Resultado.objects.get(id_resultado=id_resultado)
+        item.fase_examenes_lab=Resultado.OPCIONES_FASE[1][0]
+        item.fecha_hora_toma_de_muestra=datetime.now()
+        item.save()
+        response['mensajes'].append({
             'type':'success',
-            'title':'Muestras entregadas!',
+            'title':'Muestra Entregada!',
             'data':'Examen en proceso'
-        }
+            })
+    except:
+        response['mensajes'].append({
+        'type':'error',
+        'title':'Intente de Nuevo!',
+        'data':'No se pudo cambiar de fase'
+        })
+
+    '''
+    Revisando si ya se entregaron todas las muestras de todos 
+    los examenes que pertenecen a la orden
+    '''
+    orden=item.orden_de_laboratorio
+    verificacion=Resultado.objects.values('orden_de_laboratorio').filter(orden_de_laboratorio=orden).annotate(
+        examenes_en_proceso=Count(
+                'examen_laboratorio', 
+                filter=Q(fase_examenes_lab=Resultado.OPCIONES_FASE[1][0])
+            ),
+        total=Count('examen_laboratorio')
+        )
+    total_examenes=verificacion[0]['total']
+    examenes_en_proceso=verificacion[0]['examenes_en_proceso']
+
+    # En el caso de que ya se entregaron todas las muestras entonces
+    # se cambia la fase de la orden (EsperaExamen)
+    if (total_examenes==examenes_en_proceso and orden.fase_examenes_lab!=EsperaExamen.OPCIONES_FASE_ORDEN[1][0]):
+        orden.fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[1][0]
+        orden.save()
+        response['mensajes'].append({
+            'type':'success',
+            'title':'Orden Completa En Proceso!',
+            'data':'Orden en proceso'
+            })
 
     return JsonResponse(response, safe=False)
 
