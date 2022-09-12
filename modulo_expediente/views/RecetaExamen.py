@@ -48,7 +48,7 @@ class RecetaExamenUpdate(View):
         ##Datos de la consulta
         id_consulta=int(self.kwargs['id_consulta'])
         id_receta_examen=int(self.kwargs['id_receta_examen'])
-        contiene_consulta=ContieneConsulta.objects.get(consulta__id_consulta=id_consulta)
+        contiene_consulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).last()
         categorias=Categoria.objects.all()
         paciente=contiene_consulta.expediente.id_paciente
         edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
