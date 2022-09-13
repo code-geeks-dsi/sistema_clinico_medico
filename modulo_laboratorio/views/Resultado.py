@@ -154,7 +154,7 @@ def elaborar_resultados_examen(request,id_resultado):
         resultado.lic_laboratorio=lic_laboratorio
         resultado.save()
         # verificando si los resultados han sido entregados
-        espera_examen=EsperaExamen.objects.get(resultado=resultado)
+        espera_examen=resultado.orden_de_laboratorio
 
         examen=resultado.examen_laboratorio
         valores=ContieneValor.objects.filter(resultado=resultado)
@@ -180,7 +180,7 @@ def elaborar_resultados_examen(request,id_resultado):
                 data['form-'+str(i)+'-dato']=valor.dato
         formset=ContieneValorFormSet(data)
         if request.method=='GET':
-            paciente= EsperaExamen.objects.get(resultado=id_resultado).expediente.id_paciente
+            paciente= espera_examen.expediente.id_paciente
             edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
             response={
                 'formset':formset,
@@ -188,17 +188,18 @@ def elaborar_resultados_examen(request,id_resultado):
                 'paciente':paciente,
                 'edad':edad,
                 'cantidad_valores':len(valores),
-                'fase':espera_examen.fase_examenes_lab
+                'fase':resultado.fase_examenes_lab
             }
             return render(request,'laboratorio/resultados.html',response)
         elif request.method=='POST':
-
-            print(espera_examen.fase_examenes_lab)
             #Si el examen esta listo
-            if espera_examen.fase_examenes_lab=='3' or espera_examen.fase_examenes_lab=='4' or espera_examen.fase_examenes_lab=='5':
+            if (espera_examen.fase_examenes_lab==EsperaExamen.OPCIONES_FASE_ORDEN[0][0] 
+            or espera_examen.fase_examenes_lab==EsperaExamen.OPCIONES_FASE_ORDEN[2][0]
+            or espera_examen.fase_examenes_lab==EsperaExamen.OPCIONES_FASE_ORDEN[3][0]):
                 response={
-                    'type':'warning',
-                    'data':'No se pueden moficiar los examenes de laboratorio'
+                    'type':'info',
+                    'title':'No tiene permisos para editar',
+                    'data':'No se pueden modificar los examenes de laboratorio, porque ya fueron entregados.'
                 }
             #Los examenes listos no se pueden mdificar    
             #Fin de la validación     
@@ -231,26 +232,22 @@ def elaborar_resultados_examen(request,id_resultado):
 #Método que genera los pdf 
 def generar_pdf(request,id_resultado):
     data={}
-    esperaExamen=EsperaExamen.objects.get(resultado_id=id_resultado)
-    # actualizando la fase del resultado
-    esperaExamen.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[3][0]
-    esperaExamen.save()
+    # esperaExamen=Resultado.objects.get(id_resultado=id_resultado)
+    # # actualizando la fase del resultado
+    # esperaExamen.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[3][0]
+    # esperaExamen.save()
     #consultando datos del paciente
-    idExpediente=esperaExamen.expediente_id
-    expediente=Expediente.objects.get(id_expediente=idExpediente)
-    idpaciente=expediente.id_paciente_id
-    paciente=Paciente.objects.get(id_paciente=idpaciente)
+    resultado=Resultado.objects.get(id_resultado=id_resultado)
+    expediente=resultado.orden_de_laboratorio.expediente
+    paciente=expediente.id_paciente
     edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
     #consultando datos del examen
-    resultado=Resultado.objects.get(id_resultado=id_resultado)
-    idexamen=resultado.examen_laboratorio_id
-    examenlab=ExamenLaboratorio.objects.get(id_examen_laboratorio=idexamen)
+    examenlab=resultado.examen_laboratorio
     fecha=resultado.fecha_hora_elaboracion_de_reporte
     #Consultando datos del encargado de emitir examen
-    id_lic=resultado.lic_laboratorio_id
-    licdeLab=LicLaboratorioClinico.objects.get(id_lic_laboratorio=id_lic)
-    codigo_empleado=licdeLab.empleado_id
-    empleado=Empleado.objects.get(codigo_empleado=codigo_empleado)
+    licdeLab=resultado.lic_laboratorio
+    # codigo_empleado=licdeLab.empleado_id
+    empleado=licdeLab.empleado
     #Consultando resultados
     contieneValor=ContieneValor.objects.filter(resultado_id=id_resultado)
     parametros=ContieneValor.objects.filter(resultado_id=id_resultado).values('parametro').distinct()

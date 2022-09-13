@@ -188,10 +188,7 @@ function cambiar_fase(id_resultado,id_expediente) {
       },
     success: function(data){ 
       toastr[data.type](`${data.data}`);
-      colaLaboratorioSocket.send(JSON.stringify({
-              'message':'sync'
-            }));
-
+      sync_orden();
     }
   });
 }

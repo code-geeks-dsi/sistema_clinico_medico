@@ -3,7 +3,7 @@ from unittest import result
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from datetime import datetime
-
+from django.db.models import Q
 from modulo_laboratorio.serializers import ResultadoLaboratorioSerializer, ResultadoSerializer
 from .models import EsperaExamen, Resultado
 from django.urls import reverse
@@ -15,10 +15,10 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
         def cola_ordenes(self):
                 fecha_hoy=datetime.now()
                 lista=[]
-                espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
-                                        fecha__month=fecha_hoy.month, 
-                                        fecha__day=fecha_hoy.day).select_related('expediente__id_paciente').order_by('numero_cola_orden')
-                   
+                # espera_examen=EsperaExamen.objects.filter(fecha__year=fecha_hoy.year, 
+                #                         fecha__month=fecha_hoy.month, 
+                #                         fecha__day=fecha_hoy.day).select_related('expediente__id_paciente').order_by('numero_cola_orden')
+                espera_examen=EsperaExamen.objects.filter(~Q(fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[3][0])).select_related('expediente__id_paciente').order_by('numero_cola_orden')
                 for fila in espera_examen:
                         diccionario={
                         "numero_cola_orden":"",

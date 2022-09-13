@@ -192,11 +192,11 @@
                                     data-bs-toggle="modal" 
                                     data-bs-target="#modal-eliminar-item_receta"
                                     title="Eliminar Examen" alt="eliminar">delete</button>
-                                <button class="material-symbols-outlined btn btn-sm btn-outline-success" 
-                                    ${puedeDescargar}
+                                <a class="${puedeDescargar} material-symbols-outlined btn btn-sm btn-outline-success" 
                                     title="Descargar Resultado" 
-                                    onclick="set_id_resultado(${orden.id_resultado});"
-                                    alt="descargar">download</button>
+                                    href="${orden.url_resultado_pdf}"
+                                    target="_blank"
+                                    alt="descargar">download</a>
                             </td>
                         </tr>`);
       });
