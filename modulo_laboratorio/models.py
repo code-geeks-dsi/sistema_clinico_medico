@@ -82,7 +82,7 @@ class Resultado(models.Model):
         return cola_item
 
     def __str__(self):
-        return self.examen_laboratorio.nombre_examen
+        return self.examen_laboratorio.nombre_examen +" "+str(self.examen_laboratorio.id_examen_laboratorio)
 
 class ContieneValor(models.Model):
     resultado = models.ForeignKey('Resultado', on_delete=models.CASCADE)

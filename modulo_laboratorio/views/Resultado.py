@@ -13,6 +13,8 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 import tempfile
 
+from modulo_laboratorio.serializers import Examenserializer, ResultadoSerializer
+
 def elaborar_resultados_examen(request,id_resultado):
         data={} 
         lic_laboratorio=LicLaboratorioClinico.objects.get(empleado=request.user)
@@ -95,11 +97,11 @@ def elaborar_resultados_examen(request,id_resultado):
 
 #Método para descargar examenes de laboratorio
 #Método que genera los pdf 
-def generar_pdf(request,id_resultado):
+def generar_pdf(request,orden_id):
     data={}
-    esperaExamen=EsperaExamen.objects.get(resultado_id=id_resultado)
+    esperaExamen=EsperaExamen.objects.get(id=orden_id)
     # actualizando la fase del resultado
-    esperaExamen.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[3][0]
+    esperaExamen.fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[3][0]
     esperaExamen.save()
     #consultando datos del paciente
     idExpediente=esperaExamen.expediente_id
@@ -107,22 +109,34 @@ def generar_pdf(request,id_resultado):
     idpaciente=expediente.id_paciente_id
     paciente=Paciente.objects.get(id_paciente=idpaciente)
     edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
-    #consultando datos del examen
-    resultado=Resultado.objects.get(id_resultado=id_resultado)
-    idexamen=resultado.examen_laboratorio_id
-    examenlab=ExamenLaboratorio.objects.get(id_examen_laboratorio=idexamen)
-    fecha=resultado.fecha_hora_elaboracion_de_reporte
-    #Consultando datos del encargado de emitir examen
-    id_lic=resultado.lic_laboratorio_id
-    licdeLab=LicLaboratorioClinico.objects.get(id_lic_laboratorio=id_lic)
-    codigo_empleado=licdeLab.empleado_id
-    empleado=Empleado.objects.get(codigo_empleado=codigo_empleado)
-    #Consultando resultados
-    contieneValor=ContieneValor.objects.filter(resultado_id=id_resultado)
-    parametros=ContieneValor.objects.filter(resultado_id=id_resultado).values('parametro').distinct()
-    referencias=RangoDeReferencia.objects.filter(parametro__in=parametros)
-    
-    data={'contieneValor':contieneValor, 'paciente':paciente,'edad':edad,'fecha':fecha,'empleado':empleado,'examenlab':examenlab,'referencias':referencias}
+    #consultando datos de los examenes
+    resultados=Resultado.objects.filter(orden_de_laboratorio_id=orden_id)
+    lista=[]
+    for i in range(len(resultados)):
+        resultado={
+            'id_resultado':"",
+            'id_examen':"",
+            'fecha_de_elaboracion':"",
+            'contieneValor':"",
+            'parametros':"",
+            'referencias':"",
+            'licdeLab':"",
+            'empleado':"",
+        }
+        resultado['id_resultado']=resultados[i].id_resultado
+        examen=ExamenLaboratorio.objects.get(id_examen_laboratorio=resultados[i].examen_laboratorio_id)
+        examen=Examenserializer(examen , many=False)
+        resultado['examenlab']=examen.data
+        resultado['fecha_de_elaboracion']=resultados[i].fecha_hora_elaboracion_de_reporte
+        resultado['contieneValor']=ContieneValor.objects.filter(resultado_id=resultados[i].id_resultado)
+        parametro=ContieneValor.objects.filter(resultado_id=resultados[i].id_resultado).values('parametro').distinct()
+        resultado['parametros']=parametro
+        resultado['referencias']=RangoDeReferencia.objects.filter(parametro__in=parametro)
+        licDeLab=LicLaboratorioClinico.objects.get(id_lic_laboratorio=resultados[i].lic_laboratorio_id)
+        resultado['empleado']=Empleado.objects.get(codigo_empleado=licDeLab.empleado_id)
+
+        lista.append(resultado)
+    data={ 'paciente':paciente,'edad':edad,'resultados':lista}
     #puede recibir la info como diccionario
     html_string = render_to_string('ResultadosDeLaboratorio.html',data)
     html = HTML(string=html_string, base_url=request.build_absolute_uri())

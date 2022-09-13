@@ -9,92 +9,93 @@
     <link href="{% static 'css/toastr.min.css' %}" rel="stylesheet" />
 
   </head>
-<header>
-    <div class="box">
-        <div class="row align-items-center">
-            <div class="col-2">
-                <img src="{% static 'img/logo_lab.png'%}"  alt=""/>
-            </div>
-            <div class="col">
-                <h1 >LABORATORIO DE ANALISIS CLINICO</h1>
-                <h1 >EBENEZER</h1>
-                <b>
-                    Regente: Licda. Jennifer Lisbeth Martínez de Loza.  JVPLC 4817 
-                </b>
-                <p>
-                    Teléfono: 2327-3492<br>
-                    Horarios: Lun a Vie 7:00 AM a 4:00 PM Sab: 7:00 AM a 12:00 PM<br>
-                    3ra Av. Sur Casa No. 3 “A” Barrio San Nicolás , Cojutepeque Cuscatlán<br>
-                </p>
+{% for resultado in resultados %}
+    <header>
+        <div class="box">
+            <div class="row align-items-center">
+                <div class="col-2">
+                    <img src="{% static 'img/logo_lab.png'%}"  alt=""/>
+                </div>
+                <div class="col">
+                    <h1 >LABORATORIO DE ANALISIS CLINICO</h1>
+                    <h1 >EBENEZER</h1>
+                    <b>
+                        Regente: Licda. Jennifer Lisbeth Martínez de Loza.  JVPLC 4817 
+                    </b>
+                    <p>
+                        Teléfono: 2327-3492<br>
+                        Horarios: Lun a Vie 7:00 AM a 4:00 PM Sab: 7:00 AM a 12:00 PM<br>
+                        3ra Av. Sur Casa No. 3 “A” Barrio San Nicolás , Cojutepeque Cuscatlán<br>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-</header>
-<body >    
-        <div class="col">
-            {% if paciente %}
-            
-                <center><a href="#" class="data-paciente" >Nombre:&nbsp;{{paciente.nombre_paciente}}&nbsp;{{ paciente.apellido_paciente }}</a>
-                <a href="#" class="data-paciente">Edad:&nbsp;{{edad.years}} Años</a><br></center>
-            {% endif %}
-        </div>
-        <div class="conten">
-            <table class="table table-hover">
-                <tr>
-                    <th>Examen Solicitado: <br><center>{{examenlab.nombre_examen}}</center> </th>
-                    <th><center>Resultado</center></th>
-                    <th>Rango de Referencia</th>
-                </tr>
-                {% if contieneValor %}
-                {% for cv in contieneValor %}
-                    <tr>
-                        <td><center>{{ cv.parametro.nombre_parametro }}</center></td>
-                        <td><center>{{ cv.dato }}&nbsp;{{ cv.parametro.unidad_parametro }}</center></td>
-                        
-                        <td>
-                            {% for r in referencias %}
-                                {% if r.parametro == cv.parametro %}
-                                    
-                                        {% if r.descripcion  %}
-                                            {{r.descripcion}}
-                                        {% endif %}
-                                        {% if r.valor_minimo and r.valor_maximo %}
-                                            {{r.valor_minimo}} - {{r.valor_maximo}}
-                                        {% else %}
-                                            {% if r.valor_minimo %}
-                                                 Mayor de&nbsp;{{r.valor_minimo}}
-                                            {% endif %}
-                                            {% if r.valor_maximo %}
-                                                Menor de&nbsp;{{r.valor_maximo}}
-                                            {% endif %}
-                                        {% endif %}
-                                        {% if r.unidad %}
-                                            {{r.unidad}}
-                                        {% endif %}
-                                        {% if r.valor %}
-                                            {{r.valor}}
-                                        {% endif %}
-                                {% endif %}
-                                <br>
-                            {% endfor%}
-                            
-                        </td>            
-                                
-                        
-                    </tr>
-                {% endfor %}
+    </header>
+    <body >    
+            <div class="col">
+                {% if paciente %}
+                
+                    <center><a href="#" class="data-paciente" >Nombre:&nbsp;{{paciente.nombre_paciente}}&nbsp;{{ paciente.apellido_paciente }}</a>
+                    <a href="#" class="data-paciente">Edad:&nbsp;{{edad.years}} Años</a><br></center>
                 {% endif %}
-            </table>
-            <div>
-                <p class="data-paciente">Nota:</p><br>
-                <a href="#" class="data-paciente" >Responsable: {{empleado.nombres}}&nbsp;{{empleado.apellidos}}</a>
-                <a href="#" class="data-paciente">Firma:______________</a><br><br>
-                <center><a href="#" class="data-paciente">Fecha:{{fecha.date}}</a></center>
             </div>
-        </div> 
-        
-</body>
+            <div class="conten">
+                <table class="table table-hover">
+                    <tr>
+                        <th>Examen Solicitado: <br><center>{{resultado.examenlab.nombre_examen}}</center> </th>
+                        <th><center>Resultado</center></th>
+                        <th>Rango de Referencia</th>
+                    </tr>
+                    {% if resultado.contieneValor %}
+                    {% for cv in resultado.contieneValor %}
+                        <tr>
+                            <td><center>{{ cv.parametros.nombre_parametro }}</center></td>
+                            <td><center>{{ cv.dato }}&nbsp;{{ cv.parametros.unidad_parametro }}</center></td>
+                            
+                            <td>
+                                {% for r in resultado.referencias %}
+                                    {% if r.parametro == cv.parametro %}
+                                        
+                                            {% if r.descripcion  %}
+                                                {{r.descripcion}}
+                                            {% endif %}
+                                            {% if r.valor_minimo and r.valor_maximo %}
+                                                {{r.valor_minimo}} - {{r.valor_maximo}}
+                                            {% else %}
+                                                {% if r.valor_minimo %}
+                                                    Mayor de&nbsp;{{r.valor_minimo}}
+                                                {% endif %}
+                                                {% if r.valor_maximo %}
+                                                    Menor de&nbsp;{{r.valor_maximo}}
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if r.unidad %}
+                                                {{r.unidad}}
+                                            {% endif %}
+                                            {% if r.valor %}
+                                                {{r.valor}}
+                                            {% endif %}
+                                    {% endif %}
+                                    <br>
+                                {% endfor%}
+                                
+                            </td>            
+                                    
+                            
+                        </tr>
+                    {% endfor %}
+                    {% endif %}
+                </table>
+                <div>
+                    <p class="data-paciente">Nota:</p><br>
+                    <a href="#" class="data-paciente" >Responsable: {{resultado.empleado.nombres}}&nbsp;{{resultado.empleado.apellidos}}</a>
+                    <a href="#" class="data-paciente">Firma:______________</a><br><br>
+                    <center><a href="#" class="data-paciente">Fecha:{{resultado.fecha_de_elaboracion.date}}</a></center>
+                </div>
+            </div> 
+    </body>
+{% endfor %}
 </html>
 <style>
     @page {
@@ -129,7 +130,7 @@
     .conten{
         background-image:url("{% static 'img/microscopio.png'%}");
         width:80%;
-        height:300px;
+        height:400px;
         background-size:cover;
         position:relative;
         margin-left: 60px;
