@@ -34,7 +34,7 @@ class ResultadoView(View):
         paciente=Paciente.objects.get(id_paciente=id_paciente)
         edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
         resultados=Resultado.objects.filter(orden_de_laboratorio=id_orden)
-        return render(request, self.template_name, {'Categoria':categorias, 'paciente':paciente, 'edad': edad, 'item_recetas':resultados})
+        return render(request, self.template_name, {'Categoria':categorias, 'paciente':paciente, 'edad': edad, 'item_recetas':resultados,'id_orden':id_orden})
     
     #Actualizando/Se agregan items a la orden de examen
     def put(self, request, *args, **kwargs):

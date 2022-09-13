@@ -11,8 +11,6 @@ function listExamenes(){
             data: {         
             },
             success: function(data){
-              switch(data.accion){
-                case 2:
                   $('#selectExamen').fadeIn(1000).html(data);
                   let selectExamen=document.getElementById('selectExamen');
                   selectExamen.innerHTML=null
@@ -21,8 +19,8 @@ function listExamenes(){
                     elemento= elemento+'<option value="'+x.id_examen+'">'+x.nombre_examen+'</option>';
                   });
                   selectExamen.insertAdjacentHTML("beforeend", elemento);
-                  break;
-              }           
+                  
+                  
             }
   });
 }
@@ -53,8 +51,7 @@ function entregar_muestra_medica(id_resultado) {
       },
     success: function(data){ 
       render_mensajes(data.mensajes);
-      $('#lista-receta-examen').html("");
-      render_ordenes(data.info);
+      sync_orden();
       }
     });
 }

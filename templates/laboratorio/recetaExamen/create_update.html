@@ -82,6 +82,7 @@
                             </thead>
                             <tbody id="lista-receta-examen">
                             <!--Datos del server -- dosis -- -->
+                            {% comment %}  
                             {% for item_receta in item_recetas %}
                                 <tr id="item-{{item_receta.id_resultado}}">
                                     <td>{{ item_receta.orden_de_laboratorio.numero_cola_orden }}</td>
@@ -117,6 +118,7 @@
                                     </td>
                                 </tr>
                             {% endfor%}
+                            {% endcomment %}
                             </tbody>
                         </table>
                     </div>
@@ -156,8 +158,25 @@
 </div>    
 
 <script>
-
+    
     let id_item_resultado_delete="";
+    let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
+    let socket_url=`${ws_scheme}://${window.location.host}/ws/laboratorio/cola/`;
+    const colaLaboratorioSocket=new WebSocket(socket_url);
+    function sync_orden(){
+        colaLaboratorioSocket.send(JSON.stringify({
+                  'message':'sync',
+                  'tipo':'cola_de_resultados_por_orden_de_laboratorio',
+                  'id_orden': '{{ id_orden }}'
+                  }));
+    }
+    colaLaboratorioSocket.onopen =function() {
+        sync_orden();
+    }
+    colaLaboratorioSocket.onmessage=(data)=>{
+        let examenes=JSON.parse(data.data);
+        render_ordenes(examenes.data);
+    }
     function set_id_resultado(id_item){
         id_item_resultado_delete=id_item;
     }
@@ -175,7 +194,7 @@
             }, 
             success: function(response) { 
                 render_mensajes(response.mensajes);
-                render_ordenes([response.info.examen]);
+                sync_orden();
                 
             },
             error: function(response){
@@ -186,32 +205,32 @@
     });
 
     function render_ordenes(ordenes) {
+        $('#lista-receta-examen').html("");
         ordenes.forEach(orden => {
             // solo se puede borrar o entregar la muestra en fase recepcion de muestras
             // solo se puede descargar cuando los resultados estan en fase listos
             puedeBorrar=((orden.fase_examenes_lab=='1')?'':'disabled');
             puedeAgregarMuestra=((orden.fase_examenes_lab=='1')?'':'disabled');
             puedeDescargar=((orden.fase_examenes_lab=='3')?'':'disabled');
-            
             $('#lista-receta-examen').append(
                         `<tr id='item-${orden.id_resultado}'>
                             <td>${orden.numero_orden}</td>
                             <td>${orden.numero_cola_resultado}</td>
                             <td>${orden.nombre_examen}</td>
                             <td>
-                                <button class="material-symbols-outlined btn btn-sm" 
+                                <button class="material-symbols-outlined btn btn-sm btn-outline-primary" 
                                     ${puedeAgregarMuestra}
                                     title="Entregar Muestra" 
                                     onclick="entregar_muestra_medica(${orden.id_resultado});"
                                     alt="Entregar Muestra">approval_delegation</button>
                             
-                                <button class="material-symbols-outlined btn btn-sm" 
+                                <button class="material-symbols-outlined btn btn-sm btn-outline-danger" 
                                     ${puedeBorrar}
                                     onclick="set_id_resultado(${orden.id_resultado});"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#modal-eliminar-item_receta"
                                     title="Eliminar Examen" alt="eliminar">delete</button>
-                                <button class="material-symbols-outlined btn btn-sm" 
+                                <button class="material-symbols-outlined btn btn-sm btn-outline-success" 
                                     ${puedeDescargar}
                                     title="Descargar Resultado" 
                                     onclick="set_id_resultado(${orden.id_resultado});"
@@ -233,9 +252,7 @@
             }, 
             success: (data)=>{
                 render_mensajes(data.mensajes);
-                //Imprimiendo la lista de examenes
-                $('#lista-receta-examen').html("");
-                render_ordenes(data.info);
+                sync_orden();
                 }
                 
             ,
@@ -251,18 +268,5 @@
         listExamenes();
     };
 
-    {% if update %}
-    $('#constancia-medica').submit(function (event) {
-            event.preventDefault();
-            $.ajax({
-            type: 'POST',
-            url: $("form").attr("action"),
-            data: $("form").serialize(), 
-            success: (data)=>{
-                render_mensajes([data.mensajes]);
-                },
-            });
-    });
-    {% endif %}
 </script>
 {% endblock %}

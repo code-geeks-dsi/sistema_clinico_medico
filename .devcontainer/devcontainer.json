@@ -30,7 +30,8 @@
 		"donjayamanne.githistory",
 		"GitHub.vscode-pull-request-github",
 		"ms-python.python",
-		"ms-python.vscode-pylance"
+		"ms-python.vscode-pylance",
+		"batisteo.vscode-django"
 	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
