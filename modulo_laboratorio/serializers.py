@@ -20,4 +20,4 @@ class ResultadoSerializer(serializers.ModelSerializer):
     numero_orden=serializers.CharField(source='orden_de_laboratorio.numero_cola_orden')
     class Meta:
         model=Resultado
-        fields=['id_resultado', 'nombre_examen','numero_orden','numero_cola_resultado']
+        fields=['id_resultado', 'nombre_examen','numero_orden','numero_cola_resultado','fase_examenes_lab']

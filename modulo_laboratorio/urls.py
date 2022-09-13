@@ -23,6 +23,6 @@ urlpatterns = [
     # path('bitacora/', bitacora_templete, name='bitacora_lab'),
 
     path('orden/<int:id_paciente>', OrdenExamenCreate.as_view(),name="crear_orden_examenes"),
-    path('orden/<int:id_paciente>/<int:id_orden>', OrdenExamenUpdate.as_view(),name="update_orden_examenes")
+    path('orden/<int:id_paciente>/<int:id_orden>', ResultadoView.as_view(),name="update_orden_examenes")
 
 ]

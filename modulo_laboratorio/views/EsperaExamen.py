@@ -9,7 +9,6 @@ from dateutil.relativedelta import relativedelta
 from django.utils.timezone import now
 from django.contrib.auth.decorators import login_required
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count, Q
 
 @login_required(login_url='/login/')   
@@ -171,38 +170,12 @@ def get_cola_examenes_a_elaborar(request):
         response={'data':lista}
     return JsonResponse( response , safe=False)
 
-'''
-Modificacion: Andrea Monterrosa
-Descripcion: Cambiar fase orden de examen
-''' 
-@csrf_exempt
-def cambiar_fase_a_en_proceso(request):
-    id_resultado=request.POST.get('id_resultado',0)
-    response={
-        'mensajes':[]
-    }
-    try:
-        item=Resultado.objects.get(id_resultado=id_resultado)
-        item.fase_examenes_lab=Resultado.OPCIONES_FASE[1][0]
-        item.fecha_hora_toma_de_muestra=datetime.now()
-        item.save()
-        response['mensajes'].append({
-            'type':'success',
-            'title':'Muestra Entregada!',
-            'data':'Examen en proceso'
-            })
-    except:
-        response['mensajes'].append({
-        'type':'error',
-        'title':'Intente de Nuevo!',
-        'data':'No se pudo cambiar de fase'
-        })
-
+def verificar_fase_orden_laboratorio(orden):
+    esta_en_proceso=False
     '''
     Revisando si ya se entregaron todas las muestras de todos 
     los examenes que pertenecen a la orden
     '''
-    orden=item.orden_de_laboratorio
     verificacion=Resultado.objects.values('orden_de_laboratorio').filter(orden_de_laboratorio=orden).annotate(
         examenes_en_proceso=Count(
                 'examen_laboratorio', 
@@ -217,14 +190,11 @@ def cambiar_fase_a_en_proceso(request):
     # se cambia la fase de la orden (EsperaExamen)
     if (total_examenes==examenes_en_proceso and orden.fase_examenes_lab!=EsperaExamen.OPCIONES_FASE_ORDEN[1][0]):
         orden.fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[1][0]
-        orden.save()
-        response['mensajes'].append({
-            'type':'success',
-            'title':'Orden Completa En Proceso!',
-            'data':'Orden en proceso'
-            })
-
-    return JsonResponse(response, safe=False)
+        esta_en_proceso=True
+    else:
+        orden.fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[0][0]
+    orden.save()
+    return esta_en_proceso
 
 # cambiar fase resultado de examen de laboratorio
 # cambiar la fase de un examen en cola a resultados listos

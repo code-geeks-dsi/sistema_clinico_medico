@@ -88,18 +88,32 @@
                                     <td>{{ item_receta.numero_cola_resultado}}</td>
                                     <td>{{ item_receta.examen_laboratorio.nombre_examen }}</td>
                                     <td>
-                                        <span class="material-symbols-outlined btn btn-sm" 
-                                            onclick="entregar_muestra_medica('{{item_receta.id_resultado}}');"
-                                            alt="Entregar Muestra">approval_delegation</span>
-                                   
-                                        <span 
+                                        <button class="material-symbols-outlined btn btn-sm" 
+                                        {% ifnotequal  item_receta.orden.fase_examenes_lab '1' %}
+                                        disabled
+                                        {% endifnotequal  %}
+                                        title="Entregar Muestra" 
+                                        onclick="entregar_muestra_medica('{{item_receta.id_resultado}}');"
+                                        alt="Entregar Muestra">approval_delegation</button>
+                                
+                                        <button 
                                             class="material-symbols-outlined btn btn-sm" 
+                                            {% ifnotequal  item_receta.orden.fase_examenes_lab '1' %}
+                                            disabled
+                                            {% endifnotequal  %}
                                             title="Eliminar Examen" 
                                             onclick="set_id_resultado('{{item_receta.id_resultado}}');"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#modal-eliminar-item_receta"
                                             >delete
-                                        </span>
+                                        </button>
+                                        <button class="material-symbols-outlined btn btn-sm" 
+                                        {% ifnotequal  item_receta.orden.fase_examenes_lab '3' %}
+                                            disabled
+                                        {% endifnotequal  %}
+                                        title="Descargar Resultado" 
+                                        onclick="set_id_resultado(${orden.id_resultado});"
+                                        alt="descargar">download</button>
                                     </td>
                                 </tr>
                             {% endfor%}
@@ -160,41 +174,54 @@
                 'id_examen':$('#selectExamen').val(),
             }, 
             success: function(response) { 
-                toastr[response.type](response.data);
+                render_mensajes(response.mensajes);
                 render_ordenes([response.info.examen]);
                 
             },
             error: function(response){
                 response=response.responseJSON;
-                toastr[response.type](response.data);
+                render_mensajes(response.mensajes);
             }
             });
     });
 
     function render_ordenes(ordenes) {
         ordenes.forEach(orden => {
+            // solo se puede borrar o entregar la muestra en fase recepcion de muestras
+            // solo se puede descargar cuando los resultados estan en fase listos
+            puedeBorrar=((orden.fase_examenes_lab=='1')?'':'disabled');
+            puedeAgregarMuestra=((orden.fase_examenes_lab=='1')?'':'disabled');
+            puedeDescargar=((orden.fase_examenes_lab=='3')?'':'disabled');
+            
             $('#lista-receta-examen').append(
                         `<tr id='item-${orden.id_resultado}'>
                             <td>${orden.numero_orden}</td>
                             <td>${orden.numero_cola_resultado}</td>
                             <td>${orden.nombre_examen}</td>
                             <td>
-                                <span class="material-symbols-outlined btn btn-sm" 
+                                <button class="material-symbols-outlined btn btn-sm" 
+                                    ${puedeAgregarMuestra}
+                                    title="Entregar Muestra" 
                                     onclick="entregar_muestra_medica(${orden.id_resultado});"
-                                    alt="Entregar Muestra">approval_delegation</span>
+                                    alt="Entregar Muestra">approval_delegation</button>
                             
-                                <span class="material-symbols-outlined btn btn-sm" 
+                                <button class="material-symbols-outlined btn btn-sm" 
+                                    ${puedeBorrar}
                                     onclick="set_id_resultado(${orden.id_resultado});"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#modal-eliminar-item_receta"
-                                    title="Eliminar Examen" alt="eliminar">delete</span>
+                                    title="Eliminar Examen" alt="eliminar">delete</button>
+                                <button class="material-symbols-outlined btn btn-sm" 
+                                    ${puedeDescargar}
+                                    title="Descargar Resultado" 
+                                    onclick="set_id_resultado(${orden.id_resultado});"
+                                    alt="descargar">download</button>
                             </td>
                         </tr>`);
       });
     }
     //Boton para eliminar Receta
     $('#eliminar-item-receta-examen-btn').click(()=>{
-        console.log(id_item_resultado_delete);
         $.ajax({
             type: 'delete',
             url: "",
@@ -204,16 +231,17 @@
             data: {
                 'id_resultado':id_item_resultado_delete
             }, 
-            success: function(response) { 
-                toastr[response.type](response.data);
+            success: (data)=>{
+                render_mensajes(data.mensajes);
                 //Imprimiendo la lista de examenes
                 $('#lista-receta-examen').html("");
-                render_ordenes(response.info);
+                render_ordenes(data.info);
+                }
                 
-            },
-            error: function(response){
-                toastr['error']('F')
-            }
+            ,
+            error: (data)=>{
+                render_mensajes(data.mensajes);
+                }
             });
     });
     
@@ -230,9 +258,9 @@
             type: 'POST',
             url: $("form").attr("action"),
             data: $("form").serialize(), 
-            success: function(response) { 
-                    toastr[response.type](response.data); 
-            },
+            success: (data)=>{
+                render_mensajes([data.mensajes]);
+                },
             });
     });
     {% endif %}

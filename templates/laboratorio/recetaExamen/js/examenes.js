@@ -26,6 +26,16 @@ function listExamenes(){
             }
   });
 }
+
+function render_mensajes(mensajes){ 
+  mensajes.forEach(mensaje => {
+    if (mensaje.type!='success'){
+      toastr[mensaje.type](`${mensaje.title}`,`${mensaje.data}`,{timeout: 10000});
+    }else{
+      toastr[mensaje.type](`${mensaje.data}`);
+    }
+  });
+}
 /**
  * Creacion: Andrea Monterrosa
  * Descripcion: funcion para cambiar el resultado a fase en proceso,
@@ -42,10 +52,9 @@ function entregar_muestra_medica(id_resultado) {
         'id_resultado':id_resultado
       },
     success: function(data){ 
-      data.mensajes.forEach(mensaje => {
-        toastr[mensaje.type](`${mensaje.data}`);
-      });
-
-    }
-  });
+      render_mensajes(data.mensajes);
+      $('#lista-receta-examen').html("");
+      render_ordenes(data.info);
+      }
+    });
 }
