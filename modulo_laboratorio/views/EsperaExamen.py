@@ -171,7 +171,7 @@ def get_cola_examenes_a_elaborar(request):
     return JsonResponse( response , safe=False)
 
 def verificar_fase_orden_laboratorio(orden):
-    esta_en_proceso=False
+    mensaje=None
     '''
     Revisando si ya se entregaron todas las muestras de todos 
     los examenes que pertenecen a la orden
@@ -190,11 +190,20 @@ def verificar_fase_orden_laboratorio(orden):
     # se cambia la fase de la orden (EsperaExamen)
     if (total_examenes==examenes_en_proceso and orden.fase_examenes_lab!=EsperaExamen.OPCIONES_FASE_ORDEN[1][0]):
         orden.fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[1][0]
-        esta_en_proceso=True
-    else:
+        mensaje={
+                'type':'success',
+                'title':'Orden en proceso!',
+                'data':'Orden Completa En Proceso!'
+                }
+    elif (total_examenes>examenes_en_proceso and orden.fase_examenes_lab==EsperaExamen.OPCIONES_FASE_ORDEN[1][0]):
         orden.fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[0][0]
+        mensaje={
+                'type':'info',
+                'title':'Recepcion de Muestras!',
+                'data':'Orden En Recepcion de Muestras Medicas!'
+                }
     orden.save()
-    return esta_en_proceso
+    return mensaje
 
 # cambiar fase resultado de examen de laboratorio
 # cambiar la fase de un examen en cola a resultados listos

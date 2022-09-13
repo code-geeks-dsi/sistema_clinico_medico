@@ -69,18 +69,9 @@ class ResultadoView(View):
                 })
             return JsonResponse(self.response, status=500)
         orden=item.orden_de_laboratorio
-        if(verificar_fase_orden_laboratorio(orden)):
-            self.response['mensajes'].append({
-                'type':'success',
-                'title':'Orden en proceso!',
-                'data':'Orden Completa En Proceso!'
-                })
-        else:
-            self.response['mensajes'].append({
-                'type':'warning',
-                'title':'Recepcion de Muestras!',
-                'data':'Orden En Recepcion de Muestras Medicas!'
-                })
+        orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
+        if(orden_en_proceso_mensaje!=None):
+            self.response['mensajes'].append(orden_en_proceso_mensaje)
         return JsonResponse(self.response)
 
     ##Para eliminar
@@ -91,6 +82,7 @@ class ResultadoView(View):
         resultado=Resultado.objects.filter(
             id_resultado=data['id_resultado']
         ).first()
+        orden=resultado.orden_de_laboratorio
         if (resultado.fase_examenes_lab==Resultado.OPCIONES_FASE[1][0]):
             self.response['mensajes'].append({
                 'type':'error',
@@ -104,7 +96,9 @@ class ResultadoView(View):
                 'title':'Examen Eliminado!',
                 'data':'El examen ha sido eliminado'
                 })
-
+        orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
+        if(orden_en_proceso_mensaje!=None):
+            self.response['mensajes'].append(orden_en_proceso_mensaje)
         # actualizando las ordenes
         recetasItems=Resultado.objects.filter(orden_de_laboratorio=id_orden)
         recetasItems=ResultadoSerializer(recetasItems, many=True)
