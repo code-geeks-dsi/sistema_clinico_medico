@@ -67,7 +67,7 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
         def cola_de_resultados(self):
                 fecha_hoy=datetime.now()
                 lista=[]
-                resultados=Resultado.objects.filter(fase_examenes_lab=EsperaExamen.OPCIONES_FASE[1][0]).select_related('expediente__id_paciente').order_by('numero_cola_resultado')                
+                resultados=Resultado.objects.filter(fase_examenes_lab=Resultado.OPCIONES_FASE[1][0]).select_related('orden_de_laboratorio__expediente__id_paciente').order_by('numero_cola_resultado')                
                 resultados=ResultadoLaboratorioSerializer(resultados,many=True)
                 if len(resultados.data)==0:
                         response={
@@ -76,8 +76,7 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                         }
                 else:
                         response={'data':resultados.data}
-                # return self.send(text_data=json.dumps(response))
-                return self.send(text_data=response)
+                return self.send(text_data=json.dumps(response))
 
 
         def cola_laboratorio(self,event):

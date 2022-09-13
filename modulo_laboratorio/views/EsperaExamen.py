@@ -207,12 +207,11 @@ def verificar_fase_orden_laboratorio(orden):
 
 # cambiar fase resultado de examen de laboratorio
 # cambiar la fase de un examen en cola a resultados listos
-def cambiar_fase_laboratorio(request):
+def cambiar_fase_a_listo(request):
     id_resultado=request.POST.get('id_resultado',0)
-    id_expediente=request.POST.get('id_expediente',0)
-    item=EsperaExamen.objects.get(resultado__id_resultado=id_resultado,expediente__id_expediente=id_expediente)
-    item.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[2][0]
-    item.resultado.fecha_hora_elaboracion_de_reporte=now
+    item=Resultado.objects.get(resultado__id_resultado=id_resultado)
+    item.fase_examenes_lab=Resultado.OPCIONES_FASE[2][0]
+    item.resultado.fecha_hora_elaboracion_de_reporte=datetime.now()
     item.save()
     response={
             'type':'success',

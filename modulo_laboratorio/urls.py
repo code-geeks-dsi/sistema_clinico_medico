@@ -16,11 +16,11 @@ urlpatterns = [
 
     # path('examen/resultado/<int:id_resultado>/pdf', generar_pdf, name='generar_pdf'),
     path('examen/fase/2',cambiar_fase_a_en_proceso,name="cambiar_fase_secretaria"),#cambia a fase en proceso
-    # path('examen/fase/3',cambiar_fase_a_listo,name="cambiar_fase_laboratorio"),#cambia a listo
+    path('examen/fase/3',cambiar_fase_a_listo,name="cambiar_fase_laboratorio"),#cambia a listo
 
     path('inicio/', inicio, name='inicio_lab'),
-    # path('pendientes/', examenes_pendientes, name='pendientes_lab'),
-    # path('bitacora/', bitacora_templete, name='bitacora_lab'),
+    path('pendientes/', examenes_pendientes, name='pendientes_lab'),
+    path('bitacora/', bitacora_templete, name='bitacora_lab'),
 
     path('orden/<int:id_paciente>', OrdenExamenCreate.as_view(),name="crear_orden_examenes"),
     path('orden/<int:id_paciente>/<int:id_orden>', ResultadoView.as_view(),name="update_orden_examenes")
