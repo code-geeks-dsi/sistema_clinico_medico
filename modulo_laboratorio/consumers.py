@@ -60,7 +60,16 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                         'data':'No hay examenes pendientes'
                         }
                 else:
-                        response={'data':resultados.data}
+                        url_orden_pdf=reverse('generar_orden_pdf',kwargs={'orden_id':id_orden})
+                        orden=EsperaExamen.objects.get(id=id_orden)
+                        if (orden.fase_examenes_lab==EsperaExamen.OPCIONES_FASE_ORDEN[2][0]):
+                                puede_descargar=True
+                        else: puede_descargar=False
+                        response={
+                                'data':resultados.data,
+                                'url_orden_pdf':url_orden_pdf,
+                                'puede_descargar':puede_descargar
+                                }
                 return self.send(text_data=json.dumps(response))
 
         def cola_de_resultados(self):

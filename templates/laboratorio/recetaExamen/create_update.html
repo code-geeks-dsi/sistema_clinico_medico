@@ -66,9 +66,11 @@
                     </div>
 
                     <!--Examenes Seleccionados-->
-                    <p class="fw-bold text-secondary">Exámenes Seleccionados</p>
+                    <div class="row text-start">
+                            
+                            <div id="descargar_pdf_consolidado"><span class="fw-bold text-secondary">Exámenes</span></div>
+                    </div>
                     <hr class="dropdown-divider">
-
                     <!--Tabla de Examenes-->
                     <div class="table-responsive" id="tabla_referencias_agregadas">
                         <table class="table table-bordered text-center">
@@ -137,6 +139,11 @@
     }
     colaLaboratorioSocket.onmessage=(data)=>{
         let examenes=JSON.parse(data.data);
+        puedeDescargarConsolidado=(examenes.puede_descargar==true)?'':'disabled';
+        $('#descargar_pdf_consolidado').append(
+            `<a href="${examenes.url_orden_pdf}"
+            class="${puedeDescargarConsolidado} material-symbols-outlined btn btn-outline-primary mx-4" >download</a>`
+        );
         render_ordenes(examenes.data);
     }
     function set_id_resultado(id_item){
@@ -155,6 +162,7 @@
                 'id_examen':$('#selectExamen').val(),
             }, 
             success: function(response) { 
+
                 render_mensajes(response.mensajes);
                 sync_orden();
                 

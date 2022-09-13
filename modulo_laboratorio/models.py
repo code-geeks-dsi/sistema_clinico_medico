@@ -19,6 +19,7 @@ class EsperaExamen(models.Model):
     OPCIONES_FASE_ORDEN=(
         ('RC','Recepcion'),
         ('EP','En Proceso'),
+        ('RL','Resultados Listos'),
         ('RE','Resultados Entregado'),
         ('PF','Proceso Finalizado')
     )
