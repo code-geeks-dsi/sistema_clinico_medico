@@ -1,0 +1,162 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="{% static 'css/toastr.min.css' %}" rel="stylesheet" />
+
+  </head>
+<header>
+    <div class="box">
+        <div class="row align-items-center">
+            <div class="col-2">
+                <img src="{% static 'img/logo_lab.png'%}"  alt=""/>
+            </div>
+            <div class="col">
+                <h1 >LABORATORIO DE ANALISIS CLINICO</h1>
+                <h1 >EBENEZER</h1>
+                <b>
+                    Regente: Licda. Jennifer Lisbeth Martínez de Loza.  JVPLC 4817 
+                </b>
+                <p>
+                    Teléfono: 2327-3492<br>
+                    Horarios: Lun a Vie 7:00 AM a 4:00 PM Sab: 7:00 AM a 12:00 PM<br>
+                    3ra Av. Sur Casa No. 3 “A” Barrio San Nicolás , Cojutepeque Cuscatlán<br>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+</header>
+<body >    
+        <div class="col">
+            {% if paciente %}
+            
+                <center><a href="#" class="data-paciente" >Nombre:&nbsp;{{paciente.nombre_paciente}}&nbsp;{{ paciente.apellido_paciente }}</a>
+                <a href="#" class="data-paciente">Edad:&nbsp;{{edad.years}} Años</a><br></center>
+            {% endif %}
+        </div>
+        <div class="conten">
+            <table class="table table-hover">
+                <tr>
+                    <th>Examen Solicitado: <br><center>{{examenlab.nombre_examen}}</center> </th>
+                    <th><center>Resultado</center></th>
+                    <th>Rango de Referencia</th>
+                </tr>
+                {% if contieneValor %}
+                {% for cv in contieneValor %}
+                    <tr>
+                        <td><center>{{ cv.parametro.nombre_parametro }}</center></td>
+                        <td><center>{{ cv.dato }}&nbsp;{{ cv.parametro.unidad_parametro }}</center></td>
+                        
+                        <td>
+                            {% for r in referencias %}
+                                {% if r.parametro == cv.parametro %}
+                                    
+                                        {% if r.descripcion  %}
+                                            {{r.descripcion}}
+                                        {% endif %}
+                                        {% if r.valor_minimo and r.valor_maximo %}
+                                            {{r.valor_minimo}} - {{r.valor_maximo}}
+                                        {% else %}
+                                            {% if r.valor_minimo %}
+                                                 Mayor de&nbsp;{{r.valor_minimo}}
+                                            {% endif %}
+                                            {% if r.valor_maximo %}
+                                                Menor de&nbsp;{{r.valor_maximo}}
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if r.unidad %}
+                                            {{r.unidad}}
+                                        {% endif %}
+                                        {% if r.valor %}
+                                            {{r.valor}}
+                                        {% endif %}
+                                {% endif %}
+                                <br>
+                            {% endfor%}
+                            
+                        </td>            
+                                
+                        
+                    </tr>
+                {% endfor %}
+                {% endif %}
+            </table>
+            <div>
+                <p class="data-paciente">Nota:</p><br>
+                <a href="#" class="data-paciente" >Responsable: {{empleado.nombres}}&nbsp;{{empleado.apellidos}}</a>
+                <a href="#" class="data-paciente">Firma:______________</a><br><br>
+                <center><a href="#" class="data-paciente">Fecha:{{fecha.date}}</a></center>
+            </div>
+        </div> 
+        
+</body>
+</html>
+<style>
+    @page {
+        margin: 0.25cm;
+        margin-left: 2.25cm;
+        margin-right: 2.25cm;
+    }
+    .box h1{
+        color: #92CDDC;
+        font-size: 20px;
+        line-height:1px;
+        padding-top:20px;
+        font-weight:  bolder;
+    }
+    .box p{
+        font-size: 7px;
+        text-align:center;
+        font-weight: bolder;
+    }
+    .box b{
+        font-size: 8px;
+        line-height: 1px;
+    }
+    .box {
+        border: #243F60 3px solid;
+        margin: 10px;
+        padding: 5px;
+        border-radius:25px;
+        text-align: center;
+        padding-bottom: 5px;
+    }
+    .conten{
+        background-image:url("{% static 'img/microscopio.png'%}");
+        width:80%;
+        height:300px;
+        background-size:cover;
+        position:relative;
+        margin-left: 60px;
+        padding-top: 20px;
+    }
+
+    .data-paciente {
+        font-size: 12px;
+        margin: 0 10px;
+        line-height: 20px;
+        width: max-content;
+        text-transform: uppercase;
+        color:#243F60 ;
+        text-decoration: none;
+        padding: 0px 0px;
+    }
+    .conten table, tr, td{
+        font-size: 10pt;
+        font-family: Arial;
+        border-collapse: collapse;
+        z-index: 100; 
+        margin-top:3px ;
+    }        
+    .conten table th, td{
+        border: 1.5px solid #243F60;
+        padding: 6px 0px 6px 5px;
+        width: 2.5cm;
+        position: relative;
+    }
+</style>

@@ -147,6 +147,8 @@ def cambiar_fase_a_en_proceso(request):
 
     return JsonResponse(response, safe=False)
 
+from modulo_laboratorio.serializers import Examenserializer, ResultadoSerializer
+
 def elaborar_resultados_examen(request,id_resultado):
         data={} 
         lic_laboratorio=LicLaboratorioClinico.objects.get(empleado=request.user)
@@ -228,9 +230,67 @@ def elaborar_resultados_examen(request,id_resultado):
             
             return JsonResponse(response,safe=False)
 
+# generar pdf consolidado
 #Método para descargar examenes de laboratorio
 #Método que genera los pdf 
-def generar_pdf(request,id_resultado):
+def generar_orden_pdf(request,orden_id):
+    data={}
+    esperaExamen=EsperaExamen.objects.get(id=orden_id)
+    # actualizando la fase del resultado
+    esperaExamen.fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[3][0]
+    esperaExamen.save()
+    #consultando datos del paciente
+    idExpediente=esperaExamen.expediente_id
+    expediente=Expediente.objects.get(id_expediente=idExpediente)
+    idpaciente=expediente.id_paciente_id
+    paciente=Paciente.objects.get(id_paciente=idpaciente)
+    edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)
+    #consultando datos de los examenes
+    resultados=Resultado.objects.filter(orden_de_laboratorio_id=orden_id)
+    lista=[]
+    for i in range(len(resultados)):
+        resultado={
+            'id_resultado':"",
+            'id_examen':"",
+            'fecha_de_elaboracion':"",
+            'contieneValor':"",
+            'parametros':"",
+            'referencias':"",
+            'licdeLab':"",
+            'empleado':"",
+        }
+        resultado['id_resultado']=resultados[i].id_resultado
+        examen=ExamenLaboratorio.objects.get(id_examen_laboratorio=resultados[i].examen_laboratorio_id)
+        examen=Examenserializer(examen , many=False)
+        resultado['examenlab']=examen.data
+        resultado['fecha_de_elaboracion']=resultados[i].fecha_hora_elaboracion_de_reporte
+        resultado['contieneValor']=ContieneValor.objects.filter(resultado_id=resultados[i].id_resultado)
+        parametro=ContieneValor.objects.filter(resultado_id=resultados[i].id_resultado).values('parametro').distinct()
+        resultado['parametros']=parametro
+        resultado['referencias']=RangoDeReferencia.objects.filter(parametro__in=parametro)
+        licDeLab=LicLaboratorioClinico.objects.get(id_lic_laboratorio=resultados[i].lic_laboratorio_id)
+        resultado['empleado']=Empleado.objects.get(codigo_empleado=licDeLab.empleado_id)
+
+        lista.append(resultado)
+    data={ 'paciente':paciente,'edad':edad,'resultados':lista}
+    #puede recibir la info como diccionario
+    html_string = render_to_string('OrdenDeExamenes.html',data)
+    html = HTML(string=html_string, base_url=request.build_absolute_uri())
+    result = html.write_pdf()
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="resultados.pdf"'
+    response['Content-Transfer-Encoding'] = 'binary'
+    #Crea un archivo temporal
+    with tempfile.NamedTemporaryFile(delete=True) as output:
+        output.write(result)
+        output.flush()
+        output = open(output.name, 'rb')
+        response.write(output.read())
+    return response
+
+
+# generar pdf de un resultado
+def generar_resultado_pdf(request,id_resultado):
     data={}
     # esperaExamen=Resultado.objects.get(id_resultado=id_resultado)
     # # actualizando la fase del resultado
@@ -255,7 +315,7 @@ def generar_pdf(request,id_resultado):
     
     data={'contieneValor':contieneValor, 'paciente':paciente,'edad':edad,'fecha':fecha,'empleado':empleado,'examenlab':examenlab,'referencias':referencias}
     #puede recibir la info como diccionario
-    html_string = render_to_string('ResultadosDeLaboratorio.html',data)
+    html_string = render_to_string('ResultadoLaboratorio.html',data)
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
     result = html.write_pdf()
     response = HttpResponse(content_type='application/pdf')

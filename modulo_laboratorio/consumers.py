@@ -50,8 +50,7 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                 return self.send(text_data=json.dumps(response))
 
         def cola_de_resultados_por_orden_de_laboratorio(self,id_orden):
-                fecha_hoy=datetime.now()
-                lista=[]
+                
                 resultados=Resultado.objects.filter(orden_de_laboratorio__id=id_orden).select_related('orden_de_laboratorio__expediente__id_paciente').order_by('numero_cola_resultado')
                 resultados=ResultadoSerializer(resultados,many=True)
         

@@ -16,7 +16,7 @@ class Examenserializer(serializers.ModelSerializer):
     muestra=serializers.CharField(source='get_tipo_muestra_display')
     class Meta:
         model=ExamenLaboratorio
-        fields=['muestra', 'nombre_examen']
+        fields=['muestra', 'nombre_examen','id_examen_laboratorio']
 
 class ResultadoSerializer(serializers.ModelSerializer):
     nombre_examen=serializers.CharField(source='examen_laboratorio.nombre_examen')
