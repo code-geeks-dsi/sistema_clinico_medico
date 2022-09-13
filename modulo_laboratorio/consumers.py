@@ -81,14 +81,14 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
 
 
         def cola_laboratorio(self,event):
-                id_orden = event['id_orden']
                 tipo=event['tipo']
-                print(id_orden)
-                print(tipo)
-                if( tipo=='cola_de_resultados_por_orden_de_laboratorio'):
-                        self.cola_de_resultados_por_orden_de_laboratorio(id_orden)
-                elif ( tipo=='cola_de_resultados'):
+                
+                if (tipo=='cola_de_resultados_por_orden_de_laboratorio'):
+                        self.cola_de_resultados_por_orden_de_laboratorio(event['id_orden'])
+                elif (tipo=='cola_de_resultados'):
                         self.cola_de_resultados()
+                elif (tipo=='cola_ordenes'):
+                        self.cola_ordenes()
         
         def connect(self):
                 self.room_group_name='laboratorio'
@@ -97,16 +97,15 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                         self.channel_name
                         )
                 self.accept()
-                # if(self.scope["user"].roles.codigo_rol=='ROL_SECRETARIA'):
-                #         self.cola_inicial_ordenes()
-                # else:
-                #         self.cola_inicial_resultados()
 
 
         def receive(self,text_data):
                 text_data_json = json.loads(text_data)
-                id_orden = text_data_json['id_orden']
                 tipo = text_data_json['tipo']
+                try:
+                        id_orden = text_data_json['id_orden']
+                except:
+                        id_orden=None
 
                 async_to_sync(self.channel_layer.group_send)(
                         self.room_group_name,
