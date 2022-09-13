@@ -1,0 +1,242 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Constancia Medica {% endblock %}
+{% block content %}
+<div class="container py-4">
+	<div class="row">
+		<div class="col-6">
+			<h3 class="fw-bold text-secondary pb-4">Orden de Examen de Laboratorio</h3>
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-header alert-primary text-primary" aria-expanded="true">
+			<div class="px-1 py-2">
+				Orden Examen de Laboratorio
+			</div>
+		</div>
+		<div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <label class="form-label fw-bold text-secondary" for="nombre-paciente">Nombre del paciente:</label>
+                        <input type="text" class="form-control" value="{{ paciente.nombre_paciente }} {{paciente.apellido_paciente}}" disabled>
+                        <p></p>
+                    </div>
+                    <div class="col">
+                        <label class="form-label fw-bold text-secondary" for="edad-paciente">Edad del paciente:</label>
+                        <input type="text" class="form-control" value="{{ edad.years }} años" disabled>
+                        <p></p>
+                    </div>
+                </div>
+
+				{% csrf_token %}
+                
+                <!--Datos del Examen-->
+                <div id="form-addExamItem" >
+                    <hr class="dropdown-divider">
+                    <p class="fw-bold text-secondary pt-2">Examen a Realizar</p>
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6">
+                            <div class="mb-3">
+                            <label for="selectCategoria" class="form-label fw-bold text-secondary">Seleccione el Perfil</label>
+                            <select id="selectCategoria" class="form-select">
+                                {% for c in Categoria %}
+                                <option value="{{ c.id_categoria }}">{{ c.descripcion_categoria }}</option>
+                                {% endfor %}
+                            </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-6">
+                            <div class="mb-3">
+                            <label for="selectExamen" class="form-label fw-bold text-secondary">Seleccione el Examen</label>
+                            <select id="selectExamen" class="form-select">
+                                {% for e in Examen %}
+                                <option value="{{ e.examen_laboratorio.id_examen_laboratorio }}">{{ e.examen_laboratorio.nombre_examen }}</option>
+                                {% endfor %}
+                            </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end pt-2">
+                        <button class="btn btn-outline-primary" id="btn-agregar-examen">Agregar</button>
+                    </div>
+
+                    <!--Examenes Seleccionados-->
+                    <div class="row text-start">
+                            
+                            <div id="descargar_pdf_consolidado"><span class="fw-bold text-secondary">Exámenes</span></div>
+                    </div>
+                    <hr class="dropdown-divider">
+                    <!--Tabla de Examenes-->
+                    <div class="table-responsive" id="tabla_referencias_agregadas">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Número de Orden</th>
+                                    <th>Número de Examen</th>
+                                    <th>Examen</th>
+                                    <th>Opciones</td>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-receta-examen">
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- fin Tabla de Examenes-->
+
+                </div>
+		</div>
+	</div>
+
+    <div class="modal fade" 
+        id="modal-eliminar-item_receta" 
+        tabindex="-1" 
+        aria-hidden="true" 
+        aria-labelledby="modalTitle">
+        <div class=" modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Eliminar</h5>
+                    <button 
+                        type="button" 
+                        class="btn-close" 
+                        aria-label="Cerrar" 
+                        data-bs-dismiss="modal" 
+                        id="cerar_modal_eliminar">
+                    </button>
+                </div>
+                <div class="modal-body">
+                        <p>¿Desea eliminar este examen de la orden?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-secondary" id="eliminar-item-receta-examen-btn" data-bs-dismiss="modal">Si</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>    
+
+<script>
+    
+    let id_item_resultado_delete="";
+    let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
+    let socket_url=`${ws_scheme}://${window.location.host}/ws/laboratorio/cola/`;
+    const colaLaboratorioSocket=new WebSocket(socket_url);
+    function sync_orden(){
+        colaLaboratorioSocket.send(JSON.stringify({
+                  'message':'sync',
+                  'tipo':'cola_de_resultados_por_orden_de_laboratorio',
+                  'id_orden': '{{ id_orden }}'
+                  }));
+    }
+    colaLaboratorioSocket.onopen =function() {
+        sync_orden();
+    }
+    colaLaboratorioSocket.onmessage=(data)=>{
+        let examenes=JSON.parse(data.data);
+        puedeDescargarConsolidado=(examenes.puede_descargar==true)?'':'disabled';
+        $('#descargar_pdf_consolidado').append(
+            `<a href="${examenes.url_orden_pdf}"
+            class="${puedeDescargarConsolidado} material-symbols-outlined btn btn-outline-primary mx-4" >download</a>`
+        );
+        render_ordenes(examenes.data);
+    }
+    function set_id_resultado(id_item){
+        id_item_resultado_delete=id_item;
+    }
+
+    //Boton para agregar examen a orden
+    $('#btn-agregar-examen').click(()=>{
+        $.ajax({
+            type: 'put',
+            url: "",
+            headers: {
+              "X-CSRFToken": '{{ csrf_token }}',
+              },
+            data: {
+                'id_examen':$('#selectExamen').val(),
+            }, 
+            success: function(response) { 
+
+                render_mensajes(response.mensajes);
+                sync_orden();
+                
+            },
+            error: function(response){
+                response=response.responseJSON;
+                render_mensajes(response.mensajes);
+            }
+            });
+    });
+
+    function render_ordenes(ordenes) {
+        $('#lista-receta-examen').html("");
+        ordenes.forEach(orden => {
+            // solo se puede borrar o entregar la muestra en fase recepcion de muestras
+            // solo se puede descargar cuando los resultados estan en fase listos
+            puedeBorrar=((orden.fase_examenes_lab=='1')?'':'disabled');
+            puedeAgregarMuestra=((orden.fase_examenes_lab=='1')?'':'disabled');
+            puedeDescargar=((orden.fase_examenes_lab=='3')?'':'disabled');
+            $('#lista-receta-examen').append(
+                        `<tr id='item-${orden.id_resultado}'>
+                            <td>${orden.numero_orden}</td>
+                            <td>${orden.numero_cola_resultado}</td>
+                            <td>${orden.nombre_examen}</td>
+                            <td>
+                                <button class="material-symbols-outlined btn btn-sm btn-outline-primary" 
+                                    ${puedeAgregarMuestra}
+                                    title="Entregar Muestra" 
+                                    onclick="entregar_muestra_medica(${orden.id_resultado});"
+                                    alt="Entregar Muestra">approval_delegation</button>
+                            
+                                <button class="material-symbols-outlined btn btn-sm btn-outline-danger" 
+                                    ${puedeBorrar}
+                                    onclick="set_id_resultado(${orden.id_resultado});"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modal-eliminar-item_receta"
+                                    title="Eliminar Examen" alt="eliminar">delete</button>
+                                <a class="${puedeDescargar} material-symbols-outlined btn btn-sm btn-outline-success" 
+                                    title="Descargar Resultado" 
+                                    href="${orden.url_resultado_pdf}"
+                                    target="_blank"
+                                    alt="descargar">download</a>
+                            </td>
+                        </tr>`);
+      });
+    }
+    //Boton para eliminar Receta
+    $('#eliminar-item-receta-examen-btn').click(()=>{
+        $.ajax({
+            type: 'delete',
+            url: "",
+            headers: {
+              "X-CSRFToken": '{{ csrf_token }}',
+              },
+            data: {
+                'id_resultado':id_item_resultado_delete
+            }, 
+            success: (data)=>{
+                render_mensajes(data.mensajes);
+                sync_orden();
+                }
+                
+            ,
+            error: (data)=>{
+                render_mensajes(data.mensajes);
+                }
+            });
+    });
+    
+    {% include './js/examenes.js'%}  
+
+    window.onload = (event) => {
+        listExamenes();
+    };
+
+</script>
+{% endblock %}

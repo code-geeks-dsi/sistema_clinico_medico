@@ -1,9 +1,3 @@
-document.getElementById("selectCategoria").addEventListener("change", function(){
-
-  accionServer($('#selectCategoria').val(), 2);
-  console.log($('#selectCategoria').val());
-});
-
 function getAutocompletado(url, id_component, urlFiltro, complementoConsulta, tablaData){
     let dataAutoComletado = [];
     let consultaData = new XMLHttpRequest();
@@ -56,7 +50,7 @@ function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsul
                 }
 
                 //imprime paciente en el modal de resultados de busqueda
-                elemento=elemento+'<td><div onclick="setPaciente('+Object.values(p)[0]+','+"'"+Object.values(p)[1]+"', '"+Object.values(p)[2]+"', "+"'"+Object.values(p)[3]+"'"+');"class="material-symbols-outlined btn" data-bs-toggle="modal" data-bs-target="#modalSelectExamen" >add</div></td>';
+                elemento=`${elemento}<td><a target="blank" href="/laboratorio/orden/${Object.values(p)[0]}" class="material-symbols-outlined btn">open_in_new</a></td>`;
                 elemento=elemento+'</tr>';
                 tablaData.insertAdjacentHTML("beforeend", elemento);
                 
@@ -74,26 +68,26 @@ function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsul
     }
   }
 
-function setPaciente(id_paciente, nombre_paciente, apellido_paciente, fecha_nacimiento){
-  edad=getEdad(fecha_nacimiento);
-  $('#pacienteId').val(id_paciente);
-  $('#nombrePaciente').val(nombre_paciente+" "+apellido_paciente);
-  $('#edadPaciente').val(edad +" años")
+// function setPaciente(id_paciente, nombre_paciente, apellido_paciente, fecha_nacimiento){
+//   edad=getEdad(fecha_nacimiento);
+//   $('#pacienteId').val(id_paciente);
+//   $('#nombrePaciente').val(nombre_paciente+" "+apellido_paciente);
+//   $('#edadPaciente').val(edad +" años")
   
 
-}
-function getEdad(dateString) {
-  let hoy = new Date()
-  let fechaNacimiento = new Date(dateString)
-  let edad = hoy.getFullYear() - fechaNacimiento.getFullYear()
-  let diferenciaMeses = hoy.getMonth() - fechaNacimiento.getMonth()
-  if (
-    diferenciaMeses < 0 ||
-    (diferenciaMeses === 0 && hoy.getDate() < fechaNacimiento.getDate())
-  ) {
-    edad--
-  }
-  return edad
-}
+// }
+// function getEdad(dateString) {
+//   let hoy = new Date()
+//   let fechaNacimiento = new Date(dateString)
+//   let edad = hoy.getFullYear() - fechaNacimiento.getFullYear()
+//   let diferenciaMeses = hoy.getMonth() - fechaNacimiento.getMonth()
+//   if (
+//     diferenciaMeses < 0 ||
+//     (diferenciaMeses === 0 && hoy.getDate() < fechaNacimiento.getDate())
+//   ) {
+//     edad--
+//   }
+//   return edad
+// }
 
 
