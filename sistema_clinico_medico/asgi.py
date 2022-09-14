@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
 import django
 django.setup()
 import os
-from django.urls import re_path
+from django.urls import re_path,path
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter,URLRouter
 from channels.auth import AuthMiddlewareStack
@@ -23,7 +23,7 @@ application = ProtocolTypeRouter({
         'https':get_asgi_application(),
         'websocket':AuthMiddlewareStack(
                 URLRouter([
-                        re_path(r'ws/laboratorio/cola/',ColaLaboratorioConsumer.as_asgi()),
+                        path('ws/laboratorio/cola/<str:tipo>',ColaLaboratorioConsumer.as_asgi()),
                         re_path(r'ws/expediente/cola/',ColaExpedienteConsumer.as_asgi()),
                         re_path(r'ws/calendario/update/',CalendarioConsumer.as_asgi()),
                         re_path(r'ws/expediente/registro-masivo/',RegistroMasivoConsumer.as_asgi()),

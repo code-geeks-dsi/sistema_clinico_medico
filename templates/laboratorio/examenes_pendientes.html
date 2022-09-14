@@ -98,14 +98,14 @@
   let cargando=false;
   let tabla_examenes_cola_pendientes=document.getElementById("tabla_cola_pendientes");
 
-  // let tabla;
+  const tipo_consulta='cola_de_resultados';
   let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
-  let socket_url=`${ws_scheme}://${window.location.host}/ws/laboratorio/cola/`;
+  let socket_url=`${ws_scheme}://${window.location.host}/ws/laboratorio/cola/${tipo_consulta}`;
   const colaLaboratorioSocket=new WebSocket(socket_url);
   function sync_orden(){
     colaLaboratorioSocket.send(JSON.stringify({
               'message':'sync',
-              'tipo':'cola_de_resultados'
+              'tipo':tipo_consulta
               }));
   }
   colaLaboratorioSocket.onopen =function() {
