@@ -21,7 +21,7 @@ from modulo_laboratorio.serializers import Examenserializer, ResultadoSerializer
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ResultadoView(View):
-    template_name = 'laboratorio/recetaExamen/create_update.html'
+    template_name = 'laboratorio/OrdenExamen/GestionOrdenExamenes.html'
     response={'type':'','data':'', 'info':''}
     #Imprimir en pantalla el formulario de creación de orden
     def get(self, request, *args, **kwargs):
