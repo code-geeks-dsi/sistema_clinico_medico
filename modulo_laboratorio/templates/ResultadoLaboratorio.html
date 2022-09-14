@@ -51,7 +51,6 @@
                     <tr>
                         <td><center>{{ cv.parametro.nombre_parametro }}</center></td>
                         <td><center>{{ cv.dato }}&nbsp;{{ cv.parametro.unidad_parametro }}</center></td>
-                        
                         <td>
                             {% for r in referencias %}
                                 {% if r.parametro == cv.parametro %}
@@ -63,7 +62,7 @@
                                             {{r.valor_minimo}} - {{r.valor_maximo}}
                                         {% else %}
                                             {% if r.valor_minimo %}
-                                                 Mayor de&nbsp;{{r.valor_minimo}}
+                                                Mayor de&nbsp;{{r.valor_minimo}}
                                             {% endif %}
                                             {% if r.valor_maximo %}
                                                 Menor de&nbsp;{{r.valor_maximo}}
@@ -76,12 +75,8 @@
                                             {{r.valor}}
                                         {% endif %}
                                 {% endif %}
-                                <br>
                             {% endfor%}
-                            
                         </td>            
-                                
-                        
                     </tr>
                 {% endfor %}
                 {% endif %}
@@ -128,12 +123,13 @@
     }
     .conten{
         background-image:url("{% static 'img/microscopio.png'%}");
-        width:80%;
-        height:300px;
+        width:100%;
+        height:500px;
         background-size:cover;
         position:relative;
-        margin-left: 60px;
+        margin-left: 20px;
         padding-top: 20px;
+        margin-top: 10px;
     }
 
     .data-paciente {

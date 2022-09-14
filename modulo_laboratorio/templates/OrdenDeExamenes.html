@@ -43,16 +43,15 @@
             <div class="conten">
                 <table class="table table-hover">
                     <tr>
-                        <th>Examen Solicitado: <br><center>{{resultado.examenlab.nombre_examen}}</center> </th>
+                        <th><center>Examen Solicitado: <br>{{resultado.examenlab.nombre_examen}}</center> </th>
                         <th><center>Resultado</center></th>
                         <th>Rango de Referencia</th>
                     </tr>
                     {% if resultado.contieneValor %}
                     {% for cv in resultado.contieneValor %}
                         <tr>
-                            <td><center>{{ cv.parametros.nombre_parametro }}</center></td>
-                            <td><center>{{ cv.dato }}&nbsp;{{ cv.parametros.unidad_parametro }}</center></td>
-                            
+                            <td><center>{{ cv.parametro.nombre_parametro }}</center></td>
+                            <td><center>{{ cv.dato }}&nbsp;{{ cv.parametro.unidad_parametro }}</center></td>
                             <td>
                                 {% for r in resultado.referencias %}
                                     {% if r.parametro == cv.parametro %}
@@ -77,12 +76,8 @@
                                                 {{r.valor}}
                                             {% endif %}
                                     {% endif %}
-                                    <br>
                                 {% endfor%}
-                                
                             </td>            
-                                    
-                            
                         </tr>
                     {% endfor %}
                     {% endif %}
@@ -129,12 +124,14 @@
     }
     .conten{
         background-image:url("{% static 'img/microscopio.png'%}");
-        width:80%;
-        height:400px;
+        width:100%;
+        height:500px;
         background-size:cover;
         position:relative;
-        margin-left: 60px;
+        margin-left: 20px;
         padding-top: 20px;
+        margin-top: 10px;
+        margin-bottom: 410px;
     }
 
     .data-paciente {
@@ -161,4 +158,3 @@
         position: relative;
     }
 </style>
-
