@@ -95,7 +95,7 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                                 {'type':self.room_group_name}
                         )
                 else:   
-                        id_orden=self.room_group_name=self.scope["url_route"]["kwargs"]["id_orden"]
+                        id_orden=self.scope["url_route"]["kwargs"]["id_orden"]
                         async_to_sync(self.channel_layer.group_send)(
                                 self.room_group_name,
                                 {
