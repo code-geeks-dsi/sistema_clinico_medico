@@ -82,7 +82,7 @@
 <!--Js de la vista-->
 {% block js %}
 <script>
-  $( "#side_laboratorio" ).addClass( "active" );
+  $( "#side_pendientes" ).addClass( "active" );
   const url = "{% url 'autocompletado_apellidos' %}";
   const urlFiltro = "{% url 'busqueda_paciente' %}";
   const complementoConsulta = "?apellido_paciente=";

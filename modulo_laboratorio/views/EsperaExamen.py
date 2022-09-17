@@ -20,12 +20,12 @@ def examenes_pendientes(request):
     else:
         return render(request,"Control/error403.html")
 
-@login_required(login_url='/login/')   
+""" @login_required(login_url='/login/')   
 def bitacora_templete(request):
     if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
         return render(request,"laboratorio/bitacora.html")
     else:
-        return render(request,"Control/error403.html")
+        return render(request,"Control/error403.html") """
 
 @login_required(login_url='/login/')  
 def sala_laboratorio(request):

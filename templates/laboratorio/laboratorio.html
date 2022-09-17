@@ -17,55 +17,70 @@
 {% block content %}
 <div class="container py-2 rounded">
   <div class="row g-0">
-    <h2 class="fw-bold text-secondary text-center">Laboratorio Clinico</h2>
+    <h2 class="fw-bold text-secondary text-start">Laboratorio Clinico</h2>
   </div>
 </div>
-<div class="container py-2">
-  <div class="row">
-    <!--Bitacora-->
-    <div class="col-6">
-      <div class="d-grid gap-2">
-        <a class="btn btn-outline-primary" type="button" href="{% url 'bitacora_lab' %}">
-          <p class="pt-3">Bitacora de Examenes</p>
-          <span class="material-symbols-outlined pb-3">
-            list_alt
-          </span>
-        </a>
+<div class="container">
+  <div class="row align-items-center">
+    <!--Vinculos-->
+    <div class="col-12 col-lg-8 ">
+
+      <!--Bitacora-->
+      <div class="card p-0">
+        <div class="row align-items-center justify-content-center">
+          <div class="col-2 align-items-center justify-content-center">
+            <div class="d-flex align-items-center justify-content-center alert-success p-3">
+              <span class="material-symbols-outlined">list_alt</span>
+            </div>
+          </div>
+          <div class="col-10">
+            <div class="d-flex align-items-center justify-content-center">
+              <a  href="{% url 'bitacora_lab' %}">Ver Bitacora de Examenes</a>
+            </div>           
+          </div>
+        </div>
+      </div>
+      <div class="p-2"></div>
+      <!--Pendientes-->
+      <div class="card p-0">
+        <div class="row align-items-center justify-content-center">
+          <div class="col-2 align-items-center justify-content-center">
+            <div class="d-flex align-items-center justify-content-center alert-success p-3">
+              <span class="material-symbols-outlined">biotech</span>
+            </div>
+          </div>
+          <div class="col-10">
+            <div class="d-flex align-items-center justify-content-center">
+              <a  href="{% url 'pendientes_lab' %}">Ver Examenes Pendientes</a>
+            </div>           
+          </div>
+        </div>
+      </div>
+      <div class="p-2"></div>
+      <!--Listos-->
+      <div class="card p-0">
+        <div class="row align-items-center justify-content-center">
+          <div class="col-2 align-items-center justify-content-center">
+            <div class="d-flex align-items-center justify-content-center alert-success p-3">
+              <span class="material-symbols-outlined">check_circle</span>
+            </div>
+          </div>
+          <div class="col-10">
+            <div class="d-flex align-items-center justify-content-center">
+              <a >Ver Examenes Listos</a>
+            </div>           
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!--Imagen-->
+    <div class="col-12 col-lg-4">
+      <div class="d-flex justify-content-end">
+        <embed src="{% static 'img/laboratory-animate 2.svg' %}" class="image-fluid" width="350" height="350"/>
       </div>
     </div>
-    <!--Examenes Pendientes-->
-    <div class="col-6">
-      <div class="d-grid gap-2">
-        <a class="btn btn-outline-primary" type="button" href="{% url 'pendientes_lab' %}">
-          <p class="pt-3">Examenes Pendientes</p>
-          <span class="material-symbols-outlined pb-3">
-            biotech
-          </span>
-        </a>
-      </div>
-    </div>
-    <!--Examenes Listos-->
-    <div class="col-6 pt-4" hidden>
-      <div class="d-grid gap-2">
-        <a class="btn btn-outline-primary" type="button">
-          <p class="pt-3">Examenes Listos</p>
-          <span class="material-symbols-outlined pb-3">
-            fact_check
-          </span>
-        </a>
-      </div>
-    </div>
-    <!--Filtrar-->
-    <div class="col-6 pt-4" hidden>
-      <div class="d-grid gap-2">
-        <a class="btn btn-outline-primary" type="button">
-          <p class="pt-3">Filtrar Examenes</p>
-          <span class="material-symbols-outlined pb-3">
-            calendar_month
-          </span>
-        </a>
-      </div>
-    </div>
+    
   </div>
 </div>
 
