@@ -20,7 +20,7 @@ class EsperaExamen(models.Model):
         ('RC','Recepcion'),
         ('EP','En Proceso'),
         ('RL','Resultados Listos'),
-        ('RE','Resultados Entregado'),
+        ('RE','Resultados Entregados'),
         ('PF','Proceso Finalizado')
     )
     expediente=models.ForeignKey('modulo_expediente.Expediente', on_delete=models.CASCADE)

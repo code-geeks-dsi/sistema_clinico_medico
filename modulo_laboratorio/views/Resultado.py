@@ -79,14 +79,17 @@ class ResultadoView(View):
         except IntegrityError:
             self.response['mensajes'].append({
                 'type':'warning',
-                'title':'El examen ya existe en la orden.',
-                'data':'Examen ya existe'
+                'title':'Examen ya existe',
+                'data':'El examen ya existe en la orden.'
                 })
+            # no hay necesidad de actualizar cola porque no hubo cambio
             return JsonResponse(self.response, status=500)
         orden=item.orden_de_laboratorio
+        print(self.response['mensajes'])
         orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
         if(orden_en_proceso_mensaje!=None):
             self.response['mensajes'].append(orden_en_proceso_mensaje)
+        print(self.response['mensajes'])
         sync_cola()
         return JsonResponse(self.response)
 
@@ -112,14 +115,16 @@ class ResultadoView(View):
                 'title':'Examen Eliminado!',
                 'data':'El examen ha sido eliminado'
                 })
+            orden=resultado.orden_de_laboratorio
+            orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
+            if(orden_en_proceso_mensaje!=None):
+                self.response['mensajes'].append(orden_en_proceso_mensaje)
             sync_cola()
-        orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
-        if(orden_en_proceso_mensaje!=None):
-            self.response['mensajes'].append(orden_en_proceso_mensaje)
-        # actualizando las ordenes
-        recetasItems=Resultado.objects.filter(orden_de_laboratorio=id_orden)
-        recetasItems=ResultadoSerializer(recetasItems, many=True)
-        self.response['info']=recetasItems.data
+        
+        # # actualizando las ordenes
+        # recetasItems=Resultado.objects.filter(orden_de_laboratorio=id_orden)
+        # recetasItems=ResultadoSerializer(recetasItems, many=True)
+        # self.response['info']=[]
 
         return JsonResponse(self.response)
 
@@ -143,6 +148,11 @@ def cambiar_fase_a_en_proceso(request):
             'title':'Muestra Entregada!',
             'data':'Examen en proceso'
             })
+        orden=item.orden_de_laboratorio
+        orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
+        if(orden_en_proceso_mensaje!=None):
+            response['mensajes'].append(orden_en_proceso_mensaje)
+        sync_cola()
     except:
         response['mensajes'].append({
         'type':'error',
@@ -150,19 +160,11 @@ def cambiar_fase_a_en_proceso(request):
         'data':'No se pudo cambiar de fase'
         })
 
-    orden=item.orden_de_laboratorio
-    if(verificar_fase_orden_laboratorio(orden)):
-        response['mensajes'].append({
-            'type':'success',
-            'title':'Orden Completa En Proceso!',
-            'data':'Orden en proceso'
-            })
     # actualizando las ordenes
-    ordenes=Resultado.objects.filter(orden_de_laboratorio=orden)
-    ordenes=ResultadoSerializer(ordenes, many=True)
-    response['info']=ordenes.data
+    # ordenes=Resultado.objects.filter(orden_de_laboratorio=orden)
+    # ordenes=ResultadoSerializer(ordenes, many=True)
+    # response['info']=ordenes.data
 
-    sync_cola()
     return JsonResponse(response, safe=False)
 
 # Lic de Laboratorio
@@ -178,6 +180,13 @@ def cambiar_fase_a_listo(request):
             'type':'success',
             'data':'Resultados Listos'
         }
+    # cambiando la fase de la orden
+    orden=item.orden_de_laboratorio
+    orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
+
+    # if(orden_en_proceso_mensaje!=None):
+        # self.response['mensajes'].append(orden_en_proceso_mensaje)
+
     sync_cola()
     return JsonResponse(response, safe=False)
 
@@ -267,12 +276,18 @@ def elaborar_resultados_examen(request,id_resultado):
 #Método que genera los pdf 
 def generar_orden_pdf(request,orden_id):
     data={}
-    esperaExamen=EsperaExamen.objects.get(id=orden_id)
-    # actualizando la fase del resultado
-    esperaExamen.fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[3][0]
-    esperaExamen.save()
+    orden_examenes=EsperaExamen.objects.get(id=orden_id)
+
+    # actualizando la fase de los resultados
+    Resultado.objects.filter(orden_de_laboratorio=orden_examenes).update(fase_examenes_lab=Resultado.OPCIONES_FASE[3][0])
+
+    # actualizando la fase de la orden
+    orden_examenes.fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[3][0]
+    orden_examenes.save()
+    sync_cola()
+
     #consultando datos del paciente
-    idExpediente=esperaExamen.expediente_id
+    idExpediente=orden_examenes.expediente_id
     expediente=Expediente.objects.get(id_expediente=idExpediente)
     idpaciente=expediente.id_paciente_id
     paciente=Paciente.objects.get(id_paciente=idpaciente)
@@ -324,12 +339,20 @@ def generar_orden_pdf(request,orden_id):
 # generar pdf de un resultado
 def generar_resultado_pdf(request,id_resultado):
     data={}
-    # esperaExamen=Resultado.objects.get(id_resultado=id_resultado)
-    # # actualizando la fase del resultado
-    # esperaExamen.fase_examenes_lab=EsperaExamen.OPCIONES_FASE[3][0]
-    # esperaExamen.save()
+    
     #consultando datos del paciente
     resultado=Resultado.objects.get(id_resultado=id_resultado)
+
+    # actualizando la fase del resultado
+    resultado.fase_examenes_lab=Resultado.OPCIONES_FASE[3][0]
+    resultado.save()
+
+    # Cambiando fase de orden de laboratorio
+    orden=resultado.orden_de_laboratorio
+    orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
+    # if(orden_en_proceso_mensaje!=None):
+    #     response['mensajes'].append(orden_en_proceso_mensaje)
+    sync_cola()
     expediente=resultado.orden_de_laboratorio.expediente
     paciente=expediente.id_paciente
     edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)

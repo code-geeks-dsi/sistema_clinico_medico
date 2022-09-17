@@ -14,7 +14,7 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
       
         def cola_ordenes(self,data):
                 lista=[]
-                espera_examen=EsperaExamen.objects.filter(~Q(fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[3][0])).select_related('expediente__id_paciente').order_by('numero_cola_orden')
+                espera_examen=EsperaExamen.objects.filter(~Q(fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[4][0])).select_related('expediente__id_paciente').order_by('numero_cola_orden')
                 for fila in espera_examen:
                         diccionario={
                         "numero_cola_orden":"",
@@ -59,7 +59,9 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                 else:
                         url_orden_pdf=reverse('generar_orden_pdf',kwargs={'orden_id':id_orden})
                         orden=EsperaExamen.objects.get(id=id_orden)
-                        if (orden.fase_examenes_lab==EsperaExamen.OPCIONES_FASE_ORDEN[2][0]):
+                        if (orden.fase_examenes_lab==EsperaExamen.OPCIONES_FASE_ORDEN[2][0] or
+                        orden.fase_examenes_lab==EsperaExamen.OPCIONES_FASE_ORDEN[3][0] or
+                        orden.fase_examenes_lab==EsperaExamen.OPCIONES_FASE_ORDEN[4][0] ):
                                 puede_descargar=True
                         else: puede_descargar=False
                         response={
