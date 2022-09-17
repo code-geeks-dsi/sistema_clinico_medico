@@ -1,9 +1,7 @@
 #Python
 #Django
-from django.http import JsonResponse, QueryDict
-from django.urls import reverse
-from dateutil.relativedelta import relativedelta
-from django.views.generic import View, TemplateView
+from django.http import JsonResponse
+from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils import timezone
 
