@@ -25,6 +25,18 @@ function getAutocompletado(url, id_component, urlFiltro, complementoConsulta, ta
     consultaData.send(null);
 }
 
+function add_orden(id_orden){
+  $.ajax({
+            url: `/laboratorio/orden/${id_orden}`,
+            type:'GET',
+            dataType: "json",
+            data: {},
+            success: function(data){ 
+              toastr[data.type](`${data.data}`,`${data.title}`);      
+            }
+  });
+}
+
 function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsulta, id_modal){
     //Variables
     let dataTarget=document.getElementById(id_component).value;
@@ -49,9 +61,9 @@ function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsul
                     elemento = elemento+'<td>'+`${p[property]}`+'</td>';
                 }
 
-                //imprime paciente en el modal de resultados de busqueda
-                elemento=`${elemento}<td><a target="blank" href="/laboratorio/orden/${Object.values(p)[0]}" class="material-symbols-outlined btn">open_in_new</a></td>`;
-                elemento=elemento+'</tr>';
+                 //imprime paciente en el modal de resultados de busqueda
+                 elemento=`${elemento}<td><button onClick="add_orden(${Object.values(p)[0]});" class="material-symbols-outlined btn">add</button></td>`;
+                 elemento=elemento+'</tr>';
                 tablaData.insertAdjacentHTML("beforeend", elemento);
                 
             });
