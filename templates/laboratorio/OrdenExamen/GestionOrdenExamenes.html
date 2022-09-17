@@ -68,7 +68,7 @@
                     <!--Examenes Seleccionados-->
                     <div class="row text-start">
                             
-                            <div id="descargar_pdf_consolidado"><span class="fw-bold text-secondary">Exámenes</span></div>
+                            <div><span class="fw-bold text-secondary">Exámenes</span><span id="descargar_pdf_consolidado"></span></div>
                     </div>
                     <hr class="dropdown-divider">
                     <!--Tabla de Examenes-->
@@ -133,7 +133,7 @@
     colaLaboratorioSocket.onmessage=(data)=>{
         let examenes=JSON.parse(data.data);
         puedeDescargarConsolidado=(examenes.puede_descargar==true)?'':'disabled';
-        $('#descargar_pdf_consolidado').append(
+        $('#descargar_pdf_consolidado').html(
             `<a href="${examenes.url_orden_pdf}"
             class="${puedeDescargarConsolidado} material-symbols-outlined btn btn-outline-primary mx-4" >download</a>`
         );
