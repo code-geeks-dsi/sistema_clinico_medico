@@ -126,9 +126,9 @@
                 'tipo':tipo
                 }));
     }
-    colaLaboratorioSocket.onopen =function() {
+    {% comment %} colaLaboratorioSocket.onopen =function() {
         sync_orden();
-    }
+    } {% endcomment %}
     colaLaboratorioSocket.onmessage=(message)=>{
       let data=JSON.parse(message.data);
       tabla_examenes_cola_pendientes.innerHTML=null; 

@@ -108,9 +108,9 @@
               'tipo':tipo_consulta
               }));
   }
-  colaLaboratorioSocket.onopen =function() {
+  {% comment %} colaLaboratorioSocket.onopen =function() {
       sync_orden();
-  }
+  } {% endcomment %}
   colaLaboratorioSocket.onmessage=(message)=>{
     $('#load').hide();
     let data=JSON.parse(message.data);

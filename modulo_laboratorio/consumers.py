@@ -12,7 +12,7 @@ from dateutil.relativedelta import relativedelta
 
 class ColaLaboratorioConsumer(WebsocketConsumer):
       
-        def cola_ordenes(self, data):
+        def cola_ordenes(self,data):
                 lista=[]
                 espera_examen=EsperaExamen.objects.filter(~Q(fase_examenes_lab=EsperaExamen.OPCIONES_FASE_ORDEN[3][0])).select_related('expediente__id_paciente').order_by('numero_cola_orden')
                 for fila in espera_examen:
@@ -68,7 +68,7 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                                 }
                 return self.send(text_data=json.dumps(response))
 
-        def cola_de_resultados(self, data):
+        def cola_de_resultados(self,data):
                 resultados=Resultado.objects.filter(fase_examenes_lab=Resultado.OPCIONES_FASE[1][0]).select_related('orden_de_laboratorio__expediente__id_paciente').order_by('numero_cola_resultado')                
                 resultados=ResultadoLaboratorioSerializer(resultados,many=True)
                 if len(resultados.data)==0:
@@ -88,22 +88,37 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                         self.channel_name
                         )
                 self.accept()
+                if(self.room_group_name=='cola_de_resultados' or
+                self.room_group_name=='cola_ordenes'):
+                        async_to_sync(self.channel_layer.group_send)(
+                                self.room_group_name,
+                                {'type':self.room_group_name}
+                        )
+                else:   
+                        id_orden=self.room_group_name=self.scope["url_route"]["kwargs"]["id_orden"]
+                        async_to_sync(self.channel_layer.group_send)(
+                                self.room_group_name,
+                                {
+                                        'type':self.room_group_name,
+                                        'id_orden':id_orden
+                                }
+                        )
 
 
-        def receive(self,text_data):
-                text_data_json = json.loads(text_data)
-                data={
-                        'type':self.room_group_name
-                }
-                try:
-                        id_orden = text_data_json['id_orden']
-                        data["id_orden"]=id_orden
-                except:
-                        id_orden=None
-                async_to_sync(self.channel_layer.group_send)(
-                        self.room_group_name,
-                        data
-                )
+        # def receive(self,text_data):
+        #         text_data_json = json.loads(text_data)
+        #         data={
+        #                 'type':self.room_group_name
+        #         }
+        #         try:
+        #                 id_orden = text_data_json['id_orden']
+        #                 data["id_orden"]=id_orden
+        #         except:
+        #                 id_orden=None
+        #         async_to_sync(self.channel_layer.group_send)(
+        #                 self.room_group_name,
+        #                 data
+        #         )
         def disconnect(self, code):
                 # super().disconnect(code)
                 raise StopConsumer()

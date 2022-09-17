@@ -24,6 +24,7 @@ application = ProtocolTypeRouter({
         'websocket':AuthMiddlewareStack(
                 URLRouter([
                         path('ws/laboratorio/cola/<str:tipo>',ColaLaboratorioConsumer.as_asgi()),
+                        path('ws/laboratorio/cola/<str:tipo>/<int:id_orden>',ColaLaboratorioConsumer.as_asgi()),
                         re_path(r'ws/expediente/cola/',ColaExpedienteConsumer.as_asgi()),
                         re_path(r'ws/calendario/update/',CalendarioConsumer.as_asgi()),
                         re_path(r'ws/expediente/registro-masivo/',RegistroMasivoConsumer.as_asgi()),
