@@ -51,7 +51,7 @@ function entregar_muestra_medica(id_resultado) {
       },
     success: function(data){ 
       render_mensajes(data.mensajes);
-      sync_orden();
+
       }
     });
 }

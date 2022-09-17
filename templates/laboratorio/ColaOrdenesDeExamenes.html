@@ -116,19 +116,19 @@
 <script src="{% static 'js/laboratorioBusqueda.js' %}"></script>
 <script>
     let tabla_examenes_cola_pendientes=document.getElementById("tabla_cola");
-
+    const tipo='cola_ordenes';
     let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
-    let socket_url=`${ws_scheme}://${window.location.host}/ws/laboratorio/cola/`;
+    let socket_url=`${ws_scheme}://${window.location.host}/ws/laboratorio/cola/${tipo}`;
     const colaLaboratorioSocket=new WebSocket(socket_url);
     function sync_orden(){
       colaLaboratorioSocket.send(JSON.stringify({
                 'message':'sync',
-                'tipo':'cola_ordenes'
+                'tipo':tipo
                 }));
     }
-    colaLaboratorioSocket.onopen =function() {
+    {% comment %} colaLaboratorioSocket.onopen =function() {
         sync_orden();
-    }
+    } {% endcomment %}
     colaLaboratorioSocket.onmessage=(message)=>{
       let data=JSON.parse(message.data);
       tabla_examenes_cola_pendientes.innerHTML=null; 

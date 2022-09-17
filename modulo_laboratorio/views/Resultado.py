@@ -7,6 +7,7 @@ from modulo_control.models import Empleado, LicLaboratorioClinico
 from modulo_expediente.models import Expediente, Paciente
 from modulo_laboratorio.forms import ContieneValorForm
 from modulo_laboratorio.models import Categoria, ContieneValor, EsperaExamen, ExamenLaboratorio, Parametro, RangoDeReferencia, Resultado
+from modulo_laboratorio.serializers import Examenserializer, ResultadoSerializer
 from dateutil.relativedelta import relativedelta
 from weasyprint import HTML
 from django.http import HttpResponse,JsonResponse, QueryDict
@@ -17,11 +18,25 @@ from django.utils.decorators import method_decorator
 from modulo_laboratorio.views.EsperaExamen import verificar_fase_orden_laboratorio
 import tempfile
 from django.db.utils import IntegrityError
-from modulo_laboratorio.serializers import Examenserializer, ResultadoSerializer
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+def sync_cola():
+    channel_layer = get_channel_layer()
+    colas=['cola_de_resultados_por_orden_de_laboratorio','cola_ordenes','cola_de_resultados']
+    for cola in colas:
+        async_to_sync(channel_layer.group_send)(
+            cola,
+            {
+                'type': cola
+            }
+        )
+        print(cola+" executada")
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ResultadoView(View):
-    template_name = 'laboratorio/recetaExamen/create_update.html'
+    template_name = 'laboratorio/OrdenExamen/GestionOrdenExamenes.html'
     response={'type':'','data':'', 'info':''}
     #Imprimir en pantalla el formulario de creación de orden
     def get(self, request, *args, **kwargs):
@@ -72,6 +87,7 @@ class ResultadoView(View):
         orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
         if(orden_en_proceso_mensaje!=None):
             self.response['mensajes'].append(orden_en_proceso_mensaje)
+        sync_cola()
         return JsonResponse(self.response)
 
     ##Para eliminar
@@ -96,6 +112,7 @@ class ResultadoView(View):
                 'title':'Examen Eliminado!',
                 'data':'El examen ha sido eliminado'
                 })
+            sync_cola()
         orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
         if(orden_en_proceso_mensaje!=None):
             self.response['mensajes'].append(orden_en_proceso_mensaje)
@@ -145,9 +162,24 @@ def cambiar_fase_a_en_proceso(request):
     ordenes=ResultadoSerializer(ordenes, many=True)
     response['info']=ordenes.data
 
+    sync_cola()
     return JsonResponse(response, safe=False)
 
-from modulo_laboratorio.serializers import Examenserializer, ResultadoSerializer
+# Lic de Laboratorio
+# cambiar fase resultado de examen de laboratorio 
+# cambiar la fase de un examen en cola a resultados listos
+def cambiar_fase_a_listo(request):
+    id_resultado=request.POST.get('id_resultado',0)
+    item=Resultado.objects.get(id_resultado=id_resultado)
+    item.fase_examenes_lab=Resultado.OPCIONES_FASE[2][0]
+    item.fecha_hora_elaboracion_de_reporte=datetime.now()
+    item.save()
+    response={
+            'type':'success',
+            'data':'Resultados Listos'
+        }
+    sync_cola()
+    return JsonResponse(response, safe=False)
 
 def elaborar_resultados_examen(request,id_resultado):
         data={} 
