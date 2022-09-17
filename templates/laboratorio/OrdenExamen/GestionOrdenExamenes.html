@@ -134,7 +134,7 @@
         let examenes=JSON.parse(data.data);
         puedeDescargarConsolidado=(examenes.puede_descargar==true)?'':'disabled';
         $('#descargar_pdf_consolidado').html(
-            `<a href="${examenes.url_orden_pdf}"
+            `<a href="${examenes.url_orden_pdf}" target="_blank"
             class="${puedeDescargarConsolidado} material-symbols-outlined btn btn-outline-primary mx-4" >download</a>`
         );
         render_ordenes(examenes.data);
@@ -174,7 +174,7 @@
             // solo se puede descargar cuando los resultados estan en fase listos
             puedeBorrar=((orden.fase_examenes_lab=='1')?'':'disabled');
             puedeAgregarMuestra=((orden.fase_examenes_lab=='1')?'':'disabled');
-            puedeDescargar=((orden.fase_examenes_lab=='3')?'':'disabled');
+            puedeDescargar=((orden.fase_examenes_lab=='3'||orden.fase_examenes_lab=='4')?'':'disabled');
             $('#lista-receta-examen').append(
                         `<tr id='item-${orden.id_resultado}'>
                             <td>${orden.numero_orden}</td>
