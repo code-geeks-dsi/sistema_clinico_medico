@@ -37,6 +37,8 @@ function add_orden(id_orden){
   });
 }
 
+console.log("detecta cambios");
+
 function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsulta, id_modal){
     //Variables
     let dataTarget=document.getElementById(id_component).value;
