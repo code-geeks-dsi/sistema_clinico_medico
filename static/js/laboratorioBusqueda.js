@@ -6,12 +6,9 @@ function getAutocompletado(url, id_component, urlFiltro, complementoConsulta, ta
       if (consultaData.readyState === 4) {
         if (consultaData.status === 200) {
             $( function() {
-        
               dataAutoComletado=JSON.parse(consultaData.responseText).data
               $( "#"+id_component ).autocomplete({
                 source: dataAutoComletado,
-              
-          
               });
             } );
         } else {
@@ -37,8 +34,6 @@ function add_orden(id_orden){
   });
 }
 
-console.log("detecta cambios");
-
 function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsulta, id_modal){
     //Variables
     let dataTarget=document.getElementById(id_component).value;
@@ -62,7 +57,6 @@ function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsul
                 for (const property in p) {
                     elemento = elemento+'<td>'+`${p[property]}`+'</td>';
                 }
-
                  //imprime paciente en el modal de resultados de busqueda
                  elemento=`${elemento}<td><button onClick="add_orden(${Object.values(p)[0]});" class="material-symbols-outlined btn">add</button></td>`;
                  elemento=elemento+'</tr>';
@@ -81,27 +75,5 @@ function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsul
       filtroResultado.send();
     }
   }
-
-// function setPaciente(id_paciente, nombre_paciente, apellido_paciente, fecha_nacimiento){
-//   edad=getEdad(fecha_nacimiento);
-//   $('#pacienteId').val(id_paciente);
-//   $('#nombrePaciente').val(nombre_paciente+" "+apellido_paciente);
-//   $('#edadPaciente').val(edad +" años")
-  
-
-// }
-// function getEdad(dateString) {
-//   let hoy = new Date()
-//   let fechaNacimiento = new Date(dateString)
-//   let edad = hoy.getFullYear() - fechaNacimiento.getFullYear()
-//   let diferenciaMeses = hoy.getMonth() - fechaNacimiento.getMonth()
-//   if (
-//     diferenciaMeses < 0 ||
-//     (diferenciaMeses === 0 && hoy.getDate() < fechaNacimiento.getDate())
-//   ) {
-//     edad--
-//   }
-//   return edad
-// }
 
 

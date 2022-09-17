@@ -1,7 +1,5 @@
 #Django
-from django.urls import reverse
 from django.views.generic import  TemplateView
-from django.shortcuts import redirect
 from modulo_expediente.models import Expediente
 ##Libreria Propias
 from modulo_laboratorio.models import ( EsperaExamen)
@@ -36,7 +34,6 @@ class OrdenExamenCreate(TemplateView):
             self.response['type']='success'
             self.response['title']='Guardado!'
             self.response['data']='Orden En Recepcion de Muestras.'
-
 
         except Expediente.DoesNotExist:
             self.response['type']='error'

@@ -120,12 +120,6 @@ class ResultadoView(View):
             if(orden_en_proceso_mensaje!=None):
                 self.response['mensajes'].append(orden_en_proceso_mensaje)
             sync_cola()
-        
-        # # actualizando las ordenes
-        # recetasItems=Resultado.objects.filter(orden_de_laboratorio=id_orden)
-        # recetasItems=ResultadoSerializer(recetasItems, many=True)
-        # self.response['info']=[]
-
         return JsonResponse(self.response)
 
 '''
@@ -159,12 +153,6 @@ def cambiar_fase_a_en_proceso(request):
         'title':'Intente de Nuevo!',
         'data':'No se pudo cambiar de fase'
         })
-
-    # actualizando las ordenes
-    # ordenes=Resultado.objects.filter(orden_de_laboratorio=orden)
-    # ordenes=ResultadoSerializer(ordenes, many=True)
-    # response['info']=ordenes.data
-
     return JsonResponse(response, safe=False)
 
 # Lic de Laboratorio
@@ -183,10 +171,6 @@ def cambiar_fase_a_listo(request):
     # cambiando la fase de la orden
     orden=item.orden_de_laboratorio
     orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
-
-    # if(orden_en_proceso_mensaje!=None):
-        # self.response['mensajes'].append(orden_en_proceso_mensaje)
-
     sync_cola()
     return JsonResponse(response, safe=False)
 
@@ -350,9 +334,8 @@ def generar_resultado_pdf(request,id_resultado):
     # Cambiando fase de orden de laboratorio
     orden=resultado.orden_de_laboratorio
     orden_en_proceso_mensaje=verificar_fase_orden_laboratorio(orden)
-    # if(orden_en_proceso_mensaje!=None):
-    #     response['mensajes'].append(orden_en_proceso_mensaje)
     sync_cola()
+    
     expediente=resultado.orden_de_laboratorio.expediente
     paciente=expediente.id_paciente
     edad = relativedelta(datetime.now(), paciente.fecha_nacimiento_paciente)

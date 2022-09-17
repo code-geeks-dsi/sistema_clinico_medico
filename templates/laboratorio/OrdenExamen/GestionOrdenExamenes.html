@@ -155,10 +155,7 @@
                 'id_examen':$('#selectExamen').val(),
             }, 
             success: function(response) { 
-
                 render_mensajes(response.mensajes);
-
-                
             },
             error: function(response){
                 response=response.responseJSON;
@@ -215,10 +212,7 @@
             }, 
             success: (data)=>{
                 render_mensajes(data.mensajes);
-
-                }
-                
-            ,
+            },
             error: (data)=>{
                 render_mensajes(data.mensajes);
                 }

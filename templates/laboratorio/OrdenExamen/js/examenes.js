@@ -19,8 +19,6 @@ function listExamenes(){
                     elemento= elemento+'<option value="'+x.id_examen+'">'+x.nombre_examen+'</option>';
                   });
                   selectExamen.insertAdjacentHTML("beforeend", elemento);
-                  
-                  
             }
   });
 }
@@ -51,7 +49,6 @@ function entregar_muestra_medica(id_resultado) {
       },
     success: function(data){ 
       render_mensajes(data.mensajes);
-
       }
     });
 }
