@@ -1,6 +1,3 @@
-import datetime
-from datetime import datetime
-from django.http import JsonResponse
 from django.shortcuts import render
 from modulo_laboratorio.models import  (EsperaExamen, Resultado)
 from django.contrib.auth.decorators import login_required
