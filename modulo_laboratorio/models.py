@@ -52,7 +52,8 @@ class Resultado(models.Model):
     OPCIONES_FASE=(
         ('1','Recepción de muestra'),
         ('2','Resultados en Proceso'),
-        ('3','Resultados Listos')
+        ('3','Resultados Listos'),
+        ('4','Resultados Entregados')
     )
     id_resultado = models.AutoField(primary_key=True)
     lic_laboratorio = models.ForeignKey('modulo_control.LicLaboratorioClinico', on_delete=models.CASCADE,null=True)
