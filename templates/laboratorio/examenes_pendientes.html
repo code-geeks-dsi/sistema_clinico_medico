@@ -102,15 +102,7 @@
   let ws_scheme=window.location.protocol=='https:'?"wss":"ws";
   let socket_url=`${ws_scheme}://${window.location.host}/ws/laboratorio/cola/${tipo_consulta}`;
   const colaLaboratorioSocket=new WebSocket(socket_url);
-  function sync_orden(){
-    colaLaboratorioSocket.send(JSON.stringify({
-              'message':'sync',
-              'tipo':tipo_consulta
-              }));
-  }
-  {% comment %} colaLaboratorioSocket.onopen =function() {
-      sync_orden();
-  } {% endcomment %}
+
   colaLaboratorioSocket.onmessage=(message)=>{
     $('#load').hide();
     let data=JSON.parse(message.data);
@@ -188,7 +180,7 @@ function cambiar_fase(id_resultado,id_expediente) {
       },
     success: function(data){ 
       toastr[data.type](`${data.data}`);
-      sync_orden();
+      //sync_orden();
     }
   });
 }

@@ -43,10 +43,11 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                         }
                 else:
                         response={'data':lista}
+                print('cola_ordenes')
                 return self.send(text_data=json.dumps(response))
 
         def cola_de_resultados_por_orden_de_laboratorio(self,data):
-                id_orden=data['id_orden']
+                id_orden=self.scope["url_route"]["kwargs"]["id_orden"]
                 resultados=Resultado.objects.filter(orden_de_laboratorio__id=id_orden).select_related('orden_de_laboratorio__expediente__id_paciente').order_by('numero_cola_resultado')
                 resultados=ResultadoSerializer(resultados,many=True)
         
@@ -66,6 +67,7 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                                 'url_orden_pdf':url_orden_pdf,
                                 'puede_descargar':puede_descargar
                                 }
+                print('cola_de_resultados_por_orden_de_laboratorio')
                 return self.send(text_data=json.dumps(response))
 
         def cola_de_resultados(self,data):
@@ -78,6 +80,7 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                         }
                 else:
                         response={'data':resultados.data}
+                print('cola_de_resultados')
                 return self.send(text_data=json.dumps(response))
 
         
@@ -88,21 +91,21 @@ class ColaLaboratorioConsumer(WebsocketConsumer):
                         self.channel_name
                         )
                 self.accept()
-                if(self.room_group_name=='cola_de_resultados' or
-                self.room_group_name=='cola_ordenes'):
-                        async_to_sync(self.channel_layer.group_send)(
-                                self.room_group_name,
-                                {'type':self.room_group_name}
-                        )
-                else:   
-                        id_orden=self.scope["url_route"]["kwargs"]["id_orden"]
-                        async_to_sync(self.channel_layer.group_send)(
-                                self.room_group_name,
-                                {
-                                        'type':self.room_group_name,
-                                        'id_orden':id_orden
-                                }
-                        )
+                # if(self.room_group_name=='cola_de_resultados' or
+                # self.room_group_name=='cola_ordenes'):
+                async_to_sync(self.channel_layer.group_send)(
+                        self.room_group_name,
+                        {'type':self.room_group_name}
+                )
+                # else:   
+                #         id_orden=self.scope["url_route"]["kwargs"]["id_orden"]
+                #         async_to_sync(self.channel_layer.group_send)(
+                #                 self.room_group_name,
+                #                 {
+                #                         'type':self.room_group_name,
+                #                         'id_orden':id_orden
+                #                 }
+                #         )
 
 
         # def receive(self,text_data):
