@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseNotFound,Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from modulo_control.forms import EmpleadoForm,LicLaboratorioClinicoForm,DoctorForm
 from modulo_control.models import *
 from modulo_control.serializers import EmpleadoSerializer, RolSerializer, SimpleEmpleadoSerializer
@@ -10,6 +11,7 @@ from .forms import *
 from datetime import datetime
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.views.generic import View
 
 
 """
@@ -19,6 +21,41 @@ ejecutar el comando < python manage.py collectstatic > cada vez que se
 se coloque en modo producción.
 -------------------------------------------------------------------------
 """
+class LoginView(View):
+    template_name = "Control/login.html"
+
+    def get(self, request, *args, **kwargs):
+        data={'mensaje':"",
+          'type':'',
+        }
+        return render(request,self.template_name,data)
+
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get("usuario")
+        email = email.lower()
+        password = request.POST.get("password")
+        url = self.request.GET.get("next", None)
+        
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            login(request, user)
+            ##Si no hay un next?
+            if url is None:
+                if request.user.roles.codigo_rol=='ROL_ADMIN':
+                    return redirect('vistaGestionEmpleados')
+                elif request.user.roles.codigo_rol=='ROL_SECRETARIA' or request.user.roles.codigo_rol=='ROL_DOCTOR' or request.user.roles.codigo_rol=='ROL_ENFERMERA':
+                    return redirect('sala_consulta')
+                elif request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
+                    return redirect('inicio_lab')
+            ##si hay una url en next?
+            else:
+                return redirect(url)
+        else:
+            data={'mensaje':"usuario/contraseña no válido",
+                'type':'warning',
+                    }
+        return render(request,"login.html",data)
+  
 
 #Login
 def vista_iniciarsesion(request):
@@ -30,6 +67,10 @@ def vista_iniciarsesion(request):
 def cerrar_sesion(request):
     logout(request)
     return redirect('login')
+
+@login_required(login_url='/login/')
+def home(request):
+    return render(request,"home.html")
 
 @csrf_exempt
 def logearse(request):
