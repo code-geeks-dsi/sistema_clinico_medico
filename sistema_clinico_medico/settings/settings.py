@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'modulo_control',
     'modulo_expediente',
     'modulo_laboratorio',
+    'modulo_publicidad',
     'django_filters',
     'channels',
 ]

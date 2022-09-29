@@ -20,6 +20,7 @@ from django.urls import path,include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
 from modulo_control.views import vista_iniciarsesion, logearse, cerrar_sesion, home, LoginView
+from modulo_publicidad.views.PaginaPrincipal import PaginaPrincipal
 # from modulo_expediente.views import vista_sala_espera
 
 urlpatterns = [
@@ -28,7 +29,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logearse/', LoginView.as_view(), name='logearse'),
     path('logout/', cerrar_sesion, name='logout'),
-    path('', RedirectView.as_view(url='login/')),
+    path('', PaginaPrincipal.as_view(), name='paginaPrincipal'),
     path('home/', home, name='home'),
     #Sala de Espera
     path('expediente/', include('modulo_expediente.urls')),
