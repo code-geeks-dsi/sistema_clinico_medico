@@ -99,4 +99,9 @@
     stroke-dashoffset: 100;
     transition: 0.6s ease-out;
   }
+
+  .bg-footer{
+    background: rgb(55,218,220);
+    background: linear-gradient(180deg, rgba(55,218,220,1) 0%, rgba(18,64,229,1) 100%);
+  }
   
