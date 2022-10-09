@@ -36,6 +36,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('control/', include('modulo_control.urls')),
     path('laboratorio/', include('modulo_laboratorio.urls')),
+    path('publicidad/', include('modulo_publicidad.urls'))
 
 ]
 urlpatterns += staticfiles_urlpatterns()

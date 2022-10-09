@@ -1,0 +1,84 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Administración de Publicidad {% endblock %}
+{% block content %}
+<div class="container py-2 rounded">
+	<div class="row g-0">
+	  <h2 class="fw-bold text-secondary text-start">Administración de Publicidad</h2>
+	</div>
+  </div>
+  <div class="container">
+	<div class="row w-100 align-items-center" style="height: 70vh;">
+
+	  <!--Vinculos-->
+	  <div class="col-12 col-lg-8 ">
+  
+		<!--Publicidad de Clinica-->
+		<div class="card p-0">
+		  <div class="row align-items-center justify-content-center">
+			<div class="col-2 align-items-center justify-content-center">
+			  <div class="d-flex align-items-center justify-content-center alert-info p-3">
+				<span class="material-symbols-outlined">medical_services</span>
+			  </div>
+			</div>
+			<div class="col-10">
+			  <div class="d-flex align-items-center justify-content-center">
+				<a  href="{% url 'clinica_publicidad' %}">Publicidad de Clínica Médica</a>
+			  </div>           
+			</div>
+		  </div>
+		</div>
+		<div class="p-2"></div>
+		<!--Publicidad de Laboratorio-->
+		<div class="card p-0">
+		  <div class="row align-items-center justify-content-center">
+			<div class="col-2 align-items-center justify-content-center">
+			  <div class="d-flex align-items-center justify-content-center alert-info p-3">
+				<span class="material-symbols-outlined">biotech</span>
+			  </div>
+			</div>
+			<div class="col-10">
+			  <div class="d-flex align-items-center justify-content-center">
+				<a  href="{% url 'laboratorio_publicidad' %}">Publicidad de Laboratorio</a>
+			  </div>           
+			</div>
+		  </div>
+		</div>
+		<div class="p-2"></div>
+		<!--Otros Servicios-->
+		<div class="card p-0">
+		  <div class="row align-items-center justify-content-center">
+			<div class="col-2 align-items-center justify-content-center">
+			  <div class="d-flex align-items-center justify-content-center alert-info p-3">
+				<span class="material-symbols-outlined">medication_liquid</span>
+			  </div>
+			</div>
+			<div class="col-10">
+			  <div class="d-flex align-items-center justify-content-center">
+				<a href="{% url 'farmacia_publicidad' %}">Publicidad de Otros Servicios</a>
+			  </div>           
+			</div>
+		  </div>
+		</div>
+  
+	  </div>
+
+		<!--Imagen-->
+		<div class="col-12 col-lg-4">
+			<div class="d-flex justify-content-end">
+				<embed src="{% static 'img/ads-animate.svg' %}" class="image-fluid" width="330" height="330"/>
+			</div>
+		</div>
+	  
+	</div>
+  </div>  
+
+<script>
+    $( "#side_administrar_publicidad" ).addClass( "active" );
+</script>
+{% endblock %}

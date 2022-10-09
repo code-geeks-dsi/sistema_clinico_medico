@@ -1,0 +1,42 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Publicidad | Clínica {% endblock %}
+{% block content %}
+<div class="container py-4">
+	<div class="row">
+		<div class="col-6">
+			<h3 class="fw-bold text-secondary pb-4">Crear Nueva Promoción</h3>
+		</div>
+		<div class="col-6">
+			<div class="d-flex justify-content-end">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb pt-3">
+						<li class="breadcrumb-item"><a href="{% url 'inicio_publicidad' %}">Publicidad</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'clinica_publicidad' %}">Publicidad</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Nueva Promoción</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-header alert-primary text-primary" aria-expanded="true">
+			<div class="px-1 py-2">
+				Nueva Promoción
+			</div>
+		</div>
+		<div class="card-body">
+            
+		</div>
+	</div>
+</div>    
+
+<script>
+  $( "#side_administrar_publicidad" ).addClass( "active" );
+</script>
+{% endblock %}
