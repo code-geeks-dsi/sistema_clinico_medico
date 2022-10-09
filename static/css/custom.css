@@ -3,6 +3,7 @@
     opacity: 0.70;
     height: auto;
     max-height: 90vh;
+    min-height: 60vh;
 }
 .btn-outline-primary{
     color: #0d6efd;
