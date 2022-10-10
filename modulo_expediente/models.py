@@ -104,14 +104,8 @@ class SignosVitales(models.Model):
     objects= SignosVitalesManager()
 
 class TipoConsulta(models.Model):
-    TIPOS_DE_CONSULTA=(
-    ('G','General'),
-    ('CP','Control Prenatal'),
-    ('CNS','Control Niño Sano'),
-    ('CAM','Control Adulto Mayor')
-    )
     id_tipo_consulta=models.AutoField(primary_key=True)
-    nombre=models.CharField(choices=TIPOS_DE_CONSULTA,default=TIPOS_DE_CONSULTA[0][0],max_length=3)
+    nombre=models.CharField(max_length=25)
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
