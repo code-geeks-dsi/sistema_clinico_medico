@@ -49,7 +49,7 @@
 					<div class="card-header">
 						Descuento
 					</div>
-					<div class="card-body">
+					<div class="card-body" id="formulario-descuento-body">
 						{{form_descuento.as_p}}
 					</div>
 				</div>
@@ -79,6 +79,9 @@
 	if ($('#habilitar-descuento').is(":checked")) {
             $('#formulario-descuento-body :input').prop('disabled', true);
         }
+	else {
+		$('#formulario-descuento-body :input').prop('disabled', false);
+	}
   })
 </script>
 {% endblock %}
