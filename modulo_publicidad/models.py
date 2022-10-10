@@ -39,14 +39,14 @@ class Descuento(models.Model):
     id_descuento=models.AutoField(primary_key=True)
     servicio=models.ForeignKey("Servicio", on_delete=models.CASCADE,related_name='descuentos')
     codigo_descuento=models.CharField(max_length=15)
-    fecha_expedicion=models.DateField(auto_now_add=True, null=False)
+    fecha_expedicion=models.DateField(null=False)
     fecha_expiracion=models.DateField(null=True)
     cantidad_descuento=models.DecimalField(max_digits=10,decimal_places=2)
     restricciones=models.TextField()
 
 # Modelos de Publicación
 class Publicacion(models.Model):
-    id_publicidad=models.AutoField(primary_key=True)
+    id_publicacion=models.AutoField(primary_key=True)
     servicio=models.ForeignKey("Servicio", on_delete=models.CASCADE,related_name='publicaciones')
     descripcion=models.TextField()
     fecha_creacion=models.DateField(auto_now_add=True)
@@ -55,8 +55,11 @@ class Publicacion(models.Model):
 # Isaí 
 class Imagen(models.Model):
     id_imagen=models.AutoField(primary_key=True)
-    publicidad=models.ForeignKey('Publicacion', on_delete=models.CASCADE,related_name='imagenes')
-    archivo=models.FileField(null=True)
+    publicacion=models.ForeignKey('Publicacion', on_delete=models.CASCADE,related_name='imagenes')
+    archivo=models.ImageField(null=True, blank=True, storage=S3Boto3Storage(
+                            bucket_name='code-geek-medic',
+                            default_acl='public-read'
+                            ),upload_to='publicaciones')
 
 
 
