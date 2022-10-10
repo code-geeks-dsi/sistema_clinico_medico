@@ -56,7 +56,6 @@ class Publicacion(models.Model):
 class Imagen(models.Model):
     id_imagen=models.AutoField(primary_key=True)
     publicidad=models.ForeignKey('Publicacion', on_delete=models.CASCADE,related_name='imagenes')
-    descripcion=models.CharField(max_length=25)
     archivo=models.FileField(null=True)
 
 

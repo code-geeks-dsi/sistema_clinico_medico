@@ -1,4 +1,4 @@
-{% extends "baseControl.html" %}
+{% extends "base.html" %}
 {% load static %}
 <!--Css del template-->
 {% block css %}
@@ -31,7 +31,23 @@
 			</div>
 		</div>
 		<div class="card-body">
-            
+			<form method="post">
+				{% csrf_token %}
+				{{ formset.management_form }}
+				{{form.as_p}}
+				<div class="card">
+					<div class="card-header">
+					  Imagenes
+					</div>
+					<ul class="list-group list-group-flush">
+						{% for form in formset_imagen %}
+							<li class="list-group-item">
+								{{form.as_p}}
+							</li>
+						{% endfor %}
+					</ul>
+				  </div>
+			</form>
 		</div>
 	</div>
 </div>    

@@ -1,4 +1,4 @@
-{% extends "baseControl.html" %}
+{% extends "base.html" %}
 {% load static %}
 <!--Css del template-->
 {% block css %}
@@ -34,29 +34,36 @@
       <table class="table table-hover text-center">
           <thead>
             <tr>
-              <th scope="col">#</th>
+              {% comment %} <th scope="col">#</th> {% endcomment %}
               <th scope="col">Titulo</th>
-              <th scope="col">Período de Validez</th>
+              {% comment %} <th scope="col">Período de Validez</th> {% endcomment %}
+              <th scope="col">Descripción</th>
+              <th scope="col">Fecha Creación</th>
+              <th scope="col">Vistas</th>
               <th scope="col">Opciones</th>
             </tr>
           </thead>
           <tbody>
+            {% for publicacion in object_list %}
             <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
+              {% comment %} <th scope="row"></th> {% endcomment %}
+              <td>{{ publicacion.servicio.nombre }}</td>
+              <td class"text-truncate">{{ publicacion.descripcion }}</td>
+              <td>{{ publicacion.fecha_creacion }}</td>
+              <td>{{ publicacion.cantidad_visitas }}</td>
               <td>
                 <a 
-                  class="material-symbols-outlined btn btn-sm" 
+                class="material-symbols-outlined btn btn-sm" 
                   href=""  
                   target="_blank">open_in_new</a>
                 <a 
                   class="material-symbols-outlined btn btn-sm" 
                   href=""
                   >delete</a>
-              </td>
-            </tr>
-
+                </td>
+              </tr>
+              {% endfor %}
+              
           </tbody>
         </table>
         <a href="{% url 'clinica_publicidad_promocion' id_promocion=0%}" class="btn btn-outline-primary w-0 my-1">Crear Nueva Promoción</a>
