@@ -1,6 +1,15 @@
 from email.policy import default
 from django.db import models
 
+""""
+Por simplificación considerar el servicio y servicio médico como uno solo,
+mismo caso aplica para servicio y servicio laboratorio clínico.
+
+Relacionar el servicio al detalle de transacción y agregar atributo 
+booleano estado_de_pago a Orden Examen (EsperaExamen) y
+Cola Consulta (ContieneConsulta)
+"""
+
 class Servicio(models.Model):
     id_servicio=models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
@@ -14,14 +23,18 @@ class Servicio(models.Model):
 # Implementaciones de Servicio
 class ServicioMedico(models.Model):
     id_servicio_medico=models.AutoField(primary_key=True)
-    servicio=models.ForeignKey('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_medicos')
-    tipo_consulta=models.ForeignKey('modulo_expediente.TipoConsulta', on_delete=models.CASCADE, null=False)
-
+    servicio=models.OneToOneField('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_medicos')
+    tipo_consulta=models.OneToOneField('modulo_expediente.TipoConsulta',on_delete=models.CASCADE, null=False)
+    def __str__(self):
+        return str(self.tipo_consulta.nombre)+" $ "+str(self.servicio.precio)
 class ServicioLaboratorioClinico(models.Model):
     id_servicio_laboratorio_clinico=models.AutoField(primary_key=True)
-    servicio=models.ForeignKey('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_laboratorio_clinico')
-    examen_laboratorio=models.ForeignKey('modulo_laboratorio.ExamenLaboratorio', on_delete=models.CASCADE, null=False)
+    servicio=models.OneToOneField('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_laboratorio_clinico')
+    examen_laboratorio=models.OneToOneField('modulo_laboratorio.ExamenLaboratorio', on_delete=models.CASCADE, null=False)
+    def __str__(self):
+        return str(self.examen_laboratorio.nombre_examen)+" $ "+str(self.servicio.precio)
 
+# Descuentos asociados a cada Servicio
 class Descuento(models.Model):
     id_descuento=models.AutoField(primary_key=True)
     servicio=models.ForeignKey("Servicio", on_delete=models.CASCADE,related_name='descuentos')
@@ -31,6 +44,7 @@ class Descuento(models.Model):
     cantidad_descuento=models.DecimalField(max_digits=10,decimal_places=2)
     restricciones=models.TextField()
 
+# Modelos de Publicación
 class Publicacion(models.Model):
     id_publicidad=models.AutoField(primary_key=True)
     servicio=models.ForeignKey("Servicio", on_delete=models.CASCADE,related_name='publicaciones')

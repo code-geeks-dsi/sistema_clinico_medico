@@ -45,6 +45,7 @@ class Paciente(models.Model):
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)
 
+# Cola Consulta
 class ContieneConsulta(models.Model):
     OPCIONES_ESTADO_DE_PAGO=(
         ('1','Pendiente'),
@@ -106,6 +107,8 @@ class SignosVitales(models.Model):
 class TipoConsulta(models.Model):
     id_tipo_consulta=models.AutoField(primary_key=True)
     nombre=models.CharField(max_length=25)
+    def __str__(self):
+        return str(self.nombre)
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
