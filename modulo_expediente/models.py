@@ -1,5 +1,6 @@
 from datetime import datetime
 from faulthandler import disable
+from random import choices
 from django.db import models
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
@@ -101,7 +102,16 @@ class SignosVitales(models.Model):
     valor_saturacion_oxigeno=models.IntegerField(validators=[MaxValueValidator(101),MinValueValidator(0)],null=True, blank=True)
     fecha=models.DateTimeField(auto_now_add=True)
     objects= SignosVitalesManager()
-    
+
+class TipoConsulta(models.Model):
+    TIPOS_DE_CONSULTA=(
+    ('G','General'),
+    ('CP','Control Prenatal'),
+    ('CNS','Control Niño Sano'),
+    ('CAM','Control Adulto Mayor')
+    )
+    id_tipo_consulta=models.AutoField(primary_key=True)
+    nombre=models.CharField(choices=TIPOS_DE_CONSULTA,default=TIPOS_DE_CONSULTA[0][0],max_length=3)
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
