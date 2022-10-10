@@ -1,5 +1,14 @@
 from email.policy import default
 from django.db import models
+from storages.backends.s3boto3 import S3Boto3Storage
+""""
+Por simplificación considerar el servicio y servicio médico como uno solo,
+mismo caso aplica para servicio y servicio laboratorio clínico.
+
+Relacionar el servicio al detalle de transacción y agregar atributo 
+booleano estado_de_pago a Orden Examen (EsperaExamen) y
+Cola Consulta (ContieneConsulta)
+"""
 
 class Servicio(models.Model):
     id_servicio=models.AutoField(primary_key=True)
@@ -12,36 +21,45 @@ class Servicio(models.Model):
     #     abstract=True
 
 # Implementaciones de Servicio
-class ServicioMedico(Servicio):
+class ServicioMedico(models.Model):
     id_servicio_medico=models.AutoField(primary_key=True)
-    servicio=models.ForeignKey('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_medicos')
-    tipo_consulta=models.ForeignKey('modulo_expediente.TipoConsulta', on_delete=models.CASCADE, null=False)
-
-class ServicioLaboratorioClinico(Servicio):
+    servicio=models.OneToOneField('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_medicos')
+    tipo_consulta=models.OneToOneField('modulo_expediente.TipoConsulta',on_delete=models.CASCADE, null=False)
+    def __str__(self):
+        return str(self.tipo_consulta.nombre)+" $ "+str(self.servicio.precio)
+class ServicioLaboratorioClinico(models.Model):
     id_servicio_laboratorio_clinico=models.AutoField(primary_key=True)
-    servicio=models.ForeignKey('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_laboratorio_clinico')
-    examen_laboratorio=models.ForeignKey('modulo_laboratorio.ExamenLaboratorio', on_delete=models.CASCADE, null=False)
+    servicio=models.OneToOneField('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_laboratorio_clinico')
+    examen_laboratorio=models.OneToOneField('modulo_laboratorio.ExamenLaboratorio', on_delete=models.CASCADE, null=False)
+    def __str__(self):
+        return str(self.examen_laboratorio.nombre_examen)+" $ "+str(self.servicio.precio)
 
+# Descuentos asociados a cada Servicio
 class Descuento(models.Model):
     id_descuento=models.AutoField(primary_key=True)
     servicio=models.ForeignKey("Servicio", on_delete=models.CASCADE,related_name='descuentos')
     codigo_descuento=models.CharField(max_length=15)
-    fecha_expedicion=models.DateField(auto_now_add=True, null=False)
+    fecha_expedicion=models.DateField(null=False)
     fecha_expiracion=models.DateField(null=True)
     cantidad_descuento=models.DecimalField(max_digits=10,decimal_places=2)
     restricciones=models.TextField()
 
+# Modelos de Publicación
 class Publicacion(models.Model):
-    id_publicidad=models.AutoField(primary_key=True)
+    id_publicacion=models.AutoField(primary_key=True)
     servicio=models.ForeignKey("Servicio", on_delete=models.CASCADE,related_name='publicaciones')
     descripcion=models.TextField()
     fecha_creacion=models.DateField(auto_now_add=True)
     cantidad_visitas=models.IntegerField(default=0)
 
+# Isaí 
 class Imagen(models.Model):
     id_imagen=models.AutoField(primary_key=True)
-    publicidad=models.ForeignKey('Publicacion', on_delete=models.CASCADE,related_name='imagenes')
-    descripcion=models.CharField(max_length=25)
+    publicacion=models.ForeignKey('Publicacion', on_delete=models.CASCADE,related_name='imagenes')
+    archivo=models.ImageField(null=True, blank=True, storage=S3Boto3Storage(
+                            bucket_name='code-geek-medic',
+                            default_acl='public-read'
+                            ),upload_to='publicaciones')
 
 
 

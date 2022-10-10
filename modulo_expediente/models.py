@@ -45,6 +45,7 @@ class Paciente(models.Model):
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)
 
+# Cola Consulta
 class ContieneConsulta(models.Model):
     OPCIONES_ESTADO_DE_PAGO=(
         ('1','Pendiente'),
@@ -104,14 +105,10 @@ class SignosVitales(models.Model):
     objects= SignosVitalesManager()
 
 class TipoConsulta(models.Model):
-    TIPOS_DE_CONSULTA=(
-    ('G','General'),
-    ('CP','Control Prenatal'),
-    ('CNS','Control Niño Sano'),
-    ('CAM','Control Adulto Mayor')
-    )
     id_tipo_consulta=models.AutoField(primary_key=True)
-    nombre=models.CharField(choices=TIPOS_DE_CONSULTA,default=TIPOS_DE_CONSULTA[0][0],max_length=3)
+    nombre=models.CharField(max_length=25)
+    def __str__(self):
+        return str(self.nombre)
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
