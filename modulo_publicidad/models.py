@@ -1,6 +1,6 @@
 from email.policy import default
 from django.db import models
-
+from storages.backends.s3boto3 import S3Boto3Storage
 """"
 Por simplificación considerar el servicio y servicio médico como uno solo,
 mismo caso aplica para servicio y servicio laboratorio clínico.
@@ -52,10 +52,12 @@ class Publicacion(models.Model):
     fecha_creacion=models.DateField(auto_now_add=True)
     cantidad_visitas=models.IntegerField(default=0)
 
+# Isaí 
 class Imagen(models.Model):
     id_imagen=models.AutoField(primary_key=True)
     publicidad=models.ForeignKey('Publicacion', on_delete=models.CASCADE,related_name='imagenes')
     descripcion=models.CharField(max_length=25)
+    archivo=models.FileField()
 
 
 

@@ -13,5 +13,10 @@ class InicioPublicidad(TemplateView):
 class ClinicaPublicidad(TemplateView):
     template_name = "publicidad/administracion/tablaPublicidad.html"
 
-class PromocionClinica(TemplateView):
+# Publicaciones
+class CrearPromocion(View):
+    template_name = "publicidad/administracion/crearActualizar.html"
+    
+
+class EditarPromocion(TemplateView):
     template_name = "publicidad/administracion/crearActualizar.html"

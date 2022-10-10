@@ -1,8 +1,6 @@
-from cgitb import enable
-from dataclasses import fields
 from django import forms
 
-from .models import ContieneValor, Parametro
+from .models import ContieneValor
 
 class ContieneValorForm(forms.ModelForm):
         dato=forms.DecimalField(max_digits=12, decimal_places=3,initial=0)
