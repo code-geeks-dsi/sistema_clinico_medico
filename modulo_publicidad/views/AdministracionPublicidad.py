@@ -14,7 +14,7 @@ class ClinicaPublicidad(TemplateView):
     template_name = "publicidad/administracion/tablaPublicidad.html"
 
 # Publicaciones
-class CrearPromocion(View):
+class CrearPromocion(TemplateView):
     template_name = "publicidad/administracion/crearActualizar.html"
     
 
