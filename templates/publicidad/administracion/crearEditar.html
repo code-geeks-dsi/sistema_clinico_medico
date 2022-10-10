@@ -33,11 +33,26 @@
 		<div class="card-body">
 			<form method="post">
 				{% csrf_token %}
-				{{ formset.management_form }}
-				{{form.as_p}}
 				<div class="card">
 					<div class="card-header">
-					  Imagenes
+						Publicación
+					</div>
+					<div class="card-body">
+						{{form.as_p}}
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-header">
+						Descuento
+					</div>
+					<div class="card-body">
+						{{form_descuento.as_p}}
+					</div>
+				</div>
+				<div class="card">
+					{{ formset.management_form }}
+					<div class="card-header">
+						Imagenes
 					</div>
 					<ul class="list-group list-group-flush">
 						{% for form in formset_imagen %}
@@ -46,7 +61,8 @@
 							</li>
 						{% endfor %}
 					</ul>
-				  </div>
+				</div>
+				<input class="btn btn-outline-success" type="submit" value="Submit">
 			</form>
 		</div>
 	</div>
