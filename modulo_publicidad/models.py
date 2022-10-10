@@ -12,12 +12,12 @@ class Servicio(models.Model):
     #     abstract=True
 
 # Implementaciones de Servicio
-class ServicioMedico(Servicio):
+class ServicioMedico(models.Model):
     id_servicio_medico=models.AutoField(primary_key=True)
     servicio=models.ForeignKey('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_medicos')
     tipo_consulta=models.ForeignKey('modulo_expediente.TipoConsulta', on_delete=models.CASCADE, null=False)
 
-class ServicioLaboratorioClinico(Servicio):
+class ServicioLaboratorioClinico(models.Model):
     id_servicio_laboratorio_clinico=models.AutoField(primary_key=True)
     servicio=models.ForeignKey('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_laboratorio_clinico')
     examen_laboratorio=models.ForeignKey('modulo_laboratorio.ExamenLaboratorio', on_delete=models.CASCADE, null=False)
