@@ -77,6 +77,6 @@ class CrearPromocion(View):
 class EditarPromocion(TemplateView):
     template_name = "publicidad/administracion/crearEditar.html"
 
-class PublicacionListView(ListView):
+class PublicacionListView(TemplateView):
     model=Publicacion
     template_name= "publicidad/administracion/lista.html"
