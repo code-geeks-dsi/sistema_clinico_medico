@@ -39,13 +39,17 @@
 					</div>
 					<div class="card-body">
 						{{form.as_p}}
+						<div class="form-check form-switch pt-2">
+							<input class="form-check-input" type="checkbox" id="habilitar-descuento">
+							<label class="form-check-label" for="habilitar-descuento">Habilitar Descuento</label>
+						</div>
 					</div>
 				</div>
 				<div class="card">
 					<div class="card-header">
 						Descuento
 					</div>
-					<div class="card-body">
+					<div class="card-body" id="formulario-descuento-body">
 						{{form_descuento.as_p}}
 					</div>
 				</div>
@@ -69,6 +73,15 @@
 </div>    
 
 <script>
+	const formDescuento="";
   $( "#side_administrar_publicidad" ).addClass( "active" );
+  $('#habilitar-descuento').click(()=>{
+	if ($('#habilitar-descuento').is(":checked")) {
+            $('#formulario-descuento-body :input').prop('disabled', true);
+        }
+	else {
+		$('#formulario-descuento-body :input').prop('disabled', false);
+	}
+  })
 </script>
 {% endblock %}
