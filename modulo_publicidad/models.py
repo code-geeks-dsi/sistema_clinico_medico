@@ -45,6 +45,8 @@ class Descuento(models.Model):
     cantidad_descuento=models.DecimalField(max_digits=10,decimal_places=2)
     porcentaje_descuento=models.IntegerField()
     restricciones=models.TextField()
+    fecha_creacion=models.DateField(auto_now_add=True)
+    fecha_ultima_edicion=models.DateField(auto_now=True)
 
 # Modelos de Publicación
 class Publicacion(models.Model):
