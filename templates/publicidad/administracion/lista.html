@@ -23,6 +23,7 @@
 			</div>
 		</div>
 	</div>
+  <a href="{% url 'crear_publicacion'%}" class="btn btn-success w-0 my-1">Crear Nueva Promoción</a>
 	<div class="card">
 		<div class="card-header alert-primary text-primary" aria-expanded="true">
 			<div class="px-1 py-2">
@@ -35,12 +36,18 @@
         <thead>
           <tr>
             {% comment %} <th scope="col">#</th> {% endcomment %}
-            <th scope="col">Titulo</th>
+            <th scope="col" rowspan="2">Titulo</th>
             {% comment %} <th scope="col">Período de Validez</th> {% endcomment %}
-            <th scope="col">Descripción</th>
-            <th scope="col">Fecha Creación</th>
-            <th scope="col">Vistas</th>
-            <th scope="col">Opciones</th>
+            <th scope="col" rowspan="2">Descripción</th>
+            <th scope="col" rowspan="2">Creación</th>
+            <th scope="col" rowspan="2">Útima Modificación</th>
+            <th scope="col" colspan="2">Validez</th>
+            <th scope="col" rowspan="2">Vistas</th>
+            <th scope="col" rowspan="2">Opciones</th>
+          </tr>
+          <tr>
+            <th>Inicio</th>
+            <th>Fin</th>
           </tr>
         </thead>
         <tbody>
@@ -50,6 +57,9 @@
             <td>{{ publicacion.servicio.nombre }}</td>
             <td class"text-truncate">{{ publicacion.descripcion }}</td>
             <td>{{ publicacion.fecha_creacion }}</td>
+            <td>{{ publicacion.fecha_ultima_edicion }}</td>
+            <td>{{ publicacion.validez_fecha_inicio|default:"" }}</td>
+            <td>{{ publicacion.validez_fecha_fin|default:"" }}</td>
             <td>{{ publicacion.cantidad_visitas }}</td>
             <td>
               <a 
@@ -62,12 +72,15 @@
                 >delete</a>
             </td>
           </tr>
+          {% empty %}
+              <li>Lo siento, aún no hay publicaciones.</li>
+              <a href="{% url 'crear_publicacion'%}" class="btn btn-outline-success w-0 my-1">Crear Nueva Promoción</a>
           {% endfor %}
             
         </tbody>
 
       </table>
-      <a href="{% url 'crear_publicacion'%}" class="btn btn-outline-primary w-0 my-1">Crear Nueva Promoción</a>
+      
     </div>
   </div>
 </div>    
