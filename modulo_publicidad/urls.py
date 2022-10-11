@@ -14,5 +14,9 @@ urlpatterns = [
     # publica promociones
     path('promociones/new', CrearPromocion.as_view(), name='crear_publicacion'),
     # edita promociones
-    path('promociones/<int:id_publicidad>', EditarPromocion.as_view(), name='editar_publicacion')
+    path('promociones/<int:id_publicidad>', EditarPromocion.as_view(), name='editar_publicacion'),
+
+    # servicios
+    path('servicios/<int:pk>', ServicioDetailView.as_view(), name='ver_servicio')
+    
 ]

@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic import ListView
+from django.views.generic.detail import SingleObjectMixin
 from django.forms import modelformset_factory
 
 #Propias
@@ -48,33 +49,6 @@ class CrearPromocion(View):
 
         return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento})
 
-    # def post(self, request, *args, **kwargs):
-    #     form = self.form_class(request.POST)
-    #     if form.is_valid():
-    #         # <process form cleaned data>
-    #         return HttpResponseRedirect('/success/')
-
-    #     return render(request, self.template_name, {'form': form})
-
-
-    # template_name = "publicidad/administracion/crearEditar.html"
-    # form_publicacion = PublicacionForm
-    # form_imagen = PublicacionImagenForm
-    # # initial = {'key': 'value'}
-
-    # def get(self, request, *args, **kwargs):
-    #     form = self.form_publicacion(initial=self.initial)
-    #     return render(request, self.template_name, {'form': form})
-
-    # def post(self, request, *args, **kwargs):
-    #     form = self.form_class(request.POST)
-    #     if form.is_valid():
-    #         # <process form cleaned data>
-    #         return HttpResponseRedirect('/success/')
-
-    #     return render(request, self.template_name, {'form': form})
-    
-
 class EditarPromocion(TemplateView):
     template_name = "publicidad/administracion/crearEditar.html"
 
@@ -82,3 +56,20 @@ class PublicacionListView(ListView):
     model=Publicacion
     context_object_name = "publicaciones"
     template_name= "publicidad/administracion/lista.html"
+
+#servicios
+class ServicioDetailView(SingleObjectMixin, ListView):
+    template_name = "servicios/detalle.html"
+    paginate_by = 2
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Servicio.objects.all())
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['servicio'] = self.object
+        return context
+
+    def get_queryset(self):
+        return self.object.descuentos.all()
+        # return self.object.descuento_set.all()
