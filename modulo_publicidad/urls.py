@@ -9,12 +9,12 @@ urlpatterns = [
     path('farmacia/', InicioPublicidad.as_view(), name='farmacia_publicidad'),
     path('paginaClinica/', PaginaClinica.as_view(), name='paginaClinica'),
     path('paginaLaboratorio/', PaginaLaboratorio.as_view(), name='paginaLaboratorio'),
-    #lista promociones
-    path('promociones/', PublicacionListView.as_view(), name='ver_publicaciones'),
-    # publica promociones
-    path('promociones/new', CrearPromocion.as_view(), name='crear_publicacion'),
-    # edita promociones
-    path('promociones/<int:id_publicidad>', EditarPromocion.as_view(), name='editar_publicacion'),
+    #lista publicaciones
+    path('publicaciones/', PublicacionListView.as_view(), name='ver_publicaciones'),
+    # crea publicaciones
+    path('publicaciones/new', CrearPromocion.as_view(), name='crear_publicacion'),
+    # edita publicaciones
+    path('publicaciones/<int:id_publicidad>', EditarPromocion.as_view(), name='editar_publicacion'),
 
     # servicios
     path('servicios/<int:pk>', ServicioDetailView.as_view(), name='ver_servicio')
