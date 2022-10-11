@@ -39,6 +39,7 @@ class CrearPromocion(View):
             if form_descuento.is_valid():
                 descuento=form_descuento.save(commit=False)
                 descuento.servicio=publicacion.servicio
+                descuento.save()
             if form_imagenes.is_valid():
                 imagenes=form_imagenes.save(commit=False)
                 for imagen in imagenes:
@@ -77,6 +78,7 @@ class CrearPromocion(View):
 class EditarPromocion(TemplateView):
     template_name = "publicidad/administracion/crearEditar.html"
 
-class PublicacionListView(TemplateView):
+class PublicacionListView(ListView):
     model=Publicacion
+    context_object_name = "publicaciones"
     template_name= "publicidad/administracion/lista.html"
