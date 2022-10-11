@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'modulo_laboratorio',
     'modulo_publicidad',
     'django_filters',
+    'django.contrib.humanize',
     'channels',
 ]
 ASGI_APPLICATION='sistema_clinico_medico.asgi.application'
