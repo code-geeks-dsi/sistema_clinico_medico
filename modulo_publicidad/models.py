@@ -40,7 +40,7 @@ class Descuento(models.Model):
     id_descuento=models.AutoField(primary_key=True)
     servicio=models.ForeignKey("Servicio", on_delete=models.CASCADE,related_name='descuentos')
     codigo_descuento=models.CharField(max_length=15,unique=True)
-    validez_fecha_inicio=models.DateField(null=False)
+    validez_fecha_inicio=models.DateField(null=True)
     validez_fecha_fin=models.DateField(null=True)
     cantidad_descuento=models.DecimalField(max_digits=10,decimal_places=2)
     restricciones=models.TextField()
@@ -52,7 +52,8 @@ class Publicacion(models.Model):
     descripcion=models.TextField()
     fecha_creacion=models.DateField(auto_now_add=True)
     fecha_ultima_edicion=models.DateField(auto_now=True)
-    fecha_vencimiento=models.DateField(null=True)
+    validez_fecha_inicio=models.DateField(null=True)
+    validez_fecha_fin=models.DateField(null=True)
     cantidad_visitas=models.IntegerField(default=0)
 
 # Isaí 
