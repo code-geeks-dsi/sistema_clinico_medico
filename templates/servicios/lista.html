@@ -1,0 +1,91 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Publicidad | Clínica {% endblock %}
+{% block content %}
+<div class="container py-4">
+	<div class="row">
+		<div class="col-6">
+			<h3 class="fw-bold text-secondary pb-4">Publicidad</h3>
+		</div>
+		<div class="col-6">
+			<div class="d-flex justify-content-end">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb pt-3">
+						<li class="breadcrumb-item"><a href="{% url 'inicio_publicidad' %}">Publicidad</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Clínica</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
+  <a href="{% url 'crear_publicacion'%}" class="btn btn-success w-0 my-1">Crear Nueva Promoción</a>
+	<div class="card">
+		<div class="card-header alert-primary text-primary" aria-expanded="true">
+			<div class="px-1 py-2">
+				Publicidad de la Clínica
+			</div>
+		</div>
+		<div class="card-body">
+      <!--Tabla de Publicidad-->
+      <table class="table table-hover text-center">
+        <thead>
+          <tr>
+            {% comment %} <th scope="col">#</th> {% endcomment %}
+            <th scope="col" rowspan="2">Titulo</th>
+            {% comment %} <th scope="col">Período de Validez</th> {% endcomment %}
+            <th scope="col" rowspan="2">Descripción</th>
+            <th scope="col" rowspan="2">Creación</th>
+            <th scope="col" rowspan="2">Útima Modificación</th>
+            <th scope="col" colspan="2">Validez</th>
+            <th scope="col" rowspan="2">Vistas</th>
+            <th scope="col" rowspan="2">Opciones</th>
+          </tr>
+          <tr>
+            <th>Inicio</th>
+            <th>Fin</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for publicacion in publicaciones %}
+          <tr>
+            {% comment %} <th scope="row"></th> {% endcomment %}
+            <td>{{ publicacion.servicio.nombre }}</td>
+            <td class"text-truncate">{{ publicacion.descripcion }}</td>
+            <td>{{ publicacion.fecha_creacion }}</td>
+            <td>{{ publicacion.fecha_ultima_edicion }}</td>
+            <td>{{ publicacion.validez_fecha_inicio|default:"" }}</td>
+            <td>{{ publicacion.validez_fecha_fin|default:"" }}</td>
+            <td>{{ publicacion.cantidad_visitas }}</td>
+            <td>
+              <a 
+              class="material-symbols-outlined btn btn-sm" 
+                href=""  
+                target="_blank">open_in_new</a>
+              <a 
+                class="material-symbols-outlined btn btn-sm" 
+                href=""
+                >delete</a>
+            </td>
+          </tr>
+          {% empty %}
+              <li>Lo siento, aún no hay publicaciones.</li>
+              <a href="{% url 'crear_publicacion'%}" class="btn btn-outline-success w-0 my-1">Crear Nueva Promoción</a>
+          {% endfor %}
+            
+        </tbody>
+
+      </table>
+      
+    </div>
+  </div>
+</div>    
+
+<script>
+  $( "#side_administrar_publicidad" ).addClass( "active" );
+</script>
+{% endblock %}
