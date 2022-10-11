@@ -8,6 +8,7 @@ urlpatterns = [
     path('laboratorio/', InicioPublicidad.as_view(), name='laboratorio_publicidad'),
     path('farmacia/', InicioPublicidad.as_view(), name='farmacia_publicidad'),
     path('paginaClinica/', PaginaClinica.as_view(), name='paginaClinica'),
+    path('paginaLaboratorio/', PaginaLaboratorio.as_view(), name='paginaLaboratorio'),
     #lista promociones
     path('promociones/', PublicacionListView.as_view(), name='ver_publicaciones'),
     # publica promociones

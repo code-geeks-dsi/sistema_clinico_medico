@@ -1,0 +1,22 @@
+{% extends "publicidad/paginaPrincipal/base.html" %}
+{% load static %}
+{% block css %}
+<link href="{% static 'css/custom.css' %}" rel="stylesheet" />
+<link href="{% static 'css/sidebars.css' %}" rel="stylesheet" />
+{% endblock %}
+{% block titulo %} Clínica Médica Económica {% endblock %}
+{% block content %}
+    {% include 'nav/publicNavBar.html' %}
+    {% include './secciones/promocionLaboratorio.html' %}
+    {% include './secciones/promociones.html' %}
+    {% include 'publicidad/paginaPrincipal/secciones/promocionPrincipal.html' %}
+    {% include 'publicidad/paginaPrincipal/secciones/nuestrosServicios.html' %}
+    {% include 'publicidad/paginaPrincipal/secciones/ubicacion.html' %}
+    {% include 'publicidad/paginaPrincipal/secciones/footer.html' %}
+
+{% endblock %}
+{% block js %}
+    <script>
+        $("#link-principal").addClass( "active" );
+    </script>
+{% endblock %}

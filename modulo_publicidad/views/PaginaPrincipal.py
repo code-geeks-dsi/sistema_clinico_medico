@@ -12,3 +12,6 @@ class PaginaPrincipal(TemplateView):
 
 class PaginaClinica(TemplateView):
     template_name= "publicidad/paginaDeClinica/paginaDeClinica.html"
+
+class PaginaLaboratorio(TemplateView):
+    template_name= "publicidad/paginaDeLaboratorio/paginaDeLaboratorio.html"
