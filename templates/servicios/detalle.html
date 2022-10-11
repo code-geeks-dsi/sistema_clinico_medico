@@ -5,12 +5,13 @@
 
 {% endblock %}
 <!--Titulo-->
-{% block titulo %} Publicidad | Clínica {% endblock %}
+{% block titulo %} Servicios {% endblock %}
 {% block content %}
+{% load l10n %}
 <div class="container py-4">
 	<div class="row">
 		<div class="col-6">
-			<h3 class="fw-bold text-secondary pb-4">Publicidad</h3>
+			<h3 class="fw-bold text-secondary pb-4">Servicios</h3>
 		</div>
 		<div class="col-6">
 			<div class="d-flex justify-content-end">
@@ -23,41 +24,75 @@
 			</div>
 		</div>
 	</div>
-  {% comment %} <a href="{% url 'crear_publicacion'%}" class="btn btn-success w-0 my-1">Crear Nueva Promoción</a> {% endcomment %}
-	<div class="card">
-		<div class="card-header alert-primary text-primary" aria-expanded="true">
-			<div class="px-1 py-2">
-				Servicios
-			</div>
-		</div>
-		<div class="card-body">
 
-      <h2>Servicio {{ servicio.nombre }}</h2>
-
-      <ol>
-        {% for descuento in page_obj %}
-          <li>{{ descuento.codigo_descuento }}</li>
-        {% endfor %}
-      </ol>
-  
-      <div class="pagination">
-          <span class="step-links">
-              {% if page_obj.has_previous %}
-                  <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-              {% endif %}
-  
-              <span class="current">
-                  Page {{ page_obj.number }} of {{ paginator.num_pages }}.
-              </span>
-  
-              {% if page_obj.has_next %}
-                  <a href="?page={{ page_obj.next_page_number }}">next</a>
-              {% endif %}
-          </span>
-      </div>
+      <h3>Servicio: {{ servicio.nombre }}</h3>
+      <h4>Precio: ${{ servicio.precio|localize }}</h4>  
       
-    </div>
-  </div>
+      <div class="d-flex justify-content-between">
+        <h4>Descuentos</h4>
+        <a href="#" class="btn btn-success w-0 my-1">Nuevo Descuento</a>
+      </div>
+    
+      <table class="table table-hover text-center">
+      <thead>
+        <tr>
+          
+          <th scope="col" rowspan="2">Código</th>
+          <th scope="col" colspan="2">Validez</th>
+          <th scope="col" rowspan="2">Restricciones</th>
+          <th scope="col" rowspan="2">Descuento($)</th>
+          <th scope="col" rowspan="2">Porcentaje(%)</th>
+          <th scope="col" rowspan="2">Opciones</th>
+        </tr>
+        <tr>
+          <th>Inicio</th>
+          <th>Fin</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for descuento in page_obj %}        
+        <tr>
+          <td>{{ descuento.codigo_descuento }}</td>
+          <td>{{ descuento.validez_fecha_inicio|default:"" }}</td>
+          <td>{{ descuento.validez_fecha_fin|default:"" }}</td>
+          <td class"text-truncate">{{ descuento.restricciones }}</td>
+          <td>{{ descuento.cantidad_descuento}}</td>
+          <td>{{ descuento.porcentaje_descuento}}</td>
+          <td>
+            <a 
+            class="material-symbols-outlined btn btn-sm" 
+              href=""  
+              target="_blank">open_in_new</a>
+            <a 
+              class="material-symbols-outlined btn btn-sm" 
+              href=""
+              >delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">Aún no hay descuentos para este servicio. Puedes crear uno seleccionando <i>Crear mi primer descuento</i><br/><a href="#" class="btn btn-warning w-0 my-1">Crear Primer descuento</a></td></tr>
+        {% endfor %}
+          
+      </tbody>
+
+      </table>
+      <div class="pagination">
+        <span class="step-links">
+          {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+          {% endif %}
+          
+          <span class="current">
+            Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+          </span>
+          
+          {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">next</a>
+          {% endif %}
+        </span>
+      </div>
+
+   
 </div>    
 
 <script>

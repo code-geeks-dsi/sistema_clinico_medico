@@ -43,6 +43,7 @@ class Descuento(models.Model):
     validez_fecha_inicio=models.DateField(null=True)
     validez_fecha_fin=models.DateField(null=True)
     cantidad_descuento=models.DecimalField(max_digits=10,decimal_places=2)
+    porcentaje_descuento=models.IntegerField()
     restricciones=models.TextField()
 
 # Modelos de Publicación
