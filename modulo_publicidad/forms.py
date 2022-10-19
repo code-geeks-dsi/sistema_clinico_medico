@@ -1,5 +1,4 @@
 from cProfile import label
-from tkinter import Widget
 from django import forms
 from modulo_publicidad.models import *
 class PublicacionForm(forms.ModelForm):
