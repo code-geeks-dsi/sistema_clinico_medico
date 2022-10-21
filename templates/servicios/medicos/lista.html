@@ -1,0 +1,90 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Servicios Médicos {% endblock %}
+{% block content %}
+<div class="container py-4">
+	<div class="row">
+		<div class="col-6">
+			<h3 class="fw-bold text-secondary pb-4">Administración Servicios Médicos</h3>
+		</div>
+		<div class="col-6">
+			<div class="d-flex justify-content-end">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb pt-3">
+						<li class="breadcrumb-item"><a href="{% url 'inicio_publicidad' %}">Publicidad</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Clínica</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
+  {% comment %} <a href="{% url ''%}" class="btn btn-success w-0 my-1">Crear Servicio Médico</a> {% endcomment %}
+	<div class="card">
+	<div class="card-body">
+      <table class="table table-hover text-center">
+        <thead>
+            <th scope="col">Nombre</th>
+            <th scope="col">Precio</th>
+            <th scope="col">Área</th>
+            <th scope="col">Editar</th>
+            <th scope="col">Eliminar</th>
+        </thead>
+        <tbody>
+          {% for servicioMedico in page_obj %}
+          <tr>
+            <td>{{ servicioMedico.servicio.nombre }}</td>
+            <td>{{ servicioMedico.servicio.precio }}</td>
+            <td>{{ servicioMedico.tipo_consulta.nombre }}</td>
+            <td>
+                <a 
+                class="material-symbols-outlined btn btn-sm" 
+                href=""  
+                hover="Editar"
+                target="_blank">edit</a>
+            </td>
+            <td>
+              <a 
+                class="material-symbols-outlined btn btn-sm" 
+                href=""
+                hover="Eliminar"
+                >delete</a>
+            </td>
+          </tr>
+          {% empty %}
+              <li>Lo siento, aún no hay servicios médicos.</li>
+              {% comment %} <a href="{% url ''%}" class="btn btn-outline-success w-0 my-1">Crear Servicio Médico</a> {% endcomment %}
+          {% endfor %}
+            
+        </tbody>
+
+      </table>
+      
+    </div>
+    <div class="pagination d-flex justify-content-center">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; Primero</a>
+                <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+    
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Último &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>    
+
+<script>
+  $( "#side_administrar_publicidad" ).addClass( "active" );
+</script>
+{% endblock %}

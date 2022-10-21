@@ -46,20 +46,20 @@ class DescuentoForm(forms.ModelForm):
 
                 exclude=('servicio','id_descuento')
                 widgets = {
-                        'fecha_expedicion': forms.DateInput(
-                                format=('%Y-%m-%d'),
-                                attrs={
-                                        'placeholder':'Fecha de Creación',
-                                        'label':'Fecha de Creación',
-                                        'type': 'date',
-                                }),
-                        'fecha_expiracion': forms.DateInput(
-                                format=('%Y-%m-%d'),
-                                attrs={
-                                        'placeholder':'Fecha de Vencimiento',
-                                        'label':'Fecha de Vencimiento',
-                                        'type': 'date'
-                                }),
+                        'validez_fecha_fin': forms.DateInput(
+                        format=('%Y-%m-%d'),
+                        attrs={
+                                'placeholder':'Fecha de Inicio',
+                                'label':'Fecha de Creación',
+                                'type': 'date',
+                        }),
+                        'validez_fecha_inicio': forms.DateInput(
+                        format=('%Y-%m-%d'),
+                        attrs={
+                                'placeholder':'Fecha de Fin',
+                                'label':'Fecha de Creación',
+                                'type': 'date',
+                        }),
                         
                 }
         def __init__(self, *args, **kwargs):
