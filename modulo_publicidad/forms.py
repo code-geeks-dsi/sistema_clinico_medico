@@ -10,7 +10,21 @@ class PublicacionForm(forms.ModelForm):
                                                   'class': 'form-control', 
                                                   "rows":5,
                                                   "cols":20,
-                                }),
+                        }),
+                        'validez_fecha_fin': forms.DateInput(
+                        format=('%Y-%m-%d'),
+                        attrs={
+                                'placeholder':'Fecha de Inicio',
+                                'label':'Fecha de Creación',
+                                'type': 'date',
+                        }),
+                        'validez_fecha_inicio': forms.DateInput(
+                        format=('%Y-%m-%d'),
+                        attrs={
+                                'placeholder':'Fecha de Fin',
+                                'label':'Fecha de Creación',
+                                'type': 'date',
+                        }),
                 }
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
