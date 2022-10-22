@@ -18,8 +18,6 @@ class Servicio(models.Model):
 
     def __str__(self):
         return self.nombre
-    # class Meta:
-    #     abstract=True
 
 # Implementaciones de Servicio
 class ServicioMedico(models.Model):

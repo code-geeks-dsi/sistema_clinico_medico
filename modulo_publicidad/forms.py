@@ -1,16 +1,32 @@
 from cProfile import label
+from xml.etree.ElementInclude import include
 from django import forms
+from modulo_expediente.models import TipoConsulta
 from modulo_publicidad.models import *
 class PublicacionForm(forms.ModelForm):
         class Meta:
                 model=Publicacion
-                exclude=('fecha_creacion','cantidad_visitas','id_publicacion')
+                exclude=('fecha_creacion','cantidad_visitas','id_publicacion','servicio')
                 widgets={
                         'descripcion': forms.Textarea(attrs={
                                                   'class': 'form-control', 
                                                   "rows":5,
                                                   "cols":20,
-                                }),
+                        }),
+                        'validez_fecha_fin': forms.DateInput(
+                        format=('%Y-%m-%d'),
+                        attrs={
+                                'placeholder':'Fecha de Inicio',
+                                'label':'Fecha de Creación',
+                                'type': 'date',
+                        }),
+                        'validez_fecha_inicio': forms.DateInput(
+                        format=('%Y-%m-%d'),
+                        attrs={
+                                'placeholder':'Fecha de Fin',
+                                'label':'Fecha de Creación',
+                                'type': 'date',
+                        }),
                 }
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
@@ -32,23 +48,31 @@ class DescuentoForm(forms.ModelForm):
 
                 exclude=('servicio','id_descuento')
                 widgets = {
-                        'fecha_expedicion': forms.DateInput(
-                                format=('%Y-%m-%d'),
-                                attrs={
-                                        'placeholder':'Fecha de Creación',
-                                        'label':'Fecha de Creación',
-                                        'type': 'date',
-                                }),
-                        'fecha_expiracion': forms.DateInput(
-                                format=('%Y-%m-%d'),
-                                attrs={
-                                        'placeholder':'Fecha de Vencimiento',
-                                        'label':'Fecha de Vencimiento',
-                                        'type': 'date'
-                                }),
+                        'validez_fecha_fin': forms.DateInput(
+                        format=('%Y-%m-%d'),
+                        attrs={
+                                'placeholder':'Fecha de Inicio',
+                                'label':'Fecha de Creación',
+                                'type': 'date',
+                        }),
+                        'validez_fecha_inicio': forms.DateInput(
+                        format=('%Y-%m-%d'),
+                        attrs={
+                                'placeholder':'Fecha de Fin',
+                                'label':'Fecha de Creación',
+                                'type': 'date',
+                        }),
                         
                 }
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 for field in self.fields:
                         self.fields[field].widget.attrs.update({'class': 'form-control','required': False})
+#Servicios Médicos
+class ServicioMedicoForm(forms.ModelForm):
+        area= forms.ModelChoiceField(queryset=TipoConsulta.objects.all(), required=False)
+        crear_tipo_consulta=forms.BooleanField(label='Otro:',required=True,initial=False)
+        otro= forms.CharField(label="",required=False,disabled=True)
+        class Meta:
+                model=Servicio
+                fields=('nombre','precio')

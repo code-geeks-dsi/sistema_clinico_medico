@@ -9,7 +9,7 @@
 {% block content %}
 <div class="container py-2 rounded">
 	<div class="row g-0">
-	  <h2 class="fw-bold text-secondary text-start">Administración de Publicidad</h2>
+	  <h2 class="fw-bold text-secondary text-start">Administración de Servicios</h2>
 	</div>
   </div>
   <div class="container">
@@ -23,12 +23,12 @@
 		  <div class="row align-items-center justify-content-center">
 			<div class="col-2 align-items-center justify-content-center">
 			  <div class="d-flex align-items-center justify-content-center alert-info p-3">
-				<span class="material-symbols-outlined">medical_services</span>
+				<span class="material-symbols-outlined fs-1">medical_services</span>
 			  </div>
 			</div>
 			<div class="col-10">
 			  <div class="d-flex align-items-center justify-content-center">
-				<a  href="{% url 'ver_publicaciones' %}">Promociones</a>
+				<a  href="{% url 'lista_servicios_medicos' %}" class="fs-3">Clínica Médica</a>
 			  </div>           
 			</div>
 		  </div>
@@ -39,19 +39,19 @@
 		  <div class="row align-items-center justify-content-center">
 			<div class="col-2 align-items-center justify-content-center">
 			  <div class="d-flex align-items-center justify-content-center alert-info p-3">
-				<span class="material-symbols-outlined">biotech</span>
+				<span class="material-symbols-outlined fs-1">biotech</span>
 			  </div>
 			</div>
 			<div class="col-10">
 			  <div class="d-flex align-items-center justify-content-center">
-				<a  href="{% url 'laboratorio_publicidad' %}">Publicidad de Laboratorio</a>
+				<a  href="{% url 'laboratorio_publicidad' %}" class="fs-3">Laboratorio Clínico</a>
 			  </div>           
 			</div>
 		  </div>
 		</div>
 		<div class="p-2"></div>
 		<!--Otros Servicios-->
-		<div class="card p-0">
+		{% comment %} <div class="card p-0">
 		  <div class="row align-items-center justify-content-center">
 			<div class="col-2 align-items-center justify-content-center">
 			  <div class="d-flex align-items-center justify-content-center alert-info p-3">
@@ -60,11 +60,11 @@
 			</div>
 			<div class="col-10">
 			  <div class="d-flex align-items-center justify-content-center">
-				<a href="{% url 'farmacia_publicidad' %}">Publicidad de Otros Servicios</a>
+				<a href="{% url 'farmacia_publicidad' %}">Farmacia</a>
 			  </div>           
 			</div>
 		  </div>
-		</div>
+		</div> {% endcomment %}
   
 	  </div>
 
