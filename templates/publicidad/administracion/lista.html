@@ -25,21 +25,20 @@
 	</div>
   
   <div class="d-flex justify-content-between">
-    <a href="{% url 'crear_publicacion'%}" class="btn btn-success w-0 my-1">Nueva Publicación</a>
+    <a href="{% url 'crear_publicacion' id_servicio=view.kwargs.id_servicio %}" class="btn btn-success w-0 my-1">Nueva Publicación</a>
   </div>
       <!--Tabla de Publicidad-->
       <table class="table table-hover text-center">
         <thead>
           <tr>
-            {% comment %} <th scope="col">#</th> {% endcomment %}
             <th scope="col" rowspan="2">Titulo</th>
-            {% comment %} <th scope="col">Período de Validez</th> {% endcomment %}
             <th scope="col" rowspan="2">Descripción</th>
             <th scope="col" rowspan="2">Creación</th>
             <th scope="col" rowspan="2">Útima Modificación</th>
             <th scope="col" colspan="2">Validez</th>
             <th scope="col" rowspan="2">Vistas</th>
-            <th scope="col" rowspan="2">Opciones</th>
+            <th scope="col" rowspan="2">Editar</th>
+            <th scope="col" rowspan="2">Eliminar</th>
           </tr>
           <tr>
             <th>Inicio</th>
@@ -49,7 +48,6 @@
         <tbody>
           {% for publicacion in publicaciones %}
           <tr>
-            <th scope="row"></th> 
             <td>{{ publicacion.servicio.nombre }}</td>
             <td class"text-truncate">{{ publicacion.descripcion }}</td>
             <td>{{ publicacion.fecha_creacion }}</td>
@@ -60,24 +58,27 @@
             <td>
               <a 
               class="material-symbols-outlined btn btn-sm" 
-                href=""  
-                target="_blank">open_in_new</a>
+              href="">edit</a>
+            </td>
+            <td>
               <a 
                 class="material-symbols-outlined btn btn-sm" 
                 href=""
                 >delete</a>
-            </td>
-          </tr>
+              </td>
+            </tr>
           {% empty %}
-          <tr><td colspan="7">Lo siento, aún no hay publicaciones. Puedes crear una seleccionando <i>Crear mi primer publicación</i><br/><a href="{% url 'crear_publicacion'%}" class="btn btn-warning w-0 my-1">Crear Primer Publicación</a></td></tr>
-              
+          <tr><td colspan="9">Lo siento, aún no hay publicaciones. Puedes crear una seleccionando <i>Crear mi primer publicación</i><br/><a href="{% url 'crear_publicacion' id_servicio=view.kwargs.id_servicio %}" class="btn btn-success w-0 my-1">Crear Primer Publicación</a></td></tr>
+          
           {% endfor %}
-            
+          
         </tbody>
-
+        
       </table>
-
-</div>    
+      <div class="d-flex justify-content-center">
+        <a href="{% url 'lista_servicios_medicos'%}" class="btn btn-secondary mx-1">Regresar</a>
+      </div>
+  </div>    
 
 <script>
   $( "#side_administrar_publicidad" ).addClass( "active" );

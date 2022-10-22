@@ -31,6 +31,7 @@
             <th scope="col">Nombre</th>
             <th scope="col">Precio</th>
             <th scope="col">Área</th>
+            <th scope="col">Promociones</th>
             <th scope="col">Editar</th>
             <th scope="col">Eliminar</th>
         </thead>
@@ -40,6 +41,12 @@
             <td>{{ servicioMedico.servicio.nombre }}</td>
             <td>{{ servicioMedico.servicio.precio }}</td>
             <td>{{ servicioMedico.tipo_consulta.nombre }}</td>
+            <td>
+                <a 
+                class="material-symbols-outlined btn btn-sm" 
+                href="{% url 'ver_publicaciones' id_servicio=servicioMedico.servicio.id_servicio %}"  
+                hover="Ver Promociones">signpost</a>
+            </td>
             <td>
                 <a 
                 class="material-symbols-outlined btn btn-sm" 
