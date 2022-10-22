@@ -38,7 +38,14 @@
                 {{formServicioMedico.crear_tipo_consulta.label_tag }}
                 {{formServicioMedico.crear_tipo_consulta}}         
                 {{formServicioMedico.otro}}
-                {{formPublicacion.as_p}}
+				<div class="col">
+					<div class="row">
+						{{formServicioMedico.descripcion.label_tag}}
+					</div>
+					<div class="row">
+						{{formServicioMedico.descripcion}}
+					</div>
+				</div>
                 {{formImagen.as_p}}
 				<input class="btn btn-outline-success" type="submit" value="Guardar">
 			</form>

@@ -44,7 +44,7 @@ class PublicacionImagenForm(forms.ModelForm):
 class ServicioImagenForm(forms.ModelForm):
         class Meta:
                 model=ImagenServicio
-                exclude=('publicacion','id_imagen')
+                exclude=('servicio','id_imagen')
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 for field in self.fields:
@@ -83,7 +83,7 @@ class ServicioMedicoForm(forms.ModelForm):
         otro= forms.CharField(label="",required=False)
         class Meta:
                 model=Servicio
-                fields=('nombre','precio')
+                fields=('nombre','precio','descripcion')
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self.fields['otro'].widget.attrs.update({'class': 'disabled','required': False})
