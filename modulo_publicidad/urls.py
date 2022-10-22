@@ -12,8 +12,6 @@ urlpatterns = [
     path('paginaLaboratorio/', PaginaLaboratorio.as_view(), name='paginaLaboratorio'),
 
     # administración de publicaciones
-    # crea publicaciones
-    path('publicaciones/new', CrearPromocion.as_view(), name='crear_publicacion'),
     # edita publicaciones
     path('publicaciones/<int:id_publicidad>', EditarPromocion.as_view(), name='editar_publicacion'),
 
@@ -32,6 +30,8 @@ urlpatterns = [
     #Administrar Promociones de servicios
     #lista publicaciones
     path('servicios/<int:id_servicio>/promociones/', PublicacionListView.as_view(), name='ver_publicaciones'),
+    # crea publicaciones
+    path('servicios/<int:id_servicio>/promociones/new', CrearPromocion.as_view(), name='crear_publicacion'),
 
     
 ]

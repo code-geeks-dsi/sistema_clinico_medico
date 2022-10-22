@@ -26,22 +26,26 @@ class CrearPromocion(View):
     ImagenFormSet = modelformset_factory(ImagenPublicacion, form=PublicacionImagenForm, min_num=1,max_num=3, extra=3)
 
     def get(self, request, *args, **kwargs):
+        self.servicio = get_object_or_404(Servicio, id_servicio=self.kwargs['id_servicio'])
         form = PublicacionForm()
         form_descuento=DescuentoForm()
         form_imagenes=self.ImagenFormSet()
         return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento})
 
     def post(self, request, *args, **kwargs):
+        self.servicio = get_object_or_404(Servicio, id_servicio=self.kwargs['id_servicio'])
         form = PublicacionForm(request.POST)
         form_descuento=DescuentoForm(request.POST)
-        form_imagenes=self.ImagenFormSet(request.POST,request.FILES)
+        form_imagenes=self.ImagenFormSet(request.POST, request.FILES)
         if form.is_valid():
+            publicacion=form.save(commit=False)
+            publicacion.servicio=self.servicio
+            publicacion.save()
             if form_descuento.is_valid():
+                descuento=form_descuento.save(commit=False)
+                descuento.servicio=self.servicio
+                descuento.save()
                 if form_imagenes.is_valid():
-                    publicacion=form.save()
-                    descuento=form_descuento.save(commit=False)
-                    descuento.servicio=publicacion.servicio
-                    descuento.save()
                     imagenes=form_imagenes.save(commit=False)
                     for imagen in imagenes:
                         imagen.publicacion=publicacion
@@ -63,17 +67,17 @@ class PublicacionListView(ListView):
         return Publicacion.objects.filter(servicio=self.servicio)
 
 #servicios
-class ServicioDetailView(SingleObjectMixin, ListView):
-    template_name = "servicios/detalle.html"
-    paginate_by = 2
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object(queryset=Servicio.objects.all())
-        return super().get(request, *args, **kwargs)
+# class ServicioDetailView(SingleObjectMixin, ListView):
+#     template_name = "servicios/detalle.html"
+#     paginate_by = 2
+#     def get(self, request, *args, **kwargs):
+#         self.object = self.get_object(queryset=Servicio.objects.all())
+#         return super().get(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['servicio'] = self.object
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['servicio'] = self.object
+#         return context
 
-    def get_queryset(self):
-        return self.object.descuentos.all()
+#     def get_queryset(self):
+#         return self.object.descuentos.all()
