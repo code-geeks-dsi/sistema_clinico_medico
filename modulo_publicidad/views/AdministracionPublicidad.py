@@ -1,7 +1,7 @@
 #Python
 
 #Django
-from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import TemplateView
@@ -57,6 +57,10 @@ class PublicacionListView(ListView):
     paginate_by = 10
     context_object_name = "publicaciones"
     template_name= "publicidad/administracion/lista.html"
+    
+    def get_queryset(self):
+        self.servicio = get_object_or_404(Servicio, id_servicio=self.kwargs['id_servicio'])
+        return Publicacion.objects.filter(servicio=self.servicio)
 
 #servicios
 class ServicioDetailView(SingleObjectMixin, ListView):
@@ -73,4 +77,3 @@ class ServicioDetailView(SingleObjectMixin, ListView):
 
     def get_queryset(self):
         return self.object.descuentos.all()
-        # return self.object.descuento_set.all()
