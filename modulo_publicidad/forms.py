@@ -1,10 +1,12 @@
 from cProfile import label
+from xml.etree.ElementInclude import include
 from django import forms
+from modulo_expediente.models import TipoConsulta
 from modulo_publicidad.models import *
 class PublicacionForm(forms.ModelForm):
         class Meta:
                 model=Publicacion
-                exclude=('fecha_creacion','cantidad_visitas','id_publicacion')
+                exclude=('fecha_creacion','cantidad_visitas','id_publicacion','servicio')
                 widgets={
                         'descripcion': forms.Textarea(attrs={
                                                   'class': 'form-control', 
@@ -66,3 +68,11 @@ class DescuentoForm(forms.ModelForm):
                 super().__init__(*args, **kwargs)
                 for field in self.fields:
                         self.fields[field].widget.attrs.update({'class': 'form-control','required': False})
+#Servicios Médicos
+class ServicioMedicoForm(forms.ModelForm):
+        area= forms.ModelChoiceField(queryset=TipoConsulta.objects.all(), required=False)
+        crear_tipo_consulta=forms.BooleanField(label='Otro:',required=True,initial=False)
+        otro= forms.CharField(label="",required=False,disabled=True)
+        class Meta:
+                model=Servicio
+                fields=('nombre','precio')

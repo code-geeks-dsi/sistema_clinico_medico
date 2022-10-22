@@ -27,6 +27,7 @@ urlpatterns = [
 
     # Administrar servicios clínica médica.
     path('servicios/medicos/', ServiciosMedicosListView.as_view(), name='lista_servicios_medicos'),
+    path('servicios/medicos/new', crearServicioMedico.as_view(), name='crear_servicio_medico'),
 
     
 ]

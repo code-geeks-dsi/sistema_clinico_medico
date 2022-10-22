@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Servicios Médicos{% endblock %}
+{% block content %}
+<div class="container py-4">
+	<div class="row">
+		<div class="col-6">
+			<h3 class="fw-bold text-secondary pb-4">Nuevo Servicio Médico</h3>
+		</div>
+		<div class="col-6">
+			<div class="d-flex justify-content-end">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb pt-3">
+						<li class="breadcrumb-item"><a href="{% url 'inicio_publicidad' %}">Publicidad</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'clinica_publicidad' %}">Publicidad</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Nueva Promoción</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-body">
+			<form method="post">
+				{% csrf_token %}
+                {{ formServicioMedico.errors }}            
+                {{formServicioMedico.nombre.label_tag }}
+                {{formServicioMedico.nombre}}              
+                {{formServicioMedico.precio.label_tag }}
+                {{formServicioMedico.precio}}        
+                {{formServicioMedico.area.label_tag }}
+                {{formServicioMedico.area}}       
+                {{formServicioMedico.crear_tipo_consulta.label_tag }}
+                {{formServicioMedico.crear_tipo_consulta}}         
+                {{formServicioMedico.otro}}
+                {{formPublicacion.as_p}}
+                {{formImagen.as_p}}
+				<input class="btn btn-outline-success" type="submit" value="Guardar">
+			</form>
+		</div>
+	</div>
+</div>    
+<script>
+    var agregarTipoConsulta = document.getElementById("id_crear_tipo_consulta");
+    agregarTipoConsulta.addEventListener('change', function(){
+        if (agregarTipoConsulta.checked == true){
+            document.getElementById('id_area').disabled = true;document.getElementById('id_otro').disabled = false;
+        } else {
+            document.getElementById('id_area').disabled = false;document.getElementById('id_otro').disabled = true;
+        }
+    });
+</script>
+{% endblock %}

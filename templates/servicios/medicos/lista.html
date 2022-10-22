@@ -23,7 +23,7 @@
 			</div>
 		</div>
 	</div>
-  {% comment %} <a href="{% url ''%}" class="btn btn-success w-0 my-1">Crear Servicio Médico</a> {% endcomment %}
+  <a href="{% url 'crear_servicio_medico'%}" class="btn btn-success w-0 my-1">Crear Servicio Médico</a>
 	<div class="card">
 	<div class="card-body">
       <table class="table table-hover text-center">
@@ -57,7 +57,7 @@
           </tr>
           {% empty %}
               <li>Lo siento, aún no hay servicios médicos.</li>
-              {% comment %} <a href="{% url ''%}" class="btn btn-outline-success w-0 my-1">Crear Servicio Médico</a> {% endcomment %}
+              <a href="{% url 'crear_servicio_medico'%}" class="btn btn-outline-success w-0 my-1">Crear Servicio Médico</a>
           {% endfor %}
             
         </tbody>
