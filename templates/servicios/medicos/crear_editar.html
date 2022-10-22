@@ -47,7 +47,10 @@
 					</div>
 				</div>
                 {{formImagen.as_p}}
-				<input class="btn btn-outline-success" type="submit" value="Guardar">
+				<div class="d-flex justify-content-center">
+					<a href="{% url 'lista_servicios_medicos'%}" class="btn btn-secondary mx-1">Regresar</a>
+					<input class="btn btn-primary" type="submit" value="Guardar">
+				</div>
 			</form>
 		</div>
 	</div>

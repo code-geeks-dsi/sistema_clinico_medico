@@ -1,11 +1,12 @@
 #Django
-from email.mime import image
+from django.urls import reverse_lazy
+from django.views.generic.edit import DeleteView
 from django.views.generic import ListView
 from django.views import View
-from django.shortcuts import (render,redirect)
+from django.shortcuts import (render,redirect,reverse)
 #Propias
 from modulo_expediente.models import TipoConsulta
-from modulo_publicidad.forms import PublicacionForm, ServicioImagenForm, ServicioMedicoForm
+from modulo_publicidad.forms import ServicioImagenForm, ServicioMedicoForm
 from modulo_publicidad.models import *
 
 class ServiciosMedicosListView(ListView):
@@ -13,7 +14,12 @@ class ServiciosMedicosListView(ListView):
     paginate_by = 10
     template_name= "servicios/medicos/lista.html"
 
-class crearServicioMedico(View):
+class EliminarServicioMedicoView(DeleteView):
+    model = Servicio
+    template_name= "servicios/medicos/confirmar_eliminar.html"
+    success_url = reverse_lazy('lista_servicios_medicos')
+
+class CrearServicioMedico(View):
     template_name="servicios/medicos/crear_editar.html"
 
     def get(self, request, *args, **kwargs):
@@ -32,7 +38,7 @@ class crearServicioMedico(View):
         '''
         # Recuperando datos
         formServicioMedico=ServicioMedicoForm(request.POST)
-        formImagen=ServicioImagenForm(request.POST)
+        formImagen=ServicioImagenForm(request.POST, request.FILES)
         if formServicioMedico.is_valid():
                 if formImagen.is_valid():
                     #PASO 1
@@ -60,7 +66,7 @@ class crearServicioMedico(View):
                 'formImagen':formImagen
             }
             return render(request, self.template_name, data)
-class editarServicioMedico(View):
+class EditarServicioMedico(View):
     template_name="servicios/medicos/crear_editar.html"
     def get(self, request, *args, **kwargs):
         id_servicio=kwargs.get('id_servicio', None)
@@ -82,7 +88,7 @@ class editarServicioMedico(View):
         imagen=ImagenServicio.objects.get(servicio=servicio)
         # Recuperando datos
         formServicioMedico=ServicioMedicoForm(request.POST,instance=servicio)
-        formImagen=ServicioImagenForm(request.POST,instance=imagen)
+        formImagen=ServicioImagenForm(request.POST, request.FILES, instance=imagen)
         if formServicioMedico.is_valid():
                 if formImagen.is_valid():
                     #PASO 1

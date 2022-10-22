@@ -43,21 +43,24 @@
             <td>
                 <a 
                 class="material-symbols-outlined btn btn-sm" 
-                href=""  
-                hover="Editar"
-                target="_blank">edit</a>
+                href="{% url 'editar_servicio_medico' id_servicio=servicioMedico.servicio.id_servicio %}"  
+                hover="Editar">edit</a>
             </td>
             <td>
               <a 
                 class="material-symbols-outlined btn btn-sm" 
-                href=""
+                href="{% url 'eliminar_servicio_medico' pk=servicioMedico.servicio.id_servicio %}"
                 hover="Eliminar"
                 >delete</a>
             </td>
           </tr>
           {% empty %}
-              <li>Lo siento, aún no hay servicios médicos.</li>
-              <a href="{% url 'crear_servicio_medico'%}" class="btn btn-outline-success w-0 my-1">Crear Servicio Médico</a>
+          <tr>
+            <td colspan="7"> 
+              <p>Lo siento, aún no hay servicios médicos.</p>
+              <a href="{% url 'crear_servicio_medico'%}" class="btn btn-success w-0 my-1">Crear Mi Primer Servicio Médico</a>
+            </td>
+          </tr>
           {% endfor %}
             
         </tbody>
