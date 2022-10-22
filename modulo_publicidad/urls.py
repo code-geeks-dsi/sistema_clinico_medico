@@ -27,8 +27,9 @@ urlpatterns = [
 
     # Administrar servicios clínica médica.
     path('servicios/medicos/', ServiciosMedicosListView.as_view(), name='lista_servicios_medicos'),
-    path('servicios/medicos/new', crearServicioMedico.as_view(), name='crear_servicio_medico'),
-    path('servicios/medicos/<int:id_servicio>', editarServicioMedico.as_view(), name='editar_servicio_medico'),
+    path('servicios/medicos/new', CrearServicioMedico.as_view(), name='crear_servicio_medico'),
+    path('servicios/medicos/<int:id_servicio>', EditarServicioMedico.as_view(), name='editar_servicio_medico'),
+    path('servicios/medicos/<int:pk>/delete', EliminarServicioMedicoView.as_view(), name='eliminar_servicio_medico'),
 
     
 ]
