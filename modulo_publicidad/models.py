@@ -64,7 +64,8 @@ class ImagenPublicacion(models.Model):
     publicacion=models.ForeignKey('Publicacion', on_delete=models.CASCADE,related_name='imagenes')
     archivo=models.ImageField(null=True, blank=True, storage=S3Boto3Storage(
                             bucket_name='code-geek-medic',
-                            default_acl='public-read'
+                            default_acl='public-read',
+                            location='static',
                             ),upload_to='publicaciones')
 
 class ImagenServicio(models.Model):
@@ -72,7 +73,8 @@ class ImagenServicio(models.Model):
     servicio=models.ForeignKey('Servicio', on_delete=models.CASCADE,related_name='imagenes')
     archivo=models.ImageField(null=True, blank=True, storage=S3Boto3Storage(
                             bucket_name='code-geek-medic',
-                            default_acl='public-read'
+                            default_acl='public-read',
+                            location='static',
                             ),upload_to='servicios')
 
 
