@@ -46,12 +46,21 @@
 	</div>
 </div>    
 <script>
-    var agregarTipoConsulta = document.getElementById("id_crear_tipo_consulta");
+    const agregarTipoConsulta = document.getElementById("id_crear_tipo_consulta");
+	const area=document.getElementById('id_area');
+	const otro=document.getElementById('id_otro');
+	otro.disabled=true;
     agregarTipoConsulta.addEventListener('change', function(){
         if (agregarTipoConsulta.checked == true){
-            document.getElementById('id_area').disabled = true;document.getElementById('id_otro').disabled = false;
+            area.disabled = true;
+			area.required=false;
+			otro.required=true;
+			otro.disabled = false;
         } else {
-            document.getElementById('id_area').disabled = false;document.getElementById('id_otro').disabled = true;
+            area.disabled = false;
+            area.required = true;
+            otro.required = false;
+			otro.disabled = true;
         }
     });
 </script>

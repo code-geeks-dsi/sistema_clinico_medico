@@ -35,7 +35,15 @@ class PublicacionForm(forms.ModelForm):
 
 class PublicacionImagenForm(forms.ModelForm):
         class Meta:
-                model=Imagen
+                model=ImagenPublicacion
+                exclude=('publicacion','id_imagen')
+        def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                for field in self.fields:
+                        self.fields[field].widget.attrs.update({'class': 'form-control'})
+class ServicioImagenForm(forms.ModelForm):
+        class Meta:
+                model=ImagenServicio
                 exclude=('publicacion','id_imagen')
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
@@ -71,8 +79,11 @@ class DescuentoForm(forms.ModelForm):
 #Servicios Médicos
 class ServicioMedicoForm(forms.ModelForm):
         area= forms.ModelChoiceField(queryset=TipoConsulta.objects.all(), required=False)
-        crear_tipo_consulta=forms.BooleanField(label='Otro:',required=True,initial=False)
-        otro= forms.CharField(label="",required=False,disabled=True)
+        crear_tipo_consulta=forms.BooleanField(label='Otro:',initial=False,required=False)
+        otro= forms.CharField(label="",required=False)
         class Meta:
                 model=Servicio
                 fields=('nombre','precio')
+        def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.fields['otro'].widget.attrs.update({'class': 'disabled','required': False})

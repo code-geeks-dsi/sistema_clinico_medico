@@ -15,6 +15,7 @@ class Servicio(models.Model):
     id_servicio=models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
     precio=models.DecimalField(max_digits=10,decimal_places=2)
+    descripcion=models.TextField()
 
     def __str__(self):
         return self.nombre
@@ -23,7 +24,7 @@ class Servicio(models.Model):
 class ServicioMedico(models.Model):
     id_servicio_medico=models.AutoField(primary_key=True)
     servicio=models.OneToOneField('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_medicos')
-    tipo_consulta=models.OneToOneField('modulo_expediente.TipoConsulta',on_delete=models.CASCADE, null=False)
+    tipo_consulta=models.ForeignKey('modulo_expediente.TipoConsulta',on_delete=models.CASCADE, null=False)
     def __str__(self):
         return str(self.tipo_consulta.nombre)+" $ "+str(self.servicio.precio)
 class ServicioLaboratorioClinico(models.Model):
@@ -58,13 +59,21 @@ class Publicacion(models.Model):
     cantidad_visitas=models.IntegerField(default=0)
 
 # Isaí 
-class Imagen(models.Model):
+class ImagenPublicacion(models.Model):
     id_imagen=models.AutoField(primary_key=True)
     publicacion=models.ForeignKey('Publicacion', on_delete=models.CASCADE,related_name='imagenes')
     archivo=models.ImageField(null=True, blank=True, storage=S3Boto3Storage(
                             bucket_name='code-geek-medic',
                             default_acl='public-read'
                             ),upload_to='publicaciones')
+
+class ImagenServicio(models.Model):
+    id_imagen=models.AutoField(primary_key=True)
+    servicio=models.ForeignKey('Servicio', on_delete=models.CASCADE,related_name='imagenes')
+    archivo=models.ImageField(null=True, blank=True, storage=S3Boto3Storage(
+                            bucket_name='code-geek-medic',
+                            default_acl='public-read'
+                            ),upload_to='servicios')
 
 
 

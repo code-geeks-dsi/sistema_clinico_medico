@@ -23,7 +23,7 @@ class ClinicaPublicidad(TemplateView):
 # Publicaciones
 class CrearPromocion(View):
     template_name = "publicidad/administracion/crearEditar.html"
-    ImagenFormSet = modelformset_factory(Imagen, form=PublicacionImagenForm, min_num=1,max_num=3, extra=3)
+    ImagenFormSet = modelformset_factory(ImagenPublicacion, form=PublicacionImagenForm, min_num=1,max_num=3, extra=3)
 
     def get(self, request, *args, **kwargs):
         form = PublicacionForm()
@@ -36,16 +36,16 @@ class CrearPromocion(View):
         form_descuento=DescuentoForm(request.POST)
         form_imagenes=self.ImagenFormSet(request.POST,request.FILES)
         if form.is_valid():
-            publicacion=form.save()
             if form_descuento.is_valid():
-                descuento=form_descuento.save(commit=False)
-                descuento.servicio=publicacion.servicio
-                descuento.save()
-            if form_imagenes.is_valid():
-                imagenes=form_imagenes.save(commit=False)
-                for imagen in imagenes:
-                    imagen.publicacion=publicacion
-                    imagen.save()
+                if form_imagenes.is_valid():
+                    publicacion=form.save()
+                    descuento=form_descuento.save(commit=False)
+                    descuento.servicio=publicacion.servicio
+                    descuento.save()
+                    imagenes=form_imagenes.save(commit=False)
+                    for imagen in imagenes:
+                        imagen.publicacion=publicacion
+                        imagen.save()
 
         return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento})
 
