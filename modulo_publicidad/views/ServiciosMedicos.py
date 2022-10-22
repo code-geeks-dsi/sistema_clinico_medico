@@ -32,7 +32,7 @@ class crearServicioMedico(View):
         '''
         # Recuperando datos
         formServicioMedico=ServicioMedicoForm(request.POST)
-        formImagen=ServicioImagenForm(request.POST)
+        formImagen=ServicioImagenForm(request.POST,  request.FILES)
         if formServicioMedico.is_valid():
                 if formImagen.is_valid():
                     #PASO 1
