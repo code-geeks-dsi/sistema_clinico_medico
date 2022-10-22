@@ -54,6 +54,7 @@ class EditarPromocion(TemplateView):
 
 class PublicacionListView(ListView):
     model=Publicacion
+    paginate_by = 10
     context_object_name = "publicaciones"
     template_name= "publicidad/administracion/lista.html"
 
