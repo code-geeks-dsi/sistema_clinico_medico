@@ -64,8 +64,8 @@ class ContieneConsulta(models.Model):
     #expediente = models.ManyToManyField(Expediente, models.DO_NOTHING, blank=False, null=True)
     #consulta = models.ManyToManyField(Consulta, models.DO_NOTHING, blank=False, null=True)
     id=models.AutoField(primary_key=True)
-    expediente = models.ForeignKey('Expediente', models.DO_NOTHING, blank=False, null=True)
-    consulta = models.ForeignKey('Consulta', models.DO_NOTHING, blank=True, null=True)
+    expediente = models.ForeignKey('Expediente', on_delete=models.CASCADE, blank=False, null=True)
+    consulta = models.ForeignKey('Consulta', on_delete=models.CASCADE, blank=True, null=True)
     numero_cola=models.IntegerField(blank=False, null=False) #No lleva max_length
     fecha_de_cola=models.DateField(default=datetime.now, blank=False, null=False)
     # hora_de_ingreso=models.TimeField(default=datetime.now,blank=False,null=False)
@@ -277,14 +277,14 @@ class BrindaConsulta(models.Model):
         (1,'Matutino'),
         (2,'Vespertino'),
     )
-    consulta=models.ForeignKey('Consulta', models.DO_NOTHING, blank=False, null=False)
-    doctor=models.ForeignKey('modulo_control.Doctor', models.DO_NOTHING, blank=False, null=False)
+    consulta=models.ForeignKey('Consulta', on_delete=models.CASCADE, blank=False, null=False)
+    doctor=models.ForeignKey('modulo_control.Doctor', on_delete=models.CASCADE, blank=False, null=False)
     #consultorio=models.IntegerField(blank=False, null=False)#Es llave foranea, pero no existe la clase consultorio
     turno=models.CharField(max_length=20,choices=OPCIONES_TURNO, blank=False,null=False)
 
 class ConstanciaMedica(models.Model):
     id_constancia_medica= models.AutoField(primary_key=True)
-    consulta= models.ForeignKey('Consulta', models.DO_NOTHING, blank=False, null=False)
+    consulta= models.ForeignKey('Consulta', on_delete=models.CASCADE, blank=False, null=False)
     fecha_de_emision=models.DateField(default=datetime.now, blank=False, null=False)
     dias_reposo=models.IntegerField(blank=False, null=False)#Los integer no llevan max_length
     diagnostico_constancia=models.TextField(blank=True, null=True)
@@ -299,7 +299,7 @@ class DocumentoExpediente(models.Model):
                             location='static'
                             ),upload_to='exams')
     fecha=models.DateTimeField(default=datetime.now, blank=False, null=False)
-    expediente=models.ForeignKey('Expediente', models.DO_NOTHING,null=False, blank=False)
+    expediente=models.ForeignKey('Expediente', on_delete=models.CASCADE,null=False, blank=False)
     empleado=models.ForeignKey('modulo_control.Empleado', on_delete=models.CASCADE,null=True, blank=True)
     def __str__(self):
         return f'{self.titulo} - {self.expediente.id_paciente.nombre_paciente}'
