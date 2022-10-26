@@ -88,7 +88,7 @@ class SignosVitales(models.Model):
     )
     id_signos_vitales= models.AutoField(primary_key=True)
     consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
-    enfermera=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+    enfermera=models.ForeignKey('modulo_control.Empleado', on_delete=models.CASCADE,null=True, blank=True)
     unidad_temperatura=models.CharField(max_length=2,choices=UNIDADES_TEMPERATURA,default=UNIDADES_TEMPERATURA[1][0],null=False, blank=True)
     unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,default=UNIDADES_PESO[0][0],null=False, blank=True)
     unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
@@ -154,7 +154,7 @@ class ControlSubsecuente(models.Model):
 class RecetaOrdenExamenLaboratorio(models.Model):
     id_receta_orden_examen_laboratorio= models.AutoField(primary_key=True)
     fecha_programada=models.DateField(default=datetime.now,null=False, blank=False)
-    consulta=models.ForeignKey('Consulta',on_delete=models.DO_NOTHING,null=False, blank=False)
+    consulta=models.ForeignKey('Consulta', on_delete=models.CASCADE,null=False, blank=False)
 
 class RecetaOrdenExamenLaboratorioItem(models.Model):
     id_receta_orden_examen_laboratorio_item=models.AutoField(primary_key=True)
@@ -264,8 +264,8 @@ class Dosis(models.Model):
     unidad_frecuencia_dosis=models.CharField(max_length=6,choices=OPCIONES_TIEMPO,null=False,blank=False,default=OPCIONES_TIEMPO[0][0])
     cantidad_dosis=models.DecimalField(decimal_places=2,max_digits=5,null=False,blank=False,default=1,validators=[MinValueValidator(1)])
     unidad_de_medida_dosis=models.CharField(choices=UNIDADES_DE_MEDIDA_DOSIS,max_length=17,null=False,blank=False,default=UNIDADES_DE_MEDIDA_DOSIS[14][0])
-    medicamento=models.ForeignKey('Medicamento',on_delete=models.DO_NOTHING,null=False, blank=False)
-    receta_medica=models.ForeignKey('RecetaMedica',on_delete=models.DO_NOTHING,null=False, blank=False)
+    medicamento=models.ForeignKey('Medicamento', on_delete=models.CASCADE,null=False, blank=False)
+    receta_medica=models.ForeignKey('RecetaMedica', on_delete=models.CASCADE,null=False, blank=False)
     class Meta:
         unique_together = (('medicamento', 'receta_medica'),)
     def __str__(self):
@@ -300,7 +300,7 @@ class DocumentoExpediente(models.Model):
                             ),upload_to='exams')
     fecha=models.DateTimeField(default=datetime.now, blank=False, null=False)
     expediente=models.ForeignKey('Expediente', models.DO_NOTHING,null=False, blank=False)
-    empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+    empleado=models.ForeignKey('modulo_control.Empleado', on_delete=models.CASCADE,null=True, blank=True)
     def __str__(self):
         return f'{self.titulo} - {self.expediente.id_paciente.nombre_paciente}'
 
@@ -311,12 +311,12 @@ class CitaConsulta(models.Model):
         ('3','Baja'),
     )
     id_cita_consulta=models.AutoField(primary_key=True)
-    expediente=models.ForeignKey('Expediente', models.DO_NOTHING, null=False, blank=False)
+    expediente=models.ForeignKey('Expediente', on_delete=models.CASCADE, null=False, blank=False)
     prioridad_paciente=models.CharField(max_length=1, choices=OPCIONES_PRIORIDAD, blank=False, null=False)
     observacion=models.CharField(default="", max_length=80, blank=True, null=True)
     fecha_cita=models.DateField()
-    horario=models.ForeignKey('modulo_expediente.HorarioConsulta', models.DO_NOTHING, null=False, blank=False)
-    empleado=models.ForeignKey('modulo_control.Empleado',on_delete=models.DO_NOTHING,null=True, blank=True)
+    horario=models.ForeignKey('modulo_expediente.HorarioConsulta', on_delete=models.CASCADE, null=False, blank=False)
+    empleado=models.ForeignKey('modulo_control.Empleado', on_delete=models.CASCADE,null=True, blank=True)
     recordar=models.BooleanField(default=False, null=False, blank=False)
     class Meta:
          unique_together = (('fecha_cita', 'horario', 'empleado'),)

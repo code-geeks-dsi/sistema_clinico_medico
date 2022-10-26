@@ -114,7 +114,7 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateField(db_column='LAST_LOGIN', null=True)
     fechaCreacion = models.DateTimeField(db_column='FECHA_CREACION', default=timezone.now)
     fechaNacimiento = models.DateField(db_column='FECHA_NACMIENTO', null=True)
-    roles = models.ForeignKey(Rol, on_delete=models.DO_NOTHING, null=True)
+    roles = models.ForeignKey(Rol, on_delete=models.CASCADE, null=True)
     objects = EmpleadoManager()
 
     USERNAME_FIELD="email"
