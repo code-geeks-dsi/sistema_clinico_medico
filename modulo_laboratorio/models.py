@@ -93,7 +93,7 @@ class ContieneValor(models.Model):
     class Meta:
         unique_together = ('resultado', 'parametro',)
     def __str__(self):
-        return self.parametro.nombre_parametro+": "+str(self.dato)+" "+self.parametro.unidad_parametro
+       return self.parametro.nombre_parametro+": "+str(self.dato)
 
 class ExamenLaboratorio(models.Model):
     OPCIONES_MUESTRA=(
