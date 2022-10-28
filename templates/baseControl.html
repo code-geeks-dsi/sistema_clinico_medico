@@ -16,10 +16,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link href="{% static 'css/toastr.min.css' %}" rel="stylesheet" />
     <link href="{% static 'css/sidebars.css' %}" rel="stylesheet" />
-
-    {% block css %}
-    
-    {% endblock %}
+    <style>
+      {% block css %}
+      
+      {% endblock %}
+    </style>
 
     <title>{% block titulo%}{% endblock %}</title>
   </head>

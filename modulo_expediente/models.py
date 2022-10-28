@@ -2,6 +2,7 @@ from datetime import datetime
 from faulthandler import disable
 from random import choices
 from django.db import models
+from datetime import date
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from .managers import (
@@ -29,15 +30,15 @@ class Paciente(models.Model):
     )
     id_paciente=models.AutoField(primary_key=True,unique=True)
     
-    nombre_paciente = models.CharField( max_length=40,blank=False, null=False)
-    apellido_paciente = models.CharField( max_length=40,blank=False, null=False)
-    fecha_nacimiento_paciente = models.DateField( blank=False,null=False)
+    nombre_paciente = models.CharField( max_length=40)
+    apellido_paciente = models.CharField( max_length=40)
+    fecha_nacimiento_paciente = models.DateField(validators=[MaxValueValidator(limit_value=date.today)])
     sexo_paciente = models.CharField( max_length=1,choices=OPCIONES_SEXO, blank=False, null=False )
     direccion_paciente=models.CharField( max_length=120, blank=True,null=True,default="")
-    email_paciente = models.EmailField( max_length=100, blank=False, null=False, unique=True,default="")
-    responsable=models.CharField(max_length=40,blank=True,null=False,default="")
-    dui=models.CharField(max_length=10,blank=True,null=True)
-    pasaporte=models.CharField(max_length=15,blank=True,null=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
+    email_paciente = models.EmailField( max_length=100, blank=True,null=True, unique=True,default="")
+    responsable=models.CharField(max_length=40,blank=True,null=True,default="")
+    dui=models.CharField(max_length=10,blank=True,null=True, unique=True)
+    pasaporte=models.CharField(max_length=15,blank=True,null=True, unique=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
     numero_telefono=models.CharField(max_length=8, null=True, blank=True,default="")
     class Meta:
         unique_together = (('dui'),)
