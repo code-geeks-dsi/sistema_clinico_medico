@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
                 ('fecha_nacimiento_paciente', models.DateField()),
                 ('sexo_paciente', models.CharField(choices=[('M', 'Masculino'), ('F', 'Femenino')], max_length=1)),
                 ('direccion_paciente', models.CharField(blank=True, default='', max_length=120, null=True)),
-                ('email_paciente', models.EmailField(default='', max_length=100, unique=True)),
+                ('email_paciente', models.EmailField(default='', max_length=100)),
                 ('responsable', models.CharField(blank=True, default='', max_length=40)),
                 ('dui', models.CharField(blank=True, max_length=10, null=True)),
                 ('pasaporte', models.CharField(blank=True, max_length=15, null=True)),
