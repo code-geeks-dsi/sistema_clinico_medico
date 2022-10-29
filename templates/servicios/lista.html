@@ -73,8 +73,12 @@
             </td>
           </tr>
           {% empty %}
-              <li>Lo siento, aún no hay publicaciones.</li>
-              <a href="{% url 'crear_publicacion'%}" class="btn btn-outline-success w-0 my-1">Crear Nueva Promoción</a>
+          <tr>
+            <td colspan="7">
+              <p>Lo siento, aún no hay publicaciones.</p>
+              <a href="{% url 'crear_publicacion'%}" class="btn btn-success w-0 my-1">Crear Nueva Promoción</a>
+            </td>
+          </tr>
           {% endfor %}
             
         </tbody>

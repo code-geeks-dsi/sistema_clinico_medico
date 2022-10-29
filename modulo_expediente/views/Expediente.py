@@ -115,6 +115,7 @@ def crear_expediente(request):
                 query_string =  urlencode({'id': new_paciente.id_paciente})
                 url = '{}?{}'.format(base_url, query_string)
                 return redirect(url)
+            
         else:
             paciente=Paciente.objects.get(id_paciente=idpaciente)
             formulario = DatosDelPaciente(request.POST, instance=paciente)
