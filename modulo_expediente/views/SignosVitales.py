@@ -7,9 +7,15 @@ from django.views.generic import View
 from django.http import HttpResponseForbidden
 
 from modulo_expediente.serializers import SignosVitalesSerializer
+
 @csrf_exempt
 @login_required
 def modificar_signosVitales(request, id_consulta):
+    response={
+            'type':'',
+            'title':'',
+            'data':''
+        }
     datos={
         "empleado":request.user,
         "id_consulta":int(id_consulta),
@@ -17,17 +23,23 @@ def modificar_signosVitales(request, id_consulta):
         "unidad_peso":request.POST['unidad_peso'],
         "valor_temperatura":request.POST['valor_temperatura'],
         "valor_peso":request.POST['valor_peso'],
-        "valor_arterial_diasolica":request.POST['valor_presion_arterial_diastolica'],
-        "valor_arterial_sistolica":request.POST['valor_presion_arterial_sistolica'],
+        "valor_presion_arterial_diastolica":request.POST['valor_presion_arterial_diastolica'],
+        "valor_presion_arterial_sistolica":request.POST['valor_presion_arterial_sistolica'],
         "valor_frecuencia_cardiaca":request.POST['valor_frecuencia_cardiaca'],
         "valor_saturacion_oxigeno":request.POST['valor_saturacion_oxigeno'],
     }
-    response=SignosVitales.objects.modificar_signos_vitales(datos)
+    signosForm=SignosVitalesForm(datos)
     contieneConsulta=ContieneConsulta.objects.filter(consulta__id_consulta=id_consulta).latest('fecha_de_cola')
-    contieneConsulta.fase_cola_medica="3"
-    contieneConsulta.save()
+    if signosForm.is_valid():
+        response=SignosVitales.objects.modificar_signos_vitales(datos)
+        contieneConsulta.fase_cola_medica="3"
+        contieneConsulta.save()
+    else:
+        response['errors']=signosForm.errors.get_json_data()
+        response['type']="warning"
 
     return JsonResponse(response, safe=False)
+
 def crear_signos_vitales(request,id_consulta):
     if request.method=='POST':
         consulta=Consulta.objects.get(id_consulta=id_consulta)

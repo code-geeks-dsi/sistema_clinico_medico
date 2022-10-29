@@ -1,7 +1,0 @@
-{% extends 'base.html' %}
-{% block content %}
-<form method="POST" action="{%url 'agregarEnfermera'%}">
-{{ enfermeraForm.as_p }}
-<button type="submit">Guardar</button>
-</form>
-{% endblock %}

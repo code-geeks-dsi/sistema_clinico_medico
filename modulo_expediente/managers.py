@@ -14,8 +14,8 @@ class SignosVitalesManager(models.Manager):
                     unidad_peso=datos["unidad_peso"],
                     valor_temperatura=datos["valor_temperatura"],
                     valor_peso=datos["valor_peso"],
-                    valor_presion_arterial_diastolica=datos["valor_arterial_diasolica"],
-                    valor_presion_arterial_sistolica=datos["valor_arterial_sistolica"],
+                    valor_presion_arterial_diastolica=datos["valor_presion_arterial_diastolica"],
+                    valor_presion_arterial_sistolica=datos["valor_presion_arterial_sistolica"],
                     valor_frecuencia_cardiaca=int(datos["valor_frecuencia_cardiaca"]),
                     valor_saturacion_oxigeno=datos["valor_saturacion_oxigeno"],
                     enfermera= datos["empleado"]
