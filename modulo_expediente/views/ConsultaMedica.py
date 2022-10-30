@@ -63,12 +63,15 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
         return render(request, self.template_name, datos)
     
     def post(self, request, *args, **kwargs):
-        consulta_form=ConsultaFormulario(request.POST, instance=Consulta.objects.get(id_consulta=self.kwargs['id_consulta']))
+        id_consulta=self.kwargs['id_consulta']
+        consulta_form=ConsultaFormulario(request.POST, instance=Consulta.objects.get(id_consulta=id_consulta))
         if consulta_form.is_valid():
             consulta=consulta_form.save()
             ContieneConsulta.objects.filter(consulta=consulta).update(fase_cola_medica='6')
             messages.add_message(request=request, level=messages.SUCCESS, message="Consulta Guardada!")
             return redirect(reverse('editar_consulta', kwargs={'id_consulta':consulta.id_consulta}))
+        else:
+            return redirect(reverse('editar_consulta', kwargs={'id_consulta':id_consulta}))
 
 ##Se sustituyo la funcion de ancedentes por una clase
 class antecedentesUpdateView(PermissionRequiredMixin, View):

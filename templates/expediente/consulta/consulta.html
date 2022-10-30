@@ -126,6 +126,13 @@
         toastr[ '{{ message.tags }}' ]( '{{ message }}' );
         '{% endif %}'
     '{% endfor %}'
+
+    '{% if form.errors %}'
+        
+            toastr['warning']({{ form.errors }})
+
+    '{% endif %}'
+
     {% include './js/antecedentes.js' %}
     {% include './js/cita_medica.js' %}
     {% include './js/hoja_evolucion.js' %}
