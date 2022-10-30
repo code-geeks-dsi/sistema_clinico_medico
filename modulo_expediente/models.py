@@ -111,10 +111,10 @@ class TipoConsulta(models.Model):
 
 class Consulta(models.Model):
     id_consulta= models.AutoField(primary_key=True)
-    consulta_por=models.TextField(max_length=200, blank=True, null=False)
+    consulta_por=models.TextField(max_length=200, blank=False, null=False)
     presente_enfermedad=models.TextField(max_length=200, blank=True, null=False)
     examen_fisico=models.TextField(max_length=200, blank=True, null=False)
-    diagnostico=models.TextField(max_length=200, blank=True, null=False)
+    diagnostico=models.TextField(max_length=200, blank=False, null=False)
     plan_tratamiento=models.TextField(max_length=200, blank=True, null=False)
     fecha=models.DateTimeField(auto_now_add=True)
     dar_seguimiento=models.BooleanField(default=False)
