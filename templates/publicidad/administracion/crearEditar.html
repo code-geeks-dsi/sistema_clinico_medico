@@ -66,9 +66,9 @@
 						{% endfor %}
 					</ul>
 				</div>
-				<div class="d-flex justify-content-between">
-					<a href="{% url 'ver_publicaciones' id_servicio=view.kwargs.id_servicio %}" class="btn btn-secondary mx-1">Regresar</a>
-					<input class="btn btn-outline-success" type="submit" value="Guardar">
+				<div class="d-flex justify-content-center my-3">
+					<a href="{% url 'ver_publicaciones' id_servicio=id_servicio %}" class="btn btn-secondary mx-1">Regresar</a>
+					<input class="btn btn-success" type="submit" value="Guardar">
 				  </div>
 			</form>
 		</div>

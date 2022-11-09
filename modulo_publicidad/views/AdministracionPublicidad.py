@@ -30,7 +30,7 @@ class CrearPromocion(View):
         form = PublicacionForm()
         form_descuento=DescuentoForm()
         form_imagenes=self.ImagenFormSet()
-        return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento})
+        return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento, 'id_servicio': self.kwargs['id_servicio']})
 
     def post(self, request, *args, **kwargs):
         self.servicio = get_object_or_404(Servicio, id_servicio=self.kwargs['id_servicio'])
