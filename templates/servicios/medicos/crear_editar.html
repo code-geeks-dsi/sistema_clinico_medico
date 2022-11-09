@@ -46,6 +46,10 @@
 						{{formServicioMedico.descripcion}}
 					</div>
 				</div>
+				{% if formImagen.instance.archivo.url %}
+				<img src="{{formImagen.instance.archivo.url}}" class="img-thumbnail my-3" alt="Servicio Médico {{formServicioMedico.nombre.value}}">
+				{% endif %}
+				{{formImagen.instance.archivo.clear}}
                 {{formImagen.as_p}}
 				<div class="d-flex justify-content-center">
 					<a href="{% url 'lista_servicios_medicos'%}" class="btn btn-secondary mx-1">Regresar</a>
