@@ -2,7 +2,7 @@
 from dataclasses import fields
 from pyexpat import model
 from django import forms
-from django.forms import ModelForm, NumberInput, TextInput, Select
+from django.forms import ModelForm, NumberInput, TextInput, Select, EmailInput
 from django import forms
 from .models import (
   Consulta, Dosis, Paciente, Medicamento, ReferenciaMedica,EvolucionConsulta,ControlSubsecuente,
@@ -45,7 +45,7 @@ class DatosDelPaciente(ModelForm):
                'placeholder': 'Calle, número de casa, Ciudad, Departamento',
               } 
             ),
-            'email_paciente': TextInput(
+            'email_paciente': EmailInput(
                attrs={'class': 'form-control', 
                'placeholder': 'example@gmail.com',
               } 

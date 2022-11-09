@@ -3,14 +3,26 @@
 {% load static %}
 <!--Css del template-->
 {% block css %}
-
+<style>
+ul.errorlist li{
+      color: #dc3545;
+      list-style-type: none;
+}
+ul{
+  padding-left: 0;
+  margin-bottom:0;
+}
+label{
+  margin-top:1rem;
+}
+</style>
 {% endblock %}
 {% block titulo %} Datos del Paciente {% endblock %}
 {% block content %}
 
 <body>
 <div class="container py-2 rounded">
-  <form class="" method="POST">
+  <form class="" method="POST" novalidate>
     <div class="pt-4">
       <div class="card">
         <div class="card-header">
@@ -18,12 +30,8 @@
         </div>
         <div class="card-body">
           {% csrf_token %}
-          {% for field in formulario.visible_fields %}
-          <div class="mb-4">
-            <label for="exampleInputPassword1" class="form-label mt-4">{{field.label}}</label>
-            {{field}}
-          </div>
-          {% endfor %}
+          {{ formulario }}
+
           <div class="text-end">
             <input type="submit" class="btn btn-outline-primary rounded"  value="Guardar Datos">
           </div>

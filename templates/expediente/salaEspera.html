@@ -160,8 +160,8 @@
                       <label for="exampleInputEmail1" class="form-label d-none d-sm-block">Unidades</label>
                       <select class="form-select" aria-label="Default select example" id="select_temperatura" required>
                         <option selected>--</option>
-                        <option value="F">Fahrenheit</option>
-                        <option value="C">Celsius</option>
+                        <option value="°F">Fahrenheit</option>
+                        <option value="°C">Celsius</option>
                       </select>
                     </div>
                   </div>
@@ -366,8 +366,17 @@
                   {% endif %}
                 },
                 success: function(data){
-                  $('#load').hide(); 
-                  toastr[data.type](data.data);           
+                  $('#load').hide();
+                  if(data.errors){               
+                    for (const property in data.errors) {
+                      toastr[data.type](`${property}: ${data.errors[property][0]['message']}`);     
+                    }
+                  }       
+                  else{
+                    toastr[data.type](data.data);  
+                    $('#agregarSignosVitalesModal').modal( "hide" )
+
+                  }  
                   colaExpedienteSocket.send(JSON.stringify({
                     'message':'sync'
                   }));

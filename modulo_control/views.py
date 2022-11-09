@@ -54,7 +54,7 @@ class LoginView(View):
             data={'mensaje':"usuario/contraseña no válido",
                 'type':'warning',
                     }
-        return render(request,"login.html",data)
+        return render(request, self.template_name, data)
   
 
 #Login

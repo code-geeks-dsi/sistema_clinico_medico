@@ -114,7 +114,7 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateField(db_column='LAST_LOGIN', null=True)
     fechaCreacion = models.DateTimeField(db_column='FECHA_CREACION', default=timezone.now)
     fechaNacimiento = models.DateField(db_column='FECHA_NACMIENTO', null=True)
-    roles = models.ForeignKey(Rol, on_delete=models.DO_NOTHING, null=True)
+    roles = models.ForeignKey(Rol, on_delete=models.CASCADE, null=True)
     objects = EmpleadoManager()
 
     USERNAME_FIELD="email"
@@ -169,7 +169,7 @@ class Empleado(AbstractBaseUser, PermissionsMixin):
 
 class Enfermera(models.Model):
     id_enfermera=models.AutoField(primary_key=True)
-    empleado=models.OneToOneField('Empleado', on_delete=models.DO_NOTHING)
+    empleado=models.OneToOneField('Empleado', on_delete=models.CASCADE)
     def __str__(self):
         return self.empleado.nombres
 
@@ -177,7 +177,7 @@ class Doctor(models.Model):
     id_doctor=models.AutoField(primary_key=True, unique=True)
     especialidad_doctor = models.CharField(max_length=40,null=False, blank=False)
     jvmp =models.IntegerField(null=False,blank=False)
-    empleado = models.OneToOneField('Empleado', on_delete=models.DO_NOTHING)
+    empleado = models.OneToOneField('Empleado', on_delete=models.CASCADE)
     def __str__(self):
         return self.empleado.nombres
 
@@ -189,14 +189,14 @@ class Doctor(models.Model):
     
 class Secretaria(models.Model):
     id_secretaria=models.AutoField(primary_key=True, null=False, blank=False)
-    empleado= models.OneToOneField(Empleado, on_delete=models.DO_NOTHING)
+    empleado= models.OneToOneField(Empleado, on_delete=models.CASCADE)
     def __str__(self):
         return self.empleado.nombres
 
 class LicLaboratorioClinico(models.Model):
     id_lic_laboratorio=models.AutoField(primary_key=True)
     jvplc =models.IntegerField(null=False,blank=False,default=0)
-    empleado= models.OneToOneField(Empleado, on_delete=models.DO_NOTHING)
+    empleado= models.OneToOneField(Empleado, on_delete=models.CASCADE)
     def __str__(self):
         return self.empleado.nombres
 
