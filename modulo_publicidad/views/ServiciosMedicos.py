@@ -25,7 +25,8 @@ class CrearServicioMedico(View):
     def get(self, request, *args, **kwargs):
         data={
             'formServicioMedico':ServicioMedicoForm(),
-            'formImagen':ServicioImagenForm()
+            'formImagen':ServicioImagenForm(),
+            'mensajes':[]
         }
         return render(request, self.template_name, data)
     def post(self, request, *args, **kwargs):
@@ -59,7 +60,11 @@ class CrearServicioMedico(View):
                     imagen=formImagen.save(commit=False)
                     imagen.servicio=servicio
                     imagen.save()
-                    return redirect('editar_servicio_medico', servicio.id_servicio)
+                    request.session['mensajes']=[{
+                        'type':'success',
+                        'data':'Servicio Médico '+servicio.nombre+' Guardado'
+                        }]
+                    return redirect('editar_servicio_medico',servicio.id_servicio)
 
         else:
             data={
@@ -71,6 +76,7 @@ class EditarServicioMedico(View):
     template_name="servicios/medicos/crear_editar.html"
     def get(self, request, *args, **kwargs):
         id_servicio=kwargs.get('id_servicio', None)
+        mensajes=request.session.get('mensajes', [])
         servicio=Servicio.objects.get(id_servicio=id_servicio)
         imagen=ImagenServicio.objects.get(servicio=servicio)
         servicioMedico=ServicioMedico.objects.get(servicio=servicio)
@@ -80,7 +86,8 @@ class EditarServicioMedico(View):
         servicioMedicoForm=ServicioMedicoForm(instance=servicio, initial=initial_data)
         data={
             'formServicioMedico':servicioMedicoForm,
-            'formImagen':ServicioImagenForm(instance=imagen)
+            'formImagen':ServicioImagenForm(instance=imagen),
+            'mensajes': mensajes
         }
         return render(request, self.template_name, data)
     def post(self, request, *args, **kwargs):
@@ -108,7 +115,13 @@ class EditarServicioMedico(View):
                     servicioMedico.save()
                     #PASO 4
                     formImagen.save()
-                    return redirect('editar_servicio_medico', servicio.id_servicio)
+                    request.session['mensajes']=[{
+                        'type':'success',
+                        'data':'Servicio Médico '+servicio.nombre+' Modificado'
+                        }] 
+                    return redirect(
+                        'editar_servicio_medico', 
+                        servicio.id_servicio )
         else:
             data={
                 'formServicioMedico':formServicioMedico,

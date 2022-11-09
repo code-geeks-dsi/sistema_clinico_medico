@@ -73,5 +73,11 @@
 			otro.disabled = true;
         }
     });
+
+	onload = (event) => {
+		{% for mensaje in mensajes %}
+			toastr['{{mensaje.type}}']('{{mensaje.data}}');
+		{% endfor %}
+	};
 </script>
 {% endblock %}
