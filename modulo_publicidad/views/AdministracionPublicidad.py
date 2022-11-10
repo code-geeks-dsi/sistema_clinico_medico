@@ -29,7 +29,7 @@ class CrearPromocion(View):
     def get(self, request, *args, **kwargs):
         form = PublicacionForm()
         form_descuento=DescuentoForm()
-        form_imagenes=self.ImagenFormSet()
+        form_imagenes=self.ImagenFormSet(queryset=ImagenPublicacion.objects.none())
         return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento, 'id_servicio': self.kwargs['id_servicio']})
 
     def post(self, request, *args, **kwargs):
