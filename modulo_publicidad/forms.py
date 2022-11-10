@@ -52,11 +52,24 @@ class ServicioImagenForm(forms.ModelForm):
                         self.fields[field].widget.attrs.update({'class': 'form-control'})
 
 class DescuentoForm(forms.ModelForm):
+        habilitarDescuento=forms.BooleanField(initial=True)
         class Meta:
                 model=Descuento
-
-                exclude=('publicacion','id_descuento')
+                fields=[        'habilitarDescuento',
+                                'codigo_descuento',
+                                'validez_fecha_inicio',
+                                'validez_fecha_fin',
+                                'cantidad_descuento',
+                                'porcentaje_descuento',
+                                'restricciones'
+                        ]
                 widgets = {
+                        'habilitarDescuento':forms.CheckboxInput(
+                                attrs={
+                                        'class': 'form-check-input', 
+                                        'label': 'Habilitar Descuento'
+                                        }
+                        ),
                         'validez_fecha_fin': forms.DateInput(
                         format=('%Y-%m-%d'),
                         attrs={
@@ -70,13 +83,14 @@ class DescuentoForm(forms.ModelForm):
                                 'placeholder':'Fecha de Fin',
                                 'label':'Fecha de Creación',
                                 'type': 'date',
-                        }),
-                        
+                        })
                 }
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 for field in self.fields:
-                        self.fields[field].widget.attrs.update({'class': 'form-control','required': False})
+                        if field != 'habilitarDescuento':
+                                self.fields[field].widget.attrs.update({'class': 'form-control','required': False})
+
 #Servicios Médicos
 class ServicioMedicoForm(forms.ModelForm):
         area= forms.ModelChoiceField(queryset=TipoConsulta.objects.all(), required=False)

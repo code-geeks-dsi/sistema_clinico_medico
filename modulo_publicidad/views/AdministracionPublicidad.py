@@ -95,8 +95,10 @@ class EditarPromocion(View):
             form_imagenes=self.ImagenFormSet(queryset=imagenes,initial=[{publicacion:publicacion}])
         else:
             form_imagenes=self.ImagenFormSet(initial=[{publicacion:publicacion}])
+        # recuperando mensajes para mostrarlos y limpiarlos
         mensajes=request.session.get('mensajes', [])
-        del request.session['mensajes']
+        if request.session.get('mensajes') is not None:
+            del request.session['mensajes']
         return render(request, self.template_name, {
             'form': form, 
             'formset_imagen': form_imagenes, 
@@ -134,6 +136,8 @@ class EditarPromocion(View):
                 for imagen in imagenes:
                     imagen.publicacion=publicacion
                     imagen.save()
+                    if request.session.get('mensajes') is None:
+                        request.session['mensajes']=[]
                     request.session['mensajes'].append({
                     'type':'success',
                     'data':'Imagenes Guardadas.'
