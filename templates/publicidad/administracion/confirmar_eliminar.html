@@ -5,12 +5,12 @@
 
 {% endblock %}
 <!--Titulo-->
-{% block titulo %} Servicios Médicos{% endblock %}
+{% block titulo %}Promociones{% endblock %}
 {% block content %}
 <div class="container py-4">
 	<div class="row">
 		<div class="col-6">
-			<h3 class="fw-bold text-secondary pb-4">Eliminar Servicio Médico</h3>
+			<h3 class="fw-bold text-secondary pb-4">Eliminar Promoción</h3>
 		</div>
 		{% comment %} <div class="col-6">
 			<div class="d-flex justify-content-end">
@@ -26,10 +26,10 @@
 	</div>
 	<div class='row'>
         <form method="post" class="text-center">{% csrf_token %}
-            <p>¿Seguro que desea eliminar el servicio médico "{{ object.nombre }}"?</p>
+            <p>¿Seguro que desea eliminar la promoción del servicio médico {{ object.servicio.nombre }} válida desde el {{object.validez_fecha_inicio}} hasta el {{object.validez_fecha_fin}}?</p>
             {{ form }}
 
-            <a href="{% url 'lista_servicios_medicos'%}" class="btn btn-secondary">Regresar</a>
+            <a href="{% url 'ver_publicaciones' view.kwargs.id_servicio %}" class="btn btn-secondary">Regresar</a>
             <input type="submit" value="Confirmar" class="btn btn-danger">
         </form>
     </div>

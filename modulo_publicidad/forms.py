@@ -54,7 +54,7 @@ class DescuentoForm(forms.ModelForm):
         class Meta:
                 model=Descuento
 
-                exclude=('servicio','id_descuento')
+                exclude=('publicacion','id_descuento')
                 widgets = {
                         'validez_fecha_fin': forms.DateInput(
                         format=('%Y-%m-%d'),

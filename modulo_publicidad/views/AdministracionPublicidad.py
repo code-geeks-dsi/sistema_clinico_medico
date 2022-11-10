@@ -1,13 +1,13 @@
 #Python
 
 #Django
-from email.mime import image
+from django.urls import reverse_lazy
+from django.views.generic.edit import DeleteView
 from django.shortcuts import get_object_or_404
 from django.shortcuts import (render,redirect)
 from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic import ListView
-from django.views.generic.detail import SingleObjectMixin
 from django.forms import modelformset_factory
 
 #Propias
@@ -48,7 +48,7 @@ class CrearPromocion(View):
                     })
             if form_descuento.is_valid():
                 descuento=form_descuento.save(commit=False)
-                descuento.servicio=servicio
+                descuento.publicacion=publicacion
                 descuento.save()
                 request.session['mensajes'].append({
                     'type':'success',
@@ -76,9 +76,8 @@ class EditarPromocion(View):
     ImagenFormSet = modelformset_factory(ImagenPublicacion, form=PublicacionImagenForm, min_num=1,max_num=3, extra=3)
 
     def get(self, request, *args, **kwargs):
-        servicio = get_object_or_404(Servicio, id_servicio=self.kwargs['id_servicio'])
         publicacion=get_object_or_404(Publicacion, id_publicacion=self.kwargs['id_promocion'])
-        descuento=Descuento.objects.get(servicio=servicio)
+        descuento=Descuento.objects.get(publicacion=publicacion)
         imagenes=publicacion.imagenes.all()
         form = PublicacionForm(instance=publicacion)
         if descuento is not None:
@@ -89,7 +88,6 @@ class EditarPromocion(View):
             form_imagenes=self.ImagenFormSet(queryset=imagenes)
         else:
             form_imagenes=self.ImagenFormSet()
-        # print(imagenes)
         mensajes=request.session.get('mensajes', [])
         request.session['mensajes']=[]
         return render(request, self.template_name, {
@@ -102,16 +100,26 @@ class EditarPromocion(View):
 
     def post(self, request, *args, **kwargs):
         servicio = get_object_or_404(Servicio, id_servicio=self.kwargs['id_servicio'])
-        form = PublicacionForm(request.POST)
-        form_descuento=DescuentoForm(request.POST)
-        form_imagenes=self.ImagenFormSet(request.POST, request.FILES)
+        publicacion=get_object_or_404(Publicacion, id_publicacion=self.kwargs['id_promocion'])
+        descuento=Descuento.objects.get(publicacion=publicacion)
+        imagenes=publicacion.imagenes.all()
+        form = PublicacionForm(request.POST, instance=publicacion)
+        if descuento is not None:
+            form_descuento=DescuentoForm(request.POST, instance=descuento)
+        else:
+            form_descuento=DescuentoForm(request.POST)
+        if imagenes is not None:
+            form_imagenes=self.ImagenFormSet(request.POST, request.FILES, queryset=imagenes)
+        else:
+            form_imagenes=self.ImagenFormSet(request.POST, request.FILES)
+
         if form.is_valid():
             publicacion=form.save(commit=False)
             publicacion.servicio=servicio
             publicacion.save()
             if form_descuento.is_valid():
                 descuento=form_descuento.save(commit=False)
-                descuento.servicio=servicio
+                descuento.publicacion=publicacion
                 descuento.save()
             if form_imagenes.is_valid():
                 for imagen in form_imagenes.cleaned_data:
@@ -122,6 +130,12 @@ class EditarPromocion(View):
                 print(form_imagenes.errors)
             return redirect('editar_publicacion',servicio.id_servicio,publicacion.id_publicacion)
         return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento})
+
+class EliminarPromocionView(DeleteView):
+    model = Publicacion
+    template_name= "publicidad/administracion/confirmar_eliminar.html"
+    def get_success_url(self):
+        return reverse_lazy('ver_publicaciones',kwargs={'id_servicio':self.kwargs['id_servicio']})
 
 class PublicacionListView(ListView):
     model=Publicacion
