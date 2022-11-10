@@ -16,6 +16,7 @@ class Servicio(models.Model):
     nombre = models.CharField(max_length=100)
     precio=models.DecimalField(max_digits=10,decimal_places=2)
     descripcion=models.TextField()
+    cantidad_visitas=models.IntegerField(default=0)
 
     def __str__(self):
         return self.nombre
@@ -37,7 +38,7 @@ class ServicioLaboratorioClinico(models.Model):
 # Descuentos asociados a cada Servicio
 class Descuento(models.Model):
     id_descuento=models.AutoField(primary_key=True)
-    servicio=models.OneToOneField("Servicio", on_delete=models.CASCADE,related_name='descuentos')
+    publicacion=models.OneToOneField("Publicacion", on_delete=models.CASCADE,related_name='descuentos')
     codigo_descuento=models.CharField(max_length=15,unique=True)
     validez_fecha_inicio=models.DateField(null=True)
     validez_fecha_fin=models.DateField(null=True)
@@ -77,5 +78,6 @@ class ImagenServicio(models.Model):
                             location='static',
                             ),upload_to='servicios')
 
-
-
+class Visita(models.Model):
+    id_visita=models.CharField(primary_key=True, max_length=20)
+    cantidad_visitas=models.IntegerField(default=0)
