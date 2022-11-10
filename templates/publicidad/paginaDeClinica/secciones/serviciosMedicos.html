@@ -1,0 +1,41 @@
+{% load static %}
+<div class="container pt-3">
+    <h2 class="pt-5 pb-4">Servicios</h2>
+    <div class="row" style="max-height: 75vh">
+        <!--Scroll de promociones-->
+        <div class="col-12 col-md-6">
+            <div class="scrollarea h-auto" style="max-height: 75vh">
+                <div class="d-flex flex-column">
+                        <!--Tarjetas-->
+                        <div class="card mb-3">
+                            <div class="row g-0">
+                                    <div class="col-4">
+                                    <!--Imagen-->
+                                    <img src="https://cdn.pixabay.com/photo/2017/06/05/16/24/megaphone-2374502_960_720.png" class="img-fluid rounded-start" alt="...">
+                                    </div>
+                                    <div class="col-8">
+                                    <div class="card-body">
+                                        <!--badge-->
+                                        <span class="badge bg-success ">Consulta Médica</span>
+                                        <h5 class="card-title pt-2">{{servicio.nombre}}</h5>
+                                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                    </div>
+                                    </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 d-none d-md-block">
+            <div class="card" style="width: 35rem;">
+                <img class="card-img-top" src="{% static 'img/consultorio.png' %}" alt="Card image cap" style="max-height:300px">
+                <div class="card-body">
+                  <h5 class="card-title">Nombre Servicio</h5>
+                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                  <center><a href="#" class="btn btn-primary">Contáctanos</a></center>
+                </div>
+              </div>
+        </div>
+    </div>
+</div>

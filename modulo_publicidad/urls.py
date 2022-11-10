@@ -1,7 +1,10 @@
 from django.urls import path
+
 from modulo_publicidad.views.AdministracionPublicidad import *
 from modulo_publicidad.views.PaginaPrincipal import *
 from modulo_publicidad.views.ServiciosMedicos import *
+from modulo_publicidad.views.PaginaClinica import *
+from modulo_publicidad.views.PaginaLaboratorio import *
 
 urlpatterns = [
     path('inicio/', InicioPublicidad.as_view(), name='inicio_publicidad'),
@@ -10,7 +13,7 @@ urlpatterns = [
     path('farmacia/', InicioPublicidad.as_view(), name='farmacia_publicidad'),
     path('paginaClinica/', PaginaClinica.as_view(), name='paginaClinica'),
     path('paginaLaboratorio/', PaginaLaboratorio.as_view(), name='paginaLaboratorio'),
-
+    path('paginaClinica/', SeccionServiciosMedicos.as_view(), name='seccionServiciosMedicos'),
     # administración de publicaciones
     # edita publicaciones
     path('publicaciones/<int:id_publicidad>', EditarPromocion.as_view(), name='editar_publicacion'),
