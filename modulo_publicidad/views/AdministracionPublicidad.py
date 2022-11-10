@@ -30,7 +30,16 @@ class CrearPromocion(View):
         form = PublicacionForm()
         form_descuento=DescuentoForm()
         form_imagenes=self.ImagenFormSet(queryset=ImagenPublicacion.objects.none())
-        return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento, 'id_servicio': self.kwargs['id_servicio']})
+        return render(
+            request, 
+            self.template_name, 
+            {
+                'form': form, 
+                'formset_imagen': form_imagenes, 
+                'form_descuento':form_descuento, 
+                'servicio': self.kwargs['servicio'], 
+                'id_servicio': self.kwargs['id_servicio']
+                })
 
     def post(self, request, *args, **kwargs):
         servicio = get_object_or_404(Servicio, id_servicio=self.kwargs['id_servicio'])
@@ -65,7 +74,7 @@ class CrearPromocion(View):
                     })
             else:
                 print(form_imagenes.non_form_errors())
-            return redirect('editar_publicacion',servicio.id_servicio,publicacion.id_publicacion)
+            return redirect('editar_publicacion',self.kwargs['servicio'], servicio.id_servicio,publicacion.id_publicacion)
             
 
         return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento})
@@ -94,6 +103,7 @@ class EditarPromocion(View):
             'form': form, 
             'formset_imagen': form_imagenes, 
             'form_descuento':form_descuento, 
+            'servicio':self.kwargs['servicio'],
             'id_servicio': self.kwargs['id_servicio'],
             'mensajes':mensajes
             })
@@ -128,14 +138,14 @@ class EditarPromocion(View):
             else:
                 print(form_imagenes.non_form_errors())
                 print(form_imagenes.errors)
-            return redirect('editar_publicacion',servicio.id_servicio,publicacion.id_publicacion)
+            return redirect('editar_publicacion',self.kwargs['servicio'],servicio.id_servicio,publicacion.id_publicacion)
         return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento})
 
 class EliminarPromocionView(DeleteView):
     model = Publicacion
     template_name= "publicidad/administracion/confirmar_eliminar.html"
     def get_success_url(self):
-        return reverse_lazy('ver_publicaciones',kwargs={'id_servicio':self.kwargs['id_servicio']})
+        return reverse_lazy('ver_publicaciones',kwargs={'id_servicio':self.kwargs['id_servicio'],'servicio':self.kwargs['servicio']})
 
 class PublicacionListView(ListView):
     model=Publicacion

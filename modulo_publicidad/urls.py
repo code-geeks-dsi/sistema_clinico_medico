@@ -36,11 +36,11 @@ urlpatterns = [
 
     #Administrar Promociones de servicios
     #lista publicaciones
-    path('servicios/<int:id_servicio>/promociones/', PublicacionListView.as_view(), name='ver_publicaciones'),
+    path('servicios/<str:servicio>/<int:id_servicio>/promociones/', PublicacionListView.as_view(), name='ver_publicaciones'),
     # crea publicaciones
-    path('servicios/<int:id_servicio>/promociones/new', CrearPromocion.as_view(), name='crear_publicacion'),
-    path('servicios/<int:id_servicio>/promociones/<int:id_promocion>', EditarPromocion.as_view(), name='editar_publicacion'),
-    path('servicios/<int:id_servicio>/promociones/<int:pk>/delete', EliminarPromocionView.as_view(), name='eliminar_publicacion'),
+    path('servicios/<str:servicio>/<int:id_servicio>/promociones/new', CrearPromocion.as_view(), name='crear_publicacion'),
+    path('servicios/<str:servicio>/<int:id_servicio>/promociones/<int:id_promocion>', EditarPromocion.as_view(), name='editar_publicacion'),
+    path('servicios/<str:servicio>/<int:id_servicio>/promociones/<int:pk>/delete', EliminarPromocionView.as_view(), name='eliminar_publicacion'),
 
     
 ]

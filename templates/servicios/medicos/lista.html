@@ -43,7 +43,7 @@
             <td>{{ servicioMedico.tipo_consulta.nombre }}</td>
             <td>
               <a class="material-symbols-outlined btn btn-sm"
-                href="{% url 'ver_publicaciones' id_servicio=servicioMedico.servicio.id_servicio %}"
+                href="{% url 'ver_publicaciones' servicio='medicos' id_servicio=servicioMedico.servicio.id_servicio %}"
                 hover="Ver Promociones">signpost</a>
             </td>
             <td>
