@@ -2,6 +2,7 @@ from cProfile import label
 from xml.etree.ElementInclude import include
 from django import forms
 from modulo_expediente.models import TipoConsulta
+from modulo_laboratorio.models import ExamenLaboratorio
 from modulo_publicidad.models import *
 class PublicacionForm(forms.ModelForm):
         class Meta:
@@ -87,3 +88,11 @@ class ServicioMedicoForm(forms.ModelForm):
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self.fields['otro'].widget.attrs.update({'class': 'disabled','required': False})
+
+class ServicioLaboratorioForm(forms.ModelForm):
+        examen_laboratorio= forms.ModelChoiceField(queryset=ExamenLaboratorio.objects.all(),label='Examen de Laboratorio')
+        class Meta:
+                model=Servicio
+                fields=('nombre','precio','descripcion')
+        def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)

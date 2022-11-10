@@ -10,7 +10,7 @@
 <div class="container py-4">
 	<div class="row">
 		<div class="col-6">
-			<h3 class="fw-bold text-secondary pb-4">Nuevo Servicio Médico</h3>
+			<h3 class="fw-bold text-secondary pb-4">Nuevo Servicio de Laboratorio Clínico</h3>
 		</div>
 		<div class="col-6">
 			<div class="d-flex justify-content-end">
@@ -28,30 +28,27 @@
 		<div class="card-body">
 			<form method="post"  enctype="multipart/form-data">
 				{% csrf_token %}
-                {{ formServicioMedico.errors }}            
-                {{formServicioMedico.nombre.label_tag }}
-                {{formServicioMedico.nombre}}              
-                {{formServicioMedico.precio.label_tag }}
-                {{formServicioMedico.precio}}        
-                {{formServicioMedico.area.label_tag }}
-                {{formServicioMedico.area}}       
-                {{formServicioMedico.crear_tipo_consulta.label_tag }}
-                {{formServicioMedico.crear_tipo_consulta}}         
-                {{formServicioMedico.otro}}
+                {{ formServicioLaboratorio.errors }}            
+                {{formServicioLaboratorio.nombre.label_tag }}
+                {{formServicioLaboratorio.nombre}}              
+                {{formServicioLaboratorio.precio.label_tag }}
+                {{formServicioLaboratorio.precio}}        
+                {{formServicioLaboratorio.examen_laboratorio.label_tag }}
+                {{formServicioLaboratorio.examen_laboratorio}}       
 				<div class="col">
 					<div class="row">
-						{{formServicioMedico.descripcion.label_tag}}
+						{{formServicioLaboratorio.descripcion.label_tag}}
 					</div>
 					<div class="row">
-						{{formServicioMedico.descripcion}}
+						{{formServicioLaboratorio.descripcion}}
 					</div>
 				</div>
 				{% if formImagen.instance.archivo %}
-				<img src="{{formImagen.instance.archivo.url}}" class="img-thumbnail my-3" alt="Servicio Médico {{formServicioMedico.nombre.value}}">
+				<img src="{{formImagen.instance.archivo.url}}" class="img-thumbnail my-3" alt="Servicio Médico {{formServicioLaboratorio.nombre.value}}">
 				{% endif %}
                 {{formImagen.as_p}}
 				<div class="d-flex justify-content-center">
-					<a href="{% url 'lista_servicios_medicos'%}" class="btn btn-secondary mx-1">Regresar</a>
+					<a href="{% url 'lista_servicios_laboratorio'%}" class="btn btn-secondary mx-1">Regresar</a>
 					<input class="btn btn-primary" type="submit" value="Guardar">
 				</div>
 			</form>
@@ -59,25 +56,7 @@
 	</div>
 </div>    
 <script>
-    const agregarTipoConsulta = document.getElementById("id_crear_tipo_consulta");
-	const area=document.getElementById('id_area');
-	const otro=document.getElementById('id_otro');
-	otro.disabled=true;
-    agregarTipoConsulta.addEventListener('change', function(){
-        if (agregarTipoConsulta.checked == true){
-            area.disabled = true;
-			area.required=false;
-			otro.required=true;
-			otro.disabled = false;
-        } else {
-            area.disabled = false;
-            area.required = true;
-            otro.required = false;
-			otro.disabled = true;
-        }
-    });
-
-	onload = (event) => {
+    onload = (event) => {
 		{% for mensaje in mensajes %}
 			toastr['{{mensaje.type}}']('{{mensaje.data}}');
 		{% endfor %}

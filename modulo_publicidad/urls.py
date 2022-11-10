@@ -29,7 +29,7 @@ urlpatterns = [
     path('servicios/medicos/<int:pk>/delete', EliminarServicioMedicoView.as_view(), name='eliminar_servicio_medico'),
     
     # Administrar servicios laboratorio clínico
-    path('servicios/laboratorio/', ServiciosLaboratorioListView.as_view(), name='lista_servicios_laboratorio_clinico'),
+    path('servicios/laboratorio/', ServiciosLaboratorioListView.as_view(), name='lista_servicios_laboratorio'),
     path('servicios/laboratorio/new', CrearServicioLaboratorio.as_view(), name='crear_servicio_laboratorio'),
     path('servicios/laboratorio/<int:id_servicio>', EditarServicioLaboratorio.as_view(), name='editar_servicio_laboratorio'),
     path('servicios/laboratorio/<int:pk>/delete', EliminarServicioLaboratorioView.as_view(), name='eliminar_servicio_laboratorio'),

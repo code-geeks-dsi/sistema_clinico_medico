@@ -75,9 +75,13 @@
         </tbody>
         
       </table>
-      <div class="d-flex justify-content-center">
-        <a href="{% url 'lista_servicios_medicos'%}" class="btn btn-secondary mx-1">Regresar</a>
-      </div>
+      {% comment %} <div class="d-flex justify-content-center">
+        {% if view.kwargs.servicio == 'medicos' %}
+          <a href="{% url 'lista_servicios_medicos'%}" class="btn btn-secondary mx-1">Regresar</a>
+        {% elif view.kwargs.servicio == 'laboratorio' %}
+          <a href="{% url 'lista_servicios_laboratorio'%}" class="btn btn-secondary mx-1">Regresar</a>
+        {% endif %}
+      </div> {% endcomment %}
   </div>    
 
 <script>
