@@ -57,12 +57,14 @@ class CrearPromocion(View):
                     'type':'success',
                     'data':'Promoción Guardada.'
                     })
-            if form_descuento.is_valid():
-                if form_descuento.habilitarDescuento == True:
-                    descuento=form_descuento.save(commit=False)
-                    descuento.publicacion=publicacion
-                    descuento.save()
-                    request.session['mensajes'].append({
+            if form_descuento['habilitarDescuento'].value() == True:
+                if form_descuento.is_valid():
+                        descuento=form_descuento.save(commit=False)
+                        descuento.publicacion=publicacion
+                        descuento.save()
+                        if request.session.get('mensajes') is None:
+                            request.session['mensajes']=[]
+                        request.session['mensajes'].append({
                         'type':'success',
                         'data':'Descuento Guardado.'
                         })
