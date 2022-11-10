@@ -37,7 +37,7 @@ class ServicioLaboratorioClinico(models.Model):
 # Descuentos asociados a cada Servicio
 class Descuento(models.Model):
     id_descuento=models.AutoField(primary_key=True)
-    servicio=models.ForeignKey("Servicio", on_delete=models.CASCADE,related_name='descuentos')
+    servicio=models.OneToOneField("Servicio", on_delete=models.CASCADE,related_name='descuentos')
     codigo_descuento=models.CharField(max_length=15,unique=True)
     validez_fecha_inicio=models.DateField(null=True)
     validez_fecha_fin=models.DateField(null=True)

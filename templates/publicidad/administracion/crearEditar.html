@@ -54,7 +54,7 @@
 					</div>
 				</div>
 				<div class="card">
-					{{ formset.management_form }}
+					{{ formset_imagen.management_form }}
 					<div class="card-header">
 						Imagenes
 					</div>
@@ -86,5 +86,11 @@
 		$('#formulario-descuento-body :input').prop('disabled', false);
 	}
   })
+
+  onload = (event) => {
+	{% for mensaje in mensajes %}
+		toastr['{{mensaje.type}}']('{{mensaje.data}}');
+	{% endfor %}
+};
 </script>
 {% endblock %}

@@ -77,6 +77,7 @@ class EditarServicioMedico(View):
     def get(self, request, *args, **kwargs):
         id_servicio=kwargs.get('id_servicio', None)
         mensajes=request.session.get('mensajes', [])
+        request.session['mensajes']=[]
         servicio=Servicio.objects.get(id_servicio=id_servicio)
         imagen=ImagenServicio.objects.get(servicio=servicio)
         servicioMedico=ServicioMedico.objects.get(servicio=servicio)
