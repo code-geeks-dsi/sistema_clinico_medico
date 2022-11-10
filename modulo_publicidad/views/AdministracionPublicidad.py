@@ -50,7 +50,8 @@ class CrearPromocion(View):
             publicacion=form.save(commit=False)
             publicacion.servicio=servicio
             publicacion.save()
-            request.session['mensajes']=[]
+            if request.session.get('mensajes') is None:
+                request.session['mensajes']=[]
             request.session['mensajes'].append({
                     'type':'success',
                     'data':'Promoción Guardada.'
@@ -72,10 +73,7 @@ class CrearPromocion(View):
                     'type':'success',
                     'data':'Imagenes Guardadas.'
                     })
-            else:
-                print(form_imagenes.non_form_errors())
-            return redirect('editar_publicacion',self.kwargs['servicio'], servicio.id_servicio,publicacion.id_publicacion)
-            
+                return redirect('editar_publicacion',self.kwargs['servicio'], servicio.id_servicio,publicacion.id_publicacion)        
 
         return render(request, self.template_name, {'form': form, 'formset_imagen': form_imagenes, 'form_descuento':form_descuento})
 
@@ -94,11 +92,11 @@ class EditarPromocion(View):
         else:
             form_descuento=DescuentoForm()
         if imagenes is not None:
-            form_imagenes=self.ImagenFormSet(queryset=imagenes)
+            form_imagenes=self.ImagenFormSet(queryset=imagenes,initial=[{publicacion:publicacion}])
         else:
-            form_imagenes=self.ImagenFormSet()
+            form_imagenes=self.ImagenFormSet(initial=[{publicacion:publicacion}])
         mensajes=request.session.get('mensajes', [])
-        request.session['mensajes']=[]
+        del request.session['mensajes']
         return render(request, self.template_name, {
             'form': form, 
             'formset_imagen': form_imagenes, 
@@ -132,9 +130,15 @@ class EditarPromocion(View):
                 descuento.publicacion=publicacion
                 descuento.save()
             if form_imagenes.is_valid():
-                for imagen in form_imagenes.cleaned_data:
+                imagenes=form_imagenes.save(commit=False)
+                for imagen in imagenes:
                     imagen.publicacion=publicacion
                     imagen.save()
+                    request.session['mensajes'].append({
+                    'type':'success',
+                    'data':'Imagenes Guardadas.'
+                    })
+
             else:
                 print(form_imagenes.non_form_errors())
                 print(form_imagenes.errors)
