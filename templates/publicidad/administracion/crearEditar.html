@@ -34,20 +34,25 @@
 						Publicación
 					</div>
 					<div class="card-body">
-						<div class="row justify-content-md-center">
-							<div class="col col-lg-6">
-								{{ form.descripcion.errors }}
-								{{ form.descripcion.label_tag }} {{ form.descripcion }}
+						<div class="row justify-content-md-start">
+							<em>Período de Validez</em>
+						</div>
+						<div class="row justify-content-md-start">
+							<div class=" col-lg-3">
+								{{ form.validez_fecha_inicio.errors }}
+								<label for="id_validez_fecha_inicio">Inicio:</label>
+								{{ form.validez_fecha_inicio }}
+							</div>
+							<div class=" col-lg-3">
+								{{ form.validez_fecha_fin.errors }}
+								<label for="id_validez_fecha_fin">Fin:</label>
+								{{ form.validez_fecha_fin }}
 							</div>
 						</div>
-						<div class="row justify-content-md-center">
-							<div class="col col-lg-3">
-								{{ form.validez_fecha_inicio.errors }}
-								{{ form.validez_fecha_inicio.label_tag }} {{ form.validez_fecha_inicio }}
-							</div>
-							<div class="col col-lg-3">
-								{{ form.validez_fecha_fin.errors }}
-								{{ form.validez_fecha_fin.label_tag }} {{ form.validez_fecha_fin }}
+						<div class="row justify-content-md-start">
+							<div class=" col">
+								{{ form.descripcion.errors }}
+								{{ form.descripcion.label_tag }} {{ form.descripcion }}
 							</div>
 						</div>
 					</div>
@@ -57,36 +62,53 @@
 						Descuento
 					</div>
 					<div class="card-body" id="formulario-descuento-body">
-							<div class="row justify-content-md-center">
-								<div class="col col-lg-6 py-3">
-									<div class="form-check form-switch pt-2">
+							
+							<div class="row justify-content-md-start">
+								<div class=" col py-3">
+									<div class="form-check form-switch">
 									{{ form_descuento.habilitarDescuento.errors }}
 									{{ form_descuento.habilitarDescuento.label_tag }} {{ form_descuento.habilitarDescuento }}
 									</div>
 								</div>
 							</div>
-							<div class="row justify-content-md-center">
-								<div class="col col-lg-3">
-									{{ form_descuento.validez_fecha_inicio.errors }}
-									{{ form_descuento.validez_fecha_inicio.label_tag }} {{ form_descuento.validez_fecha_inicio }}
+							<div class="row">
+								<div class="col-lg-6 border-end border-secondary">
+									<div class="row text-start">
+										<em>Período de Validez</em>
+									</div>
+									<div class="row justify-content-md-start">
+										<div class=" col-lg-6">
+											{{ form_descuento.validez_fecha_inicio.errors }}
+											<label for="id_validez_fecha_inicio">Inicio:</label>
+											{{ form_descuento.validez_fecha_inicio }}
+										</div>
+										<div class=" col-lg-6">
+											{{ form_descuento.validez_fecha_fin.errors }}
+											<label for="id_validez_fecha_fin">Fin:</label>
+											{{ form_descuento.validez_fecha_fin }}
+										</div>
+									</div>
 								</div>
-								<div class="col col-lg-3">
-									{{ form_descuento.validez_fecha_fin.errors }}
-									{{ form_descuento.validez_fecha_fin.label_tag }} {{ form_descuento.validez_fecha_fin }}
+								<div class="col-lg-6 ">
+									<div class="row text-start">
+										<em>Descuento</em>
+									</div>
+									<div class="row justify-content-md-start">
+										<div class=" col-lg-6">
+											{{ form_descuento.cantidad_descuento.errors }}
+											<label for="id_cantidad_descuento">Cantidad ($):</label>
+											{{ form_descuento.cantidad_descuento }}
+										</div>
+										<div class=" col-lg-6">
+											{{ form_descuento.porcentaje_descuento.errors }}
+											<label for="id_porcentaje_descuento">Porcentaje (%):</label>
+											{{ form_descuento.porcentaje_descuento }}
+										</div>
+									</div>
 								</div>
 							</div>
-							<div class="row justify-content-md-center">
-								<div class="col col-lg-3">
-									{{ form_descuento.cantidad_descuento.errors }}
-									{{ form_descuento.cantidad_descuento.label_tag }} {{ form_descuento.cantidad_descuento }}
-								</div>
-								<div class="col col-lg-3">
-									{{ form_descuento.porcentaje_descuento.errors }}
-									{{ form_descuento.porcentaje_descuento.label_tag }} {{ form_descuento.porcentaje_descuento }}
-								</div>
-							</div>
-							<div class="row justify-content-md-center">
-								<div class="col col-lg-6">
+							<div class="row justify-content-md-start">
+								<div class=" col">
 									{{ form_descuento.restricciones.errors }}
 									{{ form_descuento.restricciones.label_tag }} {{ form_descuento.restricciones }}
 								</div>
@@ -102,8 +124,15 @@
 					<ul class="list-group list-group-flush">
 						{% for form in formset_imagen %}
 							<li class="list-group-item">
-								<div class="row justify-content-md-center">
-									<div class="col col-lg-6">
+								<div class="row justify-content-md-start">
+									<div class="col">
+										{% if form.instance.archivo %}
+										<img src="{{form.instance.archivo.url}}" class="img-thumbnail my-3" alt="Imagen promoción">
+										{% endif %}
+									</div>
+								</div>
+								<div class="row justify-content-md-start">
+									<div class="col-lg-8">
 										{{ form.errors }}
 										{{ form.label_tag }} {{ form }}
 									</div>
