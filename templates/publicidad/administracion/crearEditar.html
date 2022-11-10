@@ -7,12 +7,9 @@
 <!--Titulo-->
 {% block titulo %} Publicidad | Clínica {% endblock %}
 {% block content %}
-<div class="container py-4">
+<div class="container text-start py-4">
 	<div class="row">
-		<div class="col-6">
-			<h3 class="fw-bold text-secondary pb-4">Crear Nueva Promoción</h3>
-		</div>
-		<div class="col-6">
+		<div class="col">
 			<div class="d-flex justify-content-end">
 				<nav aria-label="breadcrumb">
 					<ol class="breadcrumb pt-3">
@@ -24,13 +21,12 @@
 			</div>
 		</div>
 	</div>
-	<div class="card">
-		<div class="card-header alert-primary text-primary" aria-expanded="true">
-			<div class="px-1 py-2">
-				Nueva Promoción
-			</div>
-		</div>
-		<div class="card-body">
+	{% comment %} <div class="card"> {% endcomment %}
+		
+		<div class="card-body mx-auto w-75">
+
+				<h3 class="fw-bold text-secondary pb-4">Crear Nueva Promoción</h3>
+
 			<form method="post"  enctype="multipart/form-data">
 				{% csrf_token %}
 				<div class="card">
@@ -38,10 +34,29 @@
 						Publicación
 					</div>
 					<div class="card-body">
-						{{form.as_p}}
-						<div class="form-check form-switch pt-2">
-							<input class="form-check-input" type="checkbox" id="habilitar-descuento">
-							<label class="form-check-label" for="habilitar-descuento">Habilitar Descuento</label>
+						<div>
+							{{ form.non_field_errors }}
+						</div>
+						<div class="row justify-content-md-start">
+							<em>Período de Validez</em>
+						</div>
+						<div class="row justify-content-md-start">
+							<div class=" col-lg-3">
+								{{ form.validez_fecha_inicio.errors }}
+								<label for="id_validez_fecha_inicio">Inicio:</label>
+								{{ form.validez_fecha_inicio }}
+							</div>
+							<div class=" col-lg-3">
+								{{ form.validez_fecha_fin.errors }}
+								<label for="id_validez_fecha_fin">Fin:</label>
+								{{ form.validez_fecha_fin }}
+							</div>
+						</div>
+						<div class="row justify-content-md-start">
+							<div class=" col">
+								{{ form.descripcion.errors }}
+								{{ form.descripcion.label_tag }} {{ form.descripcion }}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -49,8 +64,70 @@
 					<div class="card-header">
 						Descuento
 					</div>
+					<div>
+						{{ form_descuento.non_field_errors }}
+					</div>
 					<div class="card-body" id="formulario-descuento-body">
-						{{form_descuento.as_p}}
+							
+							<div class="row justify-content-md-start">
+								<div class=" col py-3">
+									<div class="form-check form-switch">
+									{{ form_descuento.habilitarDescuento.errors }}
+									{{ form_descuento.habilitarDescuento.label_tag }} {{ form_descuento.habilitarDescuento }}
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-lg-6 border-secondary">
+									<div class="row text-start">
+										<em>Período de Validez</em>
+									</div>
+									<div class="row justify-content-md-start">
+										<div class=" col-lg-6">
+											{{ form_descuento.validez_fecha_inicio.errors }}
+											<label for="id_validez_fecha_inicio">Inicio:</label>
+											{{ form_descuento.validez_fecha_inicio }}
+										</div>
+										<div class=" col-lg-6">
+											{{ form_descuento.validez_fecha_fin.errors }}
+											<label for="id_validez_fecha_fin">Fin:</label>
+											{{ form_descuento.validez_fecha_fin }}
+										</div>
+									</div>
+								</div>
+								
+							</div>
+							<div class="row pt-3">
+								<div class="col">
+									<div class="row text-start">
+										<em>Descuento</em>
+									</div>
+									<div class="row justify-content-md-start">
+										<div class=" col-lg-3">
+											{{ form_descuento.cantidad_descuento.errors }}
+											<label for="id_cantidad_descuento">Cantidad ($):</label>
+											{{ form_descuento.cantidad_descuento }}
+										</div>
+										<div class=" col-lg-3">
+											{{ form_descuento.porcentaje_descuento.errors }}
+											<label for="id_porcentaje_descuento">Porcentaje (%):</label>
+											{{ form_descuento.porcentaje_descuento }}
+										</div>
+										<div class=" col-lg-3">
+											{{ form_descuento.codigo_descuento.errors }}
+											<label for="id_codigo_descuento">Codigo:</label>
+											{{ form_descuento.codigo_descuento }}
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row justify-content-md-start">
+								<div class=" col">
+									{{ form_descuento.restricciones.errors }}
+									{{ form_descuento.restricciones.label_tag }} {{ form_descuento.restricciones }}
+								</div>
+							</div>
+							
 					</div>
 				</div>
 				<div class="card">
@@ -61,36 +138,52 @@
 					<ul class="list-group list-group-flush">
 						{% for form in formset_imagen %}
 							<li class="list-group-item">
-								{{form.as_p}}
+								<div class="row justify-content-md-start">
+									<div class="col">
+										{% if form.instance.archivo %}
+										<img src="{{form.instance.archivo.url}}" class="img-thumbnail my-3" alt="Imagen promoción">
+										{% endif %}
+									</div>
+								</div>
+								<div class="row justify-content-md-start">
+									<div class="col-lg-8">
+										{{ form.errors }}
+										{{ form.label_tag }} {{ form }}
+									</div>
+								</div>
 							</li>
 						{% endfor %}
 					</ul>
 				</div>
 				<div class="d-flex justify-content-center my-3">
-					<a href="{% url 'ver_publicaciones' id_servicio=id_servicio %}" class="btn btn-secondary mx-1">Regresar</a>
+					<a href="{% url 'ver_publicaciones' servicio=servicio id_servicio=id_servicio %}" class="btn btn-secondary mx-1">Regresar</a>
 					<input class="btn btn-success" type="submit" value="Guardar">
 				  </div>
 			</form>
 		</div>
-	</div>
+	{% comment %} </div> {% endcomment %}
 </div>    
 
 <script>
 	const formDescuento="";
   $( "#side_administrar_publicidad" ).addClass( "active" );
-  $('#habilitar-descuento').click(()=>{
-	if ($('#habilitar-descuento').is(":checked")) {
-            $('#formulario-descuento-body :input').prop('disabled', true);
-        }
-	else {
-		$('#formulario-descuento-body :input').prop('disabled', false);
+  const checkStateDescuento = ()=>{
+	if ($('#id_habilitarDescuento').is(":checked")) {
+		$('#formulario-descuento-body :input').not(":first").prop('disabled', false);
 	}
+	else {
+		$('#formulario-descuento-body :input').not(":first").prop('disabled', true);
+	}
+  }
+  $('#id_habilitarDescuento').click(()=>{
+	checkStateDescuento();
   })
-
   onload = (event) => {
+	checkStateDescuento();
 	{% for mensaje in mensajes %}
 		toastr['{{mensaje.type}}']('{{mensaje.data}}');
 	{% endfor %}
 };
 </script>
+
 {% endblock %}

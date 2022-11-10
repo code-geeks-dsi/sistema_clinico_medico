@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Servicios de Laboratorio Clínico{% endblock %}
+{% block content %}
+<div class="container py-4">
+	<div class="row">
+		<div class="col-6">
+			<h3 class="fw-bold text-secondary pb-4">Nuevo Servicio de Laboratorio Clínico</h3>
+		</div>
+		<div class="col-6">
+			<div class="d-flex justify-content-end">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb pt-3">
+						<li class="breadcrumb-item"><a href="{% url 'inicio_publicidad' %}">Publicidad</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'clinica_publicidad' %}">Publicidad</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Nueva Promoción</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-body">
+			<form method="post"  enctype="multipart/form-data">
+				{% csrf_token %}
+                {{ formServicioLaboratorio.errors }}            
+                {{formServicioLaboratorio.nombre.label_tag }}
+                {{formServicioLaboratorio.nombre}}              
+                {{formServicioLaboratorio.precio.label_tag }}
+                {{formServicioLaboratorio.precio}}        
+                {{formServicioLaboratorio.examen_laboratorio.label_tag }}
+                {{formServicioLaboratorio.examen_laboratorio}}       
+				<div class="col">
+					<div class="row">
+						{{formServicioLaboratorio.descripcion.label_tag}}
+					</div>
+					<div class="row">
+						{{formServicioLaboratorio.descripcion}}
+					</div>
+				</div>
+				{% if formImagen.instance.archivo %}
+				<img src="{{formImagen.instance.archivo.url}}" class="img-thumbnail my-3" alt="Servicio Médico {{formServicioLaboratorio.nombre.value}}">
+				{% endif %}
+                {{formImagen.as_p}}
+				<div class="d-flex justify-content-center">
+					<a href="{% url 'lista_servicios_laboratorio'%}" class="btn btn-secondary mx-1">Regresar</a>
+					<input class="btn btn-primary" type="submit" value="Guardar">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>    
+<script>
+    onload = (event) => {
+		{% for mensaje in mensajes %}
+			toastr['{{mensaje.type}}']('{{mensaje.data}}');
+		{% endfor %}
+	};
+</script>
+{% endblock %}

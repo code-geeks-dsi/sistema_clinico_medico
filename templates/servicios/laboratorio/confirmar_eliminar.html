@@ -5,7 +5,7 @@
 
 {% endblock %}
 <!--Titulo-->
-{% block titulo %} Servicios Médicos{% endblock %}
+{% block titulo %} Servicios de Laboratorio Clínico{% endblock %}
 {% block content %}
 <div class="container py-4">
 	<div class="row">
@@ -29,7 +29,7 @@
             <p>¿Seguro que desea eliminar el servicio médico "{{ object.nombre }}"?</p>
             {{ form }}
 
-            <a href="{% url 'lista_servicios_medicos'%}" class="btn btn-secondary">Regresar</a>
+            <a href="{% url 'lista_servicios_laboratorio'%}" class="btn btn-secondary">Regresar</a>
             <input type="submit" value="Confirmar" class="btn btn-danger">
         </form>
     </div>

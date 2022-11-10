@@ -2,6 +2,7 @@ from cProfile import label
 from xml.etree.ElementInclude import include
 from django import forms
 from modulo_expediente.models import TipoConsulta
+from modulo_laboratorio.models import ExamenLaboratorio
 from modulo_publicidad.models import *
 class PublicacionForm(forms.ModelForm):
         class Meta:
@@ -11,7 +12,7 @@ class PublicacionForm(forms.ModelForm):
                         'descripcion': forms.Textarea(attrs={
                                                   'class': 'form-control', 
                                                   "rows":5,
-                                                  "cols":20,
+                                                  "cols":30,
                         }),
                         'validez_fecha_fin': forms.DateInput(
                         format=('%Y-%m-%d'),
@@ -51,10 +52,17 @@ class ServicioImagenForm(forms.ModelForm):
                         self.fields[field].widget.attrs.update({'class': 'form-control'})
 
 class DescuentoForm(forms.ModelForm):
+        habilitarDescuento=forms.BooleanField(initial=True, label='Habilitar Descuento',required=False)
         class Meta:
                 model=Descuento
-
-                exclude=('servicio','id_descuento')
+                fields=[        'habilitarDescuento',
+                                'codigo_descuento',
+                                'validez_fecha_inicio',
+                                'validez_fecha_fin',
+                                'cantidad_descuento',
+                                'porcentaje_descuento',
+                                'restricciones'
+                        ]
                 widgets = {
                         'validez_fecha_fin': forms.DateInput(
                         format=('%Y-%m-%d'),
@@ -69,13 +77,18 @@ class DescuentoForm(forms.ModelForm):
                                 'placeholder':'Fecha de Fin',
                                 'label':'Fecha de Creación',
                                 'type': 'date',
-                        }),
-                        
+                        })
                 }
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 for field in self.fields:
-                        self.fields[field].widget.attrs.update({'class': 'form-control','required': False})
+                        if field != 'habilitarDescuento':
+                                self.fields[field].widget.attrs.update({'class': 'form-control','required': False})
+                        else:       
+                                self.fields[field].widget.attrs.update({
+                                        'class': 'form-check-input'
+                                        })
+
 #Servicios Médicos
 class ServicioMedicoForm(forms.ModelForm):
         area= forms.ModelChoiceField(queryset=TipoConsulta.objects.all(), required=False)
@@ -87,3 +100,11 @@ class ServicioMedicoForm(forms.ModelForm):
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self.fields['otro'].widget.attrs.update({'class': 'disabled','required': False})
+
+class ServicioLaboratorioForm(forms.ModelForm):
+        examen_laboratorio= forms.ModelChoiceField(queryset=ExamenLaboratorio.objects.all(),label='Examen de Laboratorio')
+        class Meta:
+                model=Servicio
+                fields=('nombre','precio','descripcion')
+        def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
