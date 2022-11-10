@@ -2,6 +2,7 @@ from django.urls import path
 from modulo_publicidad.views.AdministracionPublicidad import *
 from modulo_publicidad.views.PaginaPrincipal import *
 from modulo_publicidad.views.ServiciosMedicos import *
+from modulo_publicidad.views.ServiciosLaboratorioClinico import *
 
 urlpatterns = [
     path('inicio/', InicioPublicidad.as_view(), name='inicio_publicidad'),
@@ -13,7 +14,7 @@ urlpatterns = [
 
     # administración de publicaciones
     # edita publicaciones
-    path('publicaciones/<int:id_publicidad>', EditarPromocion.as_view(), name='editar_publicacion'),
+    # path('publicaciones/<int:id_publicidad>', EditarPromocion.as_view(), name='editar_publicacion'),
 
     # servicios
     # detalle de servicio
@@ -26,6 +27,12 @@ urlpatterns = [
     path('servicios/medicos/new', CrearServicioMedico.as_view(), name='crear_servicio_medico'),
     path('servicios/medicos/<int:id_servicio>', EditarServicioMedico.as_view(), name='editar_servicio_medico'),
     path('servicios/medicos/<int:pk>/delete', EliminarServicioMedicoView.as_view(), name='eliminar_servicio_medico'),
+    
+    # Administrar servicios laboratorio clínico
+    path('servicios/laboratorio/', ServiciosLaboratorioListView.as_view(), name='lista_servicios_laboratorio_clinico'),
+    path('servicios/laboratorio/new', CrearServicioLaboratorio.as_view(), name='crear_servicio_laboratorio'),
+    path('servicios/laboratorio/<int:id_servicio>', EditarServicioLaboratorio.as_view(), name='editar_servicio_laboratorio'),
+    path('servicios/laboratorio/<int:pk>/delete', EliminarServicioLaboratorioView.as_view(), name='eliminar_servicio_laboratorio'),
 
     #Administrar Promociones de servicios
     #lista publicaciones

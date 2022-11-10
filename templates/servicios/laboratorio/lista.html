@@ -5,12 +5,12 @@
 
 {% endblock %}
 <!--Titulo-->
-{% block titulo %} Servicios Médicos {% endblock %}
+{% block titulo %} Servicios de Laboratorio Clínico {% endblock %}
 {% block content %}
 <div class="container py-4">
   <div class="row">
     <div class="col-6">
-      <h3 class="fw-bold text-secondary pb-4">Administración Servicios Médicos</h3>
+      <h3 class="fw-bold text-secondary pb-4">Administración Servicios de Laboratorio Clínico</h3>
     </div>
     <div class="col-6">
       <div class="d-flex justify-content-end">
@@ -23,7 +23,7 @@
       </div>
     </div>
   </div>
-  <a href="{% url 'crear_servicio_medico'%}" class="btn btn-success w-0 my-1">Crear Servicio Médico</a>
+  <a href="{% url 'crear_servicio_medico'%}" class="btn btn-success w-0 my-1">Crear Servicio de Laboratorio Clínico</a>
   <div class="card">
     <div class="card-body">
       <table class="table table-hover text-center">
@@ -60,9 +60,9 @@
           {% empty %}
           <tr>
             <td colspan="7">
-              <p>Lo siento, aún no hay servicios médicos.</p>
+              <p>Lo siento, aún no hay servicios de Laboratorio Clínico.</p>
               <a href="{% url 'crear_servicio_medico'%}" class="btn btn-success w-0 my-1">Crear Mi Primer Servicio
-                Médico</a>
+                de Laboratorio Clínico</a>
             </td>
           </tr>
           {% endfor %}
@@ -89,6 +89,7 @@
         {% endif %}
       </span>
     </div>
+
   </div>
   <div class="pagination d-flex justify-content-center">
     <a href="{% url 'inicio_publicidad'%}" class="btn btn-secondary w-0 my-1">Regresar</a>
