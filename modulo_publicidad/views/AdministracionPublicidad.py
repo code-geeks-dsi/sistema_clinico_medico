@@ -41,6 +41,7 @@ class CrearPromocion(View):
             publicacion=form.save(commit=False)
             publicacion.servicio=servicio
             publicacion.save()
+            request.session['mensajes']=[]
             request.session['mensajes'].append({
                     'type':'success',
                     'data':'Promoción Guardada.'
@@ -88,7 +89,7 @@ class EditarPromocion(View):
             form_imagenes=self.ImagenFormSet(queryset=imagenes)
         else:
             form_imagenes=self.ImagenFormSet()
-        print(imagenes)
+        # print(imagenes)
         mensajes=request.session.get('mensajes', [])
         request.session['mensajes']=[]
         return render(request, self.template_name, {
