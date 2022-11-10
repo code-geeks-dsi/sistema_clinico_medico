@@ -75,6 +75,7 @@ class CrearServicioLaboratorio(View):
             'mensajes':request.session['mensajes']
         }
         return render(request, self.template_name, data)
+        
 class EditarServicioLaboratorio(View):
     template_name="servicios/laboratorio/crear_editar.html"
     def get(self, request, *args, **kwargs):
