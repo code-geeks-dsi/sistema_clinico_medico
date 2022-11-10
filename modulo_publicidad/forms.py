@@ -12,7 +12,7 @@ class PublicacionForm(forms.ModelForm):
                         'descripcion': forms.Textarea(attrs={
                                                   'class': 'form-control', 
                                                   "rows":5,
-                                                  "cols":20,
+                                                  "cols":30,
                         }),
                         'validez_fecha_fin': forms.DateInput(
                         format=('%Y-%m-%d'),
@@ -52,7 +52,7 @@ class ServicioImagenForm(forms.ModelForm):
                         self.fields[field].widget.attrs.update({'class': 'form-control'})
 
 class DescuentoForm(forms.ModelForm):
-        habilitarDescuento=forms.BooleanField(initial=True)
+        habilitarDescuento=forms.BooleanField(initial=True, label='Habilitar Descuento')
         class Meta:
                 model=Descuento
                 fields=[        'habilitarDescuento',
@@ -64,12 +64,6 @@ class DescuentoForm(forms.ModelForm):
                                 'restricciones'
                         ]
                 widgets = {
-                        'habilitarDescuento':forms.CheckboxInput(
-                                attrs={
-                                        'class': 'form-check-input', 
-                                        'label': 'Habilitar Descuento'
-                                        }
-                        ),
                         'validez_fecha_fin': forms.DateInput(
                         format=('%Y-%m-%d'),
                         attrs={
@@ -90,6 +84,10 @@ class DescuentoForm(forms.ModelForm):
                 for field in self.fields:
                         if field != 'habilitarDescuento':
                                 self.fields[field].widget.attrs.update({'class': 'form-control','required': False})
+                        else:       
+                                self.fields[field].widget.attrs.update({
+                                        'class': 'form-check-input', 
+                                        })
 
 #Servicios Médicos
 class ServicioMedicoForm(forms.ModelForm):
