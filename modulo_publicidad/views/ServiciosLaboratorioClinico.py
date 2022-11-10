@@ -5,7 +5,7 @@ from django.views.generic import ListView
 from django.views import View
 from django.shortcuts import (render,redirect)
 from django.db import IntegrityError
-from django.core.exceptions import ObjectDoesNotExist
+
 #Propias
 from modulo_expediente.models import TipoConsulta
 from modulo_laboratorio.models import ExamenLaboratorio

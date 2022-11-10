@@ -52,7 +52,7 @@ class ServicioImagenForm(forms.ModelForm):
                         self.fields[field].widget.attrs.update({'class': 'form-control'})
 
 class DescuentoForm(forms.ModelForm):
-        habilitarDescuento=forms.BooleanField(initial=True, label='Habilitar Descuento')
+        habilitarDescuento=forms.BooleanField(initial=True, label='Habilitar Descuento',required=False)
         class Meta:
                 model=Descuento
                 fields=[        'habilitarDescuento',
@@ -86,7 +86,7 @@ class DescuentoForm(forms.ModelForm):
                                 self.fields[field].widget.attrs.update({'class': 'form-control','required': False})
                         else:       
                                 self.fields[field].widget.attrs.update({
-                                        'class': 'form-check-input', 
+                                        'class': 'form-check-input'
                                         })
 
 #Servicios Médicos

@@ -9,6 +9,7 @@ from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic import ListView
 from django.forms import modelformset_factory
+from django.core.exceptions import ObjectDoesNotExist
 
 #Propias
 from modulo_publicidad.models import *
@@ -57,13 +58,15 @@ class CrearPromocion(View):
                     'data':'Promoción Guardada.'
                     })
             if form_descuento.is_valid():
-                descuento=form_descuento.save(commit=False)
-                descuento.publicacion=publicacion
-                descuento.save()
-                request.session['mensajes'].append({
-                    'type':'success',
-                    'data':'Descuento Guardado.'
-                    })
+                if form_descuento.habilitarDescuento == True:
+                    descuento=form_descuento.save(commit=False)
+                    descuento.publicacion=publicacion
+                    descuento.save()
+                    request.session['mensajes'].append({
+                        'type':'success',
+                        'data':'Descuento Guardado.'
+                        })
+
             if form_imagenes.is_valid():
                 imagenes=form_imagenes.save(commit=False)
                 for imagen in imagenes:
@@ -84,13 +87,16 @@ class EditarPromocion(View):
 
     def get(self, request, *args, **kwargs):
         publicacion=get_object_or_404(Publicacion, id_publicacion=self.kwargs['id_promocion'])
-        descuento=Descuento.objects.get(publicacion=publicacion)
+        try:
+            descuento=Descuento.objects.get(publicacion=publicacion)
+        except Descuento.DoesNotExist:
+            descuento=None
         imagenes=publicacion.imagenes.all()
         form = PublicacionForm(instance=publicacion)
         if descuento is not None:
-            form_descuento=DescuentoForm(instance=descuento)
+            form_descuento=DescuentoForm(instance=descuento, initial={'habilitarDescuento': True})
         else:
-            form_descuento=DescuentoForm()
+            form_descuento=DescuentoForm(initial={'habilitarDescuento': False})
         if imagenes is not None:
             form_imagenes=self.ImagenFormSet(queryset=imagenes,initial=[{publicacion:publicacion}])
         else:
@@ -111,13 +117,14 @@ class EditarPromocion(View):
     def post(self, request, *args, **kwargs):
         servicio = get_object_or_404(Servicio, id_servicio=self.kwargs['id_servicio'])
         publicacion=get_object_or_404(Publicacion, id_publicacion=self.kwargs['id_promocion'])
-        descuento=Descuento.objects.get(publicacion=publicacion)
+        try:
+            descuento=Descuento.objects.get(publicacion=publicacion)
+            form_descuento=DescuentoForm(request.POST, instance=descuento)
+        except Descuento.DoesNotExist:
+            descuento=None
+            form_descuento=DescuentoForm(request.POST)
         imagenes=publicacion.imagenes.all()
         form = PublicacionForm(request.POST, instance=publicacion)
-        if descuento is not None:
-            form_descuento=DescuentoForm(request.POST, instance=descuento)
-        else:
-            form_descuento=DescuentoForm(request.POST)
         if imagenes is not None:
             form_imagenes=self.ImagenFormSet(request.POST, request.FILES, queryset=imagenes)
         else:
@@ -127,10 +134,20 @@ class EditarPromocion(View):
             publicacion=form.save(commit=False)
             publicacion.servicio=servicio
             publicacion.save()
-            if form_descuento.is_valid():
-                descuento=form_descuento.save(commit=False)
-                descuento.publicacion=publicacion
-                descuento.save()
+            if form_descuento['habilitarDescuento'].value() == True:
+                if form_descuento.is_valid():
+                        descuento=form_descuento.save(commit=False)
+                        descuento.publicacion=publicacion
+                        descuento.save()
+                        if request.session.get('mensajes') is None:
+                            request.session['mensajes']=[]
+                        request.session['mensajes'].append({
+                        'type':'success',
+                        'data':'Descuento Guardado.'
+                        })
+            elif descuento is not None:
+                descuento.delete()
+
             if form_imagenes.is_valid():
                 imagenes=form_imagenes.save(commit=False)
                 for imagen in imagenes:

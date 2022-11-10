@@ -34,6 +34,9 @@
 						Publicación
 					</div>
 					<div class="card-body">
+						<div>
+							{{ form.non_field_errors }}
+						</div>
 						<div class="row justify-content-md-start">
 							<em>Período de Validez</em>
 						</div>
@@ -61,6 +64,9 @@
 					<div class="card-header">
 						Descuento
 					</div>
+					<div>
+						{{ form_descuento.non_field_errors }}
+					</div>
 					<div class="card-body" id="formulario-descuento-body">
 							
 							<div class="row justify-content-md-start">
@@ -72,7 +78,7 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-lg-6 border-end border-secondary">
+								<div class="col-lg-6 border-secondary">
 									<div class="row text-start">
 										<em>Período de Validez</em>
 									</div>
@@ -89,20 +95,28 @@
 										</div>
 									</div>
 								</div>
-								<div class="col-lg-6 ">
+								
+							</div>
+							<div class="row pt-3">
+								<div class="col">
 									<div class="row text-start">
 										<em>Descuento</em>
 									</div>
 									<div class="row justify-content-md-start">
-										<div class=" col-lg-6">
+										<div class=" col-lg-3">
 											{{ form_descuento.cantidad_descuento.errors }}
 											<label for="id_cantidad_descuento">Cantidad ($):</label>
 											{{ form_descuento.cantidad_descuento }}
 										</div>
-										<div class=" col-lg-6">
+										<div class=" col-lg-3">
 											{{ form_descuento.porcentaje_descuento.errors }}
 											<label for="id_porcentaje_descuento">Porcentaje (%):</label>
 											{{ form_descuento.porcentaje_descuento }}
+										</div>
+										<div class=" col-lg-3">
+											{{ form_descuento.codigo_descuento.errors }}
+											<label for="id_codigo_descuento">Codigo:</label>
+											{{ form_descuento.codigo_descuento }}
 										</div>
 									</div>
 								</div>
