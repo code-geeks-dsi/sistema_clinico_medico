@@ -8,32 +8,32 @@
 {% block titulo %} Servicios Médicos {% endblock %}
 {% block content %}
 <div class="container py-4">
-  <div class="row">
-    <div class="col-6">
-      <h3 class="fw-bold text-secondary pb-4">Administración Servicios Médicos</h3>
-    </div>
-    <div class="col-6">
-      <div class="d-flex justify-content-end">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb pt-3">
-            <li class="breadcrumb-item"><a href="{% url 'inicio_publicidad' %}">Publicidad</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Clínica</li>
-          </ol>
-        </nav>
-      </div>
-    </div>
-  </div>
+	<div class="row">
+		<div class="col-6">
+			<h3 class="fw-bold text-secondary pb-4">Administración Servicios Médicos</h3>
+		</div>
+		<div class="col-6">
+			<div class="d-flex justify-content-end">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb pt-3">
+						<li class="breadcrumb-item"><a href="{% url 'inicio_publicidad' %}">Publicidad</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Clínica</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
   <a href="{% url 'crear_servicio_medico'%}" class="btn btn-success w-0 my-1">Crear Servicio Médico</a>
-  <div class="card">
-    <div class="card-body">
+	<div class="card">
+	<div class="card-body">
       <table class="table table-hover text-center">
         <thead>
-          <th scope="col">Nombre</th>
-          <th scope="col">Precio</th>
-          <th scope="col">Área</th>
-          <th scope="col">Promociones</th>
-          <th scope="col">Editar</th>
-          <th scope="col">Eliminar</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Precio</th>
+            <th scope="col">Área</th>
+            <th scope="col">Promociones</th>
+            <th scope="col">Editar</th>
+            <th scope="col">Eliminar</th>
         </thead>
         <tbody>
           {% for servicioMedico in page_obj %}
@@ -42,60 +42,59 @@
             <td>{{ servicioMedico.servicio.precio }}</td>
             <td>{{ servicioMedico.tipo_consulta.nombre }}</td>
             <td>
-              <a class="material-symbols-outlined btn btn-sm"
-                href="{% url 'ver_publicaciones' servicio='medicos' id_servicio=servicioMedico.servicio.id_servicio %}"
+                <a 
+                class="material-symbols-outlined btn btn-sm" 
+                href="{% url 'ver_publicaciones' id_servicio=servicioMedico.servicio.id_servicio %}"  
                 hover="Ver Promociones">signpost</a>
             </td>
             <td>
-              <a class="material-symbols-outlined btn btn-sm"
-                href="{% url 'editar_servicio_medico' id_servicio=servicioMedico.servicio.id_servicio %}"
+                <a 
+                class="material-symbols-outlined btn btn-sm" 
+                href="{% url 'editar_servicio_medico' id_servicio=servicioMedico.servicio.id_servicio %}"  
                 hover="Editar">edit</a>
             </td>
             <td>
-              <a class="material-symbols-outlined btn btn-sm"
+              <a 
+                class="material-symbols-outlined btn btn-sm" 
                 href="{% url 'eliminar_servicio_medico' pk=servicioMedico.servicio.id_servicio %}"
-                hover="Eliminar">delete</a>
+                hover="Eliminar"
+                >delete</a>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="7">
+            <td colspan="7"> 
               <p>Lo siento, aún no hay servicios médicos.</p>
-              <a href="{% url 'crear_servicio_medico'%}" class="btn btn-success w-0 my-1">Crear Mi Primer Servicio
-                Médico</a>
+              <a href="{% url 'crear_servicio_medico'%}" class="btn btn-success w-0 my-1">Crear Mi Primer Servicio Médico</a>
             </td>
           </tr>
           {% endfor %}
-
+            
         </tbody>
 
       </table>
-
+      
     </div>
     <div class="pagination d-flex justify-content-center">
-      <span class="step-links">
-        {% if page_obj.has_previous %}
-        <a href="?page=1">&laquo; Primero</a>
-        <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-        {% endif %}
-
-        <span class="current">
-          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; Primero</a>
+                <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+    
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Último &raquo;</a>
+            {% endif %}
         </span>
-
-        {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}">Último &raquo;</a>
-        {% endif %}
-      </span>
     </div>
-  </div>
-  <div class="pagination d-flex justify-content-center">
-    <a href="{% url 'inicio_publicidad'%}" class="btn btn-secondary w-0 my-1">Regresar</a>
-  </div>
+</div>    
 
-</div>
 <script>
-  $("#side_administrar_publicidad").addClass("active");
+  $( "#side_administrar_publicidad" ).addClass( "active" );
 </script>
 {% endblock %}
