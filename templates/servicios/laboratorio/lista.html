@@ -1,0 +1,102 @@
+{% extends "baseControl.html" %}
+{% load static %}
+<!--Css del template-->
+{% block css %}
+
+{% endblock %}
+<!--Titulo-->
+{% block titulo %} Servicios de Laboratorio Clínico {% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row">
+    <div class="col-6">
+      <h3 class="fw-bold text-secondary pb-4">Administración Servicios de Laboratorio Clínico</h3>
+    </div>
+    <div class="col-6">
+      <div class="d-flex justify-content-end">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb pt-3">
+            <li class="breadcrumb-item"><a href="{% url 'inicio_publicidad' %}">Publicidad</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Clínica</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <a href="{% url 'crear_servicio_laboratorio'%}" class="btn btn-success w-0 my-1">Crear Servicio de Laboratorio Clínico</a>
+  <div class="card">
+    <div class="card-body">
+      <table class="table table-hover text-center">
+        <thead>
+          <th scope="col">Nombre</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Examen de Laboratorio</th>
+          <th scope="col">Promociones</th>
+          <th scope="col">Editar</th>
+          <th scope="col">Eliminar</th>
+        </thead>
+        <tbody>
+          {% for servicioLaboratorio in page_obj %}
+          <tr>
+            <td>{{ servicioLaboratorio.servicio.nombre }}</td>
+            <td>{{ servicioLaboratorio.servicio.precio }}</td>
+            <td>{{ servicioLaboratorio.examen_laboratorio.nombre_examen }}</td>
+            <td>
+              <a class="material-symbols-outlined btn btn-sm"
+                href="{% url 'ver_publicaciones' servicio='laboratorio' id_servicio=servicioLaboratorio.servicio.id_servicio %}"
+                hover="Ver Promociones">signpost</a>
+            </td>
+            <td>
+              <a class="material-symbols-outlined btn btn-sm"
+                href="{% url 'editar_servicio_laboratorio' id_servicio=servicioLaboratorio.servicio.id_servicio %}"
+                hover="Editar">edit</a>
+            </td>
+            <td>
+              <a class="material-symbols-outlined btn btn-sm"
+                href="{% url 'eliminar_servicio_laboratorio' pk=servicioLaboratorio.servicio.id_servicio %}"
+                hover="Eliminar">delete</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7">
+              <p>Lo siento, aún no hay servicios de Laboratorio Clínico.</p>
+              <a href="{% url 'crear_servicio_laboratorio'%}" class="btn btn-success w-0 my-1">Crear Mi Primer Servicio
+                de Laboratorio Clínico</a>
+            </td>
+          </tr>
+          {% endfor %}
+
+        </tbody>
+
+      </table>
+
+    </div>
+    <div class="pagination d-flex justify-content-center">
+      <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+        {% endif %}
+
+        <span class="current">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Último &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+
+  </div>
+  <div class="pagination d-flex justify-content-center">
+    <a href="{% url 'inicio_publicidad'%}" class="btn btn-secondary w-0 my-1">Regresar</a>
+  </div>
+
+</div>
+<script>
+  $("#side_administrar_publicidad").addClass("active");
+</script>
+{% endblock %}
