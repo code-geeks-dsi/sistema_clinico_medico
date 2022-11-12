@@ -12,7 +12,11 @@
                                 {% for servicio in serviciosMedicos %}
                                     <div class="col-4">
                                     <!--Imagen-->
-                                    <img src="https://cdn.pixabay.com/photo/2017/06/05/16/24/megaphone-2374502_960_720.png" class="img-fluid rounded-start" alt="...">
+                                    {% for imagen in imagenes %}
+                                        {% if imagen.servicio_id == servicio.servicio.id_servicio %}
+                                            <img src="{{imagen.archivo}}" class="img-fluid rounded-start" alt="...">
+                                        {% endif %}
+                                    {% endfor %}
                                     </div>
                                     <div class="col-8">
                                     <div class="card-body">
