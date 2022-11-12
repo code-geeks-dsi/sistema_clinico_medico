@@ -14,6 +14,7 @@ urlpatterns = [
     path('paginaClinica/', PaginaClinica.as_view(), name='paginaClinica'),
     path('paginaLaboratorio/', PaginaLaboratorio.as_view(), name='paginaLaboratorio'),
     path('serviciosMedicos/', SeccionServiciosMedicos.as_view(), name='servicios_medicos'),
+    path('serviciosLaboratorio/', SeccionServiciosLaboratorio.as_view(), name='servicios_laboratorio'),
 
     # administración de publicaciones
     # edita publicaciones

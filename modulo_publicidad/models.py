@@ -33,7 +33,7 @@ class ServicioLaboratorioClinico(models.Model):
     servicio=models.OneToOneField('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_laboratorio_clinico')
     examen_laboratorio=models.OneToOneField('modulo_laboratorio.ExamenLaboratorio', on_delete=models.CASCADE, null=False)
     def __str__(self):
-        return str(self.examen_laboratorio.nombre_examen)+" $ "+str(self.servicio.precio)
+        return str(self.examen_laboratorio.nombre_examen)+" $ "+str(self.servicio.precio)+str(self.servicio.descripcion)+str(self.servicio.id_servicio)
 
 # Descuentos asociados a cada Servicio
 class Descuento(models.Model):
