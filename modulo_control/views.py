@@ -28,7 +28,17 @@ class LoginView(View):
         data={'mensaje':"",
           'type':'',
         }
-        return render(request,self.template_name,data)
+        if not request.user.is_authenticated:
+            return render(request,self.template_name,data)
+        
+        if request.user.roles.codigo_rol=='ROL_ADMIN':
+            return redirect('vistaGestionEmpleados')
+        
+        if request.user.roles.codigo_rol=='ROL_SECRETARIA' or request.user.roles.codigo_rol=='ROL_DOCTOR' or request.user.roles.codigo_rol=='ROL_ENFERMERA':
+            return redirect('sala_consulta')
+        
+        if request.user.roles.codigo_rol=='ROL_LIC_LABORATORIO':
+            return redirect('inicio_lab')
 
     def post(self, request, *args, **kwargs):
         email = request.POST.get("usuario")

@@ -20,7 +20,11 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'paginaLaboratorio' %}" id="link-laboratorio">Laboratorio Clínico</a>
                 </li>
-                {% if not user.is_authenticated %}    
+                {% if user.is_authenticated %}    
+                <li class="nav-item">
+                  <a class="btn btn-outline-warning" href="{% url 'login' %}" id="link-laboratorio">Administración</a>
+                </li>
+                {% else %}
                 <li class="nav-item">
                   <a class="btn btn-outline-warning" href="{% url 'login' %}" id="link-laboratorio">Iniciar Sesión</a>
                 </li>
