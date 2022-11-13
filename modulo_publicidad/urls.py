@@ -3,6 +3,8 @@ from modulo_publicidad.views.AdministracionPublicidad import *
 from modulo_publicidad.views.PaginaPrincipal import *
 from modulo_publicidad.views.ServiciosMedicos import *
 from modulo_publicidad.views.ServiciosLaboratorioClinico import *
+from modulo_publicidad.views.PaginaClinica import *
+from modulo_publicidad.views.PaginaLaboratorio import *
 
 urlpatterns = [
     path('inicio/', InicioPublicidad.as_view(), name='inicio_publicidad'),
@@ -11,6 +13,7 @@ urlpatterns = [
     path('farmacia/', InicioPublicidad.as_view(), name='farmacia_publicidad'),
     path('paginaClinica/', PaginaClinica.as_view(), name='paginaClinica'),
     path('paginaLaboratorio/', PaginaLaboratorio.as_view(), name='paginaLaboratorio'),
+    path('serviciosMedicos/', SeccionServiciosMedicos.as_view(), name='servicios_medicos'),
 
     # administración de publicaciones
     # edita publicaciones
@@ -42,5 +45,4 @@ urlpatterns = [
     path('servicios/<str:servicio>/<int:id_servicio>/promociones/<int:id_promocion>', EditarPromocion.as_view(), name='editar_publicacion'),
     path('servicios/<str:servicio>/<int:id_servicio>/promociones/<int:pk>/delete', EliminarPromocionView.as_view(), name='eliminar_publicacion'),
 
-    
 ]

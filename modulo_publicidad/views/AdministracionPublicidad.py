@@ -199,3 +199,4 @@ class PublicacionListView(ListView):
 
 #     def get_queryset(self):
 #         return self.object.descuentos.all()
+

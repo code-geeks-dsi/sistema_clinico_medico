@@ -27,7 +27,7 @@ class ServicioMedico(models.Model):
     servicio=models.OneToOneField('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_medicos')
     tipo_consulta=models.ForeignKey('modulo_expediente.TipoConsulta',on_delete=models.CASCADE, null=False)
     def __str__(self):
-        return str(self.tipo_consulta.nombre)+" $ "+str(self.servicio.precio)
+        return str(self.tipo_consulta.nombre)+" $ "+str(self.servicio.precio)+str(self.servicio.descripcion)
 class ServicioLaboratorioClinico(models.Model):
     id_servicio_laboratorio_clinico=models.AutoField(primary_key=True)
     servicio=models.OneToOneField('Servicio', on_delete=models.CASCADE, null=False,related_name='servicios_laboratorio_clinico')
