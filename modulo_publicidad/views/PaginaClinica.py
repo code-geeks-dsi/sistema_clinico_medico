@@ -10,12 +10,17 @@ from modulo_expediente.models import TipoConsulta
 class PaginaClinica(TemplateView):
     template_name= "publicidad/paginaDeClinica/paginaDeClinica.html"
 
-class SeccionServiciosMedicos(TemplateView):
+class SeccionServiciosMedicos(View):
     template_name="publicidad/paginaDeClinica/secciones/serviciosMedicos.html"
     #consultando los servicios medicos
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["serviciosMedicos"] = ServicioMedico.objects.all()
-        return context
+    def get(self, request, *args, **kwargs):
+        servicioMedico= ServicioMedico.objects.all()
+        imagen=ImagenServicio.objects.all()
+        data={
+            'serviciosMedicos':servicioMedico,
+            'imagenes':imagen
+        }
+        
+        return render(request, self.template_name, data)
         
     

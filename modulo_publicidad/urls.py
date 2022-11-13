@@ -13,6 +13,7 @@ urlpatterns = [
     path('farmacia/', InicioPublicidad.as_view(), name='farmacia_publicidad'),
 
     path('serviciosMedicos/', SeccionServiciosMedicos.as_view(), name='servicios_medicos'),
+    path('serviciosLaboratorio/', SeccionServiciosLaboratorio.as_view(), name='servicios_laboratorio'),
 
     # administración de publicaciones
     # edita publicaciones
