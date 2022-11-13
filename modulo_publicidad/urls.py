@@ -4,10 +4,11 @@ from modulo_publicidad.views.PaginaPrincipal import *
 from modulo_publicidad.views.ServiciosMedicos import *
 from modulo_publicidad.views.ServiciosLaboratorioClinico import *
 from modulo_publicidad.views.PaginaClinica import *
-
+from modulo_publicidad.views.PaginaLaboratorio import *
 
 urlpatterns = [
     path('inicio/', InicioPublicidad.as_view(), name='inicio_publicidad'),
+    path('inicio/publicaciones', get_publicaciones, name='get_pub'),
     path('clinica/', ClinicaPublicidad.as_view(), name='clinica_publicidad'),
     path('laboratorio/', InicioPublicidad.as_view(), name='laboratorio_publicidad'),
     path('farmacia/', InicioPublicidad.as_view(), name='farmacia_publicidad'),
