@@ -1,40 +1,43 @@
 {% load static %}
 <div class="container text-center pt-2">
-    <h3 class="p-5">Nuestro Servicios</h3>
+    <h2 class="pt-5 title-c">Nuestro Servicios</h2>
+    <div class="dropdown-divider pb-5"></div>
     <div class="container justify-content-center">
         <div class="row ">
             <div class="col-sm-12 col-lg-4">
                 <div class="card-custom">
-                    <div class="card">
-                        <img src="{% static 'img/consultorio.png' %}" class="card-img-top" alt="...">
+                    <div class="card" style="background-color: rgb(239, 245, 255);">
+                        <img src="{% static 'img/consultorio.png' %}" class="img-card" alt="...">
                         <div class="card-body">
                           <h5 class="card-title">Consultorio</h5>
-                          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                          <a href="#" class="btn btn-primary">Go somewhere</a>
+                          <p class="card-text">Contamos con <span id="tiempo"></span> años de trayectoria brindando nuestros servicios médicos a los Cojutepecanos, siendo su salud nuestra prioridad.</p>
+                          <a href="{% url 'paginaClinica' %}" class="btn btn-outline-primary">Ver más</a>
+                          <a href="#footer" class="btn btn-primary">Contactanos</a>
                         </div>
                       </div>
                 </div>
             </div>
             <div class="col-sm-12 col-lg-4">
                 <div class="card-custom">
-                    <div class="card">
-                        <img src="{% static 'img/laboratorio.png' %}" class="card-img-top" alt="...">
+                    <div class="card" style="background-color: rgb(239, 245, 255);">
+                        <img src="{% static 'img/laboratorio.png' %}" class="img-card" alt="...">
                         <div class="card-body">
                           <h5 class="card-title">Laboratorio</h5>
-                          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                          <a href="#" class="btn btn-primary">Go somewhere</a>
+                          <p class="card-text">Contamos con altos estándares de calidad, respaldados con la experiencia de nuestro personal, ofrecemos más de 120 prueba en 16 perfiles distintos.</p>
+                          <a href="{% url 'paginaLaboratorio' %}" class="btn btn-outline-primary">Ver más</a>
+                          <a href="#footer" class="btn btn-primary">Contactanos</a>
                         </div>
                       </div>
                 </div>
             </div>
             <div class="col-sm-12 col-lg-4">
                 <div class="card-custom">
-                    <div class="card">
-                        <img src="{% static 'img/farmacia.png' %}" class="card-img-top" alt="...">
+                    <div class="card" style="background-color: rgb(239, 245, 255);">
+                        <img src="{% static 'img/farmacia.png' %}" class="img-card" alt="...">
                         <div class="card-body">
                           <h5 class="card-title">Farmacia</h5>
-                          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                          <a href="#" class="btn btn-primary">Go somewhere</a>
+                          <p class="card-text">Tenemos una amplia variedad de medicamentos para todas afecciones. Todos nuestros productos son de alta calidad y a precios increíbles.</p>
+                          <a href="#footer" class="btn btn-primary">Contactanos</a>
                         </div>
                       </div>
                 </div>

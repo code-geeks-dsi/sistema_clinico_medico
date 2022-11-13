@@ -10,23 +10,23 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-            <ul class="nav nav-pills">
+            <ul class="nav nav-pills flex-column flex-sm-row">
                 <li class="nav-item">
-                  <a class="nav-link" href="#" id="link-principal">Principal</a>
+                  <a class="nav-link" href="{% url 'paginaPrincipal' %}" id="link-principal">Principal</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'paginaClinica' %}" id="link-consultorio">Consultorio Médico</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item pb-2">
                   <a class="nav-link" href="{% url 'paginaLaboratorio' %}" id="link-laboratorio">Laboratorio Clínico</a>
                 </li>
                 {% if user.is_authenticated %}    
-                <li class="nav-item">
+                <li class="nav-item px-3">
                   <a class="btn btn-outline-warning" href="{% url 'login' %}" id="link-laboratorio">Administración</a>
                 </li>
                 {% else %}
-                <li class="nav-item">
-                  <a class="btn btn-outline-warning" href="{% url 'login' %}" id="link-laboratorio">Iniciar Sesión</a>
+                <li class="nav-item px-3">
+                  <a class="btn btn-outline-warning ps-3" href="{% url 'login' %}" id="link-laboratorio">Iniciar Sesión</a>
                 </li>
                 {% endif %}
               </ul>

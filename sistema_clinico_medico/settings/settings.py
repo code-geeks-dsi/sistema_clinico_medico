@@ -8,7 +8,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = env('SECRET_KEY')
 
-DEBUG = env('DEBUG')
+if env('DEBUG') == "False":
+    DEBUG = False
+else:
+    DEBUG=True
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 
