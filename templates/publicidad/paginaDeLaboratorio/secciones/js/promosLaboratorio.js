@@ -63,6 +63,8 @@ const detallesPromocionMedica=(indexServicio, indexPublicacion)=>{
     $('#cover-promo').hide();
     let publicacion= servicios[indexServicio].servicio.publicaciones[indexPublicacion];
     let restriccion = "";
+    //aumentando vista
+    fetch(`/publicidad/inicio/vistas/${publicacion.id_publicacion}`).then((response) => response.json()).then((data) => {})
     publicacion.descuentos?
         publicacion.descuentos.restricciones
         :
@@ -103,7 +105,7 @@ const detallesPromocionMedica=(indexServicio, indexPublicacion)=>{
 const detallesServicio=(indexServicio)=>{
     $('#cover-servicio').hide();
     let servicio= servicios[indexServicio].servicio;
-    console.log(servicio)
+
     
     let restriccion = "";
     servicio.descuentos?
@@ -152,7 +154,7 @@ fetch('/publicidad/inicio/servicios/laboratorio')
     servicios.forEach(
         (servicio) => {
             let imagen="";
-            console.log(servicio)
+       
             servicio.servicio.imagenes[0]?
                 imagen=`
                 <img 

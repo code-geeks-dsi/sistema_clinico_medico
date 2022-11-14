@@ -29,5 +29,7 @@ def get_servicios_laboratorio(request):
     return JsonResponse({"data":servicios.data})
 
 def vista(request, id_publicacion):
-    print(id_publicacion)
-    return JsonResponse({'data':'success'})
+    publicacion=Publicacion.objects.get(id_publicacion=id_publicacion)
+    publicacion.cantidad_visitas=publicacion.cantidad_visitas+1
+    publicacion.save()
+    return JsonResponse({'data':'success','cantidad':publicacion.cantidad_visitas})

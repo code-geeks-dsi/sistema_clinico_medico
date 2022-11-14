@@ -4,6 +4,10 @@ let promocionesHtml="";
 const detallesPromocion=(indexPromocion)=>{
     $('#cover-promo').hide();
     
+    //Aumentar visita
+    fetch(`/publicidad/inicio/vistas/${promociones[indexPromocion].id_publicacion}`).then((response) => response.json()).then((data) => {})
+
+
     let restriccion = "";
     promociones[indexPromocion].descuentos?
         restriccion=promociones[indexPromocion].descuentos.restricciones
