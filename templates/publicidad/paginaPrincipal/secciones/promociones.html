@@ -1,3 +1,4 @@
+{% load static %}
 <div class="container pt-3">
     <h2 class="pt-5 pb-4">Promociones</h2>
     <div class="row" style="max-height: 75vh">
@@ -15,9 +16,12 @@
             </div>
         </div>
         <div class="col-12 col-md-6 d-none d-md-block">
-            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia, beatae voluptatum? Sit, molestiae. Nihil dolorum temporibus numquam facilis alias? Cum commodi molestiae quod illum eaque ullam mollitia totam neque laboriosam.</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum illo, enim at ex recusandae perferendis, numquam suscipit placeat, consequuntur vel ullam. Sunt vel fugiat qui placeat tenetur consequatur molestias doloremque!</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta tempore veritatis dolorum a dolorem, ipsa, iusto numquam asperiores nisi ea molestias qui magnam voluptatum accusamus necessitatibus quaerat nihil eligendi vero?</p>
+            <div class="card" style="height: 75vh" id="promocion">
+                <div class="row align-items-center justify-content-center" id="promocion-detalle">
+
+                </div>
+                <img src="{% static 'img/enfermera.jpg' %}" class="p-2" alt="" style="height: 75vh; object-fit: cover;" id="cover-promo">
+            </div>
         </div>
     </div>
 </div>
