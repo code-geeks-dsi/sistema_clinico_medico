@@ -143,7 +143,7 @@ const detallesServicio=(indexServicio)=>{
 }
 
 //Consultando promociones
-fetch('/publicidad/inicio/servicios')
+fetch('/publicidad/inicio/servicios/laboratorio')
   .then((response) => response.json())
   .then((data) => {
     servicios=data.data;
@@ -182,8 +182,8 @@ fetch('/publicidad/inicio/servicios')
                     <div class="col-8">
                     <div class="card-body">
                         <!--badge-->
-                        <span class="badge bg-info text-white">${servicio.servicio.nombre}</span>
-                        <p class="card-text pb-3">${servicio.servicio.descripcion}</p>
+                        <span class="badge bg-info text-white mb-3">${servicio.servicio.nombre}</span>
+                        <p class="card-text">${servicio.servicio.descripcion}</p>
                         <div class="text-center">
                             <button 
                                 type="button" 
