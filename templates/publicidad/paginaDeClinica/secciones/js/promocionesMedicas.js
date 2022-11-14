@@ -3,7 +3,7 @@ let servicios;
 let promocionesHtml="";
 
 const detallesServicio=(indexServicio)=>{
-    $('#cover-promo').hide();
+    $('#cover-servicio').hide();
     let servicio= servicios[indexServicio].servicio;
     console.log(servicio)
     
@@ -40,7 +40,7 @@ const detallesServicio=(indexServicio)=>{
       <p class="card-text text-center text-muted fw-bold">$ ${servicio.precio}</p>
     </div>
     `
-    $('#promocion-detalle').html(detalle)
+    $('#servicio-detalle').html(detalle)
     //console.log(promociones[indexPromocion])
 }
 
