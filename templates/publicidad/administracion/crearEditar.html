@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
+{% block publicidad-url%}"{{ request.path }}"{% endblock %}
+{% block publicidad-title%}"Promoción"{% endblock %}
 <!--Css del template-->
 {% block css %}
 
@@ -56,6 +58,7 @@
 							<div class=" col">
 								{{ form.descripcion.errors }}
 								{{ form.descripcion.label_tag }} {{ form.descripcion }}
+								{% block publicidad-descripcion%}{{ form.descripcion.value }}{% endblock %}
 							</div>
 						</div>
 					</div>
@@ -141,6 +144,7 @@
 								<div class="row justify-content-md-start">
 									<div class="col">
 										{% if form.instance.archivo %}
+										{% block publicidad-imagen%}"{{form.instance.archivo.url}}"{% endblock %}																			
 										<img src="{{form.instance.archivo.url}}" class="img-thumbnail my-3" alt="Imagen promoción">
 										{% endif %}
 									</div>
@@ -158,12 +162,31 @@
 				<div class="d-flex justify-content-center my-3">
 					<a href="{% url 'ver_publicaciones' servicio=servicio id_servicio=id_servicio %}" class="btn btn-secondary mx-1">Regresar</a>
 					<input class="btn btn-success" type="submit" value="Guardar">
+<!-- Your share button code -->
+<div class="fb-share-button" 
+data-href="https://www.facebook.com" 
+data-layout="button_count">
+</div>
 				  </div>
+
 			</form>
 		</div>
 	{% comment %} </div> {% endcomment %}
-</div>    
+</div> 
 
+<div id="fb-root"></div>
+
+<script>
+$(window).load(
+	function(d, s, id) {
+var js, fjs = d.getElementsByTagName(s)[0];
+if (d.getElementById(id)) return;
+js = d.createElement(s); js.id = id;
+js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk')
+);
+</script>
 <script>
 	const formDescuento="";
   $( "#side_administrar_publicidad" ).addClass( "active" );
@@ -187,3 +210,6 @@
 </script>
 
 {% endblock %}
+
+
+
