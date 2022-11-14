@@ -64,3 +64,10 @@ class ServicioMedicoSerializerCorto(serializers.ModelSerializer):
         model = ServicioMedico
         fields = '__all__'
         depth=1
+
+class ServicioLaboratorioSerializer(serializers.ModelSerializer):
+    servicio=ServicioSerializer()
+    class Meta:
+        model = ServicioLaboratorioClinico
+        fields = ['servicio']
+        depth=1
