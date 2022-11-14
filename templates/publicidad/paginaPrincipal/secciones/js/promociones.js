@@ -21,7 +21,7 @@ const detallesPromocion=(indexPromocion)=>{
     </div>
     `
     $('#promocion-detalle').html(detalle)
-    console.log(promociones[indexPromocion])
+    //console.log(promociones[indexPromocion])
 }
 
 //Consultando promociones
