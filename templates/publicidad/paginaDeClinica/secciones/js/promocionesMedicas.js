@@ -18,7 +18,7 @@ const HtmlPromociones=(html, publicacion, publicaciones, indexServicio)=>{
                     class="img-fluid rounded-start" 
                     alt="..."
                 />`
-            html=`${html} 
+            html=html+` 
             <div class="card mb-3">
                 <div class="row g-0">
                     <div class="col-3">
@@ -147,7 +147,7 @@ fetch('/publicidad/inicio/servicios')
   .then((response) => response.json())
   .then((data) => {
     servicios=data.data;
-    let promocionesMedicasHTML;
+    let promocionesMedicasHTML="";
     
     servicios.forEach(
         (servicio) => {
@@ -202,6 +202,7 @@ fetch('/publicidad/inicio/servicios')
     //promos
     $('#load-promos-medicas').hide();
     $('#lista-promociones').append(promocionesMedicasHTML);
+    
     //servicios
     $('#load-promos').hide();
     $('#lista-servicios').append(promocionesHtml);
