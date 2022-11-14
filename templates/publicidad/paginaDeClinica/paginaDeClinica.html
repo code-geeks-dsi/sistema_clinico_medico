@@ -7,7 +7,7 @@
 {% block titulo %} Clínica Médica Económica {% endblock %}
 {% block content %}
     {% include 'nav/publicNavBar.html' %}
-    {% include './secciones/promocionConsulta.html' %}
+    {% include 'publicidad/paginaPrincipal/secciones/promocionPrincipal.html' %}
     {% include './secciones/promocionesMedicas.html' %}
     {% include 'publicidad/paginaPrincipal/secciones/nuestrosServicios.html' %}
     {% include './secciones/serviciosMedicos.html' %}
@@ -20,4 +20,5 @@
         $("#link-consultorio").addClass( "active" );
         {% include './secciones/js/promocionesMedicas.js' %}
     </script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v15.0" nonce="RKHPxjrX"></script>
 {% endblock %}
