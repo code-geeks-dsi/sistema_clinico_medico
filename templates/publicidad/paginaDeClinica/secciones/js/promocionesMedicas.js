@@ -61,20 +61,18 @@ const HtmlPromociones=(html, publicacion, publicaciones, indexServicio)=>{
 
 const detallesPromocionMedica=(indexServicio, indexPublicacion)=>{
     $('#cover-promo').hide();
-    let servicio= servicios[indexServicio].servicio.publicaciones[indexPublicacion];
-    console.log(servicio)
-    
+    let publicacion= servicios[indexServicio].servicio.publicaciones[indexPublicacion];
     let restriccion = "";
-    servicio.descuentos?
-        restriccion=servicio.descuentos.restricciones
+    publicacion.descuentos?
+        publicacion.descuentos.restricciones
         :
         restriccion=""
 
         let imagen="";
-        servicio.imagenes[0]?
+        publicacion.imagenes[0]?
             imagen=`
             <img 
-                src="${servicio.imagenes[0].archivo}" 
+                src="${publicacion.imagenes[0].archivo}" 
                 class="img-fluid rounded-start" 
                 alt="..."
                 style="max-height: 250px;max-width: 250px;"
@@ -82,7 +80,7 @@ const detallesPromocionMedica=(indexServicio, indexPublicacion)=>{
             :
             imagen=`
             <img 
-                src="https://code-geek-medic.s3.amazonaws.com/static/servicios/consultorio.png" 
+                src="https://cdn.pixabay.com/photo/2017/06/05/16/24/megaphone-2374502_960_720.png" 
                 class="img-fluid rounded-start" 
                 alt="..."
                 style="max-height: 230px;max-width: 230px;"
@@ -91,13 +89,14 @@ const detallesPromocionMedica=(indexServicio, indexPublicacion)=>{
     let detalle=`
     ${imagen}
     <div class="card-body text-center">
-      <h5 class="card-title text-center"><span class="badge bg-info text-white">${servicio.nombre}</span></h5>
-      <p class="card-text text-center">${servicio.descripcion}</p>
-      <span class="badge bg-success text-white m-2">Precios</span>
-      <p class="card-text text-center text-muted fw-bold">$ ${servicio.precio}</p>
+      <h5 class="card-title text-center"><span class="badge bg-info text-white">${publicacion.servicio.nombre}</span></h5>
+      <p class="card-text text-center">${publicacion.descripcion}</p>
+      <span class="badge bg-warning text-white m-2">Restricciones</span>
+      <p class="card-text text-center">${restriccion}</p>
+      <p class="card-text text-center text-muted fw-bold">Valido hasta el: ${publicacion.validez_fecha_fin}</p>
     </div>
     `
-    $('#servicio-detalle').html(detalle)
+    $('#promocion-detalle').html(detalle)
     //console.log(promociones[indexPromocion])
 }
 
