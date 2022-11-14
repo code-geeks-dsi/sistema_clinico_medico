@@ -9,6 +9,7 @@ from modulo_publicidad.views.PaginaLaboratorio import *
 urlpatterns = [
     path('inicio/', InicioPublicidad.as_view(), name='inicio_publicidad'),
     path('inicio/publicaciones', get_publicaciones, name='get_pub'),
+    path('inicio/servicios', get_servicios_medicos, name='get_servicios_medicos'),
     path('clinica/', ClinicaPublicidad.as_view(), name='clinica_publicidad'),
     path('laboratorio/', InicioPublicidad.as_view(), name='laboratorio_publicidad'),
     path('farmacia/', InicioPublicidad.as_view(), name='farmacia_publicidad'),

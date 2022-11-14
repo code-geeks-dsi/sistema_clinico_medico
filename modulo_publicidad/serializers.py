@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from modulo_publicidad.models import Publicacion, ImagenPublicacion, Descuento
+from modulo_publicidad.models import *
 
 class ImagenPublicacionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,6 +16,7 @@ class DescuentoSerializer(serializers.ModelSerializer):
         model = Descuento
         fields = '__all__'
         depth=1
+
 
 class PublicacionSerializer(serializers.ModelSerializer):
     descuentos=DescuentoSerializer()
@@ -34,4 +35,19 @@ class PublicacionSerializer(serializers.ModelSerializer):
             'imagenes',
             'descuentos'
             )
+        depth=1
+
+
+class ServicioSerializer(serializers.ModelSerializer):
+    publicaciones=PublicacionSerializer(many=True)
+    class Meta:
+        model = Servicio
+        fields = '__all__'
+        depth=1
+
+class ServicioMedicoSerializer(serializers.ModelSerializer):
+    servicio=ServicioSerializer()
+    class Meta:
+        model = ServicioMedico
+        fields = '__all__'
         depth=1
