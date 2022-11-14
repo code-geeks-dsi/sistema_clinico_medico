@@ -11,6 +11,15 @@ class ImagenPublicacionSerializer(serializers.ModelSerializer):
             )
         depth=1
 
+class ImagenServicioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImagenServicio
+        fields = (
+            'id_imagen',
+            'archivo'
+            )
+        depth=1
+
 class DescuentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Descuento
@@ -39,6 +48,7 @@ class PublicacionSerializer(serializers.ModelSerializer):
 
 
 class ServicioSerializer(serializers.ModelSerializer):
+    imagenes=ImagenServicioSerializer(many = True)
     publicaciones=PublicacionSerializer(many=True)
     class Meta:
         model = Servicio
