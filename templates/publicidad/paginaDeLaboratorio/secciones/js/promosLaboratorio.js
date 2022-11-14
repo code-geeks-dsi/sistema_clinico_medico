@@ -96,7 +96,7 @@ const detallesPromocionMedica=(indexServicio, indexPublicacion)=>{
       <span class="badge bg-warning text-white m-2">Restricciones</span>
       <p class="card-text text-center">${restriccion}</p>
       <p class="card-text text-center text-muted fw-bold">Valido hasta el: ${publicacion.validez_fecha_fin}</p>
-      <div class="fb-share-button" data-href="https://sistema-clinico-medico.herokuapp.com/laboratorio/#promo-73" data-layout="button" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsistema-clinico-medico.herokuapp.com/laboratorio/#promo-73;src=sdkpreparse" class="fb-xfbml-parse-ignore">Compartir</a></div>
+      <div class="fb-share-button" data-href="https://sistema-clinico-medico.herokuapp.com/laboratorio/#promo-73" data-layout="button" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsistema-clinico-medico.herokuapp.com%2Flaboratorio%2F%23promo-73&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Compartir</a></div>
     </div>
     `
     $('#promocion-detalle').html(detalle)
