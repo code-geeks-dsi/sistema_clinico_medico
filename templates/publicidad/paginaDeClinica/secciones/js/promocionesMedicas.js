@@ -2,7 +2,7 @@ let promociones;
 let servicios;
 let promocionesHtml="";
 
-const HtmlPromociones=(html, publicacion)=>{
+const HtmlPromociones=(html, publicacion, publicaciones, indexServicio)=>{
     let imagen="";
         publicacion.imagenes[0]?
                 imagen=`
@@ -46,7 +46,7 @@ const HtmlPromociones=(html, publicacion)=>{
                                     <button 
                                         type="button" 
                                         class="btn btn-outline-primary"
-                                        onclick="detallesPromocion();"    
+                                        onclick="detallesPromocionMedica(${indexServicio}, ${publicaciones.indexOf(publicacion)});"    
                                     >Ver más</button>
                                 </div>
                             </div>
@@ -57,6 +57,48 @@ const HtmlPromociones=(html, publicacion)=>{
             </div>
             `
     return html;
+}
+
+const detallesPromocionMedica=(indexServicio, indexPublicacion)=>{
+    $('#cover-promo').hide();
+    let servicio= servicios[indexServicio].servicio.publicaciones[indexPublicacion];
+    console.log(servicio)
+    
+    let restriccion = "";
+    servicio.descuentos?
+        restriccion=servicio.descuentos.restricciones
+        :
+        restriccion=""
+
+        let imagen="";
+        servicio.imagenes[0]?
+            imagen=`
+            <img 
+                src="${servicio.imagenes[0].archivo}" 
+                class="img-fluid rounded-start" 
+                alt="..."
+                style="max-height: 250px;max-width: 250px;"
+            />`
+            :
+            imagen=`
+            <img 
+                src="https://code-geek-medic.s3.amazonaws.com/static/servicios/consultorio.png" 
+                class="img-fluid rounded-start" 
+                alt="..."
+                style="max-height: 230px;max-width: 230px;"
+            />`
+
+    let detalle=`
+    ${imagen}
+    <div class="card-body text-center">
+      <h5 class="card-title text-center"><span class="badge bg-info text-white">${servicio.nombre}</span></h5>
+      <p class="card-text text-center">${servicio.descripcion}</p>
+      <span class="badge bg-success text-white m-2">Precios</span>
+      <p class="card-text text-center text-muted fw-bold">$ ${servicio.precio}</p>
+    </div>
+    `
+    $('#servicio-detalle').html(detalle)
+    //console.log(promociones[indexPromocion])
 }
 
 const detallesServicio=(indexServicio)=>{
@@ -128,7 +170,7 @@ fetch('/publicidad/inicio/servicios')
                 />`
             
             servicio.servicio.publicaciones.forEach((publicacion)=>{
-                promocionesMedicasHTML= HtmlPromociones(promocionesMedicasHTML, publicacion)
+                promocionesMedicasHTML= HtmlPromociones(promocionesMedicasHTML, publicacion, servicio.servicio.publicaciones, servicios.indexOf(servicio))
             })
                 
             promocionesHtml=`${promocionesHtml} 
