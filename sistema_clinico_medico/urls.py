@@ -21,6 +21,8 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
 from modulo_control.views import vista_iniciarsesion, logearse, cerrar_sesion, home, LoginView
 from modulo_publicidad.views.PaginaPrincipal import PaginaPrincipal
+from modulo_publicidad.views.PaginaClinica import PaginaClinica
+from modulo_publicidad.views.PaginaLaboratorio import PaginaLaboratorio
 # from modulo_expediente.views import vista_sala_espera
 
 urlpatterns = [
@@ -30,6 +32,8 @@ urlpatterns = [
     path('logearse/', LoginView.as_view(), name='logearse'),
     path('logout/', cerrar_sesion, name='logout'),
     path('', PaginaPrincipal.as_view(), name='paginaPrincipal'),
+    path('consultorio/', PaginaClinica.as_view(), name='paginaClinica'),
+    path('laboratorio/', PaginaLaboratorio.as_view(), name='paginaLaboratorio'),
     path('home/', home, name='home'),
     #Sala de Espera
     path('expediente/', include('modulo_expediente.urls')),

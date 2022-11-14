@@ -8,22 +8,16 @@ from modulo_publicidad.views.PaginaLaboratorio import *
 
 urlpatterns = [
     path('inicio/', InicioPublicidad.as_view(), name='inicio_publicidad'),
+    path('inicio/publicaciones', get_publicaciones, name='get_pub'),
+    path('inicio/servicios', get_servicios_medicos, name='get_servicios_medicos'),
+    path('inicio/<int:id_publicacion>', vista, name="vista_publicacion"),
+    path('inicio/servicios/laboratorio', get_servicios_laboratorio, name='get_servicios_laboratorio'),
     path('clinica/', ClinicaPublicidad.as_view(), name='clinica_publicidad'),
     path('laboratorio/', InicioPublicidad.as_view(), name='laboratorio_publicidad'),
     path('farmacia/', InicioPublicidad.as_view(), name='farmacia_publicidad'),
-    path('paginaClinica/', PaginaClinica.as_view(), name='paginaClinica'),
-    path('paginaLaboratorio/', PaginaLaboratorio.as_view(), name='paginaLaboratorio'),
+
     path('serviciosMedicos/', SeccionServiciosMedicos.as_view(), name='servicios_medicos'),
-
-    # administración de publicaciones
-    # edita publicaciones
-    # path('publicaciones/<int:id_publicidad>', EditarPromocion.as_view(), name='editar_publicacion'),
-
-    # servicios
-    # detalle de servicio
-    # 🤔 creo que seria mejor si unieramos la publicación con el descuento y que se editen y eliminen en conjunto
-    #  y en la de servicios solo que se edite el precio y nombre
-    # path('servicios/<int:pk>', ServicioDetailView.as_view(), name='ver_servicio')
+    path('serviciosLaboratorio/', SeccionServiciosLaboratorio.as_view(), name='servicios_laboratorio'),
 
     # Administrar servicios clínica médica.
     path('servicios/medicos/', ServiciosMedicosListView.as_view(), name='lista_servicios_medicos'),

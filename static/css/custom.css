@@ -23,9 +23,8 @@
     display: flex;
     height: auto;
     width: auto;
-    background-color: #ffffff;
+    background-color: rgb(239, 245, 255);
     border-radius: 10px;
-    box-shadow: -1rem 0 3rem #000;
   /*   margin-left: -50px; */
     transition: 0.4s ease-out;
     position: relative;
@@ -36,9 +35,16 @@
       margin-left: -50px;
   }
   
+  .img-card{
+    object-fit: cover;
+    max-height: 300px;
+    max-width: 300px;
+  }
+
   .card-custom:hover {
     transform: translateY(-20px);
     transition: 0.4s ease-out;
+    box-shadow: 0rem 0 2rem rgb(170, 163, 163);
   }
   
   .card-custom:hover ~ .card-custom {
@@ -46,13 +52,16 @@
     left: 50px;
     transition: 0.4s ease-out;
   }
+
+  .card-text{
+    text-align:justify;
+  }
   
   .title-c {
-    color: #2e3033;
-    font-weight: 300;
-    position: absolute;
-    left: 20px;
-    top: 15px;
+    font-family: "Roboto",sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #1B2C51;
   }
   
   
