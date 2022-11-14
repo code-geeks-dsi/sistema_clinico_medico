@@ -11,6 +11,12 @@ class ImagenPublicacionSerializer(serializers.ModelSerializer):
             )
         depth=1
 
+class ImagenServicioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImagenServicio
+        fields = '__all__'
+        depth=1
+
 class DescuentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Descuento
@@ -39,6 +45,7 @@ class PublicacionSerializer(serializers.ModelSerializer):
 
 
 class ServicioSerializer(serializers.ModelSerializer):
+    imagenes=ImagenServicioSerializer(many = True)
     publicaciones=PublicacionSerializer(many=True)
     class Meta:
         model = Servicio
@@ -47,6 +54,12 @@ class ServicioSerializer(serializers.ModelSerializer):
 
 class ServicioMedicoSerializer(serializers.ModelSerializer):
     servicio=ServicioSerializer()
+    class Meta:
+        model = ServicioMedico
+        fields = '__all__'
+        depth=1
+
+class ServicioMedicoSerializerCorto(serializers.ModelSerializer):
     class Meta:
         model = ServicioMedico
         fields = '__all__'

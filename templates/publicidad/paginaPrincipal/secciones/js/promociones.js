@@ -10,8 +10,26 @@ const detallesPromocion=(indexPromocion)=>{
         :
         restriccion=""
 
+        let imagen="";
+        promociones[indexPromocion].imagenes[0]?
+            imagen=`
+            <img 
+                src="${promociones[indexPromocion].imagenes[0].archivo}" 
+                class="img-fluid rounded-start" 
+                alt="..."
+                style="max-height: 250px;max-width: 250px;"
+            />`
+            :
+            imagen=`
+            <img 
+                src="https://cdn.pixabay.com/photo/2017/06/05/16/24/megaphone-2374502_960_720.png" 
+                class="img-fluid rounded-start" 
+                alt="..."
+                style="max-height: 230px;max-width: 230px;"
+            />`
+
     let detalle=`
-    <img src="${promociones[indexPromocion].imagenes[0].archivo}" class="card-img-top" alt="..." style="max-height: 250px;max-width: 250px;">
+    ${imagen}
     <div class="card-body text-center">
       <h5 class="card-title text-center"><span class="badge bg-info text-white">${promociones[indexPromocion].servicio.nombre}</span></h5>
       <p class="card-text text-center">${promociones[indexPromocion].descripcion}</p>
