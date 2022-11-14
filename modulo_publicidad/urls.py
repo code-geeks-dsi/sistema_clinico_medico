@@ -10,6 +10,7 @@ urlpatterns = [
     path('inicio/', InicioPublicidad.as_view(), name='inicio_publicidad'),
     path('inicio/publicaciones', get_publicaciones, name='get_pub'),
     path('inicio/servicios', get_servicios_medicos, name='get_servicios_medicos'),
+    path('inicio/<int:id_publicacion>', vista, name="vista_publicacion"),
     path('inicio/servicios/laboratorio', get_servicios_laboratorio, name='get_servicios_laboratorio'),
     path('clinica/', ClinicaPublicidad.as_view(), name='clinica_publicidad'),
     path('laboratorio/', InicioPublicidad.as_view(), name='laboratorio_publicidad'),

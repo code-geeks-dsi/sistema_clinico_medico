@@ -27,3 +27,7 @@ def get_servicios_laboratorio(request):
     servicios=ServicioLaboratorioClinico.objects.all()
     servicios=ServicioLaboratorioSerializer(servicios, many=True)
     return JsonResponse({"data":servicios.data})
+
+def vista(request, id_publicacion):
+    print(id_publicacion)
+    return JsonResponse({'data':'success'})
