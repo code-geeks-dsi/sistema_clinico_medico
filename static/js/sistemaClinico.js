@@ -42,9 +42,12 @@ function getDatosFiltrados(tablaData, id_component, urlFiltro, complementoConsul
             resultados.data.forEach(p => {
                 //Recorre los elemntos del objeto
                 let elemento='<tr>';
+                const id_paciente=p.id_paciente;
+                // console.log(p);
                 for (const property in p) {
                     elemento = elemento+'<td>'+`${p[property]}`+'</td>';
                 }
+                elemento+=`<td><a href="/expediente/paciente/datos?id=${id_paciente}"><span class="material-symbols-outlined btn">edit_note</span></a></td>`;
                 elemento=elemento+'<td><div onclick="accionServer('+Object.values(p)[0]+',1);"class="material-symbols-outlined btn" >add</div></td>';
                 elemento=elemento+'</tr>';
                 tablaData.insertAdjacentHTML("beforeend", elemento);
