@@ -37,8 +37,8 @@ class Paciente(models.Model):
     direccion_paciente=models.CharField( max_length=120, blank=True,null=False,default="")
     email_paciente = models.EmailField( max_length=100, blank=True,null=False, default="")
     responsable=models.CharField(max_length=40,blank=True,null=False,default="")
-    dui=models.CharField(max_length=10,blank=True,null=False, unique=True,default="")
-    pasaporte=models.CharField(max_length=15,blank=True,null=False, unique=True,default="")#hasta el 2017 tenian 9 cifras, por las dudas 15
+    dui=models.CharField(max_length=10,blank=True,null=True, unique=True)
+    pasaporte=models.CharField(max_length=15,blank=True,null=True, unique=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
     numero_telefono=models.CharField(max_length=15, null=False, blank=True,default="")
 
     def __str__(self):
@@ -88,18 +88,18 @@ class SignosVitales(models.Model):
     id_signos_vitales= models.AutoField(primary_key=True)
     consulta=models.ForeignKey('Consulta',on_delete=models.CASCADE,null=False, blank=False)
     enfermera=models.ForeignKey('modulo_control.Empleado', on_delete=models.CASCADE,null=True, blank=True)
-    unidad_temperatura=models.CharField(max_length=2,choices=UNIDADES_TEMPERATURA,default=UNIDADES_TEMPERATURA[1][0],null=False, blank=False)
-    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,default=UNIDADES_PESO[0][0],null=False, blank=False)
+    unidad_temperatura=models.CharField(max_length=2,choices=UNIDADES_TEMPERATURA,default=UNIDADES_TEMPERATURA[1][0],null=False, blank=True)
+    unidad_peso=models.CharField(max_length=3,choices=UNIDADES_PESO,default=UNIDADES_PESO[0][0],null=False, blank=True)
     unidad_presion_arterial_diastolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
     unidad_presion_arterial_sistolica=models.CharField(max_length=4,default='mmHH',null=True, blank=True)
     unidad_frecuencia_cardiaca=models.CharField(max_length=3,null=True, blank=True,default='PPM')
     unidad_saturacion_oxigeno=models.CharField(max_length=1,default='%',null=True, blank=True)
-    valor_temperatura=models.DecimalField(max_digits=5,decimal_places=2,validators=[MaxValueValidator(50),MinValueValidator(15)],null=False, blank=False)
-    valor_peso=models.DecimalField(max_digits=5,decimal_places=2,validators=[MaxValueValidator(500),MinValueValidator(0)],null=False, blank=False)
-    valor_presion_arterial_diastolica=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=False)
-    valor_presion_arterial_sistolica=models.IntegerField(validators=[MaxValueValidator(350),MinValueValidator(0)],null=False, blank=False)
-    valor_frecuencia_cardiaca=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=False)
-    valor_saturacion_oxigeno=models.IntegerField(validators=[MaxValueValidator(101),MinValueValidator(0)],null=False, blank=False)
+    valor_temperatura=models.DecimalField(max_digits=5,decimal_places=2,validators=[MaxValueValidator(50),MinValueValidator(0)],null=False, blank=False,default=0)
+    valor_peso=models.DecimalField(max_digits=5,decimal_places=2,validators=[MaxValueValidator(500),MinValueValidator(0)],null=False, blank=False,default=0)
+    valor_presion_arterial_diastolica=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=True,default=0)
+    valor_presion_arterial_sistolica=models.IntegerField(validators=[MaxValueValidator(350),MinValueValidator(0)],null=False, blank=True,default=0)
+    valor_frecuencia_cardiaca=models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)],null=False, blank=True,default=0)
+    valor_saturacion_oxigeno=models.IntegerField(validators=[MaxValueValidator(101),MinValueValidator(0)],null=False, blank=True,default=0)
     fecha=models.DateTimeField(auto_now_add=True)
     objects= SignosVitalesManager()
 
