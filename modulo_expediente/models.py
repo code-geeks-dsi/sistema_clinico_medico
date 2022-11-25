@@ -34,12 +34,12 @@ class Paciente(models.Model):
     apellido_paciente = models.CharField( max_length=40)
     fecha_nacimiento_paciente = models.DateField(validators=[MaxValueValidator(limit_value=date.today)])
     sexo_paciente = models.CharField( max_length=1,choices=OPCIONES_SEXO, blank=False, null=False )
-    direccion_paciente=models.CharField( max_length=120, blank=True,null=True,default="")
-    email_paciente = models.EmailField( max_length=100, blank=True,null=True, default="")
-    responsable=models.CharField(max_length=40,blank=True,null=True,default="")
-    dui=models.CharField(max_length=10,blank=True,null=True, unique=True)
-    pasaporte=models.CharField(max_length=15,blank=True,null=True, unique=True)#hasta el 2017 tenian 9 cifras, por las dudas 15
-    numero_telefono=models.CharField(max_length=9, null=True, blank=True,default="")
+    direccion_paciente=models.CharField( max_length=120, blank=True,null=False,default="")
+    email_paciente = models.EmailField( max_length=100, blank=True,null=False, default="")
+    responsable=models.CharField(max_length=40,blank=True,null=False,default="")
+    dui=models.CharField(max_length=10,blank=True,null=False, unique=True,default="")
+    pasaporte=models.CharField(max_length=15,blank=True,null=False, unique=True,default="")#hasta el 2017 tenian 9 cifras, por las dudas 15
+    numero_telefono=models.CharField(max_length=15, null=False, blank=True,default="")
 
     def __str__(self):
         return str(self.id_paciente)+" - "+str(self.nombre_paciente)
