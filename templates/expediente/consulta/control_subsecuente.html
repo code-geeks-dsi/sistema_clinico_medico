@@ -70,7 +70,12 @@
                     </div>
                 </div>
             </div>
+        {% empty %}
+            <p class="d-flex justify-content-center h4"> No hay Consultas Previas</p>
         {% endfor %}
+        <div class="d-flex justify-content-center">
+            <a  href="{% url 'editar_consulta' id_consulta=id_consulta %}" class="btn btn-secondary my-2">Regresar</a>
+        </div>
     </div>
 </div>
 

@@ -44,7 +44,8 @@
 				{{ field }}
 				<p></p>
 				{% endfor %}
-				<div class="text-end pt-4">
+				<div class="d-flex justify-content-end m-2">
+					<a href="{% url 'editar_consulta' id_consulta=id_consulta %}" class="btn btn-secondary mx-1">Regresar</a>
 					<input class="btn btn-outline-primary" type="submit" value="Guardar">
 				</div>
 			</form>
