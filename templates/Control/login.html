@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet" />
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Iniciar Sesión</title>
     <!-- Bootstrap -->
@@ -12,8 +13,9 @@
     <link href="{% static 'css/toastr.min.css' %}" rel="stylesheet" />
     <style>
         .bg{
-            background-image: url({%static 'img/bg5.jpg'%});
+            background-image: url("https://cdn.pixabay.com/photo/2019/08/13/08/15/adult-4402808_960_720.jpg");
             background-position: center;
+            background-size: cover;
         }
         .fill { 
             min-height: 100%;
@@ -21,18 +23,18 @@
         }
     </style>
   </head>
-  <body>
+  <body class="bg">
       <!--Login Escritorio-->
     <div class="container">
-        <div class="row vh-100 justify-content-center align-items-center">
+        <div class="row vh-100 justify-content-center align-items-center mx-2">
             <div class="col">
                 <div class="row shadow rounded" id="cuadro_login">
                     <!-- Imagen -->
-                    <div class="col-6 bg d-none d-md-block">
-
+                    <div class="col-6 d-none d-md-block bg-light">
+                        <img src="{% static 'img/forensic-medicine-animate.svg' %}" alt="">
                     </div>
                     <!-- Login -->
-                    <div class="col-12 col-md-6 bg-white p-3">
+                    <div class="col-12 col-md-6 bg-white py-3">
                         <h2 class="fw-bold text-center p-4">Iniciar Sesión</h2>
                         <form class="px-4" action="" method="post">
                             {% csrf_token %}
