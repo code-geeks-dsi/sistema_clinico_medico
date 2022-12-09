@@ -8,6 +8,7 @@
     <link href="{% static 'css/custom.css' %}" rel="stylesheet" />
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Iniciar Sesión</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/logo_clinica.png' %}">
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="{% static 'css/toastr.min.css' %}" rel="stylesheet" />
@@ -35,7 +36,12 @@
                     </div>
                     <!-- Login -->
                     <div class="col-12 col-md-6 bg-white py-3">
-                        <h2 class="fw-bold text-center p-4">Iniciar Sesión</h2>
+                        <h2 class="title-c text-center pt-4">Iniciar Sesión</h2>
+                        <div class="d-flex justify-content-center">
+                            <a href="/" title="Página de inicio">
+                                <img src="{% static 'img/logo_clinica.png' %}" class="py-3" alt="Logo Clinica Médica Cojutepeque">
+                            </a>
+                        </div>
                         <form class="px-4" action="" method="post">
                             {% csrf_token %}
                             <div class="mb-4">
@@ -51,46 +57,16 @@
                                 <label for="connected" class="form-check-label">No cerrar sesión</label>
                             </div>
                             <div class="d-grid"> 
-                                <button type="submit" class="btn btn-outline-primary rounded">Iniciar Sesión</button>
+                                <button type="submit" class="btn btn-outline-warning rounded">Iniciar Sesión</button>
                             </div>
         
                             <div class="my-3 w-100 text-center">
-                                <span><a href="#">Recuperar Password</a></span>
+                                <span class="d-grid">
+                                    <a href="#" class="btn btn-outline-secondary">Recuperar Contraseña</a>
+                                </span>
                             </div>
                         </form>
-                        <!-- Inicio de Sesión con Redes Sociales -->
-                        <div class="container w-100 px-5 p-4">
-                            <div class="row text-center">
-                                <div class="col-12 p-2">Iniciar Sesión</div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <button class="btn btn-outline-primary w-100 my-1">
-                                        <div class="row align-items-center">
-                                            <div class="col-2">
-                                                <img src="{% static 'img/fb.png'%}" width="32" alt="">
-                                            </div>
-                                            <div class="col-10 text-center">
-                                                Facebook
-                                            </div>
-                                        </div>
-                                    </button>
-                                </div>
-                                <div class="col">
-                                    <button class="btn btn-outline-danger w-100 my-1">
-                                        <div class="row align-items-center">
-                                            <div class="col-2">
-                                                <img src="{% static 'img/google.png'%}" width="32" alt="">
-                                            </div>
-                                            <div class="col-10 text-center">
-                                                Google
-                                            </div>
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <!--Fin Inicio de Sesión con Redes Sociales-->
+
                     </div>
                 </div>
             </div>

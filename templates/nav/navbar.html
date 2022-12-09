@@ -16,7 +16,7 @@
               {{ request.user.nombres }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="#">Perfil</a></li>
+              <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
               <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
             </ul>
           </li>

@@ -4,16 +4,11 @@ from django.contrib import admin
 from django.urls import path,include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
-from modulo_control.views import registrar_empleado, editar_empleado, vista_adminitracion_empleados, lista_empleados, get_empleado
+from modulo_control.views.login import registrar_empleado,editar_empleado,vista_adminitracion_empleados,lista_empleados, get_empleado
+from modulo_control.views.perfil import Perfil
 
 urlpatterns = [
-
-    # path('agregarEmpleado', agregar_empleado, name= 'agregarEmpleado'),
-    # path('', indexEmpleado, name='indexEmpleado'),
-    # path('registrarDoctor', registrarDoctor, name= 'registrarDoctor'),
-    # path('agregarDoctor', agregarDoctor, name= 'agregarDoctor'),
-    # path('registrarEnfermera', registrarEnfermera, name= 'registrarEnfermera'),
-    # path('agregarEnfermera', agregarEnfermera, name= 'agregarEnfermera'),
+    path('perfil', Perfil.as_view(), name='perfil'),
     path('registrar/empleado', registrar_empleado, name= 'registrarEmpleado'),
     path('editar/empleado/', editar_empleado, name= 'editarEmpleado'),
     # path('registrarLicLaboratorioClinico', registrarLicLaboratorioClinico, name= 'registrarLicLaboratorioClinico'),
