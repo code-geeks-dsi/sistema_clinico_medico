@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path,include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
-from modulo_control.views import vista_iniciarsesion, logearse, cerrar_sesion, home, LoginView
+from modulo_control.views import cerrar_sesion, home, LoginView
 from modulo_publicidad.views.PaginaPrincipal import PaginaPrincipal
 from modulo_publicidad.views.PaginaClinica import PaginaClinica
 from modulo_publicidad.views.PaginaLaboratorio import PaginaLaboratorio

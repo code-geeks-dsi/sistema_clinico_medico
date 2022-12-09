@@ -67,13 +67,6 @@ class LoginView(View):
         return render(request, self.template_name, data)
   
 
-#Login
-def vista_iniciarsesion(request):
-    data={'mensaje':"",
-          'type':'',
-        }
-    return render(request,"login.html",data)
-
 def cerrar_sesion(request):
     logout(request)
     return redirect('login')
@@ -126,22 +119,6 @@ def logearse(request):
     return render(request,"login.html",data)
 
     
-
-""" def registrarEmpleado(request):
-    empleadoForm = EmpleadoForm()
-    return render(request, 'registroEmpleado.html', {'empleadoForm':empleadoForm})
-    
-@csrf_exempt
-def agregarEmpleado(request):
-    if request.method == 'POST':
-        empleado = Empleado()
-        empleadoForm = EmpleadoForm(request.POST)
-
-        if empleadoForm.is_valid():
-            empleado = empleadoForm.save(commit=False)
-            empleado.save()
-
-    return redirect('index') ##luego cambiar a que redireccione a lista de enpleados o algo asi  """
 
 @csrf_exempt
 def registrar_empleado(request):
