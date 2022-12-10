@@ -7,8 +7,76 @@
 {% block titulo %} Perfil {% endblock %}
 {% block content %}
 
-<div class="container py-3">
-    <p>Perfil</p>
+<div class="container-fluid py-3">
+    <div class="card">
+        <div class="alert alert-primary rounded-0" role="alert">
+            <div class="row">
+                <div class="col text-start">
+                    Datos del usuario
+                </div>
+                <div class="col d-flex justify-content-end">
+                    <div class="form-check form-switch">
+                        <label>Habilitar Edición</label>
+                        <input class="form-check-input" type="checkbox" role="switch" id="hablitar-edicion">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row m-2">
+            <div class="col-12 col-md-3">
+                <img src="https://cdn.pixabay.com/photo/2012/04/13/21/07/user-33638_960_720.png" class="rounded-circle img-fluid" alt="Avatar" />
+            </div>
+            <div class="col-12 col-md-9">
+                <form class="mx-3" method="POST" id="registro-form">
+                    <fieldset disabled id="setDataUser">
+                        <div class="row">
+                            <div class="col-12 col-md-6 ">
+                                <div class="mb-3">
+                                    <label for="nombres" class="form-label">Nombre</label>
+                                    <input type="text" name="nombres"  class="form-control"
+                                        placeholder="Ingrese su nombre: " required>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="mb-3">
+                                    <label for="apellido" class="form-label">Apellido</label>
+                                    <input type="text" name="apellido"  class="form-control"
+                                        placeholder="Ingrese su apellido: " required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <label for="fechanacimiento" class="form-label">Fecha de Nacimiento</label>
+                                    <input type="date" name="fechanacimiento" class="form-control" required>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="sexo" class="form-label">Sexo</label>
+                                        <select name="sexo" class="form-control" required>
+                                        <option value="M" selected>Masculino</option>
+                                        <option value="F">Femenino</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Número de Teléfono</label>
+                            <input type="tel" class="form-control"  placeholder="Ingrese su número de Teléfono: " required>
+                        </div>
+                        <div class="d-grid mb-3"> 
+                            <button type="submit" class="btn btn-primary" id="btn-registrar">Actualizar información</button>
+                        </div>
+                        <div class="alert alert-warning text-center" role="alert" id="alert-null" hidden>
+                            Ingrese su correo y confirme se contraseña
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
 </div> 
 
 {% endblock %}
