@@ -63,8 +63,12 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="telefono" class="form-label">Número de Teléfono</label>
-                            <input type="tel" class="form-control"  placeholder="Ingrese su número de Teléfono: " required>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="telefono" class="form-label">Dirección</label>
+                                    <input type="tel" class="form-control"  placeholder="Ingrese su Dirección: " value="{{user.direccion}}" required>
+                                </div>
+                            </div>
                         </div>
                         <div class="d-grid mb-3"> 
                             <button type="submit" class="btn btn-primary" id="btn-registrar">Actualizar información</button>
