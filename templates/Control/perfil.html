@@ -33,14 +33,14 @@
                             <div class="col-12 col-md-6 ">
                                 <div class="mb-3">
                                     <label for="nombres" class="form-label">Nombre</label>
-                                    <input type="text" name="nombres"  class="form-control"
+                                    <input type="text" name="nombres"  class="form-control" value="{{user.nombres}}"
                                         placeholder="Ingrese su nombre: " required>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="mb-3">
                                     <label for="apellido" class="form-label">Apellido</label>
-                                    <input type="text" name="apellido"  class="form-control"
+                                    <input type="text" name="apellido"  class="form-control" value="{{user.apellidos}}"
                                         placeholder="Ingrese su apellido: " required>
                                 </div>
                             </div>
@@ -49,7 +49,7 @@
                             <div class="row">
                                 <div class="col-12 col-md-6">
                                     <label for="fechanacimiento" class="form-label">Fecha de Nacimiento</label>
-                                    <input type="date" name="fechanacimiento" class="form-control" required>
+                                    <input type="date" name="fechanacimiento" class="form-control" value="{{user.fechaNacimiento|date:"Y-m-d"}}" required>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
