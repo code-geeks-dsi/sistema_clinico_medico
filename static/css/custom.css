@@ -1,9 +1,16 @@
+.wave-container{
+  position:absolute;
+  bottom: 0;
+  z-index: 100;
+  object-fit:cover;
+}
 .img-carrusel{
     object-fit: cover;
     opacity: 0.70;
     height: auto;
     max-height: 90vh;
-    min-height: 60vh;
+    min-height: 50vh;
+    z-index: 1;
 }
 .bg-card-custom{
   color: #0c63e4;
