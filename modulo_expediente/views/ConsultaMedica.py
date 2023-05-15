@@ -39,12 +39,17 @@ class ConsultaView(PermissionRequiredMixin, TemplateView):
             recetas_examen=RecetaOrdenExamenLaboratorio.objects.filter(consulta_id=id_consulta)
             cita_form=CitaConsultaForm()
             cita_form.fields['expediente'].initial=expediente
+
+            if receta == None:
+                receta=0
+            else:
+                receta=receta.id_receta_medica
             
             datos={
                 'paciente':paciente,
                 'id_consulta':id_consulta,
                 'id_expediente':expediente,
-                'id_receta':receta.id_receta_medica,
+                'id_receta':receta,
                 'consulta_form':consulta_form,
                 'signos_vitales_form':SignosVitalesForm(),
                 'hoja_evolucion_form':HojaEvolucionForm(),
