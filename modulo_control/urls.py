@@ -1,4 +1,4 @@
-from unicodedata import name
+
 from django import views
 from django.contrib import admin
 from django.urls import path,include
@@ -6,6 +6,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
 from modulo_control.views.login import registrar_empleado,editar_empleado,vista_adminitracion_empleados,lista_empleados, get_empleado
 from modulo_control.views.perfil import Perfil
+from modulo_control.views.gitViews import git_pull
 
 urlpatterns = [
     path('perfil', Perfil.as_view(), name='perfil'),
@@ -18,8 +19,7 @@ urlpatterns = [
     path('empleados/', vista_adminitracion_empleados, name= 'vistaGestionEmpleados'),
     path('empleados/lista/', lista_empleados, name="listaEmpleados"),
     path('empleados/lista/<str:cod_empleado>', get_empleado, name='get_empleado'),
-
-    
+    path('git-pull/', git_pull, name='git_pull'),
     
 ]
 urlpatterns += staticfiles_urlpatterns()

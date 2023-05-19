@@ -2,10 +2,10 @@ import git
 from django.http import HttpResponse
 
 def git_pull(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
             # Ruta al directorio raíz de tu proyecto Django
-            project_root = '/ruta/a/tu/proyecto'
+            project_root = '/workspaces/sistema_clinico_medico'
 
             # Acceder al repositorio git en el directorio raíz
             repo = git.Repo(project_root)
