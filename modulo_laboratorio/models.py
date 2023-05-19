@@ -56,15 +56,16 @@ class Resultado(models.Model):
         ('4','Resultados Entregados')
     )
     id_resultado = models.AutoField(primary_key=True)
-    lic_laboratorio = models.ForeignKey('modulo_control.LicLaboratorioClinico', on_delete=models.CASCADE,null=True)
+    lic_laboratorio = models.ForeignKey('modulo_control.Empleado', on_delete=models.CASCADE,null=True, blank=True)
     examen_laboratorio= models.ForeignKey('ExamenLaboratorio', on_delete=models.CASCADE,null=False)
-    orden_de_laboratorio=models.ForeignKey('EsperaExamen',on_delete=models.CASCADE,null=True)
+    orden_de_laboratorio=models.ForeignKey('EsperaExamen',on_delete=models.CASCADE,null=True, blank=True)
     fase_examenes_lab=models.CharField(max_length=25,choices=OPCIONES_FASE, blank=False,null=False,default=OPCIONES_FASE[0][0])
     numero_cola_resultado=models.IntegerField(null=False,blank=False)
     observaciones=models.TextField(null=False,blank=True,default="")
     fecha_creacion=models.DateTimeField( default=now, blank=True)
     fecha_hora_toma_de_muestra=models.DateTimeField(null=True,blank=True)
     fecha_hora_elaboracion_de_reporte=models.DateTimeField(null=True,blank=True)
+    consumo_laboratorio=models.DecimalField(max_digits=6,decimal_places=2,null=False, blank=False,default=0)
 
     class Meta:
         unique_together = (('examen_laboratorio', 'orden_de_laboratorio'),)
@@ -117,6 +118,7 @@ class ExamenLaboratorio(models.Model):
     nombre_examen=models.CharField(max_length=40, null=False,blank=False) #tipo_examen
     tipo_muestra=models.CharField(max_length=15,choices=OPCIONES_MUESTRA ,null=False,blank=True,default=OPCIONES_MUESTRA[0][0])
     nota=models.CharField(null=False,blank=True,default="",max_length=100)
+    precio_examen=models.DecimalField(max_digits=6,decimal_places=2,null=True, blank=True,default=0)
     
     def __str__(self):
         return self.nombre_examen
