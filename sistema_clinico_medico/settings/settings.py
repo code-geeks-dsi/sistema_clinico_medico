@@ -13,8 +13,7 @@ if env('DEBUG') == "False":
 else:
     DEBUG=True
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
-
+ALLOWED_HOSTS = ['sistema-clinico-medico']
 
 # Application definition
 

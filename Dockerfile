@@ -15,7 +15,7 @@ ADD . .
 
 # RUN mkdir static && python manage.py collectstatic
 
-# EXPOSE 8000
+EXPOSE 8000
 
-# CMD ["gunicorn","--bind",":8000","--workers","3","sistema_clinico_medico.wsgi:application"]
+CMD ["gunicorn","--bind",":8000","--workers","3","sistema_clinico_medico.wsgi:application"]
 
